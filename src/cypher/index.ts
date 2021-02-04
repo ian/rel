@@ -3,7 +3,7 @@ import { Result } from "neo4j-driver"
 import boxen from "boxen"
 
 import driver from "../connection"
-import { Geo } from "../../lib/google"
+import { Geo } from "../util/geo"
 
 type Cypher1Response = {
   [key: string]: any

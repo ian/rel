@@ -1,10 +1,14 @@
+import _ from "lodash"
 import {
   Schema,
   convertToSchemaType,
   convertToSchemaFindQuery,
   convertToSchemaListQuery,
 } from "./schema"
-import { convertToResoverFindQuery } from "./resolvers"
+import {
+  convertToResoverFindQuery,
+  convertToResoverListQuery,
+} from "./resolvers"
 
 export function generate(obj) {
   const typeSchema = {}
@@ -24,11 +28,10 @@ export function generate(obj) {
     // Generate Queries and Mutations
     if (accessors) {
       if (accessors.find) {
-        const [schemaName, schemaDef] = convertToSchemaFindQuery(
-          name,
-          accessors.find,
-          fields
-        )
+        const {
+          name: schemaName,
+          definition: schemaDef,
+        } = convertToSchemaFindQuery(name, accessors.find, fields)
         querySchema[schemaName] = schemaDef
 
         const {
@@ -36,33 +39,52 @@ export function generate(obj) {
           handler: resolverHandler,
         } = convertToResoverFindQuery(name, accessors.find)
 
-        console.log({ resolverName })
-        console.log({ resolverHandler })
-
         queryResolvers[resolverName] = resolverHandler
       }
 
       if (accessors.list) {
-        const [queryName, queryDef] = convertToSchemaListQuery(
-          name,
-          accessors.list,
-          fields
-        )
-        querySchema[queryName] = queryDef
+        const {
+          name: schemaName,
+          definition: schemaDef,
+        } = convertToSchemaListQuery(name, accessors.list, fields)
+        querySchema[schemaName] = schemaDef
+
+        const {
+          name: resolverName,
+          handler: resolverHandler,
+        } = convertToResoverListQuery(name, accessors.list)
+        queryResolvers[resolverName] = resolverHandler
       }
     }
   })
 
-  const gqlSchema = [Object.values(typeSchema).join("\n\n")]
+  const gqlSchema = [
+    `
+scalar ID
+scalar Date
+scalar Time
+scalar DateTime
+scalar PhoneNumber
+scalar URL
+scalar UUID`,
+    Object.values(typeSchema).join("\n\n"),
+  ]
+
+  // if (!_.isEmpty(querySchema)) {
   gqlSchema.push(`type Query {
   ${Object.values(querySchema).join("\n  ")}
 }`)
+  // }
+
+  // if (!_.isEmpty(mutationSchema)) {
   gqlSchema.push(`type Mutation {
   ${Object.values(mutationSchema).join("\n  ")}
+  SystemStatus: Boolean!
 }`)
+  // }
 
   return {
-    schema: gqlSchema,
+    schema: gqlSchema.join("\n\n"),
     resolvers: {
       Query: queryResolvers,
       Mutation: mutationResolvers,

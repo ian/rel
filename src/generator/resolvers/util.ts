@@ -1,8 +1,17 @@
 import { coerce } from "../../util/coercion"
 // import { cypher, cypher1,  } from "../../util"
 
-function queryBuilder(queryOpts) {
-  const { match, geo, order, filter, search, skip, limit, where } = queryOpts
+export function queryBuilder(queryOpts) {
+  const {
+    match,
+    geo,
+    order,
+    filter,
+    //search,
+    skip,
+    limit,
+    where,
+  } = queryOpts
 
   const cypherWhere = []
   const cypherQuery = []
@@ -33,15 +42,15 @@ function queryBuilder(queryOpts) {
   }
 
   // @todo move this into a filter query: name_search: "asdf"
-  if (search?.fields && search?.query) {
-    const searchMaps = search.fields.map(
-      (key) =>
-        `node.${key} =~ '(?i)${search.query
-          .replace(/[^\s\w]/g, "")
-          .toLowerCase()}.*'`
-    )
-    cypherWhere.push(`(${searchMaps.join(" OR ")})`)
-  }
+  // if (search?.fields && search?.query) {
+  //   const searchMaps = search.fields.map(
+  //     (key) =>
+  //       `node.${key} =~ '(?i)${search.query
+  //         .replace(/[^\s\w]/g, "")
+  //         .toLowerCase()}.*'`
+  //   )
+  //   cypherWhere.push(`(${searchMaps.join(" OR ")})`)
+  // }
 
   if (cypherWhere.length > 0) {
     cypherQuery.push(`WHERE ${cypherWhere.join(" AND ")}`)

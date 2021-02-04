@@ -19,19 +19,22 @@ export type Schema = {
   accessors: SchemaAccessors
 }
 
-export function convertToSchemaFindQuery(name, def, fields: SchemaFields) {
+export function convertToSchemaFindQuery(label, def, fields: SchemaFields) {
   // Author(id: UUID!): Author
-  return [name, `${name}(id: UUID!): ${name}`]
+  const name = `Find${label}`
+  return {
+    name,
+    definition: `${name}(id: UUID!): ${label}`,
+  }
 }
 
-export function convertToSchemaListQuery(name, def, fields: SchemaFields) {
-  const pluralized = pluralize(name)
+export function convertToSchemaListQuery(label, def, fields: SchemaFields) {
+  const name = `List${pluralize(label)}`
 
-  // Authors(limit: Int, skip: Int, order: String): [Author]!
-  return [
-    pluralized,
-    `${pluralized}(limit: Int, skip: Int, order: String): [${name}]!`,
-  ]
+  return {
+    name,
+    definition: `${name}(limit: Int, skip: Int, order: String): [${label}]!`,
+  }
 }
 
 export function convertToSchemaType(name, fields: SchemaFields) {

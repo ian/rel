@@ -1,4 +1,4 @@
-import { geocode } from "../../lib/google"
+import { geocode } from "../ext/google"
 
 export async function geoify(addy) {
   const geocoded = await geocode(addy)
@@ -7,4 +7,4 @@ export async function geoify(addy) {
   return { address, geo }
 }
 
-export { Geo } from "../../lib/google"
+export { Geo } from "../ext/google"
