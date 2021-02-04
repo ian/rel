@@ -1,7 +1,9 @@
 import pluralize from "pluralize"
-import { cypher } from "../../cypher"
+import { cypher } from "../cypher"
 // import { coerce } from "../../util/coercion"
 import { queryBuilder } from "./util"
+
+import { Fields } from "./fields"
 
 // const DEFAULT_OPTS = {
 //   find: ["id"],
@@ -18,6 +20,15 @@ type ResolverListQueryOpts = {
   where?: string
   only?: string[]
   search?: string[]
+}
+
+export function convertToSchemaListQuery(label, def, fields: Fields) {
+  const name = `List${pluralize(label)}`
+
+  return {
+    name,
+    definition: `${name}(limit: Int, skip: Int, order: String): [${label}]!`,
+  }
 }
 
 export function convertToResoverListQuery(

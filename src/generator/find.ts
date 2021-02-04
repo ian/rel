@@ -1,16 +1,18 @@
 import titleize from "titleize"
-import { cypher1 } from "../../cypher"
-import { coerce } from "../../util/coercion"
+import { cypher1 } from "../cypher"
+import { coerce } from "../util/coercion"
+
+import { Fields } from "./fields"
 
 type ResolverFindQueryOpts = {
-  find?: string[]
+  findBy?: string[]
   // geo?: boolean
   where?: string
   only?: string[]
 }
 
 const DEFAULT_OPTS = {
-  find: ["id"],
+  findBy: ["id"],
 }
 
 function standardizeOpts(opts): ResolverFindQueryOpts {
@@ -22,12 +24,13 @@ export function convertToResoverFindQuery(
   opts: boolean | ResolverFindQueryOpts = {}
 ) {
   const {
-    find,
+    findBy,
     where,
     // only,
   } = standardizeOpts(opts)
 
-  const findBy = find
+  console.log(standardizeOpts(opts))
+
   const findParamName = findBy
     .map((f, i) => (i === 0 ? f : titleize(f)))
     .join("Or")
@@ -54,5 +57,15 @@ export function convertToResoverFindQuery(
   return {
     name: `Find${name}`,
     handler,
+  }
+}
+
+export function convertToSchemaFindQuery(label, def, fields: Fields) {
+  // Author(id: UUID!): Author
+  const name = `Find${label}`
+
+  return {
+    name,
+    definition: `${name}(id: UUID!): ${label}`,
   }
 }

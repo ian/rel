@@ -4,6 +4,7 @@ import mercurius from "mercurius"
 
 import { generate } from "./src/generator"
 import { string } from "./src/fields"
+import { error } from "console"
 
 const example = {
   Person: {
@@ -13,7 +14,9 @@ const example = {
       // optional: string(),
     },
     accessors: {
-      // find: true,
+      find: {
+        findBy: ["name"],
+      },
       list: true,
     },
   },
@@ -23,13 +26,18 @@ const example = {
       // released: int()
       tagline: string(),
     },
+    accessors: {
+      find: true,
+      list: true,
+    },
   },
 }
 
 const { schema, resolvers } = generate(example)
 
+console.log()
 console.log(boxen(schema.trim(), { margin: 0.5, padding: 1 }))
-console.log("Resolvers:", resolvers)
+console.log(resolvers)
 
 const app = Fastify()
 
@@ -38,17 +46,19 @@ app.register(mercurius, {
   resolvers,
 })
 
-app.get("/", async function (req, reply) {
-  const query = `
-query { 
-  ListPeople {
-    name
-  }
-}
-  `
-  return reply.graphql(query).catch((err) => {
-    console.error(err)
-  })
+app.post("/", async function (req, reply) {
+  // @ts-ignore
+  const { query } = req.body
+
+  return reply
+    .graphql(query)
+    .then((json) => JSON.stringify(json, null, 2))
+    .catch((err) => {
+      return {
+        statusCode: err.statusCode,
+        errors: err.errors.map((e) => e.message),
+      }
+    })
 })
 
 app.listen(3000)

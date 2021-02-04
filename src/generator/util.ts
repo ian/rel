@@ -1,4 +1,4 @@
-import { coerce } from "../../util/coercion"
+import { coerce } from "../util/coercion"
 // import { cypher, cypher1,  } from "../../util"
 
 export function queryBuilder(queryOpts) {

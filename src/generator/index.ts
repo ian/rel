@@ -1,14 +1,30 @@
 import _ from "lodash"
-import {
-  Schema,
-  convertToSchemaType,
-  convertToSchemaFindQuery,
-  convertToSchemaListQuery,
-} from "./schema"
-import {
-  convertToResoverFindQuery,
-  convertToResoverListQuery,
-} from "./resolvers"
+// import {
+//   Schema,
+//   convertToSchemaType,
+//   // convertToSchemaFindQuery,
+//   convertToSchemaListQuery,
+// } from "./schema.old"
+
+// import {
+//   // convertToResoverFindQuery,
+//   convertToResoverListQuery,
+// } from "./resolvers.old"
+
+import { Fields } from "./fields"
+import { convertToSchemaType } from "./types"
+import { convertToSchemaFindQuery, convertToResoverFindQuery } from "./find"
+import { convertToSchemaListQuery, convertToResoverListQuery } from "./list"
+
+type Accessors = {
+  find?: boolean
+  list?: boolean
+}
+
+export type Schema = {
+  fields: Fields
+  accessors: Accessors
+}
 
 export function generate(obj) {
   const typeSchema = {}

@@ -27,5 +27,10 @@
     "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["node_modules", "dist", "__tests__"],
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+  "include": [
+    "./src/**/*.tsx",
+    "./src/**/*.ts",
+    "src/generator/resolvers.old",
+    "src/generator/schema.old"
+  ]
 }
