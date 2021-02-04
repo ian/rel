@@ -4,5 +4,5 @@ type Field = {
 }
 
 export type Fields = {
-  [key: string]: SchemaField
+  [key: string]: Field
 }
