@@ -10,8 +10,6 @@ const example = {
   Person: {
     fields: {
       name: string().required(),
-      // born: int()
-      // optional: string(),
     },
     accessors: {
       find: {
@@ -23,7 +21,6 @@ const example = {
   Movie: {
     fields: {
       title: string().required(),
-      // released: int()
       tagline: string(),
     },
     accessors: {
@@ -39,7 +36,7 @@ console.log()
 console.log(boxen(schema.trim(), { margin: 0.5, padding: 1 }))
 console.log(resolvers)
 
-const app = Fastify()
+const app = Fastify({ logger: true })
 
 app.register(mercurius, {
   schema,

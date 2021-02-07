@@ -1,0 +1,17 @@
+{
+  schema: {
+    Author: {
+      fields: {
+        name: string(),
+      },
+    },
+  },
+  jobs: {
+    hourlyDoCalculations: {
+      cron: "...",
+      handler: (job) => {
+        ...
+      }
+    }
+  }
+}
