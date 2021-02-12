@@ -21,9 +21,12 @@ type Accessors = {
   list?: boolean
 }
 
+type Relations = {}
+
 export type Schema = {
-  fields: Fields
   accessors: Accessors
+  fields: Fields
+  relations: Relations
 }
 
 export function generate(obj) {

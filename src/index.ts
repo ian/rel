@@ -14,7 +14,7 @@ export async function server(opts) {
   console.log()
   console.log(boxen(schema.trim(), { margin: 0.5, padding: 1 }))
 
-  const app = Fastify({ logger: true })
+  const app = Fastify({ logger: false })
   app.register(mercurius, {
     schema,
     resolvers,
