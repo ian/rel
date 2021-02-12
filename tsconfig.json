@@ -26,7 +26,7 @@
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "exclude": ["node_modules", "dist", "__tests__"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"],
   "include": [
     "./src/**/*.tsx",
     "./src/**/*.ts",

@@ -4,7 +4,6 @@ import mercurius from "mercurius"
 
 import { generate } from "./src/generator"
 import { string } from "./src/fields"
-import { error } from "console"
 
 const example = {
   Person: {
