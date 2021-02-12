@@ -29,8 +29,6 @@ export function convertToResoverFindQuery(
     // only,
   } = standardizeOpts(opts)
 
-  console.log(standardizeOpts(opts))
-
   const findParamName = findBy
     .map((f, i) => (i === 0 ? f : titleize(f)))
     .join("Or")

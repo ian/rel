@@ -38,7 +38,8 @@
     "neo4j-driver": "^4.2.2",
     "pluralize": "^8.0.0",
     "slugify": "^1.4.6",
-    "titleize": "^2.1.0"
+    "titleize": "^2.1.0",
+    "yup": "^0.32.8"
   },
   "devDependencies": {
     "@types/node": "^14.14.22",

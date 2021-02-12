@@ -34,7 +34,6 @@ export function queryBuilder(queryOpts) {
 
   // filter
   if (filter) {
-    // console.log("FILTER", filter)
     Object.keys(filter).map((key) => {
       const val = filter[key]
       cypherWhere.push(`node.${key} = ${coerce(val)}`)

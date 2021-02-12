@@ -1,5 +1,5 @@
 declare type Field = {
-    typeName: string;
+    gqlName: string;
     isRequired: boolean;
 };
 export declare type Fields = {

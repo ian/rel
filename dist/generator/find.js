@@ -52,7 +52,6 @@ function standardizeOpts(opts) {
 function convertToResoverFindQuery(name, opts) {
     if (opts === void 0) { opts = {}; }
     var _a = standardizeOpts(opts), findBy = _a.findBy, where = _a.where;
-    console.log(standardizeOpts(opts));
     var findParamName = findBy
         .map(function (f, i) { return (i === 0 ? f : titleize_1.default(f)); })
         .join("Or");

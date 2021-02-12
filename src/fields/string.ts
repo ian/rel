@@ -1,5 +1,7 @@
+export * as fields from "yup"
+
 type StringType = {
-  typeName: string
+  gqlName: string
   isRequired: boolean
 
   required: () => void
@@ -7,7 +9,7 @@ type StringType = {
 
 export function string(): StringType {
   function String() {
-    this.typeName = "String"
+    this.gqlName = "String"
     this.isRequired = false
 
     this.required = () => {

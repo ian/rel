@@ -6,7 +6,7 @@ function convertToSchemaType(name, fields) {
     gqlFields.push("id: UUID!");
     Object.entries(fields).forEach(function (fieldObj) {
         var key = fieldObj[0], field = fieldObj[1];
-        gqlFields.push("  " + key + ": " + field.typeName + (field.isRequired ? "!" : ""));
+        gqlFields.push("  " + key + ": " + field.gqlName + (field.isRequired ? "!" : ""));
     });
     gqlFields.push("  createdAt: DateTime!");
     return "type " + name + " { \n  " + gqlFields.join("\n") + "\n}";

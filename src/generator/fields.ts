@@ -1,5 +1,5 @@
 type Field = {
-  typeName: string
+  gqlName: string
   isRequired: boolean
 }
 
