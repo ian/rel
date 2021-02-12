@@ -78,6 +78,7 @@ export function generate(obj) {
     `
 scalar ID
 scalar Date
+scalar Geo
 scalar Time
 scalar DateTime
 scalar PhoneNumber
@@ -86,18 +87,28 @@ scalar UUID`,
     Object.values(typeSchema).join("\n\n"),
   ]
 
-  // if (!_.isEmpty(querySchema)) {
-  gqlSchema.push(`type Query {
+  if (!_.isEmpty(querySchema)) {
+    gqlSchema.push(`type Query {
   ${Object.values(querySchema).join("\n  ")}
 }`)
-  // }
+  } else {
+    gqlSchema.push(`type Query { 
+  # Add accessors to remove placeholder
+  _ : Boolean 
+}`)
+  }
 
-  // if (!_.isEmpty(mutationSchema)) {
-  gqlSchema.push(`type Mutation {
+  if (!_.isEmpty(mutationSchema)) {
+    gqlSchema.push(`type Mutation {
   ${Object.values(mutationSchema).join("\n  ")}
   SystemStatus: Boolean!
 }`)
-  // }
+  } else {
+    gqlSchema.push(`type Mutation { 
+  # Add accessors to remove placeholder
+  _ : Boolean 
+}`)
+  }
 
   return {
     schema: gqlSchema.join("\n\n"),

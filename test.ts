@@ -33,7 +33,6 @@ const { schema, resolvers } = generate(example)
 
 console.log()
 console.log(boxen(schema.trim(), { margin: 0.5, padding: 1 }))
-console.log(resolvers)
 
 const app = Fastify({ logger: true })
 

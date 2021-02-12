@@ -5,7 +5,7 @@ import mercurius from "mercurius"
 import { generate } from "./generator"
 
 // export * as fields from "yup"
-export * as fields from "./fields"
+export { default as fields } from "./fields"
 
 export async function server(opts) {
   const { port, schema: relSchema } = opts
@@ -35,5 +35,5 @@ export async function server(opts) {
       })
   })
 
-  return app.listen(port)
+  await app.listen(port)
 }
