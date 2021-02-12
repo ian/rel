@@ -11,7 +11,7 @@ export function convertToSchemaType(name, fields: Fields) {
   })
 
   gqlFields.push(`  createdAt: DateTime!`)
-  // gqlFields.push(`  updatedAt: DateTime!`)
+  gqlFields.push(`  updatedAt: DateTime!`)
 
   return `type ${name} { 
   ${gqlFields.join("\n")}

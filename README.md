@@ -4,6 +4,10 @@ Questions Outstanding
 
 - should we make label and id reserved keywords?
 
+# TODO
+
+- [] Add support for field `timestamps: false`
+
 # Quickstart
 
 Install Rel
