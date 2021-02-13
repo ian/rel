@@ -70,7 +70,9 @@ server.extend({
 
 ## Auth
 
-- [ ] `server.plugin(require("rel-auth0")({ apiKey: ..., model: "saas" | "accounts" | "users" }))`
+- [ ] `server.auth({ model: "saas" | "accounts" | "users" })`
+- [ ] `server.plugin(require("rel-auth0")({ apiKey: ...))`
+- [ ] `server.plugin(require("rel-signalwire")({ apiKey: ... }))`
 
 ## Images
 
