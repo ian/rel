@@ -8,24 +8,25 @@ Questions Outstanding
 
 ## Fields
 
-- [ ] UUID
-- [ ] String
-- [ ] Int
-- [ ] Boolean
-- [ ] Date
-- [ ] Time
-- [ ] DateTime
-- [ ] URL
-- [ ] PhoneNumber
-- [ ] Geo
-- [ ] Slugs
-- [ ] Uniqueness
+- [x] generates type object
+- [ ] `uuid()`
+- [x] `string()`
+- [ ] `int()`
+- [ ] `boolean()`
+- [ ] `date()`
+- [ ] `time()`
+- [ ] `dateTime()`
+- [ ] `url()`
+- [x] `phoneNumber()`
+- [x] `geo()`
+- [ ] `slug({ from: "name" })`
+- [ ] ``.unique()`
 - [ ] `timestamps: false`
 
 ## Accessors
 
-- [ ] find
-- [ ] list
+- [x] find
+- [x] list
 - [ ] popular?
 - [ ] where clauses https://graphcms.com/docs/content-api/queries
 
