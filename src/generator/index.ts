@@ -1,25 +1,12 @@
 import _ from "lodash"
 import { formatSdl } from "format-graphql"
 
-import { Fields } from "../types"
+import { Schema } from "../types"
 
 // import { convertToSchemaType } from "./types.old"
 import { generateObject } from "./object"
 import { generateFind } from "./find"
 import { generateList } from "./list"
-
-type Accessors = {
-  find?: boolean
-  list?: boolean
-}
-
-type Relations = {}
-
-export type Schema = {
-  accessors: Accessors
-  fields: Fields
-  relations: Relations
-}
 
 export function generate(obj) {
   const typeSchema = {}

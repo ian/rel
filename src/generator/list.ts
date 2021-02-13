@@ -27,7 +27,11 @@ function convertToSchemaListQuery(label, def, fields: Fields) {
 
   return {
     name,
-    definition: `${name}(limit: Int, skip: Int, order: String): [${label}]!`,
+    definition: `${name}(
+  limit: Int, 
+  skip: Int, 
+  order: String
+): [${label}]!`,
   }
 }
 

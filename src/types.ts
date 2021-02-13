@@ -39,3 +39,19 @@ export type Relation = {
 export type Relations = {
   [key: string]: Relation
 }
+
+export type Accessors = {
+  find?: boolean
+  list?: boolean
+}
+
+export type Schema = {
+  accessors: Accessors
+  fields: Fields
+  relations: Relations
+}
+
+export type Config = {
+  port?: number
+  schema: Schema
+}
