@@ -31,6 +31,7 @@ Questions Outstanding
 - [x] list
 - [ ] popular?
 - [ ] where clauses https://graphcms.com/docs/content-api/queries
+- [ ] Guards
 
 ## Mutators
 
@@ -38,12 +39,14 @@ Questions Outstanding
 - [ ] merge
 - [ ] update
 - [ ] delete
+- [ ] Guards
 
 ## Relationships
 
 - [ ] object field (accessors)
 - [ ] mutators
 - [ ] out vs in
+- [ ] Guards
 
 ## Publishing
 
@@ -51,19 +54,31 @@ Questions Outstanding
 
 ## Extend
 
-- [ ] server.extend({ CustomEndpoint: (runtime:Runtime) => object }) })
+- [ ] GQL extensions
+
+```
+server.extend({
+  CustomEndpoint: {
+    fields: {
+      [key:string]: Field
+    },
+    resolver: (runtime:Runtime) => object })
+    guard?: string
+  }
+})
+```
 
 ## Auth
 
-- [ ] server.plugin(require("rel-auth0"))
+- [ ] `server.plugin(require("rel-auth0")({ apiKey: ..., model: "saas" | "accounts" | "users" }))`
 
 ## Images
 
-- [ ] server.plugin(require("rel-imgix"))
+- [ ] `server.plugin(require("rel-imgix")({ apiKey: ... }))`
 
 ## Video
 
-- [ ] server.plugin(require("rel-imgix"))
+- [ ] `server.plugin(require("rel-mux")({ apiKey: ... }))`
 
 ## Guards
 
