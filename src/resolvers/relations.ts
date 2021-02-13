@@ -60,10 +60,7 @@ export function relationResolver(definition: Relation) {
         return mapper(rec)
       })
     } else {
-      return cypher(cypherQuery).then((records) => {
-        console.log(records.map(mapper))
-        return records.map(mapper)
-      })
+      return cypher(cypherQuery).then((records) => records.map(mapper))
     }
   }
 }
