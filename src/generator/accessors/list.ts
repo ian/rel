@@ -1,18 +1,6 @@
 import pluralize from "pluralize"
-// import { cypher } from "../../cypher"
-// import { coerce } from "../../util/coercion"
-// import { queryBuilder } from "../util"
 import { listResolver } from "../../resolvers"
 import { ConfigFields } from "../../server/types"
-
-// const DEFAULT_OPTS = {
-//   find: ["id"],
-// }
-
-// function standardizeOpts(opts): ResolverListQueryOpts {
-//   // return Object.assign({}, DEFAULT_OPTS, typeof opts === "boolean" ? {} : opts)
-//   return {}
-// }
 
 type ResolverListQueryOpts = {
   find?: string[]

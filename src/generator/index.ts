@@ -16,9 +16,11 @@ type Schema = {
 }
 
 type Resolver = (...RuntimeParams) => ResolvableObject
-type Resolvers = {
-  [name: string]: Resolver
-}
+type Resolvers =
+  | {}
+  | {
+      [name: string]: Resolver
+    }
 
 type GeneratorReply = {
   schema: Schema
@@ -26,13 +28,6 @@ type GeneratorReply = {
 }
 
 export function generate(obj) {
-  // const typeSchema = {}
-  // const querySchema = {}
-  // const mutationSchema = {}
-
-  // const typeResolvers = {}
-  // const queryResolvers = {}
-  // const mutationResolvers = {}
   const reducedSchema = {
     Query: {
       Ping: "Boolean",
@@ -47,7 +42,6 @@ export function generate(obj) {
   }
 
   const reducer = (add: GeneratorReply) => {
-    console.log("reducer", add)
     _.merge(reducedSchema, add.schema)
     _.merge(reducedResolvers, add.resolvers)
   }
@@ -56,13 +50,8 @@ export function generate(obj) {
     const { accessors, fields, relations } = def as ConfigSchema
 
     // Generate the type definition
-    // typeSchema[name] = convertToSchemaType(name, fields, relations)
-    // const { schema, resolver } = generateObject(name, fields, relations)
     const objectReply = generateObject(name, fields, relations)
-    // @ts-ignore
     reducer(objectReply)
-    // typeSchema[name] = schema
-    // typeResolvers[name] = resolver
 
     // Generate Queries and Mutations
     if (accessors) {
@@ -77,34 +66,6 @@ export function generate(obj) {
       }
     }
   })
-
-  // console.log("reducedSchema", reducedSchema)
-  // console.log("reducedResolvers", reducedResolvers)
-
-  //   gqlSchema.push(Object.values(typeSchema).join("\n\n"))
-
-  //   if (!_.isEmpty(querySchema)) {
-  //     gqlSchema.push(`type Query {
-  //   ${Object.values(querySchema).join("\n  ")}
-  // }`)
-  //   } else {
-  //     gqlSchema.push(`type Query {
-  //   # Add accessors to remove placeholder
-  //   _ : Boolean
-  // }`)
-  //   }
-
-  //   if (!_.isEmpty(mutationSchema)) {
-  //     gqlSchema.push(`type Mutation {
-  //   ${Object.values(mutationSchema).join("\n  ")}
-  //   SystemStatus: Boolean!
-  // }`)
-  //   } else {
-  //     gqlSchema.push(`type Mutation {
-  //   # Add accessors to remove placeholder
-  //   _ : Boolean
-  // }`)
-  //   }
 
   const gqlSchema = []
 
@@ -136,25 +97,10 @@ export function generate(obj) {
 
   gqlSchema.push(typeSchema)
 
-  const schema = gqlSchema
-    // .map((s) =>
-    //   formatSdl(s, {
-    //     sortDefinitions: false,
-    //     sortFields: false,
-    //   })
-    // )
-    .join("\n\n")
-
-  console.log("schema", schema)
+  const schema = gqlSchema.join("\n\n")
 
   return {
     schema,
     resolvers: reducedResolvers,
-    // schema,
-    // resolvers: {
-    //   ...typeResolvers,
-    //   Query: queryResolvers,
-    //   Mutation: mutationResolvers,
-    // },
   }
 }
