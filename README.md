@@ -8,64 +8,64 @@ Questions Outstanding
 
 ## Fields
 
-- [] UUID
-- [] String
-- [] Int
-- [] Boolean
-- [] Date
-- [] Time
-- [] DateTime
-- [] URL
-- [] PhoneNumber
-- [] Geo
-- [] Slugs
-- [] Uniqueness
-- [] `timestamps: false`
+- [ ] UUID
+- [ ] String
+- [ ] Int
+- [ ] Boolean
+- [ ] Date
+- [ ] Time
+- [ ] DateTime
+- [ ] URL
+- [ ] PhoneNumber
+- [ ] Geo
+- [ ] Slugs
+- [ ] Uniqueness
+- [ ] `timestamps: false`
 
 ## Accessors
 
-- [] find
-- [] list
-- [] popular?
-- [] where clauses https://graphcms.com/docs/content-api/queries
+- [ ] find
+- [ ] list
+- [ ] popular?
+- [ ] where clauses https://graphcms.com/docs/content-api/queries
 
 ## Mutators
 
-- [] create
-- [] merge
-- [] update
-- [] delete
+- [ ] create
+- [ ] merge
+- [ ] update
+- [ ] delete
 
 ## Relationships
 
-- [] object field (accessors)
-- [] mutators
-- [] out vs in
+- [ ] object field (accessors)
+- [ ] mutators
+- [ ] out vs in
 
 ## Publishing
 
-- [] publishedAt?
+- [ ] publishedAt?
 
 ## Auth
 
-- [] server.plugin(require("rel-auth0"))
+- [ ] server.plugin(require("rel-auth0"))
 
 ## Images
 
-- [] server.plugin(require("rel-imgix"))
+- [ ] server.plugin(require("rel-imgix"))
 
 ## Video
 
-- [] server.plugin(require("rel-imgix"))
+- [ ] server.plugin(require("rel-imgix"))
 
 ## Guards
 
-- [] Authenticate
-- [] Admin
+- [ ] Authenticate
+- [ ] Admin
 
 ## Jobs
 
-- [] server.jobs({ ... })
+- [ ] server.jobs({ ... })
 
 # Quickstart
 
