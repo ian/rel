@@ -23,4 +23,5 @@ export type RuntimeParams = {
 }
 
 export * from "./node"
+export * from "./accessors"
 export * from "./relations"

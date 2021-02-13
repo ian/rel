@@ -3,10 +3,8 @@ import { formatSdl } from "format-graphql"
 
 import { Schema } from "../types"
 
-// import { convertToSchemaType } from "./types.old"
 import { generateObject } from "./object"
-import { generateFind } from "./find"
-import { generateList } from "./list"
+import { generateFind, generateList } from "./accessors"
 
 export function generate(obj) {
   const typeSchema = {}

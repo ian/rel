@@ -1,9 +1,9 @@
 import pluralize from "pluralize"
-import { cypher } from "../cypher"
+import { cypher } from "../../cypher"
 // import { coerce } from "../../util/coercion"
-import { queryBuilder } from "./util"
+import { queryBuilder } from "../util"
 
-import { Fields } from "../types"
+import { Fields } from "../../types"
 
 // const DEFAULT_OPTS = {
 //   find: ["id"],
