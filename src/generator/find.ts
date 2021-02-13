@@ -19,7 +19,7 @@ function standardizeOpts(opts): ResolverFindQueryOpts {
   return Object.assign({}, DEFAULT_OPTS, typeof opts === "boolean" ? {} : opts)
 }
 
-export function convertToResoverFindQuery(
+function convertToResoverFindQuery(
   name: string,
   opts: boolean | ResolverFindQueryOpts = {}
 ) {
@@ -58,12 +58,22 @@ export function convertToResoverFindQuery(
   }
 }
 
-export function convertToSchemaFindQuery(label, def, fields: Fields) {
+function convertToSchemaFindQuery(label, def, fields: Fields) {
   // Author(id: UUID!): Author
   const name = `Find${label}`
 
   return {
     name,
     definition: `${name}(id: UUID!): ${label}`,
+  }
+}
+
+export function generateFind(label, definition, fields: Fields) {
+  const schema = convertToSchemaFindQuery(label, definition, fields)
+  const resolver = convertToResoverFindQuery(label, definition)
+
+  return {
+    schema,
+    resolver,
   }
 }

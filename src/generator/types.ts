@@ -6,7 +6,6 @@ export function convertToSchemaType(name, fields: Fields) {
 
   Object.entries(fields).forEach((fieldObj) => {
     const [key, field] = fieldObj
-    console.log("field", field)
     gqlFields.push(`  ${key}: ${field.gqlName}${field.isRequired ? "!" : ""}`)
   })
 

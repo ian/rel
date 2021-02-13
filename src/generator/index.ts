@@ -1,20 +1,9 @@
 import _ from "lodash"
-// import {
-//   Schema,
-//   convertToSchemaType,
-//   // convertToSchemaFindQuery,
-//   convertToSchemaListQuery,
-// } from "./schema.old"
-
-// import {
-//   // convertToResoverFindQuery,
-//   convertToResoverListQuery,
-// } from "./resolvers.old"
 
 import { Fields } from "./fields"
 import { convertToSchemaType } from "./types"
-import { convertToSchemaFindQuery, convertToResoverFindQuery } from "./find"
-import { convertToSchemaListQuery, convertToResoverListQuery } from "./list"
+import { generateFind } from "./find"
+import { generateList } from "./list"
 
 type Accessors = {
   find?: boolean
@@ -47,32 +36,15 @@ export function generate(obj) {
     // Generate Queries and Mutations
     if (accessors) {
       if (accessors.find) {
-        const {
-          name: schemaName,
-          definition: schemaDef,
-        } = convertToSchemaFindQuery(name, accessors.find, fields)
-        querySchema[schemaName] = schemaDef
-
-        const {
-          name: resolverName,
-          handler: resolverHandler,
-        } = convertToResoverFindQuery(name, accessors.find)
-
-        queryResolvers[resolverName] = resolverHandler
+        const { schema, resolver } = generateFind(name, accessors.find, fields)
+        querySchema[schema.name] = schema.definition
+        queryResolvers[resolver.name] = resolver.handler
       }
 
       if (accessors.list) {
-        const {
-          name: schemaName,
-          definition: schemaDef,
-        } = convertToSchemaListQuery(name, accessors.list, fields)
-        querySchema[schemaName] = schemaDef
-
-        const {
-          name: resolverName,
-          handler: resolverHandler,
-        } = convertToResoverListQuery(name, accessors.list)
-        queryResolvers[resolverName] = resolverHandler
+        const { schema, resolver } = generateList(name, accessors.list, fields)
+        querySchema[schema.name] = schema.definition
+        queryResolvers[resolver.name] = resolver.handler
       }
     }
   })

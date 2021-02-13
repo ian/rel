@@ -22,7 +22,7 @@ type ResolverListQueryOpts = {
   search?: string[]
 }
 
-export function convertToSchemaListQuery(label, def, fields: Fields) {
+function convertToSchemaListQuery(label, def, fields: Fields) {
   const name = `List${pluralize(label)}`
 
   return {
@@ -31,7 +31,7 @@ export function convertToSchemaListQuery(label, def, fields: Fields) {
   }
 }
 
-export function convertToResoverListQuery(
+function convertToResoverListQuery(
   label: string,
   opts: boolean | ResolverListQueryOpts = {}
 ) {
@@ -74,5 +74,15 @@ export function convertToResoverListQuery(
   return {
     name: `List${pluralize(label)}`,
     handler,
+  }
+}
+
+export function generateList(label, definition, fields: Fields) {
+  const schema = convertToSchemaListQuery(label, definition, fields)
+  const resolver = convertToResoverListQuery(label, definition)
+
+  return {
+    schema,
+    resolver,
   }
 }
