@@ -24,19 +24,6 @@ type ResolverListQueryOpts = {
 
 const DEFAULT_OPTS = {}
 
-function makeSchema(label, def, fields: ConfigFields) {
-  const name = `List${pluralize(label)}`
-
-  return {
-    name,
-    definition: `${name}(
-  limit: Int, 
-  skip: Int, 
-  order: String
-): [${label}]!`,
-  }
-}
-
 function makeResolver(
   label: string,
   opts: boolean | ResolverListQueryOpts = {}
@@ -51,14 +38,26 @@ function makeResolver(
 }
 
 export function generateList(label, definition, fields: ConfigFields) {
-  const schema = makeSchema(label, definition, fields)
+  const name = `List${pluralize(label)}`
+  const gqlName = `List${pluralize(label)}(
+    limit: Int, 
+    skip: Int, 
+    order: String
+  )`
+  const gqlDef = `[${label}]!`
+
+  // const schema = makeSchema(label, definition, fields)
   const resolver = makeResolver(label, definition)
 
   return {
-    schema,
+    schema: {
+      Query: {
+        [gqlName]: gqlDef,
+      },
+    },
     // resolver,
     resolvers: {
-      [`List${pluralize(label)}`]: resolver,
+      [name]: resolver,
     },
   }
 }

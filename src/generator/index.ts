@@ -67,18 +67,14 @@ export function generate(obj) {
     // Generate Queries and Mutations
     if (accessors) {
       if (accessors.find) {
-        const findReply = generateFind(name, accessors.find, fields)
-        reducer(findReply)
-        // const { schema, resolvers } = generateFind(name, accessors.find, fields)
-        // querySchema[schema.name] = schema.definition
-        // queryResolvers[resolver.name] = resolver.handler
+        const generatedFind = generateFind(name, accessors.find, fields)
+        reducer(generatedFind)
       }
 
-      // if (accessors.list) {
-      //   const { schema, resolver } = generateList(name, accessors.list, fields)
-      //   querySchema[schema.name] = schema.definition
-      //   queryResolvers[resolver.name] = resolver.handler
-      // }
+      if (accessors.list) {
+        const generatedList = generateList(name, accessors.list, fields)
+        reducer(generatedList)
+      }
     }
   })
 
