@@ -78,5 +78,6 @@ export async function cypher1(query): Promise<Cypher1Response> {
   return res[0]
 }
 
+export { queryBuilder } from "./queryBuilder"
 export * from "./node"
 export * from "./relationship"

@@ -1,12 +1,12 @@
 import Fastify from "fastify"
 import mercurius from "mercurius"
 
-import { generate } from "./generator"
-import { Config, Schema } from "./types"
+import { generate } from "../generator"
+import { Config, ConfigSchema } from "./types"
 
 class Server {
   port: number
-  schema: Schema
+  schema: ConfigSchema
 
   constructor(config: Config) {
     const { port = 4000, schema } = config
@@ -45,4 +45,5 @@ class Server {
   }
 }
 
+export * from "./types"
 export default (config) => new Server(config)

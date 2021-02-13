@@ -1,18 +1,18 @@
 import pluralize from "pluralize"
-import { cypher } from "../../cypher"
+// import { cypher } from "../../cypher"
 // import { coerce } from "../../util/coercion"
-import { queryBuilder } from "../util"
-
-import { Fields } from "../../types"
+// import { queryBuilder } from "../util"
+import { listResolver } from "../../resolvers"
+import { ConfigFields } from "../../server/types"
 
 // const DEFAULT_OPTS = {
 //   find: ["id"],
 // }
 
-function standardizeOpts(opts): ResolverListQueryOpts {
-  // return Object.assign({}, DEFAULT_OPTS, typeof opts === "boolean" ? {} : opts)
-  return {}
-}
+// function standardizeOpts(opts): ResolverListQueryOpts {
+//   // return Object.assign({}, DEFAULT_OPTS, typeof opts === "boolean" ? {} : opts)
+//   return {}
+// }
 
 type ResolverListQueryOpts = {
   find?: string[]
@@ -22,7 +22,9 @@ type ResolverListQueryOpts = {
   search?: string[]
 }
 
-function convertToSchemaListQuery(label, def, fields: Fields) {
+const DEFAULT_OPTS = {}
+
+function makeSchema(label, def, fields: ConfigFields) {
   const name = `List${pluralize(label)}`
 
   return {
@@ -35,53 +37,28 @@ function convertToSchemaListQuery(label, def, fields: Fields) {
   }
 }
 
-function convertToResoverListQuery(
+function makeResolver(
   label: string,
   opts: boolean | ResolverListQueryOpts = {}
 ) {
-  const {
-    // find,
-    // where,
-    // only,
-  } = standardizeOpts(opts)
-  const defaultOrder = "id"
-
-  const handler = async function (obj, params, context) {
-    const { limit, skip = 0, order = defaultOrder } = params
-    const {
-      // boundingBox,
-      filter,
-    } = params
-
-    const cypherQuery = queryBuilder({
-      match: `(node:${label})`,
-      filter,
-      // geo: {
-      //   boundingBox,
-      // },
-      limit,
-      skip,
-      order,
-    })
-
-    return cypher(cypherQuery).then((res) =>
-      //@ts-ignore
-      res.map((res) => res.node)
-    )
+  const standardizedOpts = {
+    label,
+    ...DEFAULT_OPTS,
+    ...(typeof opts === "boolean" ? {} : opts),
   }
 
-  return {
-    name: `List${pluralize(label)}`,
-    handler,
-  }
+  return listResolver(standardizedOpts)
 }
 
-export function generateList(label, definition, fields: Fields) {
-  const schema = convertToSchemaListQuery(label, definition, fields)
-  const resolver = convertToResoverListQuery(label, definition)
+export function generateList(label, definition, fields: ConfigFields) {
+  const schema = makeSchema(label, definition, fields)
+  const resolver = makeResolver(label, definition)
 
   return {
     schema,
-    resolver,
+    // resolver,
+    resolvers: {
+      [`List${pluralize(label)}`]: resolver,
+    },
   }
 }

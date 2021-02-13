@@ -1,4 +1,4 @@
-import { Fields } from "../../types"
+import { ConfigFields } from "../../server/types"
 import { findResolver } from "../../resolvers"
 
 type ResolverFindQueryOpts = {
@@ -12,39 +12,30 @@ const DEFAULT_OPTS = {
   findBy: ["id"],
 }
 
-function convertToResoverFindQuery(
-  name: string,
+function makeResolver(
+  label: string,
   opts: boolean | ResolverFindQueryOpts = {}
 ) {
   const standardizedOpts = Object.assign(
-    {},
+    {
+      label,
+    },
     DEFAULT_OPTS,
     typeof opts === "boolean" ? {} : opts
   )
-  const handler = findResolver(standardizedOpts)
-
-  return {
-    name: `Find${name}`,
-    handler,
-  }
+  return findResolver(standardizedOpts)
 }
 
-function convertToSchemaFindQuery(label, def, fields: Fields) {
-  // Author(id: UUID!): Author
+export function generateFind(label, definition, fields: ConfigFields) {
   const name = `Find${label}`
-
   return {
-    name,
-    definition: `${name}(id: UUID!): ${label}`,
-  }
-}
-
-export function generateFind(label, definition, fields: Fields) {
-  const schema = convertToSchemaFindQuery(label, definition, fields)
-  const resolver = convertToResoverFindQuery(label, definition)
-
-  return {
-    schema,
-    resolver,
+    schema: {
+      Query: {
+        [`${name}(id: UUID!)`]: label,
+      },
+    },
+    resolvers: {
+      [name]: makeResolver(label, definition),
+    },
   }
 }

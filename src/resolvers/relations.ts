@@ -1,19 +1,29 @@
 import _ from "lodash"
 import { resolveNode } from "./node"
-import { Direction, Rel, Relation } from "../types"
+// import { Rel, Relation } from "./types"
 import { cypher1, cypher, cypherListRelationship } from "../cypher"
+import { Direction, ConfigRelation } from "../server/types"
 
-export enum RelDirection {
-  IN = "IN",
-  OUT = "OUT",
-}
-
-// export type BuildRelOpts = {
-//   label: string
-//   direction?: RelDirection
+// export type ConfigRelation = {
+//   from: ConfigFrom
+//   to: ConfigTo
+//   rel: ConfigRel
+//   direction?: Direction
+//   singular?: boolean
+//   order?: string
 // }
 
-export function resolveRel(rel: Rel) {
+// export enum Direction {
+//   IN = "IN",
+//   OUT = "OUT",
+// }
+
+export type RelOpts = {
+  label: string
+  direction?: Direction
+}
+
+export function resolveRel(rel: RelOpts) {
   // if (typeof rel === "string")
   //   return {
   //     name: _.camelCase(rel) + "Rel",
@@ -27,7 +37,7 @@ export function resolveRel(rel: Rel) {
   }
 }
 
-export function relationResolver(definition: Relation) {
+export function relationResolver(definition: ConfigRelation) {
   const { from, to, direction, singular = false, order, rel } = definition
 
   return async (obj, params, context) => {

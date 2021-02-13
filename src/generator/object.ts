@@ -1,32 +1,46 @@
 import { generateObjectFields } from "./fields"
 import { generateObjectRelation } from "./relations"
-import { Fields, Relations } from "../types"
+import { ConfigFields, ConfigRelations } from "../server/types"
 
-export function generateObject(name, fields: Fields, relations: Relations) {
-  const gqlFields = []
+export function generateObject(
+  label,
+  fields: ConfigFields,
+  relations: ConfigRelations
+) {
+  const gqlFields = {}
   const gqlResolver = {}
 
-  gqlFields.push(`id: UUID!`)
+  gqlFields["id"] = `UUID!`
 
   Object.entries(fields).forEach((fieldObj) => {
-    gqlFields.push(generateObjectFields(...fieldObj))
+    const [name, def] = fieldObj
+    gqlFields[name] = def.gqlName
+    // return `${name}: ${field.gqlName}${field.isRequired ? "!" : ""}`
+    // gqlFields.push(generateObjectFields(...fieldObj))
   })
 
-  gqlFields.push(`createdAt: DateTime!`)
-  gqlFields.push(`updatedAt: DateTime!`)
+  gqlFields["createdAt"] = "DateTime!"
+  gqlFields["updatedAt"] = "DateTime!"
+
+  // gqlFields.push(`createdAt: DateTime!`)
+  // gqlFields.push(`updatedAt: DateTime!`)
 
   if (relations) {
     Object.entries(relations).forEach((relObj) => {
       const { name, schema, resolver } = generateObjectRelation(...relObj)
-      gqlFields.push(schema)
+      gqlFields[name] = schema
+      // gqlFields.push(schema)
       gqlResolver[name] = resolver
     })
   }
 
+  const schema = {}
+  schema[label] = gqlFields
+
   return {
-    schema: `type ${name} { 
-      ${gqlFields.join("\n")}
-    }`,
-    resolver: gqlResolver,
+    schema,
+    resolvers: {
+      [label]: gqlResolver,
+    },
   }
 }

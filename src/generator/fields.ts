@@ -1,5 +1,5 @@
-import { Field } from "../types"
+import { ConfigField } from "../server/types"
 
-export function generateObjectFields(name: string, field: Field) {
+export function generateObjectFields(name: string, field: ConfigField) {
   return `${name}: ${field.gqlName}${field.isRequired ? "!" : ""}`
 }
