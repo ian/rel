@@ -3,7 +3,7 @@ import { cypher } from "../cypher"
 // import { coerce } from "../../util/coercion"
 import { queryBuilder } from "./util"
 
-import { Fields } from "./fields"
+import { Fields } from "../types"
 
 // const DEFAULT_OPTS = {
 //   find: ["id"],
@@ -46,17 +46,12 @@ function convertToResoverListQuery(
     const { limit, skip = 0, order = defaultOrder } = params
     const {
       // boundingBox,
-      //search,
       filter,
     } = params
 
     const cypherQuery = queryBuilder({
       match: `(node:${label})`,
       filter,
-      // search: {
-      //   query: search,
-      //   fields: opts.search,
-      // },
       // geo: {
       //   boundingBox,
       // },

@@ -1,6 +1,5 @@
 import { isInt } from "neo4j-driver/lib/integer.js"
 import { Result } from "neo4j-driver"
-import boxen from "boxen"
 
 import driver from "../connection"
 import { Geo } from "../util/geo"
@@ -20,9 +19,7 @@ export async function cypherRaw(query): Promise<Result> {
   }
 
   if (process.env.NEO4J_DEBUG === "true") {
-    console.log(
-      boxen(beautifyCypher(query), { dimBorder: true, padding: 1, margin: 1 })
-    )
+    console.log(beautifyCypher(query))
   }
 
   const session = driver.session()

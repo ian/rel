@@ -1,10 +1,10 @@
-import boxen from "boxen"
 import Fastify from "fastify"
 import mercurius from "mercurius"
 
 import { generate } from "./generator"
 
 // export * as fields from "yup"
+export * from "./types"
 export { default as fields } from "./fields"
 
 export async function server(opts) {
@@ -13,7 +13,8 @@ export async function server(opts) {
 
   console.log()
   // console.log(boxen(schema.trim(), { margin: 0.5, padding: 1 }))
-  console.log(schema.trim())
+  console.log(schema)
+  console.log(resolvers)
 
   const app = Fastify({ logger: false })
   app.register(mercurius, {
@@ -29,6 +30,7 @@ export async function server(opts) {
       .graphql(query)
       .then((json) => JSON.stringify(json, null, 2))
       .catch((err) => {
+        console.error(err)
         return {
           statusCode: err.statusCode,
           errors: err.errors.map((e) => e.message),

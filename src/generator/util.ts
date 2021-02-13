@@ -1,17 +1,7 @@
 import { coerce } from "../util/coercion"
-// import { cypher, cypher1,  } from "../../util"
 
 export function queryBuilder(queryOpts) {
-  const {
-    match,
-    geo,
-    order,
-    filter,
-    //search,
-    skip,
-    limit,
-    where,
-  } = queryOpts
+  const { match, geo, order, filter, skip, limit, where } = queryOpts
 
   const cypherWhere = []
   const cypherQuery = []
@@ -39,17 +29,6 @@ export function queryBuilder(queryOpts) {
       cypherWhere.push(`node.${key} = ${coerce(val)}`)
     })
   }
-
-  // @todo move this into a filter query: name_search: "asdf"
-  // if (search?.fields && search?.query) {
-  //   const searchMaps = search.fields.map(
-  //     (key) =>
-  //       `node.${key} =~ '(?i)${search.query
-  //         .replace(/[^\s\w]/g, "")
-  //         .toLowerCase()}.*'`
-  //   )
-  //   cypherWhere.push(`(${searchMaps.join(" OR ")})`)
-  // }
 
   if (cypherWhere.length > 0) {
     cypherQuery.push(`WHERE ${cypherWhere.join(" AND ")}`)

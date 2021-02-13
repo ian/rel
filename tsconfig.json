@@ -31,6 +31,8 @@
     "./src/**/*.tsx",
     "./src/**/*.ts",
     "src/generator/resolvers.old",
-    "src/generator/schema.old"
+    "src/generator/schema.old",
+    "src/resolvers",
+    "src/generator/types.old"
   ]
 }

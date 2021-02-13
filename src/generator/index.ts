@@ -1,7 +1,10 @@
 import _ from "lodash"
+import { formatSdl } from "format-graphql"
 
-import { Fields } from "./fields"
-import { convertToSchemaType } from "./types"
+import { Fields } from "../types"
+
+// import { convertToSchemaType } from "./types.old"
+import { generateObject } from "./object"
 import { generateFind } from "./find"
 import { generateList } from "./list"
 
@@ -23,15 +26,19 @@ export function generate(obj) {
   const querySchema = {}
   const mutationSchema = {}
 
+  const typeResolvers = {}
   const queryResolvers = {}
   const mutationResolvers = {}
 
   Object.entries(obj).forEach((types) => {
     const [name, def] = types
-    const { fields, accessors } = def as Schema
+    const { accessors, fields, relations } = def as Schema
 
     // Generate the type definition
-    typeSchema[name] = convertToSchemaType(name, fields)
+    // typeSchema[name] = convertToSchemaType(name, fields, relations)
+    const { schema, resolver } = generateObject(name, fields, relations)
+    typeSchema[name] = schema
+    typeResolvers[name] = resolver
 
     // Generate Queries and Mutations
     if (accessors) {
@@ -49,18 +56,7 @@ export function generate(obj) {
     }
   })
 
-  const gqlSchema = [
-    `
-scalar ID
-scalar Date
-scalar Geo
-scalar Time
-scalar DateTime
-scalar PhoneNumber
-scalar URL
-scalar UUID`,
-    Object.values(typeSchema).join("\n\n"),
-  ]
+  const gqlSchema = [Object.values(typeSchema).join("\n\n")]
 
   if (!_.isEmpty(querySchema)) {
     gqlSchema.push(`type Query {
@@ -85,9 +81,27 @@ scalar UUID`,
 }`)
   }
 
+  const schema =
+    `
+scalar ID
+scalar Date
+scalar Geo
+scalar Time
+scalar DateTime
+scalar PhoneNumber
+scalar URL
+scalar UUID
+
+` +
+    formatSdl(gqlSchema.join("\n\n"), {
+      sortDefinitions: false,
+      sortFields: false,
+    })
+
   return {
-    schema: gqlSchema.join("\n\n"),
+    schema,
     resolvers: {
+      ...typeResolvers,
       Query: queryResolvers,
       Mutation: mutationResolvers,
     },

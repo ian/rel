@@ -2,7 +2,7 @@ import titleize from "titleize"
 import { cypher1 } from "../cypher"
 import { coerce } from "../util/coercion"
 
-import { Fields } from "./fields"
+import { Fields } from "../types"
 
 type ResolverFindQueryOpts = {
   findBy?: string[]

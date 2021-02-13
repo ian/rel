@@ -1,8 +1,5 @@
-type Field = {
-  gqlName: string
-  isRequired: boolean
-}
+import { Field } from "../types"
 
-export type Fields = {
-  [key: string]: Field
+export function generateObjectFields(name: string, field: Field) {
+  return `${name}: ${field.gqlName}${field.isRequired ? "!" : ""}`
 }
