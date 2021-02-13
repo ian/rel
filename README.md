@@ -6,7 +6,66 @@ Questions Outstanding
 
 # TODO
 
-- [] Add support for field `timestamps: false`
+## Fields
+
+- [] UUID
+- [] String
+- [] Int
+- [] Boolean
+- [] Date
+- [] Time
+- [] DateTime
+- [] URL
+- [] PhoneNumber
+- [] Geo
+- [] Slugs
+- [] Uniqueness
+- [] `timestamps: false`
+
+## Accessors
+
+- [] find
+- [] list
+- [] popular?
+- [] where clauses https://graphcms.com/docs/content-api/queries
+
+## Mutators
+
+- [] create
+- [] merge
+- [] update
+- [] delete
+
+## Relationships
+
+- [] object field (accessors)
+- [] mutators
+- [] out vs in
+
+## Publishing
+
+- [] publishedAt?
+
+## Auth
+
+- [] server.plugin(require("rel-auth0"))
+
+## Images
+
+- [] server.plugin(require("rel-imgix"))
+
+## Video
+
+- [] server.plugin(require("rel-imgix"))
+
+## Guards
+
+- [] Authenticate
+- [] Admin
+
+## Jobs
+
+- [] server.jobs({ ... })
 
 # Quickstart
 
