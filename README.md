@@ -20,7 +20,9 @@ Questions Outstanding
 - [x] `phoneNumber()`
 - [x] `geo()`
 - [ ] `slug({ from: "name" })`
-- [ ] ``.unique()`
+- [ ] `.unique()`
+- [ ] `.guard("admin")`
+- [ ] `.guard((runtime) => ...)`
 - [ ] `timestamps: false`
 
 ## Accessors
