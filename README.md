@@ -49,6 +49,10 @@ Questions Outstanding
 
 - [ ] publishedAt?
 
+## Extend
+
+- [ ] server.extend({ CustomEndpoint: (runtime:Runtime) => object }) })
+
 ## Auth
 
 - [ ] server.plugin(require("rel-auth0"))
