@@ -56,7 +56,17 @@ export function generate(obj) {
     }
   })
 
-  const gqlSchema = [Object.values(typeSchema).join("\n\n")]
+  const gqlSchema = []
+  gqlSchema.push(`
+  scalar ID
+  scalar Date
+  scalar Geo
+  scalar Time
+  scalar DateTime
+  scalar PhoneNumber
+  scalar URL
+  scalar UUID`)
+  gqlSchema.push(Object.values(typeSchema).join("\n\n"))
 
   if (!_.isEmpty(querySchema)) {
     gqlSchema.push(`type Query {
@@ -81,22 +91,14 @@ export function generate(obj) {
 }`)
   }
 
-  const schema =
-    `
-scalar ID
-scalar Date
-scalar Geo
-scalar Time
-scalar DateTime
-scalar PhoneNumber
-scalar URL
-scalar UUID
-
-` +
-    formatSdl(gqlSchema.join("\n\n"), {
-      sortDefinitions: false,
-      sortFields: false,
-    })
+  const schema = gqlSchema
+    .map((s) =>
+      formatSdl(s, {
+        sortDefinitions: false,
+        sortFields: false,
+      })
+    )
+    .join("\n\n")
 
   return {
     schema,

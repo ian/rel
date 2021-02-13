@@ -6,7 +6,7 @@ export function generateObjectRelation(name: string, definition: Relation) {
 
   return {
     name,
-    schema: `${name}: ${singular ? to.label : `[${to.label}]`}`,
+    schema: `${name}: ${singular ? to.label : `[${to.label}]!`}`,
     resolver: relationResolver(definition),
   }
 }
