@@ -21,9 +21,10 @@ Questions Outstanding
 - [x] `geo()`
 - [ ] `slug({ from: "name" })`
 - [ ] `.unique()`
-- [ ] `.guard("admin")`
+- [x] `.guard("admin")`
 - [ ] `.guard((runtime) => ...)`
-- [ ] `timestamps: false`
+- [x] `id: false`
+- [x] `timestamps: false`
 
 ## Accessors
 
@@ -31,7 +32,7 @@ Questions Outstanding
 - [x] list
 - [ ] popular?
 - [ ] where clauses https://graphcms.com/docs/content-api/queries
-- [ ] Guards
+- [x] Guards
 
 ## Mutators
 
