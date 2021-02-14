@@ -1,5 +1,7 @@
 import BaseField from "./base"
+import { string } from "yup"
 
-export default class GeoField extends BaseField {
-  gqlName = "Geo"
+export default class Geo extends BaseField {
+  _gqlName = "Geo"
+  _validator = string()
 }

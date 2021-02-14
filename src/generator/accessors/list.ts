@@ -45,7 +45,9 @@ export function generateList(label, definition, fields: ConfigFields) {
     },
     // resolver,
     resolvers: {
-      [name]: resolver,
+      Query: {
+        [name]: resolver,
+      },
     },
   }
 }

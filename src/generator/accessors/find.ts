@@ -35,7 +35,9 @@ export function generateFind(label, definition, fields: ConfigFields) {
       },
     },
     resolvers: {
-      [name]: makeResolver(label, definition),
+      Query: {
+        [name]: makeResolver(label, definition),
+      },
     },
   }
 }

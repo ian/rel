@@ -31,6 +31,7 @@
   "homepage": "https://github.com/ian/react-animated-conversation#readme",
   "dependencies": {
     "@google/maps": "^1.1.3",
+    "@graphql-tools/schema": "^7.1.3",
     "fastify": "^3.11.0",
     "format-graphql": "^1.4.0",
     "lodash": "^4.17.20",

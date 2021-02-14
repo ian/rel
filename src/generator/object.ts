@@ -1,4 +1,3 @@
-import { generateObjectFields } from "./fields"
 import { generateObjectRelation } from "./relations"
 import { ConfigFields, ConfigRelations } from "../server/types"
 
@@ -14,7 +13,11 @@ export function generateObject(
 
   Object.entries(fields).forEach((fieldObj) => {
     const [name, def] = fieldObj
-    gqlFields[name] = def.gqlName
+
+    gqlFields[name] =
+      def._gqlName +
+      (def._required ? "!" : "") +
+      (def._guard ? ` @${def._guard}` : "")
   })
 
   gqlFields["createdAt"] = "DateTime!"

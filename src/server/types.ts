@@ -1,11 +1,14 @@
+import { GeneratorReply } from "../generator/types"
+
 export enum Direction {
   IN = "IN",
   OUT = "OUT",
 }
 
 export type ConfigField = {
-  gqlName: string
-  isRequired: boolean
+  _gqlName: string
+  _required: boolean
+  _guard: string
 }
 
 export type ConfigFields = {
@@ -51,7 +54,10 @@ export type ConfigSchema = {
   relations: ConfigRelations
 }
 
+export type ConfigAuth = () => GeneratorReply
+
 export type Config = {
+  auth?: ConfigAuth
   port?: number
   schema: ConfigSchema
 }

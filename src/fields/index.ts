@@ -4,6 +4,6 @@ import String from "./string"
 
 export default {
   geo: () => new Geo(),
-  phone: () => new PhoneNumber(),
+  phoneNumber: () => new PhoneNumber(),
   string: () => new String(),
 }

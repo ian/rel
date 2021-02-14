@@ -1,5 +1,5 @@
-import { relationResolver, resolveNode, resolveRel } from "../resolvers"
-import { Direction, ConfigRelation } from "../server/types"
+import { relationResolver, resolveNode, resolveRel } from "../../resolvers"
+import { Direction, ConfigRelation } from "../../server/types"
 
 export function generateObjectRelation(
   name: string,
