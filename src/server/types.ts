@@ -12,6 +12,9 @@ export type ConfigField = {
 }
 
 export type ConfigFields = {
+  id?: boolean
+  timestamps?: boolean
+} & {
   [key: string]: ConfigField
 }
 

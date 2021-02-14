@@ -133,12 +133,6 @@ scalar UUID`)
     return acc
   }, {})
 
-  console.log({
-    schema,
-    resolvers,
-    directives,
-  })
-
   return {
     schema,
     resolvers,

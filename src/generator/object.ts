@@ -3,13 +3,15 @@ import { ConfigFields, ConfigRelations } from "../server/types"
 
 export function generateObject(
   label,
-  fields: ConfigFields,
+  { id, timestamps, ...fields }: ConfigFields,
   relations: ConfigRelations
 ) {
   const gqlFields = {}
   const gqlResolver = {}
 
-  gqlFields["id"] = `UUID!`
+  if (id !== false) {
+    gqlFields["id"] = `UUID!`
+  }
 
   Object.entries(fields).forEach((fieldObj) => {
     const [name, def] = fieldObj
@@ -20,8 +22,10 @@ export function generateObject(
       (def._guard ? ` @${def._guard}` : "")
   })
 
-  gqlFields["createdAt"] = "DateTime!"
-  gqlFields["updatedAt"] = "DateTime!"
+  if (timestamps !== false) {
+    gqlFields["createdAt"] = "DateTime!"
+    gqlFields["updatedAt"] = "DateTime!"
+  }
 
   if (relations) {
     Object.entries(relations).forEach((relObj) => {

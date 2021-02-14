@@ -4,6 +4,8 @@ export default () => ({
   models: {
     Auth: {
       fields: {
+        id: false,
+        timestamps: false,
         token: string(),
         user: type("User").required(),
       },
