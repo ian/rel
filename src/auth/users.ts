@@ -6,7 +6,7 @@ export default () => ({
       fields: {
         id: false,
         timestamps: false,
-        token: string(),
+        token: string().required(),
         user: type("User").required(),
       },
     },
