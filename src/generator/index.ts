@@ -1,11 +1,13 @@
 import { formatSdl } from "format-graphql"
 import _ from "lodash"
-import { Config, ConfigSchema } from "../server/types"
+import { Config, ConfigModel, CallableConfig } from "../server/types"
 import { generateFind, generateList } from "./accessors"
 import { generateObject } from "./object"
 import { Directives, GeneratorReply, Resolvers, Schema } from "./types"
 
-function map(obj: Config): GeneratorReply {
+function map(opts): GeneratorReply {
+  const { auth, models } = opts
+
   const schema = {
     Query: {
       Ping: "String",
@@ -36,28 +38,69 @@ function map(obj: Config): GeneratorReply {
     _.merge(directives, add.directives)
   }
 
-  if (obj.auth) merge(obj.auth())
+  const reduce = (config: Config) => {
+    const { models, directives } = config
 
-  Object.entries(obj.schema).forEach(([name, def]) => {
-    const { accessors, fields, relations } = def as ConfigSchema
+    merge({ directives })
 
-    // Generate the type definition
-    const objectReply = generateObject(name, fields, relations)
-    merge(objectReply)
+    // Walk the models and add the resulting GeneratedConfig
+    Object.entries(models).forEach(([name, def]) => {
+      const { accessors, fields, relations } = def as ConfigModel
 
-    // Generate Queries and Mutations
-    if (accessors) {
-      if (accessors.find) {
-        const generatedFind = generateFind(name, accessors.find, fields)
-        merge(generatedFind)
+      // Generate the type definition
+      const objectReply = generateObject(name, fields, relations)
+      merge(objectReply)
+
+      // Generate Queries and Mutations
+      if (accessors) {
+        if (accessors.find) {
+          const generatedFind = generateFind(name, accessors.find, fields)
+          merge(generatedFind)
+        }
+
+        if (accessors.list) {
+          const generatedList = generateList(name, accessors.list, fields)
+          merge(generatedList)
+        }
       }
+    })
+  }
 
-      if (accessors.list) {
-        const generatedList = generateList(name, accessors.list, fields)
-        merge(generatedList)
-      }
-    }
-  })
+  // console.log(JSON.stringify(obj.auth(), null, 2))
+  if (auth) {
+    reduce(auth())
+    // const { schema: authSchema, ...authRest } = obj.auth()
+    // mergeSchema(authSchema)
+
+    // Object.entries(authSchema).forEach(([name, def]) => {
+    // })
+    // merge(obj.auth())
+  }
+
+  if (models) {
+    reduce({ models })
+  }
+
+  // Object.entries(obj.schema).forEach(([name, def]) => {
+  //   const { accessors, fields, relations } = def as ConfigModel
+
+  //   // Generate the type definition
+  //   const objectReply = generateObject(name, fields, relations)
+  //   merge(objectReply)
+
+  //   // Generate Queries and Mutations
+  //   if (accessors) {
+  //     if (accessors.find) {
+  //       const generatedFind = generateFind(name, accessors.find, fields)
+  //       merge(generatedFind)
+  //     }
+
+  //     if (accessors.list) {
+  //       const generatedList = generateList(name, accessors.list, fields)
+  //       merge(generatedList)
+  //     }
+  //   }
+  // })
 
   return {
     schema,
@@ -102,8 +145,8 @@ scalar UUID`)
           sortDefinitions: false,
           sortFields: false,
         })
-      } catch {
-        console.error("Error during GQL compilation", typeStr)
+      } catch (err) {
+        console.error("Error during GQL compilation", typeStr, err)
       }
     })
     .join("\n")
@@ -118,6 +161,12 @@ scalar UUID`)
     return acc
   }, {})
 
+  console.log({
+    schema,
+    resolvers,
+    directives,
+  })
+
   return {
     schema,
     resolvers,
@@ -125,9 +174,11 @@ scalar UUID`)
   }
 }
 
-export function generate(obj: Config) {
+type Opts = Config & { auth?: CallableConfig }
+
+export function generate(opts: Opts) {
   // generate the master level object configs
-  const mapped = map(obj)
+  const mapped = map(opts)
 
   // Reduce mapped to the proper format
   const { schema, directives, resolvers } = reducer(mapped)

@@ -3,25 +3,21 @@ import mercurius from "mercurius"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 
 import { generate } from "../generator"
-import { Config, ConfigAuth, ConfigSchema } from "./types"
+import { ServerConfig, Config } from "./types"
 
 class Server {
-  auth: ConfigAuth
   port: number
-  schema: ConfigSchema
+  config: ServerConfig
 
-  constructor(config: Config) {
-    const { auth, port = 4000, schema } = config
-    this.auth = auth
+  constructor(server: ServerConfig) {
+    const { port = 4000, ...config } = server
+
     this.port = port
-    this.schema = schema
+    this.config = config
   }
 
   async run() {
-    const { schema, resolvers, directives } = generate({
-      auth: this.auth,
-      schema: this.schema,
-    })
+    const { schema, resolvers, directives } = generate(this.config)
 
     const app = Fastify({ logger: false })
 

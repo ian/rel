@@ -27,7 +27,7 @@ export type Resolvers =
     }
 
 export type GeneratorReply = {
-  schema: Schema
-  resolvers: Resolvers
+  schema?: Schema
+  resolvers?: Resolvers
   directives?: Directives
 }

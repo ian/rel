@@ -1,4 +1,4 @@
-import { GeneratorReply } from "../generator/types"
+import { ResolvableObject } from "../resolvers/types"
 
 export enum Direction {
   IN = "IN",
@@ -48,16 +48,46 @@ export type ConfigAccessors = {
   list?: boolean
 }
 
-export type ConfigSchema = {
+export type ConfigModel = {
   accessors: ConfigAccessors
   fields: ConfigFields
   relations: ConfigRelations
 }
 
-export type ConfigAuth = () => GeneratorReply
+export type ConfigModels =
+  | {}
+  | {
+      [name: string]: ConfigModel
+    }
+
+export type ConfigDirectives = {
+  [name: string]: {
+    schema: string
+    handler: (next, src, args, context) => void
+  }
+}
+
+export type ConfigExtension = {
+  [name: string]: {
+    schema: string
+    handler: (obj, params, context) => Promise<ResolvableObject>
+  }
+}
 
 export type Config = {
-  auth?: ConfigAuth
+  models?: ConfigModels
+  // extensions?: ConfigExtension
+  directives?: ConfigDirectives
+  extend?: ConfigExtension
+}
+
+export type CallableConfig = () => Config
+
+export type ServerConfig = {
+  auth?: CallableConfig
   port?: number
-  schema: ConfigSchema
+  // directives?: ConfigDirectives
+  models: ConfigModels
+  // directives?: ConfigDirectives
+  // schema: ConfigModel
 }
