@@ -76,7 +76,6 @@ export type ConfigExtension = {
 
 export type Config = {
   models?: ConfigModels
-  // extensions?: ConfigExtension
   directives?: ConfigDirectives
   extend?: ConfigExtension
 }
@@ -86,8 +85,5 @@ export type CallableConfig = () => Config
 export type ServerConfig = {
   auth?: CallableConfig
   port?: number
-  // directives?: ConfigDirectives
   models: ConfigModels
-  // directives?: ConfigDirectives
-  // schema: ConfigModel
 }

@@ -66,41 +66,13 @@ function map(opts): GeneratorReply {
     })
   }
 
-  // console.log(JSON.stringify(obj.auth(), null, 2))
   if (auth) {
     reduce(auth())
-    // const { schema: authSchema, ...authRest } = obj.auth()
-    // mergeSchema(authSchema)
-
-    // Object.entries(authSchema).forEach(([name, def]) => {
-    // })
-    // merge(obj.auth())
   }
 
   if (models) {
     reduce({ models })
   }
-
-  // Object.entries(obj.schema).forEach(([name, def]) => {
-  //   const { accessors, fields, relations } = def as ConfigModel
-
-  //   // Generate the type definition
-  //   const objectReply = generateObject(name, fields, relations)
-  //   merge(objectReply)
-
-  //   // Generate Queries and Mutations
-  //   if (accessors) {
-  //     if (accessors.find) {
-  //       const generatedFind = generateFind(name, accessors.find, fields)
-  //       merge(generatedFind)
-  //     }
-
-  //     if (accessors.list) {
-  //       const generatedList = generateList(name, accessors.list, fields)
-  //       merge(generatedList)
-  //     }
-  //   }
-  // })
 
   return {
     schema,
