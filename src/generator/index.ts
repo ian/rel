@@ -95,33 +95,38 @@ scalar PhoneNumber
 scalar URL
 scalar UUID`)
 
-    // generate types from mapped schema
-    const typeSchema = Object.entries(this.schema.types)
-      .map(([label, def]) => {
-        const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
-          return `${fieldName}: ${gqlDef}`
+    if (this.schema.types) {
+      // generate types from mapped schema
+      const typeSchema = Object.entries(this.schema.types)
+        .map(([label, def]) => {
+          const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
+            return `${fieldName}: ${gqlDef}`
+          })
+
+          return `type ${label} { ${fields.join("\n")} }`
         })
+        .join("\n")
 
-        return `type ${label} { ${fields.join("\n")} }`
-      })
-      .join("\n")
+      gqlSchema.push(typeSchema)
+    }
 
-    gqlSchema.push(typeSchema)
+    if (this.schema.inputs) {
+      const inputSchema = Object.entries(this.schema.inputs)
+        .map(([label, def]) => {
+          const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
+            return `${fieldName}: ${gqlDef}`
+          })
 
-    const inputSchema = Object.entries(this.schema.inputs)
-      .map(([label, def]) => {
-        const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
-          return `${fieldName}: ${gqlDef}`
+          return `input ${label} { ${fields.join("\n")} }`
         })
+        .join("\n")
 
-        return `input ${label} { ${fields.join("\n")} }`
-      })
-      .join("\n")
-
-    gqlSchema.push(inputSchema)
+      gqlSchema.push(inputSchema)
+    }
 
     const typeDefs = gqlSchema
       .map((typeStr) => {
+        if (!typeStr) return null
         try {
           // I find it's best to just run through a formatter rather than rely on modules to generate clean looking GQL
           return formatSdl(typeStr, {
@@ -129,7 +134,11 @@ scalar UUID`)
             sortFields: false,
           })
         } catch (err) {
-          console.error("Error during GQL compilation", typeStr, err)
+          console.error(
+            "Error during GQL compilation",
+            JSON.stringify(typeStr, null, 2),
+            err.message
+          )
         }
       })
       .join("\n\n")

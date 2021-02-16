@@ -26,13 +26,13 @@
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"],
-  "include": [
-    "./src/**/*.tsx",
-    "./src/**/*.ts",
-    "src/generator/resolvers.old",
-    "src/generator/schema.old",
-    "src/resolvers",
-    "src/generator/types.old"
-  ]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "__tests__",
+    "__specs__",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }
