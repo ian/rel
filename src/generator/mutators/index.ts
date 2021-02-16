@@ -1,5 +1,5 @@
 import { Fields, Mutators } from "../types"
-import { createResolver, updateResolver } from "../../resolvers"
+import { createResolver, updateResolver, deleteResolver } from "../../resolvers"
 import { generateFields } from "../models/fields"
 
 // export * from "./create"
@@ -28,17 +28,20 @@ export function generateMutators(label, mutators: Mutators, fields: Fields) {
     }
 
     if (mutators.update) {
-      // this.reduce(generateUpdate(name, mutators.update, fields))
       mutationTypes[`Update${label}(id: UUID!, input: ${label}Input!)`] = label
       mutationResolvers[`Update${label}`] = updateResolver(
         label,
         fields,
-        mutators.create === "boolean" ? DEFAULT_MUTATOR : mutators.create
+        mutators.update === "boolean" ? DEFAULT_MUTATOR : mutators.update
       )
     }
 
     if (mutators.delete) {
-      // this.reduce(generateDelete(name, mutators.delete, fields))
+      mutationTypes[`Delete${label}(id: UUID!)`] = label
+      mutationResolvers[`Delete${label}`] = deleteResolver(
+        label,
+        mutators.delete === "boolean" ? DEFAULT_MUTATOR : mutators.delete
+      )
     }
   }
 
