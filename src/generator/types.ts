@@ -1,23 +1,81 @@
-import { RuntimeParams, ResolvableObject } from "../resolvers"
+import { ResolvableObject } from "../resolvers/types"
 
-export type SchemaObject = {
-  [fieldName: string]: string
+export enum Direction {
+  IN = "IN",
+  OUT = "OUT",
 }
 
-export type Schema = {
-  [name: string]: SchemaObject
+export type ConfigField = {
+  _gqlName: string
+  _required: boolean
+  _guard: string
 }
 
-export type Directive = {
-  schema: string
-  handler: (next, src, args, context) => void
+export type Fields = {
+  id?: boolean
+  timestamps?: boolean
+} & {
+  [key: string]: ConfigField
 }
 
-export type Directives =
+export type RelationFrom = {
+  label: string
+  params?: (any) => object
+}
+
+export type RelationTo = {
+  label: string
+  params?: (any) => object
+}
+
+export type Rel = {
+  label: string
+  direction?: Direction
+}
+
+export type Relation = {
+  from: RelationFrom
+  to: RelationTo
+  rel: Rel
+  direction?: Direction
+  singular?: boolean
+  order?: string
+}
+
+export type Relations = {
+  [key: string]: Relation
+}
+
+export type ModelAccessors = {
+  find?: boolean
+  list?: boolean
+}
+
+export type Model = {
+  accessors: ModelAccessors
+  fields: Fields
+  relations: Relations
+}
+
+export type Schema =
   | {}
   | {
-      [name: string]: Directive
+      [name: string]: Model
     }
+
+export type Directives = {
+  [name: string]: {
+    schema: string
+    handler: (next, src, args, context) => void
+  }
+}
+
+export type Extensions = {
+  [name: string]: {
+    schema: string
+    handler: (obj, params, context) => Promise<ResolvableObject>
+  }
+}
 
 export type Resolver = (...RuntimeParams) => ResolvableObject
 export type Resolvers =
@@ -26,8 +84,10 @@ export type Resolvers =
       [name: string]: Resolver
     }
 
-export type GeneratorReply = {
+export type GeneratorModule = {
   schema?: Schema
   resolvers?: Resolvers
   directives?: Directives
 }
+
+export type CallableGeneratorModule = () => GeneratorModule

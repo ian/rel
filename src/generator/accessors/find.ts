@@ -1,4 +1,4 @@
-import { ConfigFields } from "../../server/types"
+import { Fields } from "../types"
 import { findResolver } from "../../resolvers"
 
 type ResolverFindQueryOpts = {
@@ -26,7 +26,7 @@ function makeResolver(
   return findResolver(standardizedOpts)
 }
 
-export function generateFind(label, definition, fields: ConfigFields) {
+export function generateFind(label, definition, fields: Fields) {
   const name = `Find${label}`
   return {
     schema: {

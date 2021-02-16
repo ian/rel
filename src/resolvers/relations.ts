@@ -2,12 +2,12 @@ import _ from "lodash"
 import { resolveNode } from "./node"
 // import { Rel, Relation } from "./types"
 import { cypher1, cypher, cypherListRelationship } from "../cypher"
-import { Direction, ConfigRelation } from "../server/types"
+import { Direction, Relation } from "../generator/types"
 
-// export type ConfigRelation = {
-//   from: ConfigFrom
-//   to: ConfigTo
-//   rel: ConfigRel
+// export type Relation = {
+//   from: RelationFrom
+//   to: RelationTo
+//   rel: Rel
 //   direction?: Direction
 //   singular?: boolean
 //   order?: string
@@ -37,7 +37,7 @@ export function resolveRel(rel: RelOpts) {
   }
 }
 
-export function relationResolver(definition: ConfigRelation) {
+export function relationResolver(definition: Relation) {
   const { from, to, direction, singular = false, order, rel } = definition
 
   return async (obj, params, context) => {

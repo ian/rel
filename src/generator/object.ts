@@ -1,10 +1,10 @@
 import { generateObjectRelation } from "./relations"
-import { ConfigFields, ConfigRelations } from "../server/types"
+import { Fields, Relations } from "./types"
 
 export function generateObject(
   label,
-  { id, timestamps, ...fields }: ConfigFields,
-  relations: ConfigRelations
+  { id, timestamps, ...fields }: Fields,
+  relations: Relations
 ) {
   const gqlFields = {}
   const gqlResolver = {}

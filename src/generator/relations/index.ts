@@ -1,10 +1,7 @@
 import { relationResolver, resolveNode, resolveRel } from "../../resolvers"
-import { Direction, ConfigRelation } from "../../server/types"
+import { Direction, Relation } from "../types"
 
-export function generateObjectRelation(
-  name: string,
-  definition: ConfigRelation
-) {
+export function generateObjectRelation(name: string, definition: Relation) {
   const { from, to, rel, order = "to.id", direction, singular } = definition
 
   return {

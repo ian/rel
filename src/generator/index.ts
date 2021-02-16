@@ -1,157 +1,176 @@
 import { formatSdl } from "format-graphql"
 import _ from "lodash"
-import { Config, ConfigModel, CallableConfig } from "../server/types"
+import { makeExecutableSchema } from "@graphql-tools/schema"
+
+import { Model } from "./types"
 import { generateFind, generateList } from "./accessors"
 import { generateObject } from "./object"
-import { Directives, GeneratorReply, Resolvers, Schema } from "./types"
+// import { Directives, GeneratorModule, Resolvers, Schema } from "./types.ts.old"
+import {
+  Schema,
+  Directives,
+  Extensions,
+  Resolvers,
+  GeneratorModule,
+  CallableGeneratorModule,
+} from "./types"
 
-function map(opts): GeneratorReply {
-  const { auth, models } = opts
-
-  const schema = {
-    Query: {
-      Ping: "String",
-    },
-    Mutation: {
-      Ping: "String",
-    },
+class Generator {
+  schema = {
+    ...DEFAULT_SCHEMA,
   } as Schema
 
-  const resolvers = {
-    Query: {
-      Ping: () => {
-        return new Date().toISOString()
-      },
-    },
-    Mutation: {
-      Ping: () => {
-        return new Date().toISOString()
-      },
-    },
+  resolvers = {
+    ...DEFAULT_RESOLVERS,
   } as Resolvers
 
-  const directives = {} as Directives
+  directives = {
+    ...DEFAULT_DIRECTIVES,
+  } as Directives
 
-  const merge = (add: GeneratorReply) => {
-    _.merge(schema, add.schema)
-    _.merge(resolvers, add.resolvers)
-    _.merge(directives, add.directives)
+  private reduce(module) {
+    _.merge(this.schema, module.schema)
+    _.merge(this.resolvers, module.resolvers)
+    _.merge(this.directives, module.directives)
   }
 
-  const reduce = (config: Config) => {
-    const { models, directives } = config
+  add(module: GeneratorModule) {
+    const { schema, directives, resolvers } = module
 
-    merge({ directives })
+    // resolvers and directives are straight passthrough
+    this.reduce({ resolvers, directives })
 
-    // Walk the models and add the resulting GeneratedConfig
-    Object.entries(models).forEach(([name, def]) => {
-      const { accessors, fields, relations } = def as ConfigModel
+    if (schema) {
+      // Schema needs to be generated from the definition
+      Object.entries(schema).forEach(([name, def]) => {
+        const { accessors, fields, relations } = def as Model
 
-      // Generate the type definition
-      const objectReply = generateObject(name, fields, relations)
-      merge(objectReply)
+        // Generate the type definition
+        this.reduce(generateObject(name, fields, relations))
 
-      // Generate Queries and Mutations
-      if (accessors) {
-        if (accessors.find) {
-          const generatedFind = generateFind(name, accessors.find, fields)
-          merge(generatedFind)
+        // Generate Queries and Mutations
+        if (accessors) {
+          if (accessors.find) {
+            this.reduce(generateFind(name, accessors.find, fields))
+          }
+
+          if (accessors.list) {
+            this.reduce(generateList(name, accessors.list, fields))
+          }
         }
-
-        if (accessors.list) {
-          const generatedList = generateList(name, accessors.list, fields)
-          merge(generatedList)
-        }
-      }
-    })
+      })
+    }
   }
 
-  if (auth) {
-    reduce(auth())
-  }
+  generate() {
+    const gqlSchema = []
 
-  if (models) {
-    reduce({ models })
-  }
+    // add directives
+    const gqlDirectives = Object.values(this.directives)
+      .map((d) => d.schema)
+      .join("\n")
 
-  return {
-    schema,
-    resolvers,
-    directives,
-  }
-}
+    gqlSchema.push(gqlDirectives)
 
-function reducer(mapped: GeneratorReply) {
-  const gqlSchema = []
-
-  // add directives
-  const gqlDirectives = Object.values(mapped.directives)
-    .map((d) => d.schema)
-    .join("\n")
-  gqlSchema.push(gqlDirectives)
-
-  // add scalars
-  // @todo make dynamic
-  gqlSchema.push(`scalar ID
+    // add scalars
+    // @todo make dynamic
+    gqlSchema.push(`scalar ID
 scalar Date
 scalar Geo
 scalar Time
 scalar DateTime
 scalar PhoneNumber
-scalar URL 
+scalar URL
 scalar UUID`)
 
-  // generate types from mapped schema
-  const typeSchema = Object.entries(mapped.schema)
-    .map(([label, def]) => {
-      const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
-        return `${fieldName}: ${gqlDef}`
-      })
-
-      return `type ${label} { ${fields.join("\n")} }`
-    })
-    .map((typeStr) => {
-      try {
-        // I find it's best to just run through a formatter rather than rely on modules to generate clean looking GQL
-        return formatSdl(typeStr, {
-          sortDefinitions: false,
-          sortFields: false,
+    // generate types from mapped schema
+    const typeSchema = Object.entries(this.schema)
+      .map(([label, def]) => {
+        const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
+          return `${fieldName}: ${gqlDef}`
         })
-      } catch (err) {
-        console.error("Error during GQL compilation", typeStr, err)
-      }
+
+        return `type ${label} { ${fields.join("\n")} }`
+      })
+      .map((typeStr) => {
+        try {
+          // I find it's best to just run through a formatter rather than rely on modules to generate clean looking GQL
+          return formatSdl(typeStr, {
+            sortDefinitions: false,
+            sortFields: false,
+          })
+        } catch (err) {
+          console.error("Error during GQL compilation", typeStr, err)
+        }
+      })
+      .join("\n")
+
+    gqlSchema.push(typeSchema)
+
+    const typeDefs = gqlSchema.join("\n\n")
+    const resolvers = this.resolvers // already in the proper format
+    const directiveResolvers = Object.entries(this.directives).reduce(
+      (acc, dir) => {
+        const [name, { handler }] = dir
+        acc[name] = handler
+        return acc
+      },
+      {}
+    )
+
+    const schema = makeExecutableSchema({
+      typeDefs,
+      resolvers,
+      directiveResolvers,
     })
-    .join("\n")
 
-  gqlSchema.push(typeSchema)
-
-  const schema = gqlSchema.join("\n\n")
-  const resolvers = mapped.resolvers // already in the proper format
-  const directives = Object.entries(mapped.directives).reduce((acc, dir) => {
-    const [name, { handler }] = dir
-    acc[name] = handler
-    return acc
-  }, {})
-
-  return {
-    schema,
-    resolvers,
-    directives,
+    return {
+      typeDefs,
+      schema,
+    }
   }
 }
 
-type Opts = Config & { auth?: CallableConfig }
+export type GeneratorOpts = {
+  auth?: CallableGeneratorModule
+  // extend?: GeneratorModule
+} & GeneratorModule
 
-export function generate(opts: Opts) {
-  // generate the master level object configs
-  const mapped = map(opts)
-
-  // Reduce mapped to the proper format
-  const { schema, directives, resolvers } = reducer(mapped)
-
-  return {
-    schema,
-    resolvers,
-    directives,
-  }
+export type GeneratedRuntime = {
+  typeDefs: string
+  schema: any
 }
+
+export function generate(opts: GeneratorOpts): GeneratedRuntime {
+  const { auth, ...config } = opts
+  const generator = new Generator()
+
+  if (auth) generator.add(auth(/* @todo should this take params? */))
+  generator.add(config)
+
+  return generator.generate()
+}
+
+const DEFAULT_SCHEMA = {
+  Query: {
+    Ping: "String",
+  },
+  Mutation: {
+    Ping: "String",
+  },
+}
+
+const DEFAULT_RESOLVERS = {
+  Query: {
+    Ping: () => {
+      return new Date().toISOString()
+    },
+  },
+  Mutation: {
+    Ping: () => {
+      return new Date().toISOString()
+    },
+  },
+}
+
+const DEFAULT_DIRECTIVES = {}

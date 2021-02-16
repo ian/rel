@@ -1,9 +1,11 @@
 import Fastify from "fastify"
 import mercurius from "mercurius"
-import { makeExecutableSchema } from "@graphql-tools/schema"
 
-import { generate } from "../generator"
-import { ServerConfig, Config } from "./types"
+import { generate, GeneratorOpts } from "../generator"
+
+type ServerConfig = GeneratorOpts & {
+  port?: number
+}
 
 class Server {
   port: number
@@ -17,16 +19,12 @@ class Server {
   }
 
   async run() {
-    const { schema, resolvers, directives } = generate(this.config)
+    const { typeDefs, schema } = generate(this.config)
 
     const app = Fastify({ logger: false })
 
     app.register(mercurius, {
-      schema: makeExecutableSchema({
-        typeDefs: schema,
-        resolvers,
-        directiveResolvers: directives,
-      }),
+      schema,
     })
 
     app.post("/", async function (req, reply) {
@@ -45,11 +43,9 @@ class Server {
         })
     })
 
-    return app
-      .listen(this.port)
-      .then(() => ({ schema, resolvers, port: this.port }))
+    return app.listen(this.port).then(() => ({ typeDefs, port: this.port }))
   }
 }
 
-export * from "./types"
+export * from "../generator/types"
 export default (config) => new Server(config)

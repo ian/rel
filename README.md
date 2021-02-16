@@ -26,7 +26,7 @@ Questions Outstanding
 - [x] `id: false`
 - [x] `timestamps: false`
 
-## Accessors
+## ModelAccessors
 
 - [x] find
 - [x] list

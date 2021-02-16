@@ -1,4 +1,4 @@
-import { Direction } from "../server/types"
+import { Direction } from "../generator/types"
 
 export type CypherRelOpts = {
   name: string
