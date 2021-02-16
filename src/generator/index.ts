@@ -4,7 +4,8 @@ import { makeExecutableSchema } from "@graphql-tools/schema"
 
 import { Model } from "./types"
 import { generateFind, generateList } from "./accessors"
-import { generateObject } from "./object"
+import { generateModel } from "./models"
+
 // import { Directives, GeneratorModule, Resolvers, Schema } from "./types.ts.old"
 import {
   Schema,
@@ -43,10 +44,10 @@ class Generator {
     if (schema) {
       // Schema needs to be generated from the definition
       Object.entries(schema).forEach(([name, def]) => {
-        const { accessors, fields, relations } = def as Model
+        const { accessors, mutators, fields, relations } = def as Model
 
         // Generate the type definition
-        this.reduce(generateObject(name, fields, relations))
+        this.reduce(generateModel(name, fields, relations))
 
         // Generate Queries and Mutations
         if (accessors) {
@@ -55,6 +56,16 @@ class Generator {
           }
 
           if (accessors.list) {
+            this.reduce(generateList(name, accessors.list, fields))
+          }
+        }
+
+        if (mutators) {
+          if (mutators.create) {
+            this.reduce(generateFind(name, accessors.find, fields))
+          }
+
+          if (mutators.update) {
             this.reduce(generateList(name, accessors.list, fields))
           }
         }

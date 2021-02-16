@@ -1,7 +1,7 @@
 import { generateObjectRelation } from "./relations"
-import { Fields, Relations } from "./types"
+import { Fields, Relations } from "../types"
 
-export function generateObject(
+export function generateModel(
   label,
   { id, timestamps, ...fields }: Fields,
   relations: Relations

@@ -18,6 +18,17 @@ export type Fields = {
   [key: string]: ConfigField
 }
 
+type Mutator =
+  | boolean
+  | {
+      guard?: string
+    }
+
+export type Mutators = {
+  create?: Mutator
+  update?: Mutator
+}
+
 export type RelationFrom = {
   label: string
   params?: (any) => object
@@ -52,9 +63,10 @@ export type ModelAccessors = {
 }
 
 export type Model = {
-  accessors: ModelAccessors
   fields: Fields
   relations: Relations
+  accessors: ModelAccessors
+  mutators: Mutators
 }
 
 export type Schema =
