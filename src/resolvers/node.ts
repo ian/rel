@@ -1,10 +1,5 @@
 import _ from "lodash"
 
-// export type NodeOpts = {
-//   label: string
-//   params?: object
-// }
-
 function callIfFunction(objOrFunc, runtime) {
   if (typeof objOrFunc === "function") {
     return objOrFunc(runtime)
