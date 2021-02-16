@@ -12,8 +12,8 @@ describe(".schema", () => {
     expect(schema).toBeDefined()
     expect(typeDefs).toContain(`type Query {
   Ping: String
-}
-type Mutation {
+}`)
+    expect(typeDefs).toContain(`type Mutation {
   Ping: String
 }`)
   })
