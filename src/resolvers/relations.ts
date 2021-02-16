@@ -1,29 +1,9 @@
 import _ from "lodash"
 import { resolveNode } from "./node"
-// import { Rel, Relation } from "./types"
 import { cypher1, cypher, cypherListRelationship } from "../cypher"
-import { Direction, Relation } from "../generator/types"
+import { Rel, Relation } from "../generator/types"
 
-// export type Relation = {
-//   from: RelationFrom
-//   to: RelationTo
-//   rel: Rel
-//   direction?: Direction
-//   singular?: boolean
-//   order?: string
-// }
-
-// export enum Direction {
-//   IN = "IN",
-//   OUT = "OUT",
-// }
-
-export type RelOpts = {
-  label: string
-  direction?: Direction
-}
-
-export function resolveRel(rel: RelOpts) {
+export function resolveRel(rel: Rel) {
   // if (typeof rel === "string")
   //   return {
   //     name: _.camelCase(rel) + "Rel",
@@ -37,13 +17,13 @@ export function resolveRel(rel: RelOpts) {
   }
 }
 
-export function relationResolver(definition: Relation) {
-  const { from, to, direction, singular = false, order, rel } = definition
+export function relationResolver(relation: Relation) {
+  const { from, to, singular = false, order, rel } = relation
 
   return async (obj, params, context) => {
-    // console.log("relationResolver", obj)
     const runtime = { obj, params, context }
     const fromResolved = resolveNode("from", from, runtime, {
+      // default the from to be the current object
       params: ({ obj }) => ({ id: obj.id }),
     })
     const toResolved = resolveNode("to", to, runtime)
