@@ -33,8 +33,7 @@ class Server {
     app.register(mercurius, {
       schema,
       errorHandler: (error, request, reply) => {
-        console.log("ERROR", error)
-        console.error("ERROR", error)
+        console.error("mercurius ERROR", error)
 
         return {
           statusCode: error.statusCode,
@@ -60,7 +59,7 @@ class Server {
           sortFields: false,
         })
       )
-      console.log(variables)
+      console.log(JSON.stringify(variables, null, 2))
 
       const context = {}
 
@@ -68,7 +67,7 @@ class Server {
         .graphql(query, context, variables)
         .then((json) => JSON.stringify(json, null, 2))
         .catch((error) => {
-          console.error(error)
+          console.error("graphql catch", error)
 
           return {
             statusCode: error.statusCode,

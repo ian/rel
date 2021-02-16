@@ -36,7 +36,7 @@
     "fastify": "^3.11.0",
     "format-graphql": "^1.4.0",
     "lodash": "^4.17.20",
-    "mercurius": "^6.12.0",
+    "mercurius": "7",
     "moment": "^2.29.1",
     "neo4j-driver": "^4.2.2",
     "pluralize": "^8.0.0",

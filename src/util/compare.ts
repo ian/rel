@@ -107,14 +107,14 @@ export const diff = function (obj1, obj2, opts: Opts = {}) {
 
   // Loop through the first object
   for (key in obj1) {
-    if (obj1.hasOwnProperty(key) && !ignore.includes(key)) {
+    if (obj1[key] && !ignore.includes(key)) {
       compare(obj1[key], obj2[key], key)
     }
   }
 
   // Loop through the second object and find missing items
   for (key in obj2) {
-    if (obj2.hasOwnProperty(key)) {
+    if (obj2[key]) {
       if (!obj1[key] && obj1[key] !== obj2[key]) {
         diffs[key] = obj2[key]
       }

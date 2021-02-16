@@ -36,10 +36,10 @@ Questions Outstanding
 
 ## Mutators
 
-- [ ] create
-- [ ] merge
-- [ ] update
-- [ ] delete
+- [x] create
+- [x] merge
+- [x] update
+- [x] delete
 - [ ] Guards
 
 ## Relationships

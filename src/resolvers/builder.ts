@@ -1,10 +1,10 @@
 export function buildResolver(handler) {
   return async (obj, params, context) => {
-    const sanitizedParams = JSON.parse(JSON.stringify(params))
+    // @todo - send through cypher helper, fields, etc.
 
     return handler({
       obj,
-      params: sanitizedParams,
+      params,
       context,
     })
   }
