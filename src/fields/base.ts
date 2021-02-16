@@ -1,6 +1,12 @@
+export type Field = {
+  _gqlName: string
+  _required: boolean
+  _guard?: string
+  required: () => Field
+}
 export default class BaseField {
-  _required = false
-  _guard = null
+  _required: boolean = false
+  _guard: string = null
 
   required() {
     this._required = true

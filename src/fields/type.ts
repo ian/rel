@@ -1,7 +1,7 @@
 import BaseField from "./base"
 import { object } from "yup"
 
-export default class Geo extends BaseField {
+export default class Type extends BaseField {
   _gqlName = null
   _validator = object()
 

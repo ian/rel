@@ -1,11 +1,12 @@
+import { Fields, Relations, Module } from "../types"
+import { generateFields } from "./fields"
 import { generateObjectRelation } from "./relations"
-import { Fields, Relations } from "../types"
 
 export function generateModel(
   label,
   { id, timestamps, ...fields }: Fields,
   relations: Relations
-) {
+): Module {
   const gqlFields = {}
   const gqlResolver = {}
 
@@ -13,14 +14,7 @@ export function generateModel(
     gqlFields["id"] = `UUID!`
   }
 
-  Object.entries(fields).forEach((fieldObj) => {
-    const [name, def] = fieldObj
-
-    gqlFields[name] =
-      def._gqlName +
-      (def._required ? "!" : "") +
-      (def._guard ? ` @${def._guard}` : "")
-  })
+  Object.assign(gqlFields, generateFields(fields))
 
   if (timestamps !== false) {
     gqlFields["createdAt"] = "DateTime!"
@@ -37,7 +31,9 @@ export function generateModel(
 
   return {
     schema: {
-      [label]: gqlFields,
+      types: {
+        [label]: gqlFields,
+      },
     },
     resolvers: {
       [label]: gqlResolver,

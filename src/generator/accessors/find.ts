@@ -30,8 +30,10 @@ export function generateFind(label, definition, fields: Fields) {
   const name = `Find${label}`
   return {
     schema: {
-      Query: {
-        [`${name}(id: UUID!)`]: label,
+      types: {
+        Query: {
+          [`${name}(id: UUID!)`]: label,
+        },
       },
     },
     resolvers: {

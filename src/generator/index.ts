@@ -2,40 +2,47 @@ import { formatSdl } from "format-graphql"
 import _ from "lodash"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 
-import { Model } from "./types"
+import {
+  Model,
+  Module,
+  GeneratedSchema,
+  GeneratedResolvers,
+  GeneratedDirectives,
+} from "./types"
 import { generateFind, generateList } from "./accessors"
+// import { generateCreate, generateUpdate, generateDelete } from "./mutators"
+import { generateMutators } from "./mutators"
 import { generateModel } from "./models"
 
-// import { Directives, GeneratorModule, Resolvers, Schema } from "./types.ts.old"
 import {
   Schema,
-  Directives,
+  // Directives,
   Extensions,
   Resolvers,
-  GeneratorModule,
-  CallableGeneratorModule,
+  // Module,
+  CallableModule,
 } from "./types"
 
 class Generator {
   schema = {
     ...DEFAULT_SCHEMA,
-  } as Schema
+  } as GeneratedSchema
 
   resolvers = {
     ...DEFAULT_RESOLVERS,
-  } as Resolvers
+  } as GeneratedResolvers
 
   directives = {
     ...DEFAULT_DIRECTIVES,
-  } as Directives
+  } as GeneratedDirectives
 
-  private reduce(module) {
+  private reduce(module: Module) {
     _.merge(this.schema, module.schema)
     _.merge(this.resolvers, module.resolvers)
     _.merge(this.directives, module.directives)
   }
 
-  add(module: GeneratorModule) {
+  add(module: Module) {
     const { schema, directives, resolvers } = module
 
     // resolvers and directives are straight passthrough
@@ -61,13 +68,7 @@ class Generator {
         }
 
         if (mutators) {
-          if (mutators.create) {
-            this.reduce(generateFind(name, accessors.find, fields))
-          }
-
-          if (mutators.update) {
-            this.reduce(generateList(name, accessors.list, fields))
-          }
+          this.reduce(generateMutators(name, mutators, fields))
         }
       })
     }
@@ -95,7 +96,7 @@ scalar URL
 scalar UUID`)
 
     // generate types from mapped schema
-    const typeSchema = Object.entries(this.schema)
+    const typeSchema = Object.entries(this.schema.types)
       .map(([label, def]) => {
         const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
           return `${fieldName}: ${gqlDef}`
@@ -103,6 +104,23 @@ scalar UUID`)
 
         return `type ${label} { ${fields.join("\n")} }`
       })
+      .join("\n")
+
+    gqlSchema.push(typeSchema)
+
+    const inputSchema = Object.entries(this.schema.inputs)
+      .map(([label, def]) => {
+        const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
+          return `${fieldName}: ${gqlDef}`
+        })
+
+        return `input ${label} { ${fields.join("\n")} }`
+      })
+      .join("\n")
+
+    gqlSchema.push(inputSchema)
+
+    const typeDefs = gqlSchema
       .map((typeStr) => {
         try {
           // I find it's best to just run through a formatter rather than rely on modules to generate clean looking GQL
@@ -114,11 +132,7 @@ scalar UUID`)
           console.error("Error during GQL compilation", typeStr, err)
         }
       })
-      .join("\n")
-
-    gqlSchema.push(typeSchema)
-
-    const typeDefs = gqlSchema.join("\n\n")
+      .join("\n\n")
     const resolvers = this.resolvers // already in the proper format
     const directiveResolvers = Object.entries(this.directives).reduce(
       (acc, dir) => {
@@ -142,17 +156,17 @@ scalar UUID`)
   }
 }
 
-export type GeneratorOpts = {
-  auth?: CallableGeneratorModule
-  // extend?: GeneratorModule
-} & GeneratorModule
-
-export type GeneratedRuntime = {
+export type Runtime = {
   typeDefs: string
   schema: any
 }
 
-export function generate(opts: GeneratorOpts): GeneratedRuntime {
+export type GeneratorOpts = {
+  auth?: CallableModule
+  // extend?: Module
+} & Module
+
+export function generate(opts: GeneratorOpts): Runtime {
   const { auth, ...config } = opts
   const generator = new Generator()
 
@@ -163,11 +177,13 @@ export function generate(opts: GeneratorOpts): GeneratedRuntime {
 }
 
 const DEFAULT_SCHEMA = {
-  Query: {
-    Ping: "String",
-  },
-  Mutation: {
-    Ping: "String",
+  types: {
+    Query: {
+      Ping: "String",
+    },
+    Mutation: {
+      Ping: "String",
+    },
   },
 }
 

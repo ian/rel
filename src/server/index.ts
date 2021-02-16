@@ -25,22 +25,29 @@ class Server {
 
     app.register(mercurius, {
       schema,
+      errorHandler: (error, request, reply) => {
+        console.log("ERROR", error)
+        console.error("ERROR", error)
+
+        return {
+          statusCode: error.statusCode,
+          // errors: [error.message],
+          errors: [],
+        }
+      },
+    })
+
+    app.setErrorHandler(function (error, request, reply) {
+      // Send error response
+      console.log(error)
+      console.error(error)
     })
 
     app.post("/", async function (req, reply) {
       // @ts-ignore
       const { query } = req.body
 
-      return reply
-        .graphql(query)
-        .then((json) => JSON.stringify(json, null, 2))
-        .catch((err) => {
-          console.error(err)
-          return {
-            statusCode: err.statusCode,
-            errors: err.errors.map((e) => e.message),
-          }
-        })
+      return reply.graphql(query).then((json) => JSON.stringify(json, null, 2))
     })
 
     return app.listen(this.port).then(() => ({ typeDefs, port: this.port }))

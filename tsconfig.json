@@ -33,7 +33,6 @@
     "src/generator/resolvers.old",
     "src/generator/schema.old",
     "src/resolvers",
-    "src/generator/types.old",
-    "src/generator/types.ts.old"
+    "src/generator/types.old"
   ]
 }

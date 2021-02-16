@@ -39,8 +39,10 @@ export function generateList(label, definition, fields: Fields) {
 
   return {
     schema: {
-      Query: {
-        [gqlName]: gqlDef,
+      types: {
+        Query: {
+          [gqlName]: gqlDef,
+        },
       },
     },
     // resolver,

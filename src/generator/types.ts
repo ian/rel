@@ -11,22 +11,31 @@ export type ConfigField = {
   _guard: string
 }
 
-export type Fields = {
+export type MetaFields = {
   id?: boolean
   timestamps?: boolean
-} & {
+}
+
+export type Fields = MetaFields & {
   [key: string]: ConfigField
 }
 
-type Mutator =
-  | boolean
-  | {
-      guard?: string
-    }
+export type Model = {
+  fields: Fields
+  relations: Relations
+  accessors: ModelAccessors
+  mutators: Mutators
+}
+
+export type Mutator = {
+  guard?: string
+  after?: (obj: object) => Promise<void>
+}
 
 export type Mutators = {
-  create?: Mutator
-  update?: Mutator
+  create?: Mutator | boolean
+  update?: Mutator | boolean
+  delete?: Mutator | boolean
 }
 
 export type RelationFrom = {
@@ -62,13 +71,6 @@ export type ModelAccessors = {
   list?: boolean
 }
 
-export type Model = {
-  fields: Fields
-  relations: Relations
-  accessors: ModelAccessors
-  mutators: Mutators
-}
-
 export type Schema =
   | {}
   | {
@@ -96,10 +98,34 @@ export type Resolvers =
       [name: string]: Resolver
     }
 
-export type GeneratorModule = {
-  schema?: Schema
-  resolvers?: Resolvers
-  directives?: Directives
+// Output from modules / generators
+
+type GeneratedTypes = {
+  [name: string]: object
 }
 
-export type CallableGeneratorModule = () => GeneratorModule
+type GeneratedInputs = {
+  [name: string]: object
+}
+
+export type GeneratedSchema = {
+  types?: GeneratedTypes
+  inputs?: GeneratedInputs
+}
+
+export type GeneratedResolvers = {}
+
+export type GeneratedDirectives = {
+  [name: string]: {
+    schema: string
+    handler: (next, src, args, context) => void
+  }
+}
+
+export type Module = {
+  schema?: GeneratedSchema
+  resolvers?: GeneratedResolvers
+  directives?: GeneratedDirectives
+}
+
+export type CallableModule = () => Module

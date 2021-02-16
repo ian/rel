@@ -1,0 +1,58 @@
+export async function cypherUpdate(
+  label,
+  id,
+  params,
+  opts: CrudUpdateOpts = {}
+) {
+  const node = await crudFind(label, id)
+
+  if (!node) {
+    throw new Error(`Unknown ${label} id = ${id}`)
+  }
+
+  const { id: rejectId, createdAt, updatedAt, ...toParams } = diff(
+    node,
+    params,
+    { ignore: ["id", "createdAt", "updatedAt", "__typename"] }
+  )
+
+  // always trim slugs
+  if (toParams.slug) {
+    if (!(await isSlugAvailable(label, params.slug)))
+      throw new Error("Slug already taken")
+
+    Object.assign(toParams, {
+      slug: toParams.slug.trim(),
+    })
+  }
+
+  if (opts.geo) {
+    const address =
+      typeof opts.geo === "function" ? opts.geo(params) : params[opts.geo]
+    if (address) {
+      Object.assign(toParams, { ...(await geoify(address)) })
+    }
+  }
+
+  if (_.isEmpty(toParams)) {
+    // no changes necessary, just return the object
+    return node
+  }
+
+  const paramsCypher = paramify(toParams, {
+    id: false,
+    timestamps: TIMESTAMPS.UPDATED,
+    ...opts,
+  })
+
+  const res = (await cypher1(
+    `
+      MATCH (node:${label} { ${paramify({ id })} })
+      SET node += { ${paramsCypher} }
+      RETURN node;
+    `
+  )) as CrudCypherResponse
+
+  if (!res) throw new Error(`${label} not found`)
+  return res.node
+}
