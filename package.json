@@ -12,8 +12,7 @@
     "copy:assets": "cp -r src/assets dist",
     "test": "jest --watch",
     "test:ci": "jest",
-    "dev": "nodemon --watch '**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'tsc --watch'",
-    "dev2": "nodemon --watch '**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'env-cmd ts-node' test.ts"
+    "dev": "nodemon --watch '**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'tsc --watch'"
   },
   "repository": {
     "type": "git",
