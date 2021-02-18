@@ -1,4 +1,4 @@
-const { paramsBuilder, TIMESTAMPS } = require("./helpers")
+import { paramsBuilder, TIMESTAMPS } from "../params"
 
 describe("paramsBuilder", () => {
   describe("id", () => {

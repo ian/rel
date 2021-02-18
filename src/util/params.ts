@@ -7,14 +7,27 @@ export enum TIMESTAMPS {
   UPDATED = "updatedAt",
 }
 
-type ParamsBuilderOpts = {
+type Opts = {
   id?: boolean
   timestamps?: boolean | TIMESTAMPS
   only?: [string]
   except?: [string]
 }
 
-export function paramsBuilder(params, opts: ParamsBuilderOpts = {}) {
+type Params = {
+  id?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+type ToCypherOpts = {
+  prefix?: string
+  separator?: string
+}
+
+type ParamifyOpts = Opts & ToCypherOpts
+
+export function paramsBuilder(params, opts: Opts = {}): Params {
   const { id = false, timestamps = false, except = null, only = null } = opts
 
   let res = {}
@@ -43,11 +56,6 @@ export function paramsBuilder(params, opts: ParamsBuilderOpts = {}) {
   return res
 }
 
-type ToCypherOpts = {
-  prefix?: string
-  separator?: string
-}
-
 export function paramsToCypher(params, opts: ToCypherOpts = {}) {
   const { separator = ":", prefix = null } = opts
 
@@ -59,8 +67,6 @@ export function paramsToCypher(params, opts: ToCypherOpts = {}) {
 
   return Object.keys(params).map(mapper, params).join(" , ")
 }
-
-type ParamifyOpts = ParamsBuilderOpts & ToCypherOpts
 
 export function paramify(params, opts: ParamifyOpts = {}) {
   return paramsToCypher(paramsBuilder(params, opts), opts)
