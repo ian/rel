@@ -34,5 +34,9 @@
     "**/*.test.ts",
     "**/*.spec.ts"
   ],
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+  "include": [
+    "./src/**/*.tsx",
+    "./src/**/*.ts",
+    "src/cypher/__tests__/relationship.test"
+  ]
 }
