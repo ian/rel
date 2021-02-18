@@ -1,19 +1,18 @@
-export type Field = {
+export default class Field {
   _gqlName: string
-  _required: boolean
-  _guard?: string
-  required: () => Field
-}
-export default class BaseField {
   _required: boolean = false
   _guard: string = null
 
-  required() {
+  constructor(name: string) {
+    this._gqlName = name
+  }
+
+  required(): Field {
     this._required = true
     return this
   }
 
-  guard(scope) {
+  guard(scope): Field {
     this._guard = scope
     return this
   }

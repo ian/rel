@@ -1,12 +1,12 @@
-import BaseField from "./base"
+import Field from "./field"
 import { object } from "yup"
 
-export default class Type extends BaseField {
+export default class Type extends Field {
   _gqlName = null
   _validator = object()
 
   constructor(model) {
-    super()
+    super(model)
     this._gqlName = model
   }
 }

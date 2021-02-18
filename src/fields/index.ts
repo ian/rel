@@ -1,4 +1,4 @@
-import { Field } from "./base"
+import { Field } from "./field"
 import Geo from "./geo"
 import PhoneNumber from "./phoneNumber"
 import String from "./string"

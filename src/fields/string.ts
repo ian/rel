@@ -1,7 +1,10 @@
 import { string } from "yup"
-import BaseField from "./base"
+import Field from "./field"
 
-export default class String extends BaseField {
-  _gqlName = "String"
+export default class String extends Field {
   _validator = string()
+
+  constructor() {
+    super("String")
+  }
 }
