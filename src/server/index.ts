@@ -2,7 +2,7 @@ import Fastify from "fastify"
 import mercurius from "mercurius"
 import { formatSdl } from "format-graphql"
 
-import { generate, GeneratorOpts } from "../generator"
+import { generate, GeneratorOpts } from "../runtime"
 
 type ServerConfig = GeneratorOpts & {
   port?: number
@@ -16,7 +16,7 @@ type GrapqQLRequest = {
 
 class Server {
   port: number
-  config: ServerConfig
+  config: GeneratorOpts
 
   constructor(server: ServerConfig) {
     const { port = 4000, ...config } = server
@@ -53,7 +53,7 @@ class Server {
     app.post("/", async function (req, reply) {
       const { query, variables, operationName } = req.body as GrapqQLRequest
 
-      console.log("GRAPHQL\n")
+      console.log(`GRAPHQL ${operationName}\n`)
       console.log(
         formatSdl(query, {
           sortDefinitions: false,

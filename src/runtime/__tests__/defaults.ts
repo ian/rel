@@ -10,11 +10,7 @@ describe(".schema", () => {
   test("should set default Query", () => {
     const { schema, typeDefs } = subject(config)
     expect(schema).toBeDefined()
-    expect(typeDefs).toContain(`type Query {
-  Ping: String
-}`)
-    expect(typeDefs).toContain(`type Mutation {
-  Ping: String
-}`)
+    expect(typeDefs).toContain(`type Query`)
+    expect(typeDefs).toContain(`type Mutation`)
   })
 })

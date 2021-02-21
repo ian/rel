@@ -1,14 +1,15 @@
 export default class Field {
   _gqlName: string
   _required: boolean = false
+  _params: object
   _guard: string = null
 
   constructor(name: string) {
     this._gqlName = name
   }
 
-  required(): Field {
-    this._required = true
+  required(r = true): Field {
+    this._required = r
     return this
   }
 
