@@ -41,6 +41,7 @@ class Server {
           errors: [],
         }
       },
+      ide: true,
     })
 
     app.setErrorHandler(function (error, request, reply) {
