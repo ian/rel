@@ -1,0 +1,22 @@
+import { generate } from "../index"
+
+function subject(config) {
+  return generate(config)
+}
+
+// describe(".schema", () => {
+//   const config = {
+//     schema: {
+//       Book: {},
+//     },
+//   }
+
+//   test("smoke tests", () => {
+//     const { schema, typeDefs } = subject(config)
+//     expect(schema).toBeDefined()
+//     expect(typeDefs).toBeDefined()
+
+//     // expect(typeDefs).toContain(`type Query`)
+//     // expect(typeDefs).toContain(`type Mutation`)
+//   })
+// })

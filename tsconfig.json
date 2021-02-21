@@ -44,7 +44,6 @@
   "include": [
     "./src/**/*.tsx",
     "./src/**/*.ts",
-    "src/cypher/__tests__/relationship.test",
-    "src/generator/index.ts.old"
+    "src/cypher/__tests__/relationship.test"
   ]
 }

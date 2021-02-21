@@ -12,14 +12,14 @@ export enum Direction {
   OUT = "OUT",
 }
 
-// Fields always look like:
+export // Fields always look like:
 // {
 //   name: string().required(),
 //   description: string()
 //   phone: phoneNumber()
 // }
 
-export type Fields = {
+type Fields = {
   [name: string]: Field
 }
 
@@ -58,6 +58,25 @@ export type Module = {
 //   [fieldName: string]: ReducedField
 // }
 
+export type ReducedTypeFieldParams = {
+  [name: string]: Field
+}
+
+export type ReducedTypeField = {
+  params?: ReducedTypeFieldParams
+  returns: Field
+}
+
+export type ReducedTypeFields = {
+  [name: string]: ReducedTypeField
+}
+
+export type ReducedType = {
+  fields: ReducedTypeFields
+}
+
 export type ReducedTypes = {
-  [name: string]: Fields
+  // Query: ReducedType
+  // Mutation: ReducedType
+  [name: string]: ReducedTypeFields
 }

@@ -1,23 +1,26 @@
 import { formatSdl } from "format-graphql"
 import { Fields, ReducedTypes } from "~/types"
-import { generateFields } from "./typeDefs/fields"
-
-function generateType(name, fields: Fields) {
-  return `type ${name} {
-  ${generateFields(fields)}
-}`
-}
+import { generateType } from "./typeDefs/type"
 
 export function generateTypeDefs(reduced: ReducedTypes) {
-  const { Query, ...types } = reduced
+  const { Query, Mutation, ...types } = reduced
 
   const gql = []
 
-  // gql.push(generateType("Query", Query))
-  Object.entries(types).map((entry) => {
-    const [name, fields] = entry
-    gql.push(generateType(name, fields))
-  })
+  if (Query) {
+    gql.push(generateType("Query", Query))
+  }
+
+  if (Mutation) {
+    gql.push(generateType("Mutation", Mutation))
+  }
+
+  if (types) {
+    Object.entries(types).forEach((entry) => {
+      const [name, fields] = entry
+      gql.push(generateType(name, fields))
+    })
+  }
 
   return gql
     .map((typeStr) => {

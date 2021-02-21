@@ -1,3 +1,4 @@
+import { type } from "node:os"
 import { id, string } from "../fields"
 import { generateTypeDefs } from "./typeDefs"
 
@@ -5,42 +6,42 @@ const subject = (opts) => {
   return generateTypeDefs(opts)
 }
 
-// describe("Query", () => {
-//   it("should generate a type Query", () => {
-//     expect(
-//       subject({
-//         Query: {
-//           TestQuery: {
-//             params: {
-//               id: id(),
-//             },
-//             returns: "Test",
-//           },
-//         },
-//       })
-//     ).toEqual(`type Query {
-//   TestQuery(id: ID): Test
-// }`)
-//   })
-// })
+describe("Query", () => {
+  it("should generate a type Query", () => {
+    expect(
+      subject({
+        Query: {
+          TestQuery: {
+            params: {
+              id: id(),
+            },
+            returns: string(),
+          },
+        },
+      })
+    ).toEqual(`type Query {
+  TestQuery(id: UUID): String
+}`)
+  })
+})
 
 describe("Mutation", () => {
-  //   it("should generate a type Mutation", () => {
-  //     expect(
-  //       subject({
-  //         Query: {
-  //           TestQuery: {
-  //             params: {
-  //               id: id(),
-  //             },
-  //             returns: "Test",
-  //           },
-  //         },
-  //       })
-  //     ).toEqual(`type Query {
-  //   TestQuery(id: ID): Test
-  // }`)
-  //   })
+  it("should generate a type Mutation", () => {
+    expect(
+      subject({
+        Mutation: {
+          TestMutation: {
+            params: {
+              id: id(),
+            },
+            returns: string(),
+          },
+        },
+      })
+    ).toEqual(`type Mutation {
+  TestMutation(id: UUID): String
+}`)
+  })
 })
 
 describe("types", () => {
@@ -48,7 +49,9 @@ describe("types", () => {
     expect(
       subject({
         Book: {
-          name: string(),
+          name: {
+            returns: string(),
+          },
         },
       })
     ).toEqual(`type Book {
@@ -60,7 +63,9 @@ describe("types", () => {
     expect(
       subject({
         Book: {
-          name: string().required(),
+          name: {
+            returns: string().required(),
+          },
         },
       })
     ).toEqual(`type Book {
