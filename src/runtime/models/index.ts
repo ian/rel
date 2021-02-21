@@ -1,9 +1,10 @@
+import { uuid, dateTime } from "../../fields"
 import { Fields, Relations, Reducible } from "~/types"
 
 import { generateFields } from "./fields"
 import { generateObjectRelation } from "./relations"
 
-export function generateModel(
+export function modelToRuntime(
   label,
   { id, timestamps, ...fields }: Fields,
   relations: Relations
@@ -12,14 +13,14 @@ export function generateModel(
   const gqlResolver = {}
 
   if (id !== false) {
-    gqlFields["id"] = `UUID!`
+    gqlFields["id"] = { returns: uuid() }
   }
 
   Object.assign(gqlFields, generateFields(fields))
 
   if (timestamps !== false) {
-    gqlFields["createdAt"] = "DateTime!"
-    gqlFields["updatedAt"] = "DateTime!"
+    gqlFields["createdAt"] = { returns: dateTime() }
+    gqlFields["updatedAt"] = { returns: dateTime() }
   }
 
   if (relations) {

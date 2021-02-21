@@ -19,7 +19,12 @@ export // Fields always look like:
 //   phone: phoneNumber()
 // }
 
-type Fields = {
+type MetaFields = {
+  id?: boolean
+  timestamps?: boolean
+}
+
+export type Fields = MetaFields & {
   [name: string]: Field
 }
 
@@ -31,8 +36,37 @@ export type Field = {
 
 // Configuration
 
+export type RelationFrom = {
+  label: string
+  params?: (any) => object
+}
+
+export type RelationTo = {
+  label: string
+  params?: (any) => object
+}
+
+export type Rel = {
+  label: string
+  direction?: Direction
+}
+
+export type Relation = {
+  from: RelationFrom
+  to: RelationTo
+  rel: Rel
+  direction?: Direction
+  singular?: boolean
+  order?: string
+}
+
+export type Relations = {
+  [key: string]: Relation
+}
+
 export type Model = {
   fields: Fields
+  relations: Relations
 }
 
 export type Schema = {
@@ -79,4 +113,13 @@ export type ReducedTypes = {
   // Query: ReducedType
   // Mutation: ReducedType
   [name: string]: ReducedTypeFields
+}
+
+export type ReducedResolvers = {
+  [name: string]: any
+}
+
+export type Reducible = {
+  types?: ReducedTypes
+  resolvers?: ReducedResolvers
 }
