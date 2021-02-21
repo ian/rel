@@ -1,6 +1,5 @@
-import { type } from "node:os"
-import { id, string } from "../fields"
-import { generateTypeDefs } from "./typeDefs"
+import { id, string } from "../../fields"
+import { generateTypeDefs } from "."
 
 const subject = (opts) => {
   return generateTypeDefs(opts)

@@ -1,6 +1,6 @@
 import { formatSdl } from "format-graphql"
 import { Fields, ReducedTypes } from "~/types"
-import { generateType } from "./typeDefs/type"
+import { generateType } from "./type"
 
 export function generateTypeDefs(reduced: ReducedTypes) {
   const { Query, Mutation, ...types } = reduced
