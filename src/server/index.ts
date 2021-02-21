@@ -81,5 +81,4 @@ class Server {
   }
 }
 
-export * from "../generator/types"
 export default (config) => new Server(config)

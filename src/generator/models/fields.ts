@@ -1,4 +1,4 @@
-import { Fields } from "../types"
+import { Fields } from "~/types"
 
 type Opts = {
   guards?: boolean

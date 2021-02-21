@@ -1,4 +1,4 @@
-import { Fields, Mutators } from "../types"
+import { Fields, Mutators } from "../../types"
 import { createResolver, updateResolver, deleteResolver } from "../../resolvers"
 import { generateFields } from "../models/fields"
 

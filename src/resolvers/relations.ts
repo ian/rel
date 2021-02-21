@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { resolveNode } from "./node"
 import { cypher1, cypher, cypherListRelationship } from "../cypher"
-import { Rel, Relation } from "../generator/types"
+import { Rel, Relation } from "~/types"
 
 export function resolveRel(rel: Rel) {
   // if (typeof rel === "string")

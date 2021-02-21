@@ -3,7 +3,8 @@
     "allowJs": true,
     "baseUrl": "src",
     "paths": {
-      "*": ["types/*"]
+      "*": ["types/*"],
+      "~/*": ["./*"]
     },
     // "target": "esnext",
     "target": "es5",
@@ -24,7 +25,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["./types", "node_modules/@types"],
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+        // , "afterDeclarations": true
+      }
+    ]
   },
   "exclude": [
     "node_modules",

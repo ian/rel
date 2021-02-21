@@ -1,4 +1,4 @@
-import { Fields, Resolver } from "../types"
+import { Fields, Resolver } from "~/types"
 import { findResolver } from "../../resolvers"
 
 const DEFAULT_OPTS = {

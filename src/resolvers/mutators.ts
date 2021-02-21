@@ -1,4 +1,4 @@
-import { Fields, Mutator } from "../generator/types"
+import { Fields, Mutator } from "~/types"
 import { cypherCreate, cypherUpdate, cypherDelete } from "../cypher"
 import { buildResolver } from "./builder"
 

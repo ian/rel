@@ -1,4 +1,5 @@
-import { Fields, Relations, Module } from "../types"
+import { Fields, Relations, Module } from "~/types"
+
 import { generateFields } from "./fields"
 import { generateObjectRelation } from "./relations"
 

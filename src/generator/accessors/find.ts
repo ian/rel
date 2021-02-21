@@ -1,5 +1,6 @@
-import { Fields } from "../types"
+import { Fields, Runtime } from "~/types"
 import { findResolver } from "../../resolvers"
+import { string } from "../../fields"
 
 type ResolverFindQueryOpts = {
   findBy?: string[]
@@ -26,13 +27,21 @@ function makeResolver(
   return findResolver(standardizedOpts)
 }
 
-export function generateFind(label, definition, fields: Fields) {
+export function generateFind(label, definition, fields: Fields): Runtime {
   const name = `Find${label}`
   return {
-    schema: {
-      types: {
-        Query: {
-          [`${name}(id: UUID!)`]: label,
+    // schema: {
+    //   types: {
+    //     Query: {
+    //       [`${name}(id: UUID!)`]: label,
+    //     },
+    //   },
+    // },
+    types: {
+      Query: {
+        FindRestaurants: {
+          params: { id: string() },
+          returns: label,
         },
       },
     },

@@ -3,41 +3,42 @@ import _ from "lodash"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 
 import {
+  Runtime,
   Model,
   Module,
-  GeneratedSchema,
-  GeneratedResolvers,
-  GeneratedDirectives,
-} from "./types"
+  CallableModule,
+  RuntimeTypes,
+  RuntimeInputs,
+  RuntimeResolvers,
+  RuntimeDirectives,
+} from "~/types"
+
 import { generateFind, generateList } from "./accessors"
-// import { generateCreate, generateUpdate, generateDelete } from "./mutators"
 import { generateMutators } from "./mutators"
 import { generateModel } from "./models"
 
-import {
-  Schema,
-  // Directives,
-  Extensions,
-  Resolvers,
-  // Module,
-  CallableModule,
-} from "./types"
-
 class Generator {
-  schema = {
-    ...DEFAULT_SCHEMA,
-  } as GeneratedSchema
+  // @todo - add scalars, directives
+
+  inputs = {
+    ...DEFAULT_INPUTS,
+  } as RuntimeInputs
+
+  types = {
+    ...DEFAULT_TYPES,
+  } as RuntimeTypes
 
   resolvers = {
     ...DEFAULT_RESOLVERS,
-  } as GeneratedResolvers
+  } as RuntimeResolvers
 
   directives = {
     ...DEFAULT_DIRECTIVES,
-  } as GeneratedDirectives
+  } as RuntimeDirectives
 
-  private reduce(module: Module) {
-    _.merge(this.schema, module.schema)
+  private reduce(module: Runtime) {
+    _.merge(this.inputs, module.inputs)
+    _.merge(this.types, module.types)
     _.merge(this.resolvers, module.resolvers)
     _.merge(this.directives, module.directives)
   }
@@ -95,9 +96,9 @@ scalar PhoneNumber
 scalar URL
 scalar UUID`)
 
-    if (this.schema.types) {
+    if (this.types) {
       // generate types from mapped schema
-      const typeSchema = Object.entries(this.schema.types)
+      const typeSchema = Object.entries(this.types)
         .map(([label, def]) => {
           const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
             return `${fieldName}: ${gqlDef}`
@@ -110,8 +111,8 @@ scalar UUID`)
       gqlSchema.push(typeSchema)
     }
 
-    if (this.schema.inputs) {
-      const inputSchema = Object.entries(this.schema.inputs)
+    if (this.inputs) {
+      const inputSchema = Object.entries(this.inputs)
         .map(([label, def]) => {
           const fields = Object.entries(def).map(([fieldName, gqlDef]) => {
             return `${fieldName}: ${gqlDef}`
@@ -165,9 +166,13 @@ scalar UUID`)
   }
 }
 
-export type Runtime = {
-  typeDefs: string
-  schema: any
+// @todo - make this more specific
+export type GQLTypeDefs = string
+export type GQLSchema = any
+
+export type GQLConfig = {
+  typeDefs: GQLTypeDefs
+  schema: GQLSchema
 }
 
 export type GeneratorOpts = {
@@ -175,7 +180,7 @@ export type GeneratorOpts = {
   // extend?: Module
 } & Module
 
-export function generate(opts: GeneratorOpts): Runtime {
+export function generate(opts: GeneratorOpts): GQLConfig {
   const { auth, ...config } = opts
   const generator = new Generator()
 
@@ -185,14 +190,14 @@ export function generate(opts: GeneratorOpts): Runtime {
   return generator.generate()
 }
 
-const DEFAULT_SCHEMA = {
-  types: {
-    Query: {
-      Ping: "String",
-    },
-    Mutation: {
-      Ping: "String",
-    },
+const DEFAULT_INPUTS = {}
+
+const DEFAULT_TYPES = {
+  Query: {
+    Ping: "String",
+  },
+  Mutation: {
+    Ping: "String",
   },
 }
 
