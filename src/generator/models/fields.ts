@@ -10,12 +10,7 @@ export function generateFields(fields: Fields, opts: Opts = {}) {
 
   Object.entries(fields).forEach((fieldObj) => {
     const [name, def] = fieldObj
-
-    const fieldDef = [def._gqlName]
-    if (def._required) fieldDef.push("!")
-    if (guards && def._guard) fieldDef.push(` @${def._guard}`)
-
-    gqlFields[name] = fieldDef.join("")
+    gqlFields[name] = def.toGQL({ guards })
   })
 
   return gqlFields

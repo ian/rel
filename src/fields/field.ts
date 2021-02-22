@@ -1,3 +1,4 @@
+import { ToGQLOpts } from "~/types"
 export default class Field {
   _name: string
   _required: boolean = false
@@ -18,10 +19,12 @@ export default class Field {
     return this
   }
 
-  toGQL(): string {
+  toGQL(opts?: ToGQLOpts): string {
+    const { guards = true } = opts || {}
+
     const fieldDef = [this._name]
     if (this._required) fieldDef.push("!")
-    if (this._guard) fieldDef.push(` @${this._guard}`)
+    if (guards && this._guard) fieldDef.push(` @${this._guard}`)
 
     return fieldDef.join("")
   }

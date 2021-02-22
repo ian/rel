@@ -28,10 +28,15 @@ export type Fields = {
   [name: string]: Field
 }
 
+export type ToGQLOpts = {
+  guards?: boolean
+}
+
 export type Field = {
-  _gqlName: string
-  _required: boolean
-  _guard: string
+  // _gqlName: string
+  // _required: boolean
+  // _guard: string
+  toGQL(opts: ToGQLOpts): () => string
 }
 
 // Configuration

@@ -64,4 +64,8 @@ describe("toGQL", () => {
   it("should add the guard as @guard", () => {
     expect(subject().guard("admin").toGQL()).toBe("MyField @admin")
   })
+
+  it("should NOT add the guard if GQL opts sets guards=false", () => {
+    expect(subject().guard("admin").toGQL({ guards: false })).toBe("MyField")
+  })
 })
