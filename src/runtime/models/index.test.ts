@@ -128,4 +128,50 @@ describe("modelToRuntime", () => {
       expect(_subject.types.Book).toHaveProperty("author")
     })
   })
+
+  // describe("accessors", () => {
+  //   const subject = (model): Reducible => {
+  //     return modelToRuntime("Book", model)
+  //   }
+
+  //   describe("find", () => {
+  //     it("should generate find on boolean default", () => {
+  //       const _subject = subject({
+  //         accessors: {
+  //           find: true,
+  //         },
+  //       })
+
+  //       expect(_subject.types.Query).toHaveProperty("FindBook")
+  //       expect(_subject.types.Query.FindBook.guard).toBe(undefined)
+  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
+  //     })
+
+  //     it("should generate find on empty Accessor input", () => {
+  //       const _subject = subject({
+  //         accessors: {
+  //           find: {},
+  //         },
+  //       })
+
+  //       expect(_subject.types.Query).toHaveProperty("FindBook")
+  //       expect(_subject.types.Query.FindBook.guard).toBe(undefined)
+  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
+  //     })
+
+  //     it("should generate allow guards", () => {
+  //       const _subject = subject({
+  //         accessors: {
+  //           find: {
+  //             guard: "admin",
+  //           },
+  //         },
+  //       })
+
+  //       expect(_subject.types.Query).toHaveProperty("FindBook")
+  //       expect(_subject.types.Query.FindBook.guard).toBe("admin")
+  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
+  //     })
+  //   })
+  // })
 })

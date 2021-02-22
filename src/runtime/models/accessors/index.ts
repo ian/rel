@@ -1,9 +1,19 @@
+import { Reducer } from "~/reducer"
 import { Fields, Accessors } from "~/types"
+import { generateFind } from "./find"
 
 export * from "./find"
 export * from "./list"
 
 export function generateAccessors(label, accessors: Accessors, fields: Fields) {
+  const reducer = new Reducer()
+
+  if (accessors) {
+    if (accessors.find) {
+      reducer.reduce(generateFind(label, accessors.find /*fields*/))
+    }
+  }
+
   // const inputs = {}
   // const mutationTypes = {}
   // const mutationResolvers = {}
@@ -26,5 +36,5 @@ export function generateAccessors(label, accessors: Accessors, fields: Fields) {
   //   },
   // }
 
-  return {}
+  return reducer.toReducible()
 }

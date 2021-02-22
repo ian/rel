@@ -1,24 +1,24 @@
 import titleize from "titleize"
 import { cypher, cypher1, queryBuilder } from "../cypher"
 import { coerce } from "../util/coercion"
+import { FindAccessor } from "~/types"
 
-type FindOpts = {
-  label: string
-  findBy?: string[]
-  where?: string
-}
+// type FindOpts = {
+//   label: string
+//   findBy?: string[]
+//   where?: string
+// }
 
-export function findResolver(opts: FindOpts) {
+export function findResolver(label: string, opts: FindAccessor) {
   const {
-    label,
-    findBy,
-    where,
+    // findBy,
+    // where,
     // only,
   } = opts
 
-  const findParamName = findBy
-    .map((f, i) => (i === 0 ? f : titleize(f)))
-    .join("Or")
+  // const findParamName = findBy
+  //   .map((f, i) => (i === 0 ? f : titleize(f)))
+  //   .join("Or")
 
   return async (obj, params, context) => {
     // const { params } = runtime
@@ -26,14 +26,14 @@ export function findResolver(opts: FindOpts) {
     const cypherQuery = []
     cypherQuery.push(`MATCH (node:${label})`)
 
-    if (params[findParamName]) {
-      const where = findBy
-        .map((f) => `node.${f} = ${coerce(params[findParamName])}`)
-        .join(" OR ")
-      cypherQuery.push(`WHERE (${where})`)
-    }
+    // if (params[findParamName]) {
+    //   const where = findBy
+    //     .map((f) => `node.${f} = ${coerce(params[findParamName])}`)
+    //     .join(" OR ")
+    //   cypherQuery.push(`WHERE (${where})`)
+    // }
 
-    if (where) cypherQuery.push(`AND ${where}`)
+    // if (where) cypherQuery.push(`AND ${where}`)
 
     cypherQuery.push(`RETURN node`)
     cypherQuery.push(`LIMIT 1;`)

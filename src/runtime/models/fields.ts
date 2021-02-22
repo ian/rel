@@ -1,4 +1,4 @@
-import { Fields, ReducedFields } from "~/types"
+import { Fields, ReducedType } from "~/types"
 
 // type Opts = {
 //   guards?: boolean
@@ -7,7 +7,7 @@ import { Fields, ReducedFields } from "~/types"
 export function generateFields(
   fields: Fields
   // opts: Opts = {}
-): ReducedFields {
+): ReducedType {
   // const { guards = true } = opts
   const gqlFields = {}
 

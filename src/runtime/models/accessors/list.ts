@@ -1,6 +1,6 @@
 import pluralize from "pluralize"
-import { listResolver } from "../../resolvers"
-import { Fields, Runtime } from "~/types"
+import { listResolver } from "~/resolvers"
+import { Fields, Reducible } from "~/types"
 
 type ResolverListQueryOpts = {
   find?: string[]
@@ -29,7 +29,7 @@ export function generateList(
   label: string,
   definition,
   fields: Fields
-): Runtime {
+): Reducible {
   const name = `List${pluralize(label)}`
   const gqlName = `List${pluralize(label)}(
     limit: Int, 
@@ -44,10 +44,11 @@ export function generateList(
   return {
     types: {
       Query: {
-        [gqlName]: gqlDef,
+        [gqlName]: {
+          returns: gqlDef,
+        },
       },
     },
-    // resolver,
     resolvers: {
       Query: {
         [name]: resolver,

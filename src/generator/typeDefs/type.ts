@@ -1,8 +1,8 @@
 import {
   ReducedTypeFieldParams,
-  ReducedTypeField,
-  ReducedTypeFields,
+  ReducedField,
   ReducedType,
+  // ReducedType,
 } from "~/types"
 
 function generateParams(params: ReducedTypeFieldParams) {
@@ -20,7 +20,7 @@ function generateParams(params: ReducedTypeFieldParams) {
     .join(", ")
 }
 
-function generateField(name, field: ReducedTypeField) {
+function generateField(name, field: ReducedField) {
   const { params, returns } = field
   const fieldDef = [name]
 
@@ -35,7 +35,7 @@ function generateField(name, field: ReducedTypeField) {
   return fieldDef.join("")
 }
 
-export function generateFields(fields: ReducedTypeFields) {
+export function generateFields(fields: ReducedType) {
   // const { guards = true } = opts
   const gqlFields = []
 
@@ -47,7 +47,7 @@ export function generateFields(fields: ReducedTypeFields) {
   return gqlFields.join("\n")
 }
 
-export function generateType(name: string, fields: ReducedTypeFields) {
+export function generateType(name: string, fields: ReducedType) {
   return `type ${name} {
   ${generateFields(fields)}
 }`

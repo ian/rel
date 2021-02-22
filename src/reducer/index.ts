@@ -6,6 +6,8 @@ export class Reducer {
   types: ReducedTypes = {}
 
   reduce(reducible: Reducible) {
+    if (!reducible) return
+
     _.merge(this.inputs, reducible.inputs)
     _.merge(this.types, reducible.types)
     // _.merge(this.resolvers, module.resolvers)

@@ -1,5 +1,3 @@
-const { resolve } = require("path")
-
 module.exports = {
   globals: {
     "ts-jest": {
@@ -12,8 +10,9 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
   },
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+  modulePaths: ["src"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   moduleNameMapper: {
-    "^~/(.*)$": resolve(__dirname, "./src/$1"),
+    "^~/(.*)$": "<rootDir>/$1",
   },
 }

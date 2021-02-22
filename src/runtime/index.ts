@@ -1,9 +1,9 @@
 import _ from "lodash"
 import { makeExecutableSchema } from "@graphql-tools/schema"
-import { generateTypeDefs } from "../generator"
+import { Reducer } from "~/reducer"
+import { generateTypeDefs } from "~/generator"
 import { Reducible, ReducedTypes, Model, Module } from "~/types"
 import { modelToRuntime } from "./models"
-import { Reducer } from "./reducer"
 
 export class Runtime {
   reducer: Reducer
@@ -20,8 +20,6 @@ export class Runtime {
       // Schema needs to be generated from the definition
       Object.entries(schema).forEach((entry) => {
         const [name, model] = entry
-
-        // Generate the type definition
         this.reducer.reduce(modelToRuntime(name, model))
       })
     }

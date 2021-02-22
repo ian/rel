@@ -24,7 +24,7 @@ type MetaFields = {
   timestamps?: boolean
 }
 
-export type Fields = MetaFields & {
+export type Fields = {
   [name: string]: Field
 }
 
@@ -64,14 +64,23 @@ export type Relations = {
   [key: string]: Relation
 }
 
+export type FindAccessor = Accessor & {
+  findBy?: Fields
+}
+
+export type ListAccessor = Accessor & {
+  listBy?: Fields
+}
+
 export type Accessor = {
+  // params?: Fields
   guard?: string
   after?: (obj: object) => Promise<void>
 }
 
 export type Accessors = {
-  find?: Accessor | boolean
-  list?: Accessor | boolean
+  find?: FindAccessor | boolean
+  list?: ListAccessor | boolean
 }
 
 export type Mutator = {
@@ -86,7 +95,7 @@ export type Mutator = {
 // }
 
 export type Model = {
-  fields: Fields
+  fields: MetaFields & Fields
   relations?: Relations
   accessors?: Accessors
   // mutators?: Mutators
@@ -119,14 +128,15 @@ export type ReducedTypeFieldParams = {
   [name: string]: Field
 }
 
-export type ReducedTypeField = {
+export type ReducedField = {
   params?: ReducedTypeFieldParams
-  returns: Field | string
+  guard?: string
+  returns: Field // | string
   resolver?: Resolver
 }
 
-export type ReducedFields = {
-  [name: string]: ReducedTypeField
+export type ReducedType = {
+  [fieldName: string]: ReducedField
 }
 
 // export type ReducedType = {
@@ -134,13 +144,13 @@ export type ReducedFields = {
 // }
 
 export type ReducedTypes = {
-  // Query: ReducedType
-  // Mutation: ReducedType
-  [name: string]: ReducedFields
+  Query?: ReducedType
+  Mutation?: ReducedType
+  [objectName: string]: ReducedType
 }
 
 export type ReducedInputs = {
-  [name: string]: ReducedFields
+  [objectName: string]: ReducedType
 }
 
 export type ReducedResolvers = {
@@ -155,6 +165,8 @@ export type Reducible = {
 
 // Runtime - this is where the magic happens
 
+export type Resolver = (...RuntimeArgs) => RuntimeObject
+
 export type RuntimeAuthUser = {
   id: string
   name: string
@@ -164,17 +176,16 @@ export type RuntimeContext = {
   authUser?: RuntimeAuthUser
 }
 
-export type ResolvableObject = {
+export type RuntimeObject = {
   [key: string]: any
 }
 
-export type ResolvableParams = {
+export type RuntimeParams = {
   [key: string]: any
 }
 
-export type RuntimeParams = [
-  obj: ResolvableObject,
-  params: ResolvableParams,
+export type RuntimeArgs = [
+  obj: RuntimeObject,
+  params: RuntimeParams,
   context: RuntimeContext
 ]
-export type Resolver = (...RuntimeParams) => ResolvableObject

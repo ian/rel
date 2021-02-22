@@ -1,4 +1,4 @@
-import { id, string } from "../../fields"
+import { uuid, string } from "../../fields"
 import { generateTypeDefs } from "."
 
 const subject = (opts) => {
@@ -12,7 +12,7 @@ describe("Query", () => {
         Query: {
           TestQuery: {
             params: {
-              id: id(),
+              id: uuid(),
             },
             returns: string(),
           },
@@ -31,7 +31,7 @@ describe("Mutation", () => {
         Mutation: {
           TestMutation: {
             params: {
-              id: id(),
+              id: uuid(),
             },
             returns: string(),
           },
