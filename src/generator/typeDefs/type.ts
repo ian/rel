@@ -1,36 +1,23 @@
-import {
-  ReducedTypeFieldParams,
-  ReducedField,
-  ReducedType,
-  // ReducedType,
-} from "~/types"
+import { ReducedTypeFieldParams, ReducedField, ReducedType } from "~/types"
 
 function generateParams(params: ReducedTypeFieldParams) {
   return Object.entries(params)
     .map((entry) => {
       const [name, field] = entry
-
-      const fieldDef = [name]
-      fieldDef.push(": ")
-      fieldDef.push(field._gqlName)
-      if (field._required) fieldDef.push("!")
-
-      return fieldDef.join("")
+      return `${name}: ${field.toGQL()}`
     })
     .join(", ")
 }
 
 function generateField(name, field: ReducedField) {
   const { params, returns } = field
-  const fieldDef = [name]
 
+  const fieldDef = [name]
   if (params) {
     fieldDef.push(`( ${generateParams(params)} )`)
   }
   fieldDef.push(": ")
-  fieldDef.push(returns._gqlName)
-  if (returns._required) fieldDef.push("!")
-  if (returns._guard) fieldDef.push(` @${returns._guard}`)
+  fieldDef.push(returns.toGQL())
 
   return fieldDef.join("")
 }

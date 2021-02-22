@@ -36,7 +36,7 @@ export type Field = {
   // _gqlName: string
   // _required: boolean
   // _guard: string
-  toGQL(opts: ToGQLOpts): () => string
+  toGQL(opts?: ToGQLOpts): () => string
 }
 
 // Configuration
