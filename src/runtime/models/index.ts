@@ -1,42 +1,86 @@
+import _ from "lodash"
 import { uuid, dateTime } from "../../fields"
-import { Fields, Relations, Reducible } from "~/types"
+import { Model, Reducible } from "~/types"
 
 import { generateFields } from "./fields"
-import { generateObjectRelation } from "./relations"
+// import { generateObjectRelation } from "./relations"
+import { Reducer } from "../reducer"
 
-export function modelToRuntime(
-  label,
-  { id, timestamps, ...fields }: Fields,
-  relations: Relations
-): Reducible {
-  const gqlFields = {}
-  const gqlResolver = {}
+export function modelToRuntime(label, model: Model): Reducible {
+  const reducer = new Reducer()
+  const { fields, relations } = model
 
-  if (id !== false) {
-    gqlFields["id"] = { returns: uuid() }
-  }
+  // const gqlResolver = {}
 
-  Object.assign(gqlFields, generateFields(fields))
+  const type = {}
 
-  if (timestamps !== false) {
-    gqlFields["createdAt"] = { returns: dateTime() }
-    gqlFields["updatedAt"] = { returns: dateTime() }
+  if (fields) {
+    const { id, timestamps, ...restFields } = fields
+
+    if (id !== false) {
+      type["id"] = { returns: uuid() }
+    }
+
+    Object.assign(type, generateFields(restFields))
+
+    if (timestamps !== false) {
+      type["createdAt"] = { returns: dateTime() }
+      type["updatedAt"] = { returns: dateTime() }
+    }
+
+    reducer.reduce({
+      inputs: {
+        [`${label}Input`]: generateFields(restFields),
+      },
+    })
   }
 
   if (relations) {
     Object.entries(relations).forEach((relObj) => {
-      const { name, schema, resolver } = generateObjectRelation(...relObj)
-      gqlFields[name] = schema
-      gqlResolver[name] = resolver
+      const [relName, relation] = relObj
+      const { to, singular } = relation
+
+      // const [relName, relation] = relObj
+      // const { returns, resolver } = generateObjectRelation(relation)
+      // type[relName] = returns
+      // gqlResolver[relName] = resolver
     })
   }
 
-  return {
+  reducer.reduce({
     types: {
-      [label]: gqlFields,
+      [label]: type,
     },
-    resolvers: {
-      [label]: gqlResolver,
-    },
-  }
+  })
+
+  // Generate Queries and Mutations
+  // if (accessors) {
+  //   if (accessors.find) {
+  //     this.reduce(generateFind(name, accessors.find, fields))
+  //   }
+
+  //   if (accessors.list) {
+  //     this.reduce(generateList(name, accessors.list, fields))
+  //   }
+  // }
+
+  // if (mutators) {
+  //   this.reduce(generateMutators(name, mutators, fields))
+  // }
+
+  return reducer.toReducible()
+
+  // return {
+  //   inputs: {
+  //     [`${label}Input`]: input,
+  //   },
+  //   types: {
+  //     // [label]: type,
+  //     // ...types,
+  //     types,
+  //   },
+  //   resolvers: {
+  //     [label]: gqlResolver,
+  //   },
+  // }
 }

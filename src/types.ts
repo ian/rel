@@ -64,9 +64,32 @@ export type Relations = {
   [key: string]: Relation
 }
 
+export type Accessor = {
+  guard?: string
+  after?: (obj: object) => Promise<void>
+}
+
+export type Accessors = {
+  find?: Accessor | boolean
+  list?: Accessor | boolean
+}
+
+export type Mutator = {
+  guard?: string
+  after?: (obj: object) => Promise<void>
+}
+
+// export type Mutators = {
+//   create?: Mutator | boolean
+//   update?: Mutator | boolean
+//   delete?: Mutator | boolean
+// }
+
 export type Model = {
   fields: Fields
-  relations: Relations
+  relations?: Relations
+  accessors?: Accessors
+  // mutators?: Mutators
 }
 
 export type Schema = {
@@ -98,21 +121,26 @@ export type ReducedTypeFieldParams = {
 
 export type ReducedTypeField = {
   params?: ReducedTypeFieldParams
-  returns: Field
+  returns: Field | string
+  resolver?: Resolver
 }
 
-export type ReducedTypeFields = {
+export type ReducedFields = {
   [name: string]: ReducedTypeField
 }
 
-export type ReducedType = {
-  fields: ReducedTypeFields
-}
+// export type ReducedType = {
+//   fields: ReducedFields
+// }
 
 export type ReducedTypes = {
   // Query: ReducedType
   // Mutation: ReducedType
-  [name: string]: ReducedTypeFields
+  [name: string]: ReducedFields
+}
+
+export type ReducedInputs = {
+  [name: string]: ReducedFields
 }
 
 export type ReducedResolvers = {
@@ -120,6 +148,33 @@ export type ReducedResolvers = {
 }
 
 export type Reducible = {
+  inputs?: ReducedInputs
   types?: ReducedTypes
   resolvers?: ReducedResolvers
 }
+
+// Runtime - this is where the magic happens
+
+export type RuntimeAuthUser = {
+  id: string
+  name: string
+}
+
+export type RuntimeContext = {
+  authUser?: RuntimeAuthUser
+}
+
+export type ResolvableObject = {
+  [key: string]: any
+}
+
+export type ResolvableParams = {
+  [key: string]: any
+}
+
+export type RuntimeParams = [
+  obj: ResolvableObject,
+  params: ResolvableParams,
+  context: RuntimeContext
+]
+export type Resolver = (...RuntimeParams) => ResolvableObject

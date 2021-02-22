@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { resolveNode } from "./node"
 import { cypher1, cypher, cypherListRelationship } from "../cypher"
-import { Rel, Relation } from "~/types"
+import { Rel, Relation, Resolver } from "~/types"
 
 export function resolveRel(rel: Rel) {
   // if (typeof rel === "string")
@@ -17,7 +17,7 @@ export function resolveRel(rel: Rel) {
   }
 }
 
-export function relationResolver(relation: Relation) {
+export function relationResolver(relation: Relation): Resolver {
   const { from, to, singular = false, order, rel } = relation
 
   return async (obj, params, context) => {
