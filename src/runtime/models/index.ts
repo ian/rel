@@ -4,6 +4,7 @@ import { Model, Reducible } from "~/types"
 
 import { generateFields } from "./fields"
 // import { generateObjectRelation } from "./relations"
+import { relationResolver } from "../../resolvers"
 import { Reducer } from "../reducer"
 
 export function modelToRuntime(label, model: Model): Reducible {
@@ -12,9 +13,8 @@ export function modelToRuntime(label, model: Model): Reducible {
 
   // const gqlResolver = {}
 
-  const type = {}
-
   if (fields) {
+    const type = {}
     const { id, timestamps, ...restFields } = fields
 
     if (id !== false) {
@@ -29,6 +29,12 @@ export function modelToRuntime(label, model: Model): Reducible {
     }
 
     reducer.reduce({
+      types: {
+        [label]: type,
+      },
+    })
+
+    reducer.reduce({
       inputs: {
         [`${label}Input`]: generateFields(restFields),
       },
@@ -40,18 +46,25 @@ export function modelToRuntime(label, model: Model): Reducible {
       const [relName, relation] = relObj
       const { to, singular } = relation
 
-      // const [relName, relation] = relObj
-      // const { returns, resolver } = generateObjectRelation(relation)
-      // type[relName] = returns
-      // gqlResolver[relName] = resolver
+      reducer.reduce({
+        types: {
+          [label]: {
+            [relName]: {
+              returns: `${singular ? to.label : `[${to.label}]!`}`,
+            },
+          },
+        },
+      })
+
+      reducer.reduce({
+        resolvers: {
+          [label]: {
+            [relName]: relationResolver(relation),
+          },
+        },
+      })
     })
   }
-
-  reducer.reduce({
-    types: {
-      [label]: type,
-    },
-  })
 
   // Generate Queries and Mutations
   // if (accessors) {

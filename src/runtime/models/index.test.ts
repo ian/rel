@@ -78,32 +78,54 @@ describe("modelToRuntime", () => {
     })
   })
 
-  // describe("relations", () => {
-  //   const subject = (model): Reducible => {
-  //     return modelToRuntime("Book", model)
-  //   }
+  describe("relations", () => {
+    const subject = (model): Reducible => {
+      return modelToRuntime("Book", model)
+    }
 
-  //   it("should generate a field", () => {
-  //     const _subject = subject({
-  //       relations: {
-  //         author: {
-  //           from: {
-  //             label: "Actor",
-  //           },
-  //           to: {
-  //             label: "Movie",
-  //           },
-  //           rel: {
-  //             label: "ACTED_IN",
-  //           },
-  //         },
-  //       },
-  //     })
+    it("should generate a field", () => {
+      const _subject = subject({
+        relations: {
+          author: {
+            from: {
+              label: "Actor",
+            },
+            to: {
+              label: "Movie",
+            },
+            rel: {
+              label: "ACTED_IN",
+            },
+          },
+        },
+      })
 
-  //     console.log(_subject.types.Book)
+      expect(_subject.types.Book).toHaveProperty("author")
+      // expect(_subject.types.Book.author).toHaveProperty("returns")
+    })
 
-  //     expect(_subject.types.Book).toHaveProperty("author")
-  //     expect(_subject.types.Book.author).toHaveProperty("returns")
-  //   })
-  // })
+    it("should be additive with fields", () => {
+      const _subject = subject({
+        fields: {
+          name: string(),
+        },
+        relations: {
+          author: {
+            from: {
+              label: "Actor",
+            },
+            to: {
+              label: "Movie",
+            },
+            rel: {
+              label: "ACTED_IN",
+            },
+          },
+        },
+      })
+
+      expect(_subject.types.Book).toHaveProperty("name")
+      expect(_subject.types.Book).toHaveProperty("author")
+    })
+  })
 })
