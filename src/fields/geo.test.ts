@@ -5,7 +5,7 @@ describe("default properties", () => {
     return new Geo()
   }
 
-  it("should set the GQL type", () => {
-    expect(subject()._name).toBe("Geo")
+  it("should output the right GQL type", () => {
+    expect(subject().toGQL()).toBe("Geo")
   })
 })

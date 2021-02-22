@@ -5,7 +5,7 @@ describe("default properties", () => {
     return new PhoneNumber()
   }
 
-  it("should set the GQL type", () => {
-    expect(subject()._name).toBe("PhoneNumber")
+  it("should output the right GQL type", () => {
+    expect(subject().toGQL()).toBe("PhoneNumber")
   })
 })
