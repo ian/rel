@@ -2,9 +2,10 @@ import Fastify from "fastify"
 import mercurius from "mercurius"
 import { formatSdl } from "format-graphql"
 
-import { generate, GeneratorOpts } from "../runtime"
+import { Module } from "~/types"
+import { generate } from "../runtime"
 
-type ServerConfig = GeneratorOpts & {
+type ServerConfig = Module & {
   port?: number
 }
 
@@ -16,7 +17,7 @@ type GrapqQLRequest = {
 
 class Server {
   port: number
-  config: GeneratorOpts
+  config: Module
 
   constructor(server: ServerConfig) {
     const { port = 4000, ...config } = server
