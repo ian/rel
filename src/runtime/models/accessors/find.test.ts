@@ -20,7 +20,6 @@ describe("generateFind", () => {
     const _subject = subject(true)
     expect(typeof _subject).toBe("object")
     expect(_subject.types.Query.FindBook).toBeDefined()
-    console.log(_subject.types.Query.FindBook)
     expect(_subject.types.Query.FindBook.params).toBeDefined()
     expect(_subject.resolvers.Query.FindBook).toBeDefined()
   })

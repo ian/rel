@@ -1,4 +1,5 @@
 import pluralize from "pluralize"
+import { array, type } from "~/fields"
 import { listResolver } from "~/resolvers"
 import { Fields, Reducible } from "~/types"
 
@@ -36,17 +37,15 @@ export function generateList(
     skip: Int, 
     order: String
   )`
-  const gqlDef = `[${label}]!`
-
-  // const schema = makeSchema(label, definition, fields)
+  const _type = {
+    returns: array(type(label)).required(),
+  }
   const resolver = makeResolver(label, definition)
 
   return {
     types: {
       Query: {
-        [gqlName]: {
-          returns: gqlDef,
-        },
+        [gqlName]: _type,
       },
     },
     resolvers: {

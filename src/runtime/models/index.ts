@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { uuid, dateTime } from "../../fields"
+import { type, array, uuid, dateTime } from "../../fields"
 import { Model, Reducible } from "~/types"
 
 import { generateFields } from "./fields"
@@ -49,7 +49,10 @@ export function modelToRuntime(label, model: Model): Reducible {
         types: {
           [label]: {
             [relName]: {
-              returns: `${singular ? to.label : `[${to.label}]!`}`,
+              // returns: `${singular ? to.label : `[${to.label}]!`}`,
+              returns: singular
+                ? type(to.label)
+                : array(type(to.label)).required(),
             },
           },
         },

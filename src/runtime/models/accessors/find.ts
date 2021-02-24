@@ -38,7 +38,7 @@ function makeType(label: string, accessor: FindAccessor): ReducedField {
 
 export function generateFind(
   label,
-  accessor: FindAccessor
+  accessor: boolean | FindAccessor
   // fields: Fields
 ): Reducible {
   if (!accessor) return null
