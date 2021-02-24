@@ -15,13 +15,7 @@ function makeResolver(label: string, mutator: CreateMutator) {
   return createResolver(label, standardizedOpts)
 }
 
-function makeInput(
-  label: string,
-  accessor: CreateMutator,
-  fields: Fields
-): ReducedType {
-  const { guard } = accessor
-
+function makeInput(fields: Fields): ReducedType {
   const reduced = Object.entries(fields).reduce((acc, entry) => {
     const [fieldName, field] = entry
     acc[fieldName] = {
@@ -60,7 +54,7 @@ export function generateCreate(
 
   return {
     inputs: {
-      [inputName]: makeInput(label, _mutator, fields),
+      [inputName]: makeInput(fields),
     },
     types: {
       Mutation: {
