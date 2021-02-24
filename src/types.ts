@@ -107,9 +107,19 @@ export type Schema = {
   [name: string]: Model
 }
 
+export type Directives = {
+  [name: string]: {
+    schema: string
+    handler: (next, src, args, context) => void
+  }
+}
+
 export type Module = {
   schema: Schema
+  directives: Directives
 }
+
+export type CallableModule = (/* @todo - this should take some JIT params */) => Module
 
 // Runtime Types
 // These are used internally to the Runtime engine.
@@ -159,9 +169,17 @@ export type ReducedResolvers = {
   [name: string]: any
 }
 
+export type ReducedDirectives = {
+  [name: string]: {
+    schema: string
+    handler: (next, src, args, context) => void
+  }
+}
+
 export type Reducible = {
   inputs?: ReducedInputs
   types?: ReducedTypes
+  directives?: ReducedDirectives
   resolvers?: ReducedResolvers
 }
 

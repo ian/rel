@@ -1,26 +1,51 @@
 import { formatSdl } from "format-graphql"
-import { Fields, ReducedTypes } from "~/types"
+import { Reducible } from "~/types"
 import { generateType } from "./type"
 
-export function generateTypeDefs(reduced: ReducedTypes) {
-  const { Query, Mutation, ...types } = reduced
+export function generateTypeDefs(reducible: Reducible) {
+  const { types, directives } = reducible
 
   const gql = []
 
-  if (Query) {
-    gql.push(generateType("Query", Query))
+  if (directives) {
+    const gqlDirectives = Object.values(directives)
+      .map((d) => d.schema)
+      .join("\n")
+
+    gql.push(gqlDirectives)
   }
 
-  if (Mutation) {
-    gql.push(generateType("Mutation", Mutation))
-  }
+  // add scalars
+  // @todo make dynamic
+  gql.push(`scalar ID
+scalar Date
+scalar Geo
+scalar Time
+scalar DateTime
+scalar PhoneNumber
+scalar URL
+scalar UUID`)
 
   if (types) {
-    Object.entries(types).forEach((entry) => {
-      const [name, fields] = entry
-      gql.push(generateType(name, fields))
-    })
+    const { Query, Mutation, ...restOfTypes } = types
+
+    if (Query) {
+      gql.push(generateType("Query", Query))
+    }
+
+    if (Mutation) {
+      gql.push(generateType("Mutation", Mutation))
+    }
+
+    if (restOfTypes) {
+      Object.entries(restOfTypes).forEach((entry) => {
+        const [name, fields] = entry
+        gql.push(generateType(name, fields))
+      })
+    }
   }
+
+  console.log(gql.join("\n\n"))
 
   return gql
     .map((typeStr) => {

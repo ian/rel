@@ -1,7 +1,8 @@
 import { string, type } from "../fields"
+import { Module } from "../types"
 
-export default () => ({
-  models: {
+export default (): Module => ({
+  schema: {
     Auth: {
       fields: {
         id: false,
@@ -18,26 +19,26 @@ export default () => ({
       },
     },
   },
-  extend: {
-    Login: {
-      schema: "Login(token: String!): Auth",
-      resolver: (obj, params, context) => {
-        return {
-          token: "FAKE123",
-          user: {},
-        }
-      },
-    },
-    Register: {
-      schema: "Login(token: String!): Auth",
-      resolver: (obj, params, context) => {
-        return {
-          token: "FAKE123",
-          user: {},
-        }
-      },
-    },
-  },
+  // extend: {
+  //   Login: {
+  //     schema: "Login(token: String!): Auth",
+  //     resolver: (obj, params, context) => {
+  //       return {
+  //         token: "FAKE123",
+  //         user: {},
+  //       }
+  //     },
+  //   },
+  //   Register: {
+  //     schema: "Login(token: String!): Auth",
+  //     resolver: (obj, params, context) => {
+  //       return {
+  //         token: "FAKE123",
+  //         user: {},
+  //       }
+  //     },
+  //   },
+  // },
   directives: {
     authenticate: {
       schema: "directive @authenticate on FIELD_DEFINITION",

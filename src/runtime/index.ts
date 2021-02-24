@@ -1,8 +1,8 @@
 import _ from "lodash"
+import { CallableModule, Module } from "~/types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 import { Reducer } from "~/reducer"
 import { generateTypeDefs } from "~/generator"
-import { Reducible, ReducedTypes, Model, Module } from "~/types"
 import { modelToRuntime } from "./models"
 
 export class Runtime {
@@ -14,6 +14,7 @@ export class Runtime {
 
   module(module: Module) {
     // console.log("module", JSON.stringify(module, null, 2))
+
     const { schema } = module
 
     if (schema) {
@@ -26,7 +27,8 @@ export class Runtime {
   }
 
   generate() {
-    const typeDefs = generateTypeDefs(this.reducer.types)
+    const reduced = this.reducer.toReducible()
+    const typeDefs = generateTypeDefs(reduced)
     const resolvers = {}
     const directiveResolvers = {}
 
@@ -44,18 +46,17 @@ export class Runtime {
 }
 
 export type RuntimeOpts = {
-  // auth?: CallableModule
+  auth?: CallableModule
   // extend?: Module
 } & Module
 
 export function generate(opts: RuntimeOpts): GQLConfig {
-  const { ...config } = opts
+  const { auth, ...config } = opts
   const runtime = new Runtime()
 
-  runtime.module(config)
+  if (auth) runtime.module(auth(/* @todo should this take params? */))
 
-  // if (auth) generator.add(auth(/* @todo should this take params? */))
-  // generator.add(config)
+  runtime.module(config)
 
   return runtime.generate()
 }
