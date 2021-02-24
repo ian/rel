@@ -4,8 +4,8 @@ import { buildResolver } from "./builder"
 
 export function createResolver(
   label: string,
-  fields: Fields,
   mutator: Mutator
+  // fields: Fields,
 ) {
   return buildResolver(async ({ params }) => {
     const { input } = params
@@ -24,8 +24,8 @@ export function createResolver(
 
 export function updateResolver(
   label: string,
-  fields: Fields,
   mutator: Mutator
+  // fields: Fields,
 ) {
   return buildResolver(async ({ params }) => {
     const { id, input } = params

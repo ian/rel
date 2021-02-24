@@ -81,22 +81,26 @@ export type Accessors = {
   list?: ListAccessor | boolean
 }
 
+export type CreateMutator = Mutator & {}
+export type UpdateMutator = Mutator & {}
+export type DeleteMutator = Mutator & {}
+
 export type Mutator = {
   guard?: string
   after?: (obj: object) => Promise<void>
 }
 
-// export type Mutators = {
-//   create?: Mutator | boolean
-//   update?: Mutator | boolean
-//   delete?: Mutator | boolean
-// }
+export type Mutators = {
+  create?: CreateMutator | boolean
+  update?: UpdateMutator | boolean
+  delete?: DeleteMutator | boolean
+}
 
 export type Model = {
   fields: MetaFields & Fields
   relations?: Relations
   accessors?: Accessors
-  // mutators?: Mutators
+  mutators?: Mutators
 }
 
 export type Schema = {

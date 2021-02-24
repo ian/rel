@@ -1,9 +1,13 @@
 import { Reducer } from "~/reducer"
-import { Fields, Accessors } from "~/types"
+import { Fields, Accessors, Reducible } from "~/types"
 import { generateFind } from "./find"
 import { generateList } from "./list"
 
-export function generateAccessors(label, accessors: Accessors, fields: Fields) {
+export function generateAccessors(
+  label,
+  accessors: Accessors,
+  fields: Fields
+): Reducible {
   const reducer = new Reducer()
 
   if (accessors) {
