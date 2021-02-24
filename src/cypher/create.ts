@@ -23,7 +23,7 @@ const DEFAULT_CREATE_OPTS = {
   timestamps: true,
 }
 
-export async function cypherCreate(label, params, opts: CreateOpts) {
+export async function cypherCreate(label, params, opts: CreateOpts = {}) {
   const toParams = {
     ...params,
   }

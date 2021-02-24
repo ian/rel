@@ -8,11 +8,6 @@ export enum Direction {
   OUT = "OUT",
 }
 
-type MetaFields = {
-  id?: boolean
-  timestamps?: boolean
-}
-
 // Fields always look like:
 // {
 //   name: string().required(),
@@ -99,7 +94,7 @@ export type Mutators = {
 export type Model = {
   id?: boolean
   timestamps?: boolean
-  fields: MetaFields & Fields
+  fields: Fields
   relations?: Relations
   accessors?: Accessors
   mutators?: Mutators
