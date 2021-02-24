@@ -1,10 +1,6 @@
 // Following a global types definition file like how the TypeScript team uses: https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts
 
-import { string } from "yup/lib/locale"
-import { phoneNumber } from "./fields"
-
 // Global types used across multiple areas
-
 // Rel supports inbound and outbound directions for relationships
 
 export enum Direction {
@@ -12,31 +8,28 @@ export enum Direction {
   OUT = "OUT",
 }
 
-export // Fields always look like:
+type MetaFields = {
+  id?: boolean
+  timestamps?: boolean
+}
+
+// Fields always look like:
 // {
 //   name: string().required(),
 //   description: string()
 //   phone: phoneNumber()
 // }
 
-type MetaFields = {
-  id?: boolean
-  timestamps?: boolean
-}
-
 export type Fields = {
   [name: string]: Field
 }
 
-export type ToGQLOpts = {
+export type FieldToGQLOpts = {
   guards?: boolean
 }
 
 export type Field = {
-  // _gqlName: string
-  // _required: boolean
-  // _guard: string
-  toGQL(opts?: ToGQLOpts): string
+  toGQL(opts?: FieldToGQLOpts): string
 }
 
 // Configuration

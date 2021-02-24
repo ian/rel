@@ -40,7 +40,6 @@ export function generateFind(
   }
 
   const name = `Find${label}`
-  // let guard, params
 
   return {
     types: {

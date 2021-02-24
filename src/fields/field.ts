@@ -1,4 +1,4 @@
-import { ToGQLOpts } from "~/types"
+import { FieldToGQLOpts } from "~/types"
 export default class Field {
   _name: string
   _required: boolean = false
@@ -19,7 +19,7 @@ export default class Field {
     return this
   }
 
-  toGQL(opts?: ToGQLOpts): string {
+  toGQL(opts?: FieldToGQLOpts): string {
     const { guards = true } = opts || {}
 
     const fieldDef = [this._name]
