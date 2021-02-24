@@ -1,7 +1,7 @@
 import pluralize from "pluralize"
 import { int, array, type, string } from "~/fields"
 import { listResolver } from "~/resolvers"
-import { ListAccessor, Reducible } from "~/types"
+import { ListAccessor, Reducible, ReducedField } from "~/types"
 
 const DEFAULT_ACCESSOR = {}
 
@@ -14,6 +14,16 @@ function makeResolver(label: string, accessor: ListAccessor) {
   )
 
   return listResolver(standardizedOpts)
+}
+
+function makeType(label: string, accessor: ListAccessor): ReducedField {
+  const { guard } = accessor
+
+  return {
+    params: { limit: int(), skip: int(), order: string() },
+    guard,
+    returns: array(type(label)).required(),
+  }
 }
 
 export function generateList(
@@ -29,16 +39,12 @@ export function generateList(
   }
 
   const name = `List${pluralize(label)}`
-  const _type = {
-    params: { limit: int(), skip: int(), order: string() },
-    returns: array(type(label)).required(),
-  }
   const resolver = makeResolver(label, _accessor)
 
   return {
     types: {
       Query: {
-        [name]: _type,
+        [name]: makeType(label, _accessor),
       },
     },
     resolvers: {

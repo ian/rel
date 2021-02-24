@@ -3,15 +3,8 @@ import { uuid, type } from "~/fields"
 import { findResolver } from "~/resolvers"
 import _ from "lodash"
 
-// type ResolverFindQueryOpts = {
-//   findBy?: string[]
-//   // geo?: boolean
-//   where?: string
-//   only?: string[]
-// }
-
 const DEFAULT_ACCESSOR = {
-  findBy: { id: uuid() }, //["id"],
+  findBy: { id: uuid() },
 }
 
 function makeResolver(label: string, accessor: FindAccessor) {
@@ -26,8 +19,6 @@ function makeResolver(label: string, accessor: FindAccessor) {
 
 function makeType(label: string, accessor: FindAccessor): ReducedField {
   const { findBy, guard } = accessor
-
-  // console.log({ findBy })
 
   return {
     params: findBy,
@@ -63,28 +54,4 @@ export function generateFind(
       },
     },
   }
-
-  // if (accessor === true) {
-
-  // } else {
-  //   const { guard } = accessor
-  //   const params = accessor.findBy
-
-  //   return {
-  //     types: {
-  //       Query: {
-  //         [name]: {
-  //           params,
-  //           guard,
-  //           returns: label,
-  //         },
-  //       },
-  //     },
-  //     resolvers: {
-  //       Query: {
-  //         [name]: makeResolver(label, accessor),
-  //       },
-  //     },
-  //   }
-  // }
 }
