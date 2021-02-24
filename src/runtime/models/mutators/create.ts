@@ -22,21 +22,15 @@ function makeInput(
 ): ReducedType {
   const { guard } = accessor
 
-  // return {
-  //   params: { input: type(`${label}Input`) },
-  //   guard,
-  //   returns: type(label),
-  // }
+  const reduced = Object.entries(fields).reduce((acc, entry) => {
+    const [fieldName, field] = entry
+    acc[fieldName] = {
+      returns: field,
+    }
+    return acc
+  }, {})
 
-  return {
-    input: {
-      params: {
-        // @todo - dynamically generate params from fields
-        name: string(),
-      },
-      returns: type(`${label}Input`),
-    },
-  }
+  return reduced
 }
 
 function makeType(label: string, accessor: CreateMutator): ReducedField {
