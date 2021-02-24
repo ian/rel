@@ -14,7 +14,6 @@ export class Runtime {
 
   module(module: Module) {
     // console.log("module", JSON.stringify(module, null, 2))
-
     const { schema } = module
 
     if (schema) {

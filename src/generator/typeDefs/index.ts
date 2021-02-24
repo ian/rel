@@ -45,8 +45,6 @@ scalar UUID`)
     }
   }
 
-  console.log(gql.join("\n\n"))
-
   return gql
     .map((typeStr) => {
       if (!typeStr) return null

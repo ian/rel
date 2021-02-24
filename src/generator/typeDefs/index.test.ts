@@ -9,16 +9,18 @@ describe("Query", () => {
   it("should generate a type Query", () => {
     expect(
       subject({
-        Query: {
-          TestQuery: {
-            params: {
-              id: uuid(),
+        types: {
+          Query: {
+            TestQuery: {
+              params: {
+                id: uuid(),
+              },
+              returns: string(),
             },
-            returns: string(),
           },
         },
       })
-    ).toEqual(`type Query {
+    ).toMatch(`type Query {
   TestQuery(id: UUID): String
 }`)
   })
@@ -28,16 +30,18 @@ describe("Mutation", () => {
   it("should generate a type Mutation", () => {
     expect(
       subject({
-        Mutation: {
-          TestMutation: {
-            params: {
-              id: uuid(),
+        types: {
+          Mutation: {
+            TestMutation: {
+              params: {
+                id: uuid(),
+              },
+              returns: string(),
             },
-            returns: string(),
           },
         },
       })
-    ).toEqual(`type Mutation {
+    ).toMatch(`type Mutation {
   TestMutation(id: UUID): String
 }`)
   })
@@ -47,13 +51,15 @@ describe("types", () => {
   it("should generate a type", () => {
     expect(
       subject({
-        Book: {
-          name: {
-            returns: string(),
+        types: {
+          Book: {
+            name: {
+              returns: string(),
+            },
           },
         },
       })
-    ).toEqual(`type Book {
+    ).toMatch(`type Book {
   name: String
 }`)
   })
@@ -61,13 +67,15 @@ describe("types", () => {
   it("should generate a type with a required field", () => {
     expect(
       subject({
-        Book: {
-          name: {
-            returns: string().required(),
+        types: {
+          Book: {
+            name: {
+              returns: string().required(),
+            },
           },
         },
       })
-    ).toEqual(`type Book {
+    ).toMatch(`type Book {
   name: String!
 }`)
   })
