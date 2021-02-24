@@ -1,5 +1,5 @@
 import { Reducible } from "~/types"
-import { string, int } from "~/fields"
+import { string } from "~/fields"
 import { type } from "../../../fields"
 import { generateCreate } from "./create"
 

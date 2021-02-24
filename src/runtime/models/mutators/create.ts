@@ -1,5 +1,5 @@
-import { string, type } from "~/fields"
-import { CreateMutator, Fields, ReducedField, ReducedType } from "~/types"
+import { type } from "~/fields"
+import { CreateMutator, Fields, ReducedField } from "~/types"
 import { createResolver } from "~/resolvers"
 import { generateInput } from "../input"
 

@@ -16,24 +16,6 @@ function makeResolver(label: string, mutator: UpdateMutator) {
   return updateResolver(label, standardizedOpts)
 }
 
-function makeInput(
-  label: string,
-  accessor: UpdateMutator,
-  fields: Fields
-): ReducedType {
-  const { guard } = accessor
-
-  return {
-    input: {
-      params: {
-        // @todo - dynamically generate params from fields
-        name: string(),
-      },
-      returns: type(`${label}Input`),
-    },
-  }
-}
-
 function makeType(label: string, accessor: UpdateMutator): ReducedField {
   const { guard } = accessor
 

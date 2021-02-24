@@ -1,5 +1,5 @@
 import { Reducible } from "~/types"
-import { string, uuid, type } from "~/fields"
+import { string, uuid } from "~/fields"
 import { generateDelete } from "./delete"
 
 const subject = (mutator) => {
