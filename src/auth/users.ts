@@ -4,9 +4,9 @@ import { Module } from "../types"
 export default (): Module => ({
   schema: {
     Auth: {
+      id: false,
+      timestamps: false,
       fields: {
-        id: false,
-        timestamps: false,
         token: string().required(),
         user: type("User").required(),
       },

@@ -10,32 +10,33 @@ import { Reducer } from "../../reducer"
 
 export function modelToRuntime(label, model: Model): Reducible {
   const reducer = new Reducer()
-  const { fields, relations, accessors /* mutators */ } = model
+  const { id, timestamps, fields, relations, accessors /* mutators */ } = model
+
+  const modelType = {}
+
+  if (id !== false) {
+    modelType["id"] = { returns: uuid() }
+  }
 
   if (fields) {
-    const type = {}
-    const { id, timestamps, ...restFields } = fields
+    Object.assign(modelType, generateFields(fields))
+  }
 
-    if (id !== false) {
-      type["id"] = { returns: uuid() }
-    }
+  if (timestamps !== false) {
+    modelType["createdAt"] = { returns: dateTime() }
+    modelType["updatedAt"] = { returns: dateTime() }
+  }
 
-    Object.assign(type, generateFields(restFields))
+  reducer.reduce({
+    types: {
+      [label]: modelType,
+    },
+  })
 
-    if (timestamps !== false) {
-      type["createdAt"] = { returns: dateTime() }
-      type["updatedAt"] = { returns: dateTime() }
-    }
-
-    reducer.reduce({
-      types: {
-        [label]: type,
-      },
-    })
-
+  if (fields) {
     reducer.reduce({
       inputs: {
-        [`${label}Input`]: generateFields(restFields),
+        [`${label}Input`]: generateFields(fields),
       },
     })
   }

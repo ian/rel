@@ -12,11 +12,18 @@ export type SlugOpts = {
 
 export type CreateOpts = {
   // after?: AfterOption
+  id?: boolean
+  timestamps?: boolean
   geo?: string | ((object) => string)
   slug?: string | SlugOpts
 }
 
-export async function cypherCreate(label, params, opts: CreateOpts = {}) {
+const DEFAULT_CREATE_OPTS = {
+  id: true,
+  timestamps: true,
+}
+
+export async function cypherCreate(label, params, opts: CreateOpts) {
   const toParams = {
     ...params,
   }
@@ -46,8 +53,9 @@ export async function cypherCreate(label, params, opts: CreateOpts = {}) {
   }
 
   const paramsCypher = paramify(toParams, {
-    id: true,
-    timestamps: true,
+    // id: true,
+    // timestamps: true,
+    ...DEFAULT_CREATE_OPTS,
     ...opts,
   })
 

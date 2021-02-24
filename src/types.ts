@@ -97,6 +97,8 @@ export type Mutators = {
 }
 
 export type Model = {
+  id?: boolean
+  timestamps?: boolean
   fields: MetaFields & Fields
   relations?: Relations
   accessors?: Accessors

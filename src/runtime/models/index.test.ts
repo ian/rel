@@ -30,29 +30,52 @@ describe("modelToRuntime", () => {
   })
 
   describe("id", () => {
-    it("should allow id to be turned off", () => {
+    it("by default it should generate", () => {
+      const _subject = subject({})
+
+      expect(_subject.types.MyObject).toHaveProperty("id")
+    })
+
+    it("should add id if set to true", () => {
       const _subject = subject({
-        fields: {
-          id: false,
-        },
+        id: true,
       })
 
-      expect(Object.keys(_subject.types.MyObject)).toEqual([
-        "createdAt",
-        "updatedAt",
-      ])
+      expect(_subject.types.MyObject).toHaveProperty("id")
+    })
+
+    it("should allow id to be turned off", () => {
+      const _subject = subject({
+        id: false,
+      })
+
+      expect(_subject.types.MyObject).not.toHaveProperty("id")
     })
   })
 
   describe("timestamps", () => {
+    it("by default it should generate createdAt and updatedAt", () => {
+      const _subject = subject({})
+
+      expect(_subject.types.MyObject).toHaveProperty("createdAt")
+      expect(_subject.types.MyObject).toHaveProperty("updatedAt")
+    })
+
+    it("should add id if set to true", () => {
+      const _subject = subject({
+        timestamps: true,
+      })
+      expect(_subject.types.MyObject).toHaveProperty("createdAt")
+      expect(_subject.types.MyObject).toHaveProperty("updatedAt")
+    })
+
     it("should allow id to be turned off", () => {
       const _subject = subject({
-        fields: {
-          timestamps: false,
-        },
+        timestamps: false,
       })
 
-      expect(Object.keys(_subject.types.MyObject)).toEqual(["id"])
+      expect(_subject.types.MyObject).not.toHaveProperty("createdAt")
+      expect(_subject.types.MyObject).not.toHaveProperty("updatedAt")
     })
   })
 
