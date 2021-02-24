@@ -6,17 +6,17 @@ const subject = (accessor) => {
 }
 
 describe("generateFind", () => {
-  it("should NOT generate any reducer when accessor is null", () => {
+  it("should NOT generate any reducible when accessor is null", () => {
     const _subject = subject(null)
     expect(_subject).toBe(null)
   })
 
-  it("should NOT generate any reducer when accessor is false", () => {
+  it("should NOT generate any reducible when accessor is false", () => {
     const _subject = subject(false)
     expect(_subject).toBe(null)
   })
 
-  it("should generate a reducer when accessor is true", () => {
+  it("should generate a reducible when accessor is true", () => {
     const _subject = subject(true)
     expect(typeof _subject).toBe("object")
     expect(_subject.types.Query.FindBook).toBeDefined()
@@ -24,7 +24,7 @@ describe("generateFind", () => {
     expect(_subject.resolvers.Query.FindBook).toBeDefined()
   })
 
-  it("should generate a reducer when accessor is an object", () => {
+  it("should generate a reducible when accessor is an object", () => {
     const _subject = subject({})
     expect(typeof _subject).toBe("object")
     expect(_subject.types.Query.FindBook).toBeDefined()

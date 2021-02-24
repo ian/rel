@@ -1,51 +1,44 @@
 import pluralize from "pluralize"
-import { array, type } from "~/fields"
+import { int, array, type, string } from "~/fields"
 import { listResolver } from "~/resolvers"
-import { Fields, Reducible } from "~/types"
+import { ListAccessor, Reducible } from "~/types"
 
-type ResolverListQueryOpts = {
-  find?: string[]
-  // geo?: boolean
-  where?: string
-  only?: string[]
-  search?: string[]
-}
+const DEFAULT_ACCESSOR = {}
 
-const DEFAULT_OPTS = {}
-
-function makeResolver(
-  label: string,
-  opts: boolean | ResolverListQueryOpts = {}
-) {
-  const standardizedOpts = {
-    label,
-    ...DEFAULT_OPTS,
-    ...(typeof opts === "boolean" ? {} : opts),
-  }
+function makeResolver(label: string, accessor: ListAccessor) {
+  const standardizedOpts = Object.assign(
+    {
+      label,
+    },
+    accessor
+  )
 
   return listResolver(standardizedOpts)
 }
 
 export function generateList(
   label: string,
-  definition,
-  fields: Fields
+  accessor: boolean | ListAccessor
+  // fields: Fields
 ): Reducible {
+  if (!accessor) return null
+
+  let _accessor = {
+    ...DEFAULT_ACCESSOR,
+    ...(typeof accessor === "boolean" ? {} : accessor),
+  }
+
   const name = `List${pluralize(label)}`
-  const gqlName = `List${pluralize(label)}(
-    limit: Int, 
-    skip: Int, 
-    order: String
-  )`
   const _type = {
+    params: { limit: int(), skip: int(), order: string() },
     returns: array(type(label)).required(),
   }
-  const resolver = makeResolver(label, definition)
+  const resolver = makeResolver(label, _accessor)
 
   return {
     types: {
       Query: {
-        [gqlName]: _type,
+        [name]: _type,
       },
     },
     resolvers: {
