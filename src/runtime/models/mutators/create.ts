@@ -1,6 +1,7 @@
 import { string, type } from "~/fields"
 import { CreateMutator, Fields, ReducedField, ReducedType } from "~/types"
 import { createResolver } from "~/resolvers"
+import { generateInput } from "../input"
 
 const DEFAULT_MUTATOR = {}
 
@@ -13,18 +14,6 @@ function makeResolver(label: string, mutator: CreateMutator) {
   )
 
   return createResolver(label, standardizedOpts)
-}
-
-function makeInput(fields: Fields): ReducedType {
-  const reduced = Object.entries(fields).reduce((acc, entry) => {
-    const [fieldName, field] = entry
-    acc[fieldName] = {
-      returns: field,
-    }
-    return acc
-  }, {})
-
-  return reduced
 }
 
 function makeType(label: string, accessor: CreateMutator): ReducedField {
@@ -54,7 +43,7 @@ export function generateCreate(
 
   return {
     inputs: {
-      [inputName]: makeInput(fields),
+      [inputName]: generateInput(fields),
     },
     types: {
       Mutation: {

@@ -1,6 +1,7 @@
 import { string, uuid, type } from "~/fields"
 import { UpdateMutator, Fields, ReducedField, ReducedType } from "~/types"
 import { updateResolver } from "~/resolvers"
+import { generateInput } from "../input"
 
 const DEFAULT_MUTATOR = {}
 
@@ -60,7 +61,7 @@ export function generateUpdate(
 
   return {
     inputs: {
-      [inputName]: makeInput(label, _mutator, fields),
+      [inputName]: generateInput(fields),
     },
     types: {
       Mutation: {

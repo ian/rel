@@ -17,34 +17,62 @@ describe("generateDelete", () => {
     expect(_subject).toBe(null)
   })
 
-  it("should generate a reducible when mutator is true", () => {
-    const _subject = subject(true)
-    expect(typeof _subject).toBe("object")
-    expect(_subject.inputs).not.toBeDefined()
-    expect(_subject.types.Mutation.DeleteBook).toBeDefined()
-    expect(_subject.types.Mutation.DeleteBook.params).toBeDefined()
-    expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
+  describe("inputs", () => {
+    it("should NOT generate inputs when mutator true", () => {
+      const _subject = subject(true)
+      expect(typeof _subject).toBe("object")
+      expect(_subject.inputs).not.toBeDefined()
+    })
+
+    it("should NOT generate inputs when mutator is an object", () => {
+      const _subject = subject({})
+
+      expect(_subject.inputs).not.toBeDefined()
+    })
   })
 
-  it("should generate a reducible when mutator is an object", () => {
-    const _subject = subject({})
-    expect(typeof _subject).toBe("object")
-    expect(_subject.types.Mutation.DeleteBook).toBeDefined()
-    expect(_subject.types.Mutation.DeleteBook.params).toBeDefined()
-    expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
+  describe("types", () => {
+    it("should generate a reducible with an input when mutator true", () => {
+      const _subject = subject(true)
+
+      expect(_subject.types.Mutation.DeleteBook).toBeDefined()
+      expect(_subject.types.Mutation.DeleteBook.params).toBeDefined()
+    })
+
+    it("should generate a reducible with an input when mutator is an object", () => {
+      const _subject = subject({})
+
+      expect(_subject.types.Mutation.DeleteBook).toBeDefined()
+      expect(_subject.types.Mutation.DeleteBook.params).toBeDefined()
+    })
   })
 
-  describe("mutator options", () => {
+  describe("resolvers", () => {
+    it("should generate a reducible with an input when mutator true", () => {
+      const _subject = subject(true)
+
+      expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
+    })
+
+    it("should generate a reducible with an input when mutator is an object", () => {
+      const _subject = subject({})
+
+      expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
+    })
+  })
+
+  describe("guard", () => {
     it("should allow guard to be specified", () => {
       const _subject = subject({ guard: "admin" })
       expect(typeof _subject).toBe("object")
 
       expect(_subject.types.Mutation.DeleteBook.guard).toEqual("admin")
     })
+  })
 
-    it("should allow findBy to be specified", () => {
-      const findBy = { title: string() }
-      const _subject = subject({ findBy })
+  describe("params", () => {
+    it("should allow id to be specified", () => {
+      const _subject = subject({ title: string() })
 
       expect(JSON.stringify(_subject.types.Mutation.DeleteBook.params)).toBe(
         JSON.stringify({ id: uuid() })
