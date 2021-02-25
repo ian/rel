@@ -3,6 +3,7 @@ import { Reducible } from "~/types"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
+  // console.log("reducible", reducible)
   const { types, directives } = reducible
 
   const gql = []
@@ -44,6 +45,8 @@ scalar UUID`)
       })
     }
   }
+
+  console.log("gql", gql.join("\n\n"))
 
   return gql
     .map((typeStr) => {
