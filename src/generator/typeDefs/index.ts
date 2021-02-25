@@ -10,7 +10,7 @@ export function generateTypeDefs(reducible: Reducible) {
 
   if (directives) {
     const gqlDirectives = Object.values(directives)
-      .map((d) => d.schema)
+      .map((d) => d.typeDef)
       .join("\n")
 
     gql.push(gqlDirectives)

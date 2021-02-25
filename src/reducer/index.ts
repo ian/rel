@@ -21,22 +21,19 @@ export class Reducer {
 
     if (reducible.directives) {
       const intersect = intersection(this.directives, reducible.directives)
-      console.log("this", this.directives)
-      console.log("reduce", reducible.directives)
-      console.log("intersection", intersect)
-
       if (intersect.length > 0)
         throw new Error(
           `Directives currently cannot overwrite eachother, they must be unique. Collision directives: ${intersect.join(
             ", "
           )}`
         )
+
+      _.merge(this.directives, reducible.directives)
     }
 
     _.merge(this.inputs, reducible.inputs)
     _.merge(this.types, reducible.types)
     _.merge(this.resolvers, reducible.resolvers)
-    _.merge(this.directives, reducible.directives)
   }
 
   toReducible(): Reducible {

@@ -13,12 +13,9 @@ export class Runtime {
   }
 
   module(module: Module) {
-    if (module.directives)
-      console.log("module", JSON.stringify(module, null, 2))
-
     const { schema, directives } = module
 
-    this.reducer.reduce(directives)
+    this.reducer.reduce({ directives })
 
     if (schema) {
       // Schema needs to be generated from the definition
@@ -33,6 +30,7 @@ export class Runtime {
     const reduced = this.reducer.toReducible()
     const typeDefs = generateTypeDefs(reduced)
     const resolvers = reduced.resolvers
+
     // const directiveResolvers = reduced.directives
     const directiveResolvers = Object.entries(reduced.directives).reduce(
       (acc, dir) => {

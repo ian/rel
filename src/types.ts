@@ -106,14 +106,14 @@ export type Schema = {
 
 export type Directives = {
   [name: string]: {
-    schema: string
+    typeDef: string
     handler: (next, src, args, context) => void
   }
 }
 
 export type Module = {
-  schema: Schema
-  directives: Directives
+  schema?: Schema
+  directives?: Directives
 }
 
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
@@ -168,7 +168,7 @@ export type ReducedResolvers = {
 
 export type ReducedDirectives = {
   [name: string]: {
-    schema: string
+    typeDef: string
     handler: (next, src, args, context) => void
   }
 }
