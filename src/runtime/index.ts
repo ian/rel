@@ -1,7 +1,11 @@
 import _ from "lodash"
 import { CallableModule, Module } from "~/types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
-import { generateDirectiveResolvers, generateResolvers, generateTypeDefs } from "~/generator"
+import {
+  generateDirectiveResolvers,
+  generateResolvers,
+  generateTypeDefs,
+} from "~/generator"
 
 import { Reducer } from "./reducer"
 import { modelToRuntime } from "./models"
@@ -34,15 +38,22 @@ export class Runtime {
     const resolvers = generateResolvers(reduced)
     const directiveResolvers = generateDirectiveResolvers(reduced)
 
-    const schema = makeExecutableSchema({
-      typeDefs,
-      resolvers,
-      directiveResolvers,
-    })
+    try {
+      const schema = makeExecutableSchema({
+        typeDefs,
+        resolvers,
+        directiveResolvers,
+      })
 
-    return {
-      typeDefs,
-      schema,
+      return {
+        typeDefs,
+        schema,
+      }
+    } catch (err) {
+      console.error("ERROR", err.message)
+      console.log(typeDefs)
+
+      throw new Error("Unable to compile typeDefs")
     }
   }
 }

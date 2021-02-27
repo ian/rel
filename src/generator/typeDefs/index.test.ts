@@ -51,6 +51,26 @@ describe("typeDefs", () => {
 }`)
     })
   })
+
+  describe("inputs", () => {
+    it("should generate an input", () => {
+      expect(
+        subject({
+          inputs: {
+            BookInput: {
+              name: {
+                typeDef: {
+                  returns: string(),
+                },
+              },
+            },
+          },
+        })
+      ).toMatch(`input BookInput {
+  name: String
+}`)
+    })
+  })
   
   describe("types", () => {
     it("should generate a type", () => {

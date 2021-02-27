@@ -6,6 +6,7 @@ export default (): Module => ({
     Auth: {
       id: false,
       timestamps: false,
+      input: false,
       fields: {
         token: string().required(),
         user: type("User").required(),

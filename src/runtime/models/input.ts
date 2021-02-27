@@ -4,7 +4,9 @@ export function generateInput(fields: Fields): ReducedType {
   const reduced = Object.entries(fields).reduce((acc, entry) => {
     const [fieldName, field] = entry
     acc[fieldName] = {
-      returns: field,
+      typeDef: {
+        returns: field,
+      },
     }
     return acc
   }, {})

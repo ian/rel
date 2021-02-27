@@ -40,7 +40,7 @@ describe("generateUpdate", () => {
       expect(_subject.inputs.BookInput).toBeDefined()
       expect(JSON.stringify(_subject.inputs.BookInput)).toBe(
         JSON.stringify({
-          title: { returns: string() },
+          title: { typeDef: { returns: string() } },
         })
       )
     })
@@ -51,7 +51,7 @@ describe("generateUpdate", () => {
       expect(_subject.inputs.BookInput).toBeDefined()
       expect(JSON.stringify(_subject.inputs.BookInput)).toBe(
         JSON.stringify({
-          title: { returns: string() },
+          title: { typeDef: { returns: string() } },
         })
       )
     })

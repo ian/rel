@@ -1,10 +1,12 @@
 import { formatSdl } from "format-graphql"
 import { Reducible } from "~/types"
+
+import { generateInput } from "./input"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
   // console.log("reducible", reducible)
-  const { types, directives } = reducible
+  const { inputs, types, directives } = reducible
 
   const gql = []
 
@@ -26,6 +28,13 @@ scalar DateTime
 scalar PhoneNumber
 scalar URL
 scalar UUID`)
+
+  if (inputs) {
+    Object.entries(inputs).forEach((entry) => {
+      const [name, fields] = entry
+      gql.push(generateInput(name, fields))
+    })
+  }
 
   if (types) {
     const { Query, Mutation, ...restOfTypes } = types
