@@ -1,4 +1,4 @@
-import { Reducer } from "../../reducer"
+import { Reducer } from "../.."
 import { Fields, Mutators, Reducible } from "~/types"
 import { generateCreate } from "./create"
 import { generateUpdate } from "./update"

@@ -1,5 +1,5 @@
 import { type } from "../fields"
-import { Reducer, intersection } from "./reducer"
+import { Reducer, intersection } from "."
 
 describe("Reducer", () => {
   describe("#intersection", () => {
@@ -27,9 +27,7 @@ describe("Reducer", () => {
 
         reducer.reduce({
           types: {
-            Query: {
-
-            }
+            Query: {},
           },
         })
 
@@ -44,10 +42,10 @@ describe("Reducer", () => {
             Query: {
               FindBook: {
                 typeDef: {
-                  returns: type("Book")
-                }
-              }
-            }
+                  returns: type("Book"),
+                },
+              },
+            },
           },
         })
 
@@ -62,9 +60,7 @@ describe("Reducer", () => {
 
         reducer.reduce({
           types: {
-            Mutation: {
-
-            }
+            Mutation: {},
           },
         })
 
@@ -79,10 +75,10 @@ describe("Reducer", () => {
             Mutation: {
               CreateBook: {
                 typeDef: {
-                  returns: type("Book")
-                }
-              }
-            }
+                  returns: type("Book"),
+                },
+              },
+            },
           },
         })
 

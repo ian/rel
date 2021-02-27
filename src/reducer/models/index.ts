@@ -8,7 +8,7 @@ import { generateInput } from "./input"
 import { generateAccessors } from "./accessors"
 import { generateMutators } from "./mutators"
 import { relationResolver } from "../../resolvers"
-import { Reducer } from "../reducer"
+import { Reducer } from ".."
 
 export function modelToRuntime(label, model: Model): Reducible {
   const reducer = new Reducer()

@@ -7,8 +7,8 @@ import {
   generateTypeDefs,
 } from "~/generator"
 
-import { Reducer } from "./reducer"
-import { modelToRuntime } from "./models"
+import { Reducer } from "../reducer"
+import { modelToRuntime } from "../reducer/models"
 
 export class Runtime {
   reducer: Reducer
