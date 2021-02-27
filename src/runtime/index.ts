@@ -8,7 +8,7 @@ import {
 } from "~/generator"
 
 import { Reducer } from "../reducer"
-import { modelToRuntime } from "../reducer/models"
+import { reduceModel } from "../reducer/models"
 
 export class Runtime {
   reducer: Reducer
@@ -26,7 +26,7 @@ export class Runtime {
       // Schema needs to be generated from the definition
       Object.entries(schema).forEach((entry) => {
         const [name, model] = entry
-        this.reducer.reduce(modelToRuntime(name, model))
+        this.reducer.reduce(reduceModel(name, model))
       })
     }
   }

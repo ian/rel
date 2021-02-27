@@ -4,13 +4,12 @@ import { Model, Reducible } from "~/types"
 
 import { generateFields } from "./fields"
 import { generateInput } from "./input"
-// import { generateObjectRelation } from "./relations"
 import { generateAccessors } from "./accessors"
 import { generateMutators } from "./mutators"
 import { relationResolver } from "../../resolvers"
 import { Reducer } from ".."
 
-export function modelToRuntime(label, model: Model): Reducible {
+export function reduceModel(label, model: Model): Reducible {
   const reducer = new Reducer()
   const {
     id,

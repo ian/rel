@@ -1,10 +1,10 @@
 import { string } from "../../fields"
 import { Reducible } from "../../types"
-import { modelToRuntime } from "./index"
+import { reduceModel } from "./index"
 
-describe("modelToRuntime", () => {
+describe("reduceModel", () => {
   const subject = (model): Reducible => {
-    return modelToRuntime("MyObject", model)
+    return reduceModel("MyObject", model)
   }
 
   describe("defaults", () => {
@@ -103,7 +103,7 @@ describe("modelToRuntime", () => {
 
   describe("relations", () => {
     const subject = (model): Reducible => {
-      return modelToRuntime("Book", model)
+      return reduceModel("Book", model)
     }
 
     it("should generate a field", () => {
@@ -154,7 +154,7 @@ describe("modelToRuntime", () => {
 
   // describe("accessors", () => {
   //   const subject = (model): Reducible => {
-  //     return modelToRuntime("Book", model)
+  //     return reduceModel("Book", model)
   //   }
 
   //   describe("find", () => {
