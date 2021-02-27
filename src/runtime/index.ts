@@ -7,9 +7,7 @@ import {
   generateTypeDefs,
 } from "~/generator"
 
-import { Reducer } from "../reducer"
-import { reduceModel } from "../reducer/models"
-
+import { Reducer } from "~/reducer"
 export class Runtime {
   reducer: Reducer
 
@@ -18,17 +16,7 @@ export class Runtime {
   }
 
   module(module: Module) {
-    const { schema, directives } = module
-
-    this.reducer.reduce({ directives })
-
-    if (schema) {
-      // Schema needs to be generated from the definition
-      Object.entries(schema).forEach((entry) => {
-        const [name, model] = entry
-        this.reducer.reduce(reduceModel(name, model))
-      })
-    }
+    this.reducer.module(module)
   }
 
   generate() {

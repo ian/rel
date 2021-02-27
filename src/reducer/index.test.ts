@@ -1,4 +1,4 @@
-import { type } from "../fields"
+import { string, type } from "../fields"
 import { Reducer, intersection } from "."
 
 describe("Reducer", () => {
@@ -17,6 +17,65 @@ describe("Reducer", () => {
 
     it("should be return keys when o1 has overlap with o2", () => {
       expect(intersection({ same: "val1" }, { same: "val2" }).length).toBe(1)
+    })
+  })
+
+  describe("#module", () => {
+    describe("schema", () => {
+      it("should have a type for Book", () => {
+        const reducer = new Reducer()
+
+        reducer.module({
+          schema: {
+            Book: {
+              fields: {
+                name: string().required(),
+              },
+            },
+          },
+        })
+
+        expect(reducer.types).toHaveProperty("Book")
+      })
+    })
+
+    describe("directives", () => {
+      it("should add the directives to the reducer", () => {
+        const reducer = new Reducer()
+
+        reducer.module({
+          directives: {
+            authenticate: {
+              typeDef: "directive @authenticate on FIELD_DEFINITION",
+              handler: async function (next, src, args, context) {
+                throw new Error("AUTHENTICATE")
+              },
+            },
+            admin: {
+              typeDef: "directive @admin on FIELD_DEFINITION",
+              handler: async function (next, src, args, context) {
+                throw new Error("ADMIN")
+              },
+            },
+          },
+        })
+
+        const res = reducer.toReducible()
+        expect(res).toHaveProperty("directives")
+
+        expect(res.directives).toEqual(
+          expect.objectContaining({
+            authenticate: expect.any(Object),
+            admin: expect.any(Object),
+          })
+        )
+        // expect(res.directives).toBe(
+        //   // expect.objectContaining({
+        //   //   authenticate: expect.any(Object),
+        //   //   admin: expect.any(Object),
+        //   // })
+        // )
+      })
     })
   })
 

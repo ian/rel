@@ -1,10 +1,13 @@
 import _ from "lodash"
 import {
+  Module,
   Reducible,
   ReducedTypes,
   ReducedResolvers,
   ReducedDirectives,
 } from "~/types"
+
+import { reduceModel } from "./models"
 
 export function intersection(o1, o2) {
   return Object.keys(o1).filter({}.hasOwnProperty.bind(o2))
@@ -15,6 +18,20 @@ export class Reducer {
   types: ReducedTypes = {}
   resolvers: ReducedResolvers = {}
   directives: ReducedDirectives = {}
+
+  module(module: Module) {
+    const { schema, directives } = module
+
+    this.reduce({ directives })
+
+    if (schema) {
+      // Schema needs to be generated from the definition
+      Object.entries(schema).forEach((entry) => {
+        const [name, model] = entry
+        this.reduce(reduceModel(name, model))
+      })
+    }
+  }
 
   reduce(reducible: Reducible) {
     if (!reducible) return
