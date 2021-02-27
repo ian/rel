@@ -111,9 +111,34 @@ export type Directives = {
   }
 }
 
+// export type Extended = {
+//   [name: string]: {
+//     typeDef: string
+//     handler: (next, src, args, context) => void
+//   }
+// }
+
+type QueryExtension = {
+  [queryName: string]: {
+    typeDef: string | ReducedTypeDef
+    handler: (next, src, args, context) => void
+  }
+}
+
+type MutationExtension = {}
+
+type TypeExtension = {}
+
+export type Extension = {
+  Query?: QueryExtension
+  Mutation?: MutationExtension
+  [objectName: string]: TypeExtension
+}
+
 export type Module = {
   schema?: Schema
   directives?: Directives
+  extend?: Extension
 }
 
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
@@ -137,10 +162,17 @@ export type ReducedTypeFieldParams = {
   [name: string]: Field
 }
 
-export type ReducedField = {
+// We let typedefs specify themselves as compartementalized params + guard + returns, or a straight string pipe through
+// Collisions are caught on the fieldName higher up
+export type ReducedTypeDef = {
   params?: ReducedTypeFieldParams
   guard?: string
-  returns: Field // | string
+  returns: Field
+}
+// | string
+
+export type ReducedField = {
+  typeDef: ReducedTypeDef
   resolver?: Resolver
 }
 
@@ -148,13 +180,17 @@ export type ReducedType = {
   [fieldName: string]: ReducedField
 }
 
-// export type ReducedType = {
-//   fields: ReducedFields
-// }
+export type ReducedTypeQuery = {
+  [queryName: string]: ReducedField
+}
+
+export type ReducedTypeMutation = {
+  [mutationName: string]: ReducedField
+}
 
 export type ReducedTypes = {
-  Query?: ReducedType
-  Mutation?: ReducedType
+  Query?: ReducedTypeQuery
+  Mutation?: ReducedTypeMutation
   [objectName: string]: ReducedType
 }
 

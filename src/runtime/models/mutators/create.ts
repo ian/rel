@@ -20,9 +20,11 @@ function makeType(label: string, accessor: CreateMutator): ReducedField {
   const { guard } = accessor
 
   return {
-    params: { input: type(`${label}Input`) },
-    guard,
-    returns: type(label),
+    typeDef: {
+      params: { input: type(`${label}Input`) },
+      guard,
+      returns: type(label),
+    },
   }
 }
 

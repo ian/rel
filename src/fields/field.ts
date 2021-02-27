@@ -28,4 +28,5 @@ export default class Field {
 
     return fieldDef.join("")
   }
+
 }

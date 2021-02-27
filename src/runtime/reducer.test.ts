@@ -1,4 +1,5 @@
-import { Reducer, intersection } from "./index"
+import { type } from "../fields"
+import { Reducer, intersection } from "./reducer"
 
 describe("Reducer", () => {
   describe("#intersection", () => {
@@ -19,7 +20,77 @@ describe("Reducer", () => {
     })
   })
 
-  describe("schema", () => {})
+  describe("types", () => {
+    describe("Query", () => {
+      it("should have a Query property", () => {
+        const reducer = new Reducer()
+
+        reducer.reduce({
+          types: {
+            Query: {
+
+            }
+          },
+        })
+
+        expect(reducer.toReducible().types).toHaveProperty("Query")
+      })
+
+      it("should be a ReducedType", () => {
+        const reducer = new Reducer()
+
+        reducer.reduce({
+          types: {
+            Query: {
+              FindBook: {
+                typeDef: {
+                  returns: type("Book")
+                }
+              }
+            }
+          },
+        })
+
+        const query = reducer.toReducible().types.Query
+        expect(query).toHaveProperty("FindBook")
+      })
+    })
+
+    describe("Mutation", () => {
+      it("should have a Mutation property", () => {
+        const reducer = new Reducer()
+
+        reducer.reduce({
+          types: {
+            Mutation: {
+
+            }
+          },
+        })
+
+        expect(reducer.toReducible().types).toHaveProperty("Mutation")
+      })
+
+      it("should be a ReducedType", () => {
+        const reducer = new Reducer()
+
+        reducer.reduce({
+          types: {
+            Mutation: {
+              CreateBook: {
+                typeDef: {
+                  returns: type("Book")
+                }
+              }
+            }
+          },
+        })
+
+        const mutation = reducer.toReducible().types.Mutation
+        expect(mutation).toHaveProperty("CreateBook")
+      })
+    })
+  })
 
   describe("directives", () => {
     it("should start with empty directives", () => {
@@ -33,7 +104,7 @@ describe("Reducer", () => {
       reducer.reduce({
         directives: {
           authenticate: {
-            schema: "directive @authenticate on FIELD_DEFINITION",
+            typeDef: "directive @authenticate on FIELD_DEFINITION",
             handler: async function (next, src, args, context) {},
           },
         },
@@ -48,7 +119,7 @@ describe("Reducer", () => {
       reducer.reduce({
         directives: {
           authenticate: {
-            schema: "directive @authenticate on FIELD_DEFINITION",
+            typeDef: "directive @authenticate on FIELD_DEFINITION",
             handler: async function (next, src, args, context) {},
           },
         },
@@ -58,7 +129,7 @@ describe("Reducer", () => {
         reducer.reduce({
           directives: {
             authenticate: {
-              schema: "directive @authenticate on TYPE_DEFINITION",
+              typeDef: "directive @authenticate on TYPE_DEFINITION",
               handler: async function (next, src, args, context) {},
             },
           },

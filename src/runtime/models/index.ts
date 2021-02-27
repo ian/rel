@@ -6,7 +6,7 @@ import { generateFields } from "./fields"
 // import { generateObjectRelation } from "./relations"
 import { generateAccessors } from "./accessors"
 import { relationResolver } from "../../resolvers"
-import { Reducer } from "../../reducer"
+import { Reducer } from "../reducer"
 
 export function modelToRuntime(label, model: Model): Reducible {
   const reducer = new Reducer()
@@ -15,7 +15,7 @@ export function modelToRuntime(label, model: Model): Reducible {
   const modelType = {}
 
   if (id !== false) {
-    modelType["id"] = { returns: uuid() }
+    modelType["id"] = { typeDef: {returns: uuid().required()} }
   }
 
   if (fields) {
@@ -23,8 +23,8 @@ export function modelToRuntime(label, model: Model): Reducible {
   }
 
   if (timestamps !== false) {
-    modelType["createdAt"] = { returns: dateTime() }
-    modelType["updatedAt"] = { returns: dateTime() }
+    modelType["createdAt"] = { typeDef: { returns: dateTime().required() } }
+    modelType["updatedAt"] = { typeDef: { returns: dateTime().required() } }
   }
 
   reducer.reduce({
@@ -50,10 +50,11 @@ export function modelToRuntime(label, model: Model): Reducible {
         types: {
           [label]: {
             [relName]: {
-              // returns: `${singular ? to.label : `[${to.label}]!`}`,
-              returns: singular
+              typeDef: {
+                returns: singular
                 ? type(to.label)
                 : array(type(to.label)).required(),
+              }
             },
           },
         },

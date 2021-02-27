@@ -1,8 +1,9 @@
 import _ from "lodash"
 import { CallableModule, Module } from "~/types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
-import { Reducer } from "~/reducer"
-import { generateTypeDefs } from "~/generator"
+import { generateDirectiveResolvers, generateResolvers, generateTypeDefs } from "~/generator"
+
+import { Reducer } from "./reducer"
 import { modelToRuntime } from "./models"
 
 export class Runtime {
@@ -28,18 +29,10 @@ export class Runtime {
 
   generate() {
     const reduced = this.reducer.toReducible()
-    const typeDefs = generateTypeDefs(reduced)
-    const resolvers = reduced.resolvers
 
-    // const directiveResolvers = reduced.directives
-    const directiveResolvers = Object.entries(reduced.directives).reduce(
-      (acc, dir) => {
-        const [name, { handler }] = dir
-        acc[name] = handler
-        return acc
-      },
-      {}
-    )
+    const typeDefs = generateTypeDefs(reduced)
+    const resolvers = generateResolvers(reduced)
+    const directiveResolvers = generateDirectiveResolvers(reduced)
 
     const schema = makeExecutableSchema({
       typeDefs,

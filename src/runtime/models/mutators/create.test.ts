@@ -25,22 +25,15 @@ describe("generateCreate", () => {
       const _subject = subject(true)
 
       expect(typeof _subject).toBe("object")
-      expect(_subject.inputs.BookInput).toBeDefined()
-      expect(_subject.types.Mutation.CreateBook).toBeDefined()
-      expect(_subject.types.Mutation.CreateBook.params).toBeDefined()
-      expect(_subject.resolvers.Mutation.CreateBook).toBeDefined()
+      expect(_subject.types.Mutation.CreateBook.typeDef).toBeDefined()
+      expect(_subject.types.Mutation.CreateBook.typeDef.params).toBeDefined()
     })
 
     it("should generate a reducible when mutator is an object", () => {
       const _subject = subject({})
       expect(typeof _subject).toBe("object")
-      expect(_subject.inputs.BookInput).toBeDefined()
-      expect(JSON.stringify(_subject.types.Mutation.CreateBook.params)).toBe(
-        JSON.stringify({ input: type("BookInput") })
-      )
-      expect(_subject.types.Mutation.CreateBook).toBeDefined()
-      expect(_subject.types.Mutation.CreateBook.params).toBeDefined()
-      expect(_subject.resolvers.Mutation.CreateBook).toBeDefined()
+      expect(_subject.types.Mutation.CreateBook.typeDef).toBeDefined()
+      expect(_subject.types.Mutation.CreateBook.typeDef.params).toBeDefined()
     })
   })
 
@@ -87,7 +80,7 @@ describe("generateCreate", () => {
       const _subject = subject({ guard: "admin" })
 
       expect(typeof _subject).toBe("object")
-      expect(_subject.types.Mutation.CreateBook.guard).toEqual("admin")
+      expect(_subject.types.Mutation.CreateBook.typeDef.guard).toEqual("admin")
     })
   })
 
@@ -95,9 +88,9 @@ describe("generateCreate", () => {
     it("should allow id to be specified", () => {
       const _subject = subject({ title: string() })
 
-      expect(JSON.stringify(_subject.types.Mutation.CreateBook.params)).toBe(
-        JSON.stringify({ input: type("BookInput") })
-      )
+      expect(
+        JSON.stringify(_subject.types.Mutation.CreateBook.typeDef.params)
+      ).toBe(JSON.stringify({ input: type("BookInput") }))
     })
   })
 })

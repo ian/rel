@@ -15,7 +15,9 @@ export function generateFields(
     const [name, def] = fieldObj
 
     gqlFields[name] = {
-      returns: def,
+      typeDef: {
+        returns: def,
+      },
     }
   })
 

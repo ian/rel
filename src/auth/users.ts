@@ -19,26 +19,6 @@ export default (): Module => ({
       },
     },
   },
-  // extend: {
-  //   Login: {
-  //     schema: "Login(token: String!): Auth",
-  //     resolver: (obj, params, context) => {
-  //       return {
-  //         token: "FAKE123",
-  //         user: {},
-  //       }
-  //     },
-  //   },
-  //   Register: {
-  //     schema: "Login(token: String!): Auth",
-  //     resolver: (obj, params, context) => {
-  //       return {
-  //         token: "FAKE123",
-  //         user: {},
-  //       }
-  //     },
-  //   },
-  // },
   directives: {
     authenticate: {
       typeDef: "directive @authenticate on FIELD_DEFINITION",
@@ -50,6 +30,28 @@ export default (): Module => ({
       typeDef: "directive @admin on FIELD_DEFINITION",
       handler: async function (next, src, args, context) {
         throw new Error("ADMIN")
+      },
+    },
+  },
+  extend: {
+    Mutation: {
+      Login: {
+        typeDef: "Login(token: String!): Auth",
+        resolver: (obj, params, context) => {
+          return {
+            token: "FAKE123",
+            user: {},
+          }
+        },
+      },
+      Register: {
+        typeDef: "Login(token: String!): Auth",
+        resolver: (obj, params, context) => {
+          return {
+            token: "FAKE123",
+            user: {},
+          }
+        },
       },
     },
   },

@@ -10,16 +10,24 @@ function generateParams(params: ReducedTypeFieldParams) {
 }
 
 function generateField(name, field: ReducedField) {
-  const { params, returns } = field
+  const { typeDef } = field
 
-  const fieldDef = [name]
-  if (params) {
-    fieldDef.push(`( ${generateParams(params)} )`)
+  if (!typeDef) throw new Error(`Missing typedef for ${name}`)
+
+  if (typeof typeDef === "string") {
+    return typeDef
+  } else {
+    const { params, returns } = typeDef
+
+    const fieldDef = [name]
+    if (params) {
+      fieldDef.push(`( ${generateParams(params)} )`)
+    }
+    fieldDef.push(": ")
+    fieldDef.push(returns.toGQL())
+
+    return fieldDef.join("")
   }
-  fieldDef.push(": ")
-  fieldDef.push(returns.toGQL())
-
-  return fieldDef.join("")
 }
 
 export function generateFields(fields: ReducedType) {

@@ -20,9 +20,11 @@ function makeType(label: string, accessor: ListAccessor): ReducedField {
   const { guard } = accessor
 
   return {
-    params: { limit: int(), skip: int(), order: string() },
-    guard,
-    returns: array(type(label)).required(),
+    typeDef: {
+      params: { limit: int(), skip: int(), order: string() },
+      guard,
+      returns: array(type(label)).required(),
+    },
   }
 }
 

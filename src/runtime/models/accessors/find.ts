@@ -21,9 +21,11 @@ function makeType(label: string, accessor: FindAccessor): ReducedField {
   const { findBy, guard } = accessor
 
   return {
-    params: findBy,
-    guard,
-    returns: type(label),
+    typeDef: {
+      params: findBy,
+      guard,
+      returns: type(label),
+    },
   }
 }
 

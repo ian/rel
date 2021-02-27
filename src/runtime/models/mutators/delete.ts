@@ -19,9 +19,11 @@ function makeType(label: string, accessor: DeleteMutator): ReducedField {
   const { guard } = accessor
 
   return {
-    params: { id: uuid() },
-    guard,
-    returns: type(label),
+    typeDef: {
+      params: { id: uuid() },
+      guard,
+      returns: type(label),
+    },
   }
 }
 
