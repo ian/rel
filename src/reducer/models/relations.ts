@@ -1,7 +1,7 @@
 import { relationResolver, resolveNode, resolveRel } from "../../resolvers"
 import { Reducible, Relation } from "~/types"
 
-export function generateObjectRelation(
+export function reduceRelation(
   // name: string,
   definition: Relation
 ) {

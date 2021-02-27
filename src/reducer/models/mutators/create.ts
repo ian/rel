@@ -1,7 +1,7 @@
 import { type } from "~/fields"
 import { CreateMutator, Fields, ReducedField } from "~/types"
 import { createResolver } from "~/resolvers"
-import { generateInput } from "../input"
+import { reduceInput } from "../input"
 
 const DEFAULT_MUTATOR = {}
 
@@ -45,7 +45,7 @@ export function generateCreate(
 
   return {
     inputs: {
-      [inputName]: generateInput(fields),
+      [inputName]: reduceInput(fields),
     },
     types: {
       Mutation: {

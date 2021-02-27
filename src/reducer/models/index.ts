@@ -2,10 +2,10 @@ import _ from "lodash"
 import { type, array, uuid, dateTime } from "../../fields"
 import { Model, Reducible } from "~/types"
 
-import { generateFields } from "./fields"
-import { generateInput } from "./input"
-import { generateAccessors } from "./accessors"
-import { generateMutators } from "./mutators"
+import { reduceFields } from "./fields"
+import { reduceInput } from "./input"
+import { reduceAccessors } from "./accessors"
+import { reduceMutators } from "./mutators"
 import { relationResolver } from "../../resolvers"
 import { Reducer } from ".."
 
@@ -28,7 +28,7 @@ export function reduceModel(label, model: Model): Reducible {
   }
 
   if (fields) {
-    Object.assign(modelType, generateFields(fields))
+    Object.assign(modelType, reduceFields(fields))
   }
 
   if (timestamps !== false) {
@@ -45,7 +45,7 @@ export function reduceModel(label, model: Model): Reducible {
   if (input && fields) {
     reducer.reduce({
       inputs: {
-        [`${label}Input`]: generateInput(fields),
+        [`${label}Input`]: reduceInput(fields),
       },
     })
   }
@@ -80,11 +80,11 @@ export function reduceModel(label, model: Model): Reducible {
   }
 
   if (accessors) {
-    reducer.reduce(generateAccessors(label, accessors, fields))
+    reducer.reduce(reduceAccessors(label, accessors, fields))
   }
 
   if (mutators) {
-    reducer.reduce(generateMutators(label, mutators, fields))
+    reducer.reduce(reduceMutators(label, mutators, fields))
   }
 
   return reducer.toReducible()

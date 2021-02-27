@@ -3,7 +3,7 @@ import { Fields, Accessors, Reducible } from "~/types"
 import { generateFind } from "./find"
 import { generateList } from "./list"
 
-export function generateAccessors(
+export function reduceAccessors(
   label,
   accessors: Accessors,
   fields: Fields

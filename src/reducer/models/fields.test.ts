@@ -1,9 +1,9 @@
 import { string } from "../../fields"
-import { generateFields } from "./fields"
+import { reduceFields } from "./fields"
 
-describe("generateFields", () => {
+describe("reduceFields", () => {
   const subject = (fields) => {
-    return generateFields(fields)
+    return reduceFields(fields)
   }
 
   it("should convert a Field to a ReducedTypeField", () => {

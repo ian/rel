@@ -4,7 +4,7 @@ import { Fields, ReducedType } from "~/types"
 //   guards?: boolean
 // }
 
-export function generateFields(
+export function reduceFields(
   fields: Fields
   // opts: Opts = {}
 ): ReducedType {

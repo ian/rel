@@ -1,10 +1,10 @@
 import { string } from "../../fields"
 import { Direction, Relation } from "../../types"
-import { generateObjectRelation } from "./relations"
+import { reduceRelation } from "./relations"
 
-describe("generateObjectRelation", () => {
+describe("reduceRelation", () => {
   const subject = (relation: Relation) => {
-    return generateObjectRelation(relation)
+    return reduceRelation(relation)
   }
 
   describe("outbound", () => {

@@ -4,7 +4,7 @@ import { generateCreate } from "./create"
 import { generateUpdate } from "./update"
 import { generateDelete } from "./delete"
 
-export function generateMutators(
+export function reduceMutators(
   label,
   mutators: Mutators,
   fields: Fields
