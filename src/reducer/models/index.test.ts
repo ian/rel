@@ -1,4 +1,4 @@
-import { string } from "../../fields"
+import { string, type } from "../../fields"
 import { Reducible } from "../../types"
 import { reduceModel } from "./index"
 
@@ -150,51 +150,248 @@ describe("reduceModel", () => {
       expect(_subject.types.Book).toHaveProperty("name")
       expect(_subject.types.Book).toHaveProperty("author")
     })
+
+    it("should have a resolver", () => {
+      const _subject = subject({
+        relations: {
+          author: {
+            from: {
+              label: "Actor",
+            },
+            to: {
+              label: "Movie",
+            },
+            rel: {
+              label: "ACTED_IN",
+            },
+          },
+        },
+      })
+
+      expect(_subject.types.Book.author).toHaveProperty("resolver")
+    })
   })
 
-  // describe("accessors", () => {
-  //   const subject = (model): Reducible => {
-  //     return reduceModel("Book", model)
-  //   }
+  describe("accessors", () => {
+    const subject = (model): Reducible => {
+      return reduceModel("Book", model)
+    }
 
-  //   describe("find", () => {
-  //     it("should generate find on boolean default", () => {
-  //       const _subject = subject({
-  //         accessors: {
-  //           find: true,
-  //         },
-  //       })
+    describe("find", () => {
+      it("should generate on boolean value", () => {
+        const _subject = subject({
+          accessors: {
+            find: true,
+          },
+        })
 
-  //       expect(_subject.types.Query).toHaveProperty("FindBook")
-  //       expect(_subject.types.Query.FindBook.guard).toBe(undefined)
-  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
-  //     })
+        expect(_subject.endpoints).toHaveProperty("FindBook")
+        expect(_subject.endpoints.FindBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.FindBook.typeDef.returns.toGQL()).toBe("Book")
+      })
 
-  //     it("should generate find on empty Accessor input", () => {
-  //       const _subject = subject({
-  //         accessors: {
-  //           find: {},
-  //         },
-  //       })
+      it("should generate on empty Accessor input", () => {
+        const _subject = subject({
+          accessors: {
+            find: {},
+          },
+        })
 
-  //       expect(_subject.types.Query).toHaveProperty("FindBook")
-  //       expect(_subject.types.Query.FindBook.guard).toBe(undefined)
-  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
-  //     })
+        expect(_subject.endpoints).toHaveProperty("FindBook")
+        expect(_subject.endpoints.FindBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.FindBook.typeDef.returns.toGQL()).toBe("Book")
+        expect(_subject.endpoints.FindBook.resolver).toBeDefined()
+      })
 
-  //     it("should generate allow guards", () => {
-  //       const _subject = subject({
-  //         accessors: {
-  //           find: {
-  //             guard: "admin",
-  //           },
-  //         },
-  //       })
+      it("should allow guards", () => {
+        const _subject = subject({
+          accessors: {
+            find: {
+              guard: "admin",
+            },
+          },
+        })
 
-  //       expect(_subject.types.Query).toHaveProperty("FindBook")
-  //       expect(_subject.types.Query.FindBook.guard).toBe("admin")
-  //       expect(_subject.types.Query.FindBook.returns).toBe("Book")
-  //     })
-  //   })
-  // })
+        expect(_subject.endpoints.FindBook.typeDef.guard).toBe("admin")
+      })
+    })
+
+    describe("list", () => {
+      it("should generate on boolean value", () => {
+        const _subject = subject({
+          accessors: {
+            list: true,
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("ListBooks")
+        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.ListBooks.typeDef.returns.toGQL()).toBe(
+          "[Book]!"
+        )
+      })
+
+      it("should generate on empty Accessor input", () => {
+        const _subject = subject({
+          accessors: {
+            list: {},
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("ListBooks")
+        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.ListBooks.typeDef.returns.toGQL()).toBe(
+          "[Book]!"
+        )
+        expect(_subject.endpoints.ListBooks.resolver).toBeDefined()
+      })
+
+      it("should generate allow guards", () => {
+        const _subject = subject({
+          accessors: {
+            list: {
+              guard: "admin",
+            },
+          },
+        })
+
+        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe("admin")
+      })
+    })
+  })
+
+  describe("mutators", () => {
+    const subject = (model): Reducible => {
+      return reduceModel("Book", model)
+    }
+
+    describe("create", () => {
+      it("should generate on boolean value", () => {
+        const _subject = subject({
+          mutators: {
+            create: true,
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("CreateBook")
+        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.CreateBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+      })
+
+      it("should generate on empty Accessor input", () => {
+        const _subject = subject({
+          mutators: {
+            create: {},
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("CreateBook")
+        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.CreateBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+        expect(_subject.endpoints.CreateBook.resolver).toBeDefined()
+      })
+
+      it("should allow guards", () => {
+        const _subject = subject({
+          mutators: {
+            create: {
+              guard: "admin",
+            },
+          },
+        })
+
+        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe("admin")
+      })
+    })
+
+    describe("update", () => {
+      it("should generate on boolean value", () => {
+        const _subject = subject({
+          mutators: {
+            update: true,
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("UpdateBook")
+        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.UpdateBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+      })
+
+      it("should generate on empty Accessor input", () => {
+        const _subject = subject({
+          mutators: {
+            update: {},
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("UpdateBook")
+        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.UpdateBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+        expect(_subject.endpoints.UpdateBook.resolver).toBeDefined()
+      })
+
+      it("should allow guards", () => {
+        const _subject = subject({
+          mutators: {
+            update: {
+              guard: "admin",
+            },
+          },
+        })
+
+        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe("admin")
+      })
+    })
+
+    describe("delete", () => {
+      it("should generate on boolean value", () => {
+        const _subject = subject({
+          mutators: {
+            delete: true,
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("DeleteBook")
+        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.DeleteBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+      })
+
+      it("should generate on empty Accessor input", () => {
+        const _subject = subject({
+          mutators: {
+            delete: {},
+          },
+        })
+
+        expect(_subject.endpoints).toHaveProperty("DeleteBook")
+        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe(undefined)
+        expect(_subject.endpoints.DeleteBook.typeDef.returns.toGQL()).toBe(
+          "Book"
+        )
+        expect(_subject.endpoints.DeleteBook.resolver).toBeDefined()
+      })
+
+      it("should allow guards", () => {
+        const _subject = subject({
+          mutators: {
+            delete: {
+              guard: "admin",
+            },
+          },
+        })
+
+        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe("admin")
+      })
+    })
+  })
 })

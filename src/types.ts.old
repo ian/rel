@@ -80,14 +80,14 @@ export type Schema =
 export type Directives = {
   [name: string]: {
     schema: string
-    handler: (next, src, args, context) => void
+    resolver: (next, src, args, context) => void
   }
 }
 
 export type Extensions = {
   // [name: string]: {
   //   schema: string
-  //   handler: (obj, params, context) => Promise<ResolvableObject>
+  //   resolver: (obj, params, context) => Promise<ResolvableObject>
   // }
 }
 
@@ -142,7 +142,7 @@ export type RuntimeResolvers = {}
 export type RuntimeDirectives = {
   [name: string]: {
     schema: string
-    handler: (next, src, args, context) => void
+    resolver: (next, src, args, context) => void
   }
 }
 

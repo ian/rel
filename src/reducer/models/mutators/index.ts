@@ -19,7 +19,7 @@ export function reduceMutators(
       reducer.reduce(generateUpdate(label, mutators.update, fields))
     }
     if (mutators.delete) {
-      reducer.reduce(generateDelete(label, mutators.update, fields))
+      reducer.reduce(generateDelete(label, mutators.delete, fields))
     }
   }
 

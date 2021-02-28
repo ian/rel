@@ -23,57 +23,24 @@ describe("generateCreate", () => {
   describe("types", () => {
     it("should generate a reducible when mutator is true", () => {
       const _subject = subject(true)
-
-      expect(typeof _subject).toBe("object")
-      expect(_subject.types.Mutation.CreateBook.typeDef).toBeDefined()
-      expect(_subject.types.Mutation.CreateBook.typeDef.params).toBeDefined()
+      expect(_subject.endpoints.CreateBook).toBeDefined()
     })
 
     it("should generate a reducible when mutator is an object", () => {
       const _subject = subject({})
-      expect(typeof _subject).toBe("object")
-      expect(_subject.types.Mutation.CreateBook.typeDef).toBeDefined()
-      expect(_subject.types.Mutation.CreateBook.typeDef.params).toBeDefined()
-    })
-  })
-
-  describe("inputs", () => {
-    it("should generate a reducible with an input when mutator true", () => {
-      const _subject = subject(true)
-
-      expect(_subject.inputs.BookInput).toBeDefined()
-      expect(JSON.stringify(_subject.inputs.BookInput)).toBe(
-        JSON.stringify({
-          title: { typeDef: { returns: string() } },
-        })
-      )
-    })
-
-    it("should generate a reducible with an input when mutator is an object", () => {
-      const _subject = subject({})
-
-      expect(_subject.inputs.BookInput).toBeDefined()
-      expect(JSON.stringify(_subject.inputs.BookInput)).toBe(
-        JSON.stringify({
-          title: {
-            typeDef: {
-              returns: string(),
-            },
-          },
-        })
-      )
+      expect(_subject.endpoints.CreateBook).toBeDefined()
     })
   })
 
   describe("resolvers", () => {
-    it("should generate a reducible with a resolver when mutator is true", () => {
+    it("should generate a resolver when mutator is true", () => {
       const _subject = subject(true)
-      expect(_subject.resolvers.Mutation.CreateBook).toBeDefined()
+      expect(_subject.endpoints.CreateBook.resolver).toBeDefined()
     })
 
-    it("should generate a reducible with a resolver when mutator is an object", () => {
+    it("should generate a resolver when mutator is an object", () => {
       const _subject = subject({})
-      expect(_subject.resolvers.Mutation.CreateBook).toBeDefined()
+      expect(_subject.endpoints.CreateBook.resolver).toBeDefined()
     })
   })
 
@@ -82,7 +49,7 @@ describe("generateCreate", () => {
       const _subject = subject({ guard: "admin" })
 
       expect(typeof _subject).toBe("object")
-      expect(_subject.types.Mutation.CreateBook.typeDef.guard).toEqual("admin")
+      expect(_subject.endpoints.CreateBook.typeDef.guard).toEqual("admin")
     })
   })
 
@@ -90,9 +57,9 @@ describe("generateCreate", () => {
     it("should allow id to be specified", () => {
       const _subject = subject({ title: string() })
 
-      expect(
-        JSON.stringify(_subject.types.Mutation.CreateBook.typeDef.params)
-      ).toBe(JSON.stringify({ input: type("BookInput") }))
+      expect(JSON.stringify(_subject.endpoints.CreateBook.typeDef.params)).toBe(
+        JSON.stringify({ input: type("BookInput") })
+      )
     })
   })
 })

@@ -1,5 +1,5 @@
 import { type, uuid } from "~/fields"
-import { DeleteMutator, Fields, ReducedField } from "~/types"
+import { DeleteMutator, ENDPOINTS, Fields, Reducible, TypeDef } from "~/types"
 import { deleteResolver } from "~/resolvers"
 
 const DEFAULT_MUTATOR = {}
@@ -15,15 +15,13 @@ function makeResolver(label: string, mutator: DeleteMutator) {
   return deleteResolver(label, standardizedOpts)
 }
 
-function makeType(label: string, accessor: DeleteMutator): ReducedField {
+function makeType(label: string, accessor: DeleteMutator): TypeDef {
   const { guard } = accessor
 
   return {
-    typeDef: {
-      params: { id: uuid() },
-      guard,
-      returns: type(label),
-    },
+    params: { id: uuid() },
+    guard,
+    returns: type(label),
   }
 }
 
@@ -31,7 +29,7 @@ export function generateDelete(
   label: string,
   mutator: boolean | DeleteMutator,
   fields: Fields
-) {
+): Reducible {
   if (!mutator) return null
 
   let _mutator = {
@@ -39,17 +37,12 @@ export function generateDelete(
     ...(typeof mutator === "boolean" ? {} : mutator),
   }
 
-  const mutationName = `Delete${label}`
-
   return {
-    types: {
-      Mutation: {
-        [mutationName]: makeType(label, _mutator),
-      },
-    },
-    resolvers: {
-      Mutation: {
-        [mutationName]: makeResolver(label, _mutator),
+    endpoints: {
+      [`Delete${label}`]: {
+        type: ENDPOINTS.MUTATOR,
+        typeDef: makeType(label, _mutator),
+        resolver: makeResolver(label, _mutator),
       },
     },
   }

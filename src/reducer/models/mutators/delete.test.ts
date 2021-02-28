@@ -34,30 +34,12 @@ describe("generateDelete", () => {
   describe("types", () => {
     it("should generate a reducible with an input when mutator true", () => {
       const _subject = subject(true)
-
-      expect(_subject.types.Mutation.DeleteBook.typeDef).toBeDefined()
-      expect(_subject.types.Mutation.DeleteBook.typeDef.params).toBeDefined()
+      expect(_subject.endpoints.DeleteBook).toBeDefined()
     })
 
     it("should generate a reducible with an input when mutator is an object", () => {
       const _subject = subject({})
-
-      expect(_subject.types.Mutation.DeleteBook.typeDef).toBeDefined()
-      expect(_subject.types.Mutation.DeleteBook.typeDef.params).toBeDefined()
-    })
-  })
-
-  describe("resolvers", () => {
-    it("should generate a reducible with an input when mutator true", () => {
-      const _subject = subject(true)
-
-      expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
-    })
-
-    it("should generate a reducible with an input when mutator is an object", () => {
-      const _subject = subject({})
-
-      expect(_subject.resolvers.Mutation.DeleteBook).toBeDefined()
+      expect(_subject.endpoints.DeleteBook).toBeDefined()
     })
   })
 
@@ -66,7 +48,7 @@ describe("generateDelete", () => {
       const _subject = subject({ guard: "admin" })
       expect(typeof _subject).toBe("object")
 
-      expect(_subject.types.Mutation.DeleteBook.typeDef.guard).toEqual("admin")
+      expect(_subject.endpoints.DeleteBook.typeDef.guard).toEqual("admin")
     })
   })
 
@@ -74,9 +56,9 @@ describe("generateDelete", () => {
     it("should allow id to be specified", () => {
       const _subject = subject({ title: string() })
 
-      expect(
-        JSON.stringify(_subject.types.Mutation.DeleteBook.typeDef.params)
-      ).toBe(JSON.stringify({ id: uuid() }))
+      expect(JSON.stringify(_subject.endpoints.DeleteBook.typeDef.params)).toBe(
+        JSON.stringify({ id: uuid() })
+      )
     })
   })
 })

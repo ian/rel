@@ -146,8 +146,8 @@ scalar UUID`)
     const resolvers = this.resolvers // already in the proper format
     const directiveResolvers = Object.entries(this.directives).reduce(
       (acc, dir) => {
-        const [name, { handler }] = dir
-        acc[name] = handler
+        const [name, { resolver }] = dir
+        acc[name] = resolver
         return acc
       },
       {}

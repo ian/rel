@@ -1,7 +1,7 @@
 import pluralize from "pluralize"
 import { int, array, type, string } from "~/fields"
 import { listResolver } from "~/resolvers"
-import { ListAccessor, Reducible, ReducedField } from "~/types"
+import { ListAccessor, Reducible, ENDPOINTS, TypeDef } from "~/types"
 
 const DEFAULT_ACCESSOR = {}
 
@@ -16,15 +16,13 @@ function makeResolver(label: string, accessor: ListAccessor) {
   return listResolver(standardizedOpts)
 }
 
-function makeType(label: string, accessor: ListAccessor): ReducedField {
+function makeType(label: string, accessor: ListAccessor): TypeDef {
   const { guard } = accessor
 
   return {
-    typeDef: {
-      params: { limit: int(), skip: int(), order: string() },
-      guard,
-      returns: array(type(label)).required(),
-    },
+    params: { limit: int(), skip: int(), order: string() },
+    guard,
+    returns: array(type(label)).required(),
   }
 }
 
@@ -40,19 +38,26 @@ export function generateList(
     ...(typeof accessor === "boolean" ? {} : accessor),
   }
 
-  const name = `List${pluralize(label)}`
-  const resolver = makeResolver(label, _accessor)
+  // const name = `List${pluralize(label)}`
+  // const resolver = makeResolver(label, _accessor)
 
   return {
-    types: {
-      Query: {
-        [name]: makeType(label, _accessor),
+    endpoints: {
+      [`List${pluralize(label)}`]: {
+        type: ENDPOINTS.ACCESSOR,
+        typeDef: makeType(label, _accessor),
+        resolver: makeResolver(label, _accessor),
       },
     },
-    resolvers: {
-      Query: {
-        [name]: resolver,
-      },
-    },
+    // types: {
+    //   Query: {
+    //     [name]: makeType(label, _accessor),
+    //   },
+    // },
+    // resolvers: {
+    //   Query: {
+    //     [name]: resolver,
+    //   },
+    // },
   }
 }

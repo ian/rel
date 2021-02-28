@@ -1,6 +1,6 @@
-import { ReducedTypeFieldParams, ReducedField, ReducedType } from "~/types"
+import { Params, Field, ReducedType } from "~/types"
 
-function generateParams(params: ReducedTypeFieldParams) {
+function generateParams(params: Params) {
   return Object.entries(params)
     .map((entry) => {
       const [name, field] = entry
@@ -9,25 +9,21 @@ function generateParams(params: ReducedTypeFieldParams) {
     .join(", ")
 }
 
-function generateField(name, field: ReducedField) {
-  const { typeDef } = field
-
-  if (!typeDef) throw new Error(`Missing typedef for ${name}`)
-
-  if (typeof typeDef === "string") {
-    return typeDef
-  } else {
-    const { params, returns } = typeDef
-
-    const fieldDef = [name]
-    if (params) {
-      fieldDef.push(`( ${generateParams(params)} )`)
-    }
-    fieldDef.push(": ")
-    fieldDef.push(returns.toGQL({ guards: false }))
-
-    return fieldDef.join("")
-  }
+function generateField(name, field: Field) {
+  // const { typeDef } = field
+  // if (!typeDef) throw new Error(`Missing typedef for ${name}`)
+  // if (typeof typeDef === "string") {
+  //   return typeDef
+  // } else {
+  //   const { params, returns } = typeDef
+  //   const fieldDef = [name]
+  //   if (params) {
+  //     fieldDef.push(`( ${generateParams(params)} )`)
+  //   }
+  //   fieldDef.push(": ")
+  //   fieldDef.push(returns.toGQL({ guards: false }))
+  //   return fieldDef.join("")
+  // }
 }
 
 export function generateFields(fields: ReducedType) {

@@ -1,6 +1,6 @@
-import { ReducedTypeFieldParams, ReducedField, ReducedType } from "~/types"
+import { Fields, Field, Params, ReducedType } from "~/types"
 
-function generateParams(params: ReducedTypeFieldParams) {
+function generateParams(params: Params) {
   return Object.entries(params)
     .map((entry) => {
       const [name, field] = entry
@@ -9,41 +9,64 @@ function generateParams(params: ReducedTypeFieldParams) {
     .join(", ")
 }
 
-function generateField(name, field: ReducedField) {
-  const { typeDef } = field
+// function generateField(name, field: ReducedField) {
+//   const { typeDef } = field
 
-  if (!typeDef) throw new Error(`Missing typedef for ${name}`)
+//   if (!typeDef) throw new Error(`Missing typedef for ${name}`)
 
-  if (typeof typeDef === "string") {
-    return typeDef
-  } else {
-    const { params, returns } = typeDef
+//   if (typeof typeDef === "string") {
+//     return typeDef
+//   } else {
+//     const { params, returns } = typeDef
 
-    const fieldDef = [name]
-    if (params) {
-      fieldDef.push(`( ${generateParams(params)} )`)
-    }
-    fieldDef.push(": ")
-    fieldDef.push(returns.toGQL())
+//     const fieldDef = [name]
+//     if (params) {
+//       fieldDef.push(`( ${generateParams(params)} )`)
+//     }
+//     fieldDef.push(": ")
+//     fieldDef.push(returns.toGQL())
 
-    return fieldDef.join("")
-  }
+//     return fieldDef.join("")
+//   }
+// }
+
+function generateProperty(name, field: Field) {
+  const fieldDef = [name]
+  // const { params, returns } = typeDef
+
+  // if (params) {
+  //   fieldDef.push(`( ${generateParams(params)} )`)
+  // }
+  // fieldDef.push(": ")
+  // fieldDef.push(returns.toGQL())
+
+  return fieldDef.join("")
 }
 
-export function generateFields(fields: ReducedType) {
-  // const { guards = true } = opts
+// export function generateProperties(fields: Fields) {
+//   // const { guards = true } = opts
+//   const gqlFields = []
+
+//   Object.entries(fields).forEach((fieldObj) => {
+//     const [name, def] = fieldObj
+//     gqlFields.push(generateField(name, def))
+//   })
+
+//   return gqlFields.join("\n")
+// }
+
+export function generateType(name: string, type: ReducedType) {
   const gqlFields = []
 
-  Object.entries(fields).forEach((fieldObj) => {
+  Object.entries(type).forEach((fieldObj) => {
     const [name, def] = fieldObj
-    gqlFields.push(generateField(name, def))
+    // const gql = generateField(name, def)
+    console.log("fieldObj", fieldObj)
+    const gql = "TEMP"
+    gqlFields.push(gql)
   })
 
-  return gqlFields.join("\n")
-}
-
-export function generateType(name: string, fields: ReducedType) {
   return `type ${name} {
-  ${generateFields(fields)}
+  ${gqlFields.join("\n")}
 }`
 }

@@ -2,9 +2,12 @@ import _ from "lodash"
 import {
   Module,
   Reducible,
+  Endpoints,
   ReducedTypes,
-  ReducedResolvers,
-  ReducedDirectives,
+  ReducedInputs,
+  // ReducedResolvers,
+  // ReducedDirectives,
+  ENDPOINTS,
 } from "~/types"
 
 import { reduceModel } from "./models"
@@ -14,15 +17,14 @@ export function intersection(o1, o2) {
 }
 
 export class Reducer {
-  inputs: ReducedTypes = {}
+  inputs: ReducedInputs = {}
   types: ReducedTypes = {}
-  resolvers: ReducedResolvers = {}
-  directives: ReducedDirectives = {}
+  // directives: ReducedDirectives = {}
+  directives = {}
+  endpoints: Endpoints = {}
 
   module(module: Module) {
-    const { schema, directives } = module
-
-    this.reduce({ directives })
+    const { schema, directives, endpoints } = module
 
     if (schema) {
       // Schema needs to be generated from the definition
@@ -30,6 +32,14 @@ export class Reducer {
         const [name, model] = entry
         this.reduce(reduceModel(name, model))
       })
+    }
+
+    if (directives) {
+      this.reduce({ directives })
+    }
+
+    if (endpoints) {
+      this.reduce({ endpoints })
     }
   }
 
@@ -50,14 +60,14 @@ export class Reducer {
 
     _.merge(this.inputs, reducible.inputs)
     _.merge(this.types, reducible.types)
-    _.merge(this.resolvers, reducible.resolvers)
+    _.merge(this.endpoints, reducible.endpoints)
   }
 
   toReducible(): Reducible {
     return {
       inputs: this.inputs,
       types: this.types,
-      resolvers: this.resolvers,
+      endpoints: this.endpoints,
       directives: this.directives,
     }
   }

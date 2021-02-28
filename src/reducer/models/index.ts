@@ -59,20 +59,11 @@ export function reduceModel(label, model: Model): Reducible {
         types: {
           [label]: {
             [relName]: {
-              typeDef: {
-                returns: singular
-                  ? type(to.label)
-                  : array(type(to.label)).required(),
-              },
+              resolver: relationResolver(relation),
+              returns: singular
+                ? type(to.label)
+                : array(type(to.label)).required(),
             },
-          },
-        },
-      })
-
-      reducer.reduce({
-        resolvers: {
-          [label]: {
-            [relName]: relationResolver(relation),
           },
         },
       })

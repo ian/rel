@@ -1,4 +1,5 @@
-import { string, type } from "../fields"
+import { ENDPOINTS } from "../types"
+import { string, type, uuid } from "../fields"
 import { Reducer, intersection } from "."
 
 describe("Reducer", () => {
@@ -21,8 +22,28 @@ describe("Reducer", () => {
   })
 
   describe("#module", () => {
+    it("shouldn't error when adding a null module", () => {
+      const reducer = new Reducer()
+
+      expect(() => {
+        reducer.reduce(null)
+      }).not.toThrowError()
+
+      expect(reducer.endpoints).toBeDefined()
+    })
+
+    it("shouldn't error when adding an empty module", () => {
+      const reducer = new Reducer()
+
+      expect(() => {
+        reducer.reduce({})
+      }).not.toThrowError()
+
+      expect(reducer.endpoints).toBeDefined()
+    })
+
     describe("schema", () => {
-      it("should have a type for Book", () => {
+      it("should have a type and input for Book", () => {
         const reducer = new Reducer()
 
         reducer.module({
@@ -35,7 +56,40 @@ describe("Reducer", () => {
           },
         })
 
+        expect(reducer.inputs).toHaveProperty("BookInput")
         expect(reducer.types).toHaveProperty("Book")
+      })
+
+      it("should should allow a model to be extended", () => {
+        const reducer = new Reducer()
+
+        reducer.module({
+          schema: {
+            Book: {
+              fields: {
+                name: string().required(),
+              },
+            },
+          },
+        })
+
+        reducer.module({
+          schema: {
+            Book: {
+              fields: {
+                publisher: string(),
+              },
+            },
+          },
+        })
+
+        expect(reducer.inputs).toHaveProperty("BookInput")
+        expect(reducer.inputs.BookInput).toHaveProperty("name")
+        expect(reducer.inputs.BookInput).toHaveProperty("publisher")
+
+        expect(reducer.types).toHaveProperty("Book")
+        expect(reducer.types.Book).toHaveProperty("name")
+        expect(reducer.types.Book).toHaveProperty("publisher")
       })
     })
 
@@ -47,13 +101,13 @@ describe("Reducer", () => {
           directives: {
             authenticate: {
               typeDef: "directive @authenticate on FIELD_DEFINITION",
-              handler: async function (next, src, args, context) {
+              resolver: async function (next, src, args, context) {
                 throw new Error("AUTHENTICATE")
               },
             },
             admin: {
               typeDef: "directive @admin on FIELD_DEFINITION",
-              handler: async function (next, src, args, context) {
+              resolver: async function (next, src, args, context) {
                 throw new Error("ADMIN")
               },
             },
@@ -69,131 +123,201 @@ describe("Reducer", () => {
             admin: expect.any(Object),
           })
         )
-        // expect(res.directives).toBe(
-        //   // expect.objectContaining({
-        //   //   authenticate: expect.any(Object),
-        //   //   admin: expect.any(Object),
-        //   // })
-        // )
+      })
+    })
+
+    describe("endpoints", () => {
+      describe("queries", () => {
+        it("should add the query", () => {
+          const reducer = new Reducer()
+          reducer.module({
+            endpoints: {
+              CustomFind: {
+                type: ENDPOINTS.ACCESSOR,
+                typeDef: {
+                  params: { id: uuid() },
+                  returns: type("Object"),
+                },
+                resolver: (next, src, args, context) => {},
+              },
+            },
+          })
+
+          expect(reducer.endpoints).toHaveProperty("CustomFind")
+        })
+      })
+
+      describe("mutations", () => {
+        it("should add the mutation", () => {
+          const reducer = new Reducer()
+          reducer.module({
+            endpoints: {
+              CustomUpdate: {
+                type: ENDPOINTS.MUTATOR,
+                typeDef: {
+                  params: { id: uuid() },
+                  returns: type("Book"),
+                },
+                resolver: (next, src, args, context) => {},
+              },
+            },
+          })
+
+          expect(reducer.endpoints).toHaveProperty("CustomUpdate")
+        })
       })
     })
   })
 
-  describe("types", () => {
-    describe("Query", () => {
-      it("should have a Query property", () => {
+  // describe("types", () => {
+  //   it("should add the type and resolver", () => {
+  //     const reducer = new Reducer()
+
+  //     reducer.module({
+  //       extend: {
+  //         Book: {
+  //           fields: {
+  //             customField: string(),
+  //           },
+  //         },
+  //       },
+  //     })
+
+  //     expect(reducer.types).toHaveProperty("Book")
+  //     expect(reducer.resolvers).toHaveProperty("Book")
+  //   })
+
+  //   it("should extend an existing type", () => {
+  //     const reducer = new Reducer()
+
+  //     reducer.module({
+  //       schema: {
+  //         Book: {
+  //           fields: {
+  //             name: string().required(),
+  //           },
+  //         },
+  //       },
+  //     })
+
+  //     reducer.module({
+  //       extend: {
+  //         Book: {
+  //           fields: {
+  //             customField: string(),
+  //           },
+  //         },
+  //       },
+  //     })
+
+  //     console.log(reducer.types.Book)
+
+  //     expect(reducer.types).toHaveProperty("Book")
+  //     // expect(reducer.types.Book)
+  //   })
+  // })
+
+  describe("#reduce", () => {
+    describe("endpoints", () => {
+      it("shouldn't error when reducing a null endpoint", () => {
         const reducer = new Reducer()
 
-        reducer.reduce({
-          types: {
-            Query: {},
-          },
-        })
+        expect(() => {
+          reducer.reduce({
+            endpoints: null,
+          })
+        }).not.toThrowError()
 
-        expect(reducer.toReducible().types).toHaveProperty("Query")
+        expect(reducer.endpoints).toBeDefined()
       })
 
-      it("should be a ReducedType", () => {
+      it("should reduce an accessor", () => {
         const reducer = new Reducer()
 
         reducer.reduce({
-          types: {
-            Query: {
-              FindBook: {
-                typeDef: {
-                  returns: type("Book"),
-                },
+          endpoints: {
+            FindBook: {
+              type: ENDPOINTS.ACCESSOR,
+              typeDef: {
+                returns: type("Book"),
               },
+              resolver: () => null,
             },
           },
         })
 
-        const query = reducer.toReducible().types.Query
-        expect(query).toHaveProperty("FindBook")
+        const res = reducer.toReducible()
+        expect(res.endpoints).toHaveProperty("FindBook")
       })
-    })
 
-    describe("Mutation", () => {
-      it("should have a Mutation property", () => {
+      it("should reduce a mutator", () => {
         const reducer = new Reducer()
 
         reducer.reduce({
-          types: {
-            Mutation: {},
-          },
-        })
-
-        expect(reducer.toReducible().types).toHaveProperty("Mutation")
-      })
-
-      it("should be a ReducedType", () => {
-        const reducer = new Reducer()
-
-        reducer.reduce({
-          types: {
-            Mutation: {
-              CreateBook: {
-                typeDef: {
-                  returns: type("Book"),
-                },
+          endpoints: {
+            CreateBook: {
+              type: ENDPOINTS.MUTATOR,
+              typeDef: {
+                returns: type("Book"),
               },
+              resolver: () => null,
             },
           },
         })
 
-        const mutation = reducer.toReducible().types.Mutation
-        expect(mutation).toHaveProperty("CreateBook")
+        const res = reducer.toReducible()
+        expect(res.endpoints).toHaveProperty("CreateBook")
       })
     })
-  })
 
-  describe("directives", () => {
-    it("should start with empty directives", () => {
-      const reducer = new Reducer()
-      expect(reducer.toReducible()).toHaveProperty("directives")
-    })
-
-    it("should add a directive", () => {
-      const reducer = new Reducer()
-
-      reducer.reduce({
-        directives: {
-          authenticate: {
-            typeDef: "directive @authenticate on FIELD_DEFINITION",
-            handler: async function (next, src, args, context) {},
-          },
-        },
+    describe("directives", () => {
+      it("should start with empty directives", () => {
+        const reducer = new Reducer()
+        expect(reducer.toReducible()).toHaveProperty("directives")
       })
 
-      expect(reducer.toReducible().directives).toHaveProperty("authenticate")
-    })
+      it("should add a directive", () => {
+        const reducer = new Reducer()
 
-    it("should throw an error when two directives are the same name", () => {
-      const reducer = new Reducer()
-
-      reducer.reduce({
-        directives: {
-          authenticate: {
-            typeDef: "directive @authenticate on FIELD_DEFINITION",
-            handler: async function (next, src, args, context) {},
-          },
-        },
-      })
-
-      function testReducerAddThrowsError() {
         reducer.reduce({
           directives: {
             authenticate: {
-              typeDef: "directive @authenticate on TYPE_DEFINITION",
-              handler: async function (next, src, args, context) {},
+              typeDef: "directive @authenticate on FIELD_DEFINITION",
+              resolver: async function (next, src, args, context) {},
             },
           },
         })
-      }
 
-      expect(testReducerAddThrowsError).toThrowError(
-        "Directives currently cannot overwrite eachother"
-      )
+        expect(reducer.toReducible().directives).toHaveProperty("authenticate")
+      })
+
+      it("should throw an error when two directives are the same name", () => {
+        const reducer = new Reducer()
+
+        reducer.reduce({
+          directives: {
+            authenticate: {
+              typeDef: "directive @authenticate on FIELD_DEFINITION",
+              resolver: async function (next, src, args, context) {},
+            },
+          },
+        })
+
+        function testReducerAddThrowsError() {
+          reducer.reduce({
+            directives: {
+              authenticate: {
+                typeDef: "directive @authenticate on TYPE_DEFINITION",
+                resolver: async function (next, src, args, context) {},
+              },
+            },
+          })
+        }
+
+        expect(testReducerAddThrowsError).toThrowError(
+          "Directives currently cannot overwrite eachother"
+        )
+      })
     })
   })
 })

@@ -31,29 +31,37 @@ scalar UUID`)
 
   if (inputs) {
     Object.entries(inputs).forEach((entry) => {
-      const [name, fields] = entry
-      gql.push(generateInput(name, fields))
+      const [name, properties] = entry
+      gql.push(generateInput(name, properties))
     })
   }
 
   if (types) {
-    const { Query, Mutation, ...restOfTypes } = types
-
-    if (Query) {
-      gql.push(generateType("Query", Query))
-    }
-
-    if (Mutation) {
-      gql.push(generateType("Mutation", Mutation))
-    }
-
-    if (restOfTypes) {
-      Object.entries(restOfTypes).forEach((entry) => {
-        const [name, fields] = entry
-        gql.push(generateType(name, fields))
-      })
-    }
+    Object.entries(inputs).forEach((entry) => {
+      const [name, properties] = entry
+      gql.push(generateType(name, properties))
+      // console.log("type", name, fields)
+    })
   }
+
+  // if (types) {
+  //   const { Query, Mutation, ...restOfTypes } = types
+
+  //   if (Query) {
+  //     gql.push(generateType("Query", Query))
+  //   }
+
+  //   if (Mutation) {
+  //     gql.push(generateType("Mutation", Mutation))
+  //   }
+
+  //   if (restOfTypes) {
+  //     Object.entries(restOfTypes).forEach((entry) => {
+  //       const [name, fields] = entry
+  //       gql.push(generateType(name, fields))
+  //     })
+  //   }
+  // }
 
   return gql
     .map((typeStr) => {

@@ -1,5 +1,5 @@
 import { type } from "~/fields"
-import { CreateMutator, Fields, ReducedField } from "~/types"
+import { ENDPOINTS, TypeDef, CreateMutator, Fields } from "~/types"
 import { createResolver } from "~/resolvers"
 import { reduceInput } from "../input"
 
@@ -16,15 +16,13 @@ function makeResolver(label: string, mutator: CreateMutator) {
   return createResolver(label, standardizedOpts)
 }
 
-function makeType(label: string, accessor: CreateMutator): ReducedField {
+function makeType(label: string, accessor: CreateMutator): TypeDef {
   const { guard } = accessor
 
   return {
-    typeDef: {
-      params: { input: type(`${label}Input`) },
-      guard,
-      returns: type(label),
-    },
+    params: { input: type(`${label}Input`) },
+    guard,
+    returns: type(label),
   }
 }
 
@@ -40,21 +38,12 @@ export function generateCreate(
     ...(typeof mutator === "boolean" ? {} : mutator),
   }
 
-  const mutationName = `Create${label}`
-  const inputName = `${label}Input`
-
   return {
-    inputs: {
-      [inputName]: reduceInput(fields),
-    },
-    types: {
-      Mutation: {
-        [mutationName]: makeType(label, _mutator),
-      },
-    },
-    resolvers: {
-      Mutation: {
-        [mutationName]: makeResolver(label, _mutator),
+    endpoints: {
+      [`Create${label}`]: {
+        type: ENDPOINTS.MUTATOR,
+        typeDef: makeType(label, _mutator),
+        resolver: makeResolver(label, _mutator),
       },
     },
   }

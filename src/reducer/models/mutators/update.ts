@@ -1,5 +1,5 @@
-import { string, uuid, type } from "~/fields"
-import { UpdateMutator, Fields, ReducedField, ReducedType } from "~/types"
+import { uuid, type } from "~/fields"
+import { TypeDef, UpdateMutator, Fields, Reducible, ENDPOINTS } from "~/types"
 import { updateResolver } from "~/resolvers"
 import { reduceInput } from "../input"
 
@@ -16,15 +16,13 @@ function makeResolver(label: string, mutator: UpdateMutator) {
   return updateResolver(label, standardizedOpts)
 }
 
-function makeType(label: string, accessor: UpdateMutator): ReducedField {
+function makeType(label: string, accessor: UpdateMutator): TypeDef {
   const { guard } = accessor
 
   return {
-    typeDef: {
-      params: { id: uuid(), input: type(`${label}Input`) },
-      guard,
-      returns: type(label),
-    },
+    params: { id: uuid(), input: type(`${label}Input`) },
+    guard,
+    returns: type(label),
   }
 }
 
@@ -32,7 +30,7 @@ export function generateUpdate(
   label: string,
   mutator: boolean | UpdateMutator,
   fields: Fields
-) {
+): Reducible {
   if (!mutator) return null
 
   let _mutator = {
@@ -40,58 +38,23 @@ export function generateUpdate(
     ...(typeof mutator === "boolean" ? {} : mutator),
   }
 
-  const mutationName = `Update${label}`
-  const inputName = `${label}Input`
-
   return {
-    inputs: {
-      [inputName]: reduceInput(fields),
-    },
-    types: {
-      Mutation: {
-        [mutationName]: makeType(label, _mutator),
+    endpoints: {
+      [`Update${label}`]: {
+        type: ENDPOINTS.MUTATOR,
+        typeDef: makeType(label, _mutator),
+        resolver: makeResolver(label, _mutator),
       },
     },
-    resolvers: {
-      Mutation: {
-        [mutationName]: makeResolver(label, _mutator),
-      },
-    },
+    // types: {
+    //   Mutation: {
+    //     [mutationName]: makeType(label, _mutator),
+    //   },
+    // },
+    // resolvers: {
+    //   Mutation: {
+    //     [mutationName]: makeResolver(label, _mutator),
+    //   },
+    // },
   }
 }
-// import { Fields, Resolver } from "~/types"
-// import { updateResolver } from "~/resolvers"
-
-// const DEFAULT_OPTS = {
-//   findBy: ["id"],
-// }
-// const DEFAULT_RESOLVER = {}
-
-// function makeResolver(label: string, resolver: Resolver) {
-//   const standardizedOpts = Object.assign(
-//     {
-//       label,
-//     },
-//     DEFAULT_OPTS,
-//     typeof resolver === "boolean" ? DEFAULT_RESOLVER : resolver
-//   )
-//   return updateResolver(standardizedOpts)
-// }
-
-// export function generateUpdate(label, definition, fields: Fields) {
-//   throw new Error("@todo generateUpdate()")
-
-//   // const name = `Find${label}`
-//   // return {
-//   //   schema: {
-//   //     Query: {
-//   //       [`${name}(id: UUID!)`]: label,
-//   //     },
-//   //   },
-//   //   resolvers: {
-//   //     Query: {
-//   //       [name]: makeResolver(label, definition),
-//   //     },
-//   //   },
-//   // }
-// }

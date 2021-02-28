@@ -1,4 +1,4 @@
-import { Reducible, ReducedField, ReducedType, FindAccessor } from "~/types"
+import { Reducible, TypeDef, FindAccessor, ENDPOINTS } from "~/types"
 import { uuid, type } from "~/fields"
 import { findResolver } from "~/resolvers"
 import _ from "lodash"
@@ -17,15 +17,13 @@ function makeResolver(label: string, accessor: FindAccessor) {
   return findResolver(label, standardizedOpts)
 }
 
-function makeType(label: string, accessor: FindAccessor): ReducedField {
+function makeType(label: string, accessor: FindAccessor): TypeDef {
   const { findBy, guard } = accessor
 
   return {
-    typeDef: {
-      params: findBy,
-      guard,
-      returns: type(label),
-    },
+    params: findBy,
+    guard,
+    returns: type(label),
   }
 }
 
@@ -41,18 +39,25 @@ export function generateFind(
     ...(typeof accessor === "boolean" ? {} : accessor),
   }
 
-  const name = `Find${label}`
-
   return {
-    types: {
-      Query: {
-        [name]: makeType(label, _accessor),
-      },
-    },
-    resolvers: {
-      Query: {
-        [name]: makeResolver(label, _accessor),
+    endpoints: {
+      [`Find${label}`]: {
+        type: ENDPOINTS.ACCESSOR,
+        typeDef: makeType(label, _accessor),
+        resolver: makeResolver(label, _accessor),
       },
     },
   }
+  // return {
+  //   types: {
+  //     Query: {
+  //       [name]: makeType(label, _accessor),
+  //     },
+  //   },
+  //   resolvers: {
+  //     Query: {
+  //       [name]: makeResolver(label, _accessor),
+  //     },
+  //   },
+  // }
 }

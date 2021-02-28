@@ -8,15 +8,9 @@ export enum Direction {
   OUT = "OUT",
 }
 
-// Fields always look like:
-// {
-//   name: string().required(),
-//   description: string()
-//   phone: phoneNumber()
-// }
-
-export type Fields = {
-  [name: string]: Field
+export enum ENDPOINTS {
+  ACCESSOR = "ACCESSOR",
+  MUTATOR = "MUTATOR",
 }
 
 export type FieldToGQLOpts = {
@@ -25,6 +19,20 @@ export type FieldToGQLOpts = {
 
 export type Field = {
   toGQL(opts?: FieldToGQLOpts): string
+}
+
+export type Fields = {
+  [name: string]: Field
+}
+
+export type Params = {
+  [name: string]: Field
+}
+
+export type TypeDef = {
+  params?: Params
+  guard?: string
+  returns: Field
 }
 
 // Configuration
@@ -58,11 +66,11 @@ export type Relations = {
 }
 
 export type FindAccessor = Accessor & {
-  findBy?: Fields
+  findBy?: Params
 }
 
 export type ListAccessor = Accessor & {
-  listBy?: Fields
+  listBy?: Params
 }
 
 export type Accessor = {
@@ -107,39 +115,27 @@ export type Schema = {
 
 export type Directives = {
   [name: string]: {
+    // typeDef: TypeDef
     typeDef: string
-    handler: (next, src, args, context) => void
+    resolver: (next, src, args, context) => void
   }
 }
 
-// export type Extended = {
-//   [name: string]: {
-//     typeDef: string
-//     handler: (next, src, args, context) => void
-//   }
-// }
-
-type QueryExtension = {
-  [queryName: string]: {
-    typeDef: string | ReducedTypeDef
-    handler: (next, src, args, context) => void
-  }
+export type Endpoint = {
+  type: string
+  typeDef: TypeDef
+  resolver: (next, src, args, context) => void
+  // guard?: string
 }
 
-type MutationExtension = {}
-
-type TypeExtension = {}
-
-export type Extension = {
-  Query?: QueryExtension
-  Mutation?: MutationExtension
-  [objectName: string]: TypeExtension
+export type Endpoints = {
+  [queryName: string]: Endpoint
 }
 
 export type Module = {
   schema?: Schema
   directives?: Directives
-  extend?: Extension
+  endpoints?: Endpoints
 }
 
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
@@ -147,74 +143,88 @@ export type CallableModule = (/* @todo - this should take some JIT params */) =>
 // Runtime Types
 // These are used internally to the Runtime engine.
 
-// export type ReducedField = {
-//   name: string
+// export type ReducedTypeFieldParams = {
+//   [name: string]: Field
+// }
+
+// // We let typedefs specify themselves as compartementalized params + guard + returns, or a straight string pipe through
+// // Collisions are caught on the fieldName higher up
+// export type ReducedTypeDef = {
+//   params?: ReducedTypeFieldParams
+//   guard?: string
 //   returns: Field
-//   // params: {
-//   //   [name: string]: Field
-//   // }
+// }
+// // | string
+
+// export type ReducedField = {
+//   typeDef: ReducedTypeDef
+//   resolver?: Resolver
 // }
 
 // export type ReducedType = {
 //   [fieldName: string]: ReducedField
 // }
 
-export type ReducedTypeFieldParams = {
-  [name: string]: Field
-}
+// export type ReducedTypeQuery = {
+//   [queryName: string]: ReducedField
+// }
 
-// We let typedefs specify themselves as compartementalized params + guard + returns, or a straight string pipe through
-// Collisions are caught on the fieldName higher up
-export type ReducedTypeDef = {
-  params?: ReducedTypeFieldParams
+// export type ReducedTypeMutation = {
+//   [mutationName: string]: ReducedField
+// }
+
+// export type ReducedTypes = {
+//   Query?: ReducedTypeQuery
+//   Mutation?: ReducedTypeMutation
+//   [objectName: string]: ReducedType
+// }
+
+// export type ReducedInputs = {
+//   [objectName: string]: ReducedType
+// }
+
+// export type ReducedResolvers = {
+//   [name: string]: any
+// }
+
+// export type ReducedDirectives = {
+//   [name: string]: {
+//     typeDef: string
+//     resolver: (next, src, args, context) => void
+//   }
+// }
+
+export type ReducedProperty = {
+  params?: Params
   guard?: string
+  resolver?: Resolver
   returns: Field
 }
-// | string
 
-export type ReducedField = {
-  typeDef: ReducedTypeDef
-  resolver?: Resolver
-}
-
-export type ReducedType = {
-  [fieldName: string]: ReducedField
-}
-
-export type ReducedTypeQuery = {
-  [queryName: string]: ReducedField
-}
-
-export type ReducedTypeMutation = {
-  [mutationName: string]: ReducedField
-}
-
-export type ReducedTypes = {
-  Query?: ReducedTypeQuery
-  Mutation?: ReducedTypeMutation
-  [objectName: string]: ReducedType
+export type ReducedInput = {
+  [propName: string]: ReducedProperty
 }
 
 export type ReducedInputs = {
-  [objectName: string]: ReducedType
+  [inputName: string]: ReducedInput
 }
 
-export type ReducedResolvers = {
-  [name: string]: any
+export type ReducedType = {
+  [propName: string]: ReducedProperty
 }
 
-export type ReducedDirectives = {
-  [name: string]: {
-    typeDef: string
-    handler: (next, src, args, context) => void
-  }
+export type ReducedTypes = {
+  [inputName: string]: ReducedType
 }
 
 export type Reducible = {
   inputs?: ReducedInputs
   types?: ReducedTypes
-  directives?: ReducedDirectives
-  resolvers?: ReducedResolvers
+  endpoints?: Endpoints
+
+  // @todo remove / change these
+  directives?: Directives
+  // resolvers?: ReducedResolvers
 }
 
 // Runtime - this is where the magic happens
