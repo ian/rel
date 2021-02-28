@@ -169,54 +169,6 @@ describe("Reducer", () => {
     })
   })
 
-  // describe("types", () => {
-  //   it("should add the type and resolver", () => {
-  //     const reducer = new Reducer()
-
-  //     reducer.module({
-  //       extend: {
-  //         Book: {
-  //           fields: {
-  //             customField: string(),
-  //           },
-  //         },
-  //       },
-  //     })
-
-  //     expect(reducer.types).toHaveProperty("Book")
-  //     expect(reducer.resolvers).toHaveProperty("Book")
-  //   })
-
-  //   it("should extend an existing type", () => {
-  //     const reducer = new Reducer()
-
-  //     reducer.module({
-  //       schema: {
-  //         Book: {
-  //           fields: {
-  //             name: string().required(),
-  //           },
-  //         },
-  //       },
-  //     })
-
-  //     reducer.module({
-  //       extend: {
-  //         Book: {
-  //           fields: {
-  //             customField: string(),
-  //           },
-  //         },
-  //       },
-  //     })
-
-  //     console.log(reducer.types.Book)
-
-  //     expect(reducer.types).toHaveProperty("Book")
-  //     // expect(reducer.types.Book)
-  //   })
-  // })
-
   describe("#reduce", () => {
     describe("endpoints", () => {
       it("shouldn't error when reducing a null endpoint", () => {
