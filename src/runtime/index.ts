@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { CallableModule, Module } from "~/types"
+import { Module, Reducible } from "~/types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 import {
   generateDirectiveResolvers,
@@ -13,6 +13,10 @@ export class Runtime {
 
   constructor() {
     this.reducer = new Reducer()
+  }
+
+  auth(auth: Reducible) {
+    this.reducer.reduce(auth)
   }
 
   module(module: Module) {
@@ -48,15 +52,14 @@ export class Runtime {
 }
 
 export type RuntimeOpts = {
-  auth?: CallableModule
-  // extend?: Module
+  auth?: Module
 } & Module
 
 export function generate(opts: RuntimeOpts): GQLConfig {
   const { auth, ...config } = opts
   const runtime = new Runtime()
 
-  if (auth) runtime.module(auth(/* @todo should this take params? */))
+  if (auth) runtime.auth(auth)
 
   runtime.module(config)
 

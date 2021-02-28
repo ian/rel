@@ -3,6 +3,7 @@ import {
   Module,
   Reducible,
   Endpoints,
+  ReducedGuards,
   ReducedTypes,
   ReducedInputs,
 } from "~/types"
@@ -16,12 +17,11 @@ export function intersection(o1, o2) {
 export class Reducer {
   inputs: ReducedInputs = {}
   types: ReducedTypes = {}
-  // directives: ReducedDirectives = {}
-  directives = {}
+  guards: ReducedGuards = {}
   endpoints: Endpoints = {}
 
   module(module: Module) {
-    const { schema, directives, endpoints } = module
+    const { schema, guards, endpoints } = module
 
     if (schema) {
       // Schema needs to be generated from the definition
@@ -31,8 +31,8 @@ export class Reducer {
       })
     }
 
-    if (directives) {
-      this.reduce({ directives })
+    if (guards) {
+      this.reduce({ guards })
     }
 
     if (endpoints) {
@@ -43,16 +43,16 @@ export class Reducer {
   reduce(reducible: Reducible) {
     if (!reducible) return
 
-    if (reducible.directives) {
-      const intersect = intersection(this.directives, reducible.directives)
+    if (reducible.guards) {
+      const intersect = intersection(this.guards, reducible.guards)
       if (intersect.length > 0)
         throw new Error(
-          `Directives currently cannot overwrite eachother, they must be unique. Collision directives: ${intersect.join(
+          `Guards currently cannot overwrite eachother, they must be unique. Collision guards: ${intersect.join(
             ", "
           )}`
         )
 
-      _.merge(this.directives, reducible.directives)
+      _.merge(this.guards, reducible.guards)
     }
 
     _.merge(this.inputs, reducible.inputs)
@@ -65,7 +65,7 @@ export class Reducer {
       inputs: this.inputs,
       types: this.types,
       endpoints: this.endpoints,
-      directives: this.directives,
+      guards: this.guards,
     }
   }
 }

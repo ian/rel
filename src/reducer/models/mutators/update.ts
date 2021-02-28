@@ -1,7 +1,6 @@
 import { uuid, type } from "~/fields"
 import { TypeDef, UpdateMutator, Fields, Reducible, ENDPOINTS } from "~/types"
 import { updateResolver } from "~/resolvers"
-import { reduceInput } from "../input"
 
 const DEFAULT_MUTATOR = {}
 

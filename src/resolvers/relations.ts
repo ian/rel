@@ -20,8 +20,8 @@ export function resolveRel(rel: Rel) {
 export function relationResolver(relation: Relation): Resolver {
   const { from, to, singular = false, order, rel } = relation
 
-  return async (obj, params, context) => {
-    const runtime = { obj, params, context }
+  return async (runtime) => {
+    const { obj, params, context } = runtime
     const fromResolved = resolveNode("from", from, runtime, {
       // default the from to be the current object
       params: ({ obj }) => ({ id: obj.id }),

@@ -1,13 +1,12 @@
 import { Fields, Mutator } from "~/types"
 import { cypherCreate, cypherUpdate, cypherDelete } from "../cypher"
-import { buildResolver } from "./builder"
 
 export function createResolver(
   label: string,
   mutator: Mutator
   // fields: Fields,
 ) {
-  return buildResolver(async ({ params }) => {
+  return async ({ params }) => {
     const { input } = params
 
     // @todo validation
@@ -19,7 +18,7 @@ export function createResolver(
       await mutator.after(created)
     }
     return created
-  })
+  }
 }
 
 export function updateResolver(
@@ -27,7 +26,7 @@ export function updateResolver(
   mutator: Mutator
   // fields: Fields,
 ) {
-  return buildResolver(async ({ params }) => {
+  return async ({ params }) => {
     const { id, input } = params
 
     // @todo validation
@@ -39,11 +38,11 @@ export function updateResolver(
       await mutator.after(updated)
     }
     return updated
-  })
+  }
 }
 
 export function deleteResolver(label: string, mutator: Mutator) {
-  return buildResolver(async ({ params }) => {
+  return async ({ params }) => {
     const { id } = params
 
     const updated = await cypherDelete(label, id)
@@ -51,5 +50,5 @@ export function deleteResolver(label: string, mutator: Mutator) {
       await mutator.after(updated)
     }
     return updated
-  })
+  }
 }

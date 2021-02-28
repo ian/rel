@@ -1,7 +1,6 @@
 import { type } from "~/fields"
 import { ENDPOINTS, TypeDef, CreateMutator, Fields } from "~/types"
 import { createResolver } from "~/resolvers"
-import { reduceInput } from "../input"
 
 const DEFAULT_MUTATOR = {}
 

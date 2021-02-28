@@ -118,11 +118,21 @@ export type Schema = {
   [name: string]: Model
 }
 
-export type Directives = {
+export type ResolverArgs = {
+  src: string
+  args: object
+  context: object
+  cypher: (c: string) => Promise<CypherResponse>
+  cypher1: (c: string) => Promise<Cypher1Response>
+}
+
+export type Resolver = (ResolverArgs?) => RuntimeObject
+export type RuntimeObject = any
+
+export type Guards = {
   [name: string]: {
-    // typeDef: TypeDef
-    typeDef: string
-    resolver: (next, src, args, context) => void
+    typeDef?: string
+    resolver: (ResolverArgs?) => Promise<any>
   }
 }
 
@@ -138,14 +148,13 @@ export type Endpoints = {
 
 export type Module = {
   schema?: Schema
-  directives?: Directives
+  guards?: Guards
   endpoints?: Endpoints
 }
 
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
 
-// Runtime Types
-// These are used internally to the Runtime engine.
+// Reducer
 
 export type ReducedProperty = {
   typeDef: TypeDef
@@ -168,46 +177,19 @@ export type ReducedTypes = {
   [inputName: string]: ReducedType
 }
 
+export type ReducedGuards = Guards
+
 export type Reducible = {
   inputs?: ReducedInputs
   types?: ReducedTypes
   endpoints?: Endpoints
-
-  // @todo remove / change these
-  directives?: Directives
+  guards?: ReducedGuards
 }
 
-export type Resolvers = {
-  Query?: {
-    [name: string]: Resolver
-  }
-  Mutation?: {
-    [name: string]: Resolver
-  }
-  [type: string]: {
-    [name: string]: Resolver
-  }
-}
+// Cypher
 
-export type Resolver = (...RuntimeArgs) => RuntimeObject
-
-export type RuntimeAuthUser = {
-  id: string
-  name: string
-}
-
-export type RuntimeContext = {
-  authUser?: RuntimeAuthUser
-}
-
-export type RuntimeObject = any
-
-export type RuntimeParams = {
+export type Cypher1Response = {
   [key: string]: any
 }
 
-export type RuntimeArgs = [
-  obj: RuntimeObject,
-  params: RuntimeParams,
-  context: RuntimeContext
-]
+export type CypherResponse = Cypher1Response[]

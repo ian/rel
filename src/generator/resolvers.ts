@@ -1,4 +1,45 @@
-import { ENDPOINTS, Reducible, Resolvers } from "~/types"
+import { ENDPOINTS, Reducible, Resolver } from "~/types"
+import { cypher, cypher1 } from "~/cypher"
+
+function augmentResolver(resolver) {
+  return (obj, params, context) => {
+    return resolver({
+      obj,
+      params,
+      context,
+      cypher,
+      cypher1,
+    })
+  }
+}
+
+export type RuntimeContext = {
+  [contextParam: string]: any
+}
+
+export type ResolverObject = any
+
+export type ResolverParams = {
+  [key: string]: any
+}
+
+type ResolverArgs = [
+  obj: ResolverObject,
+  params: ResolverParams,
+  context: RuntimeContext
+]
+
+type Resolvers = {
+  Query?: {
+    [name: string]: (...ResolverArgs) => any
+  }
+  Mutation?: {
+    [name: string]: (...ResolverArgs) => any
+  }
+  [type: string]: {
+    [name: string]: (...ResolverArgs) => any
+  }
+}
 
 export function generateResolvers(reduced: Reducible): Resolvers {
   const { types, endpoints } = reduced
@@ -11,7 +52,7 @@ export function generateResolvers(reduced: Reducible): Resolvers {
       Object.entries(type).forEach((propEntry) => {
         const [name, property] = propEntry
         if (property.resolver) {
-          typeResolver[name] = property.resolver
+          typeResolver[name] = augmentResolver(property.resolver)
         }
       })
       resolvers[name] = typeResolver
@@ -28,11 +69,11 @@ export function generateResolvers(reduced: Reducible): Resolvers {
 
       switch (type) {
         case ENDPOINTS.ACCESSOR:
-          queries[name] = endpoint.resolver
+          queries[name] = augmentResolver(endpoint.resolver)
           break
 
         case ENDPOINTS.MUTATOR:
-          mutations[name] = endpoint.resolver
+          mutations[name] = augmentResolver(endpoint.resolver)
           break
         default:
           throw new Error(`Unknown endpoint type ${type} for ${name}`)

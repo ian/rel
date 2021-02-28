@@ -93,21 +93,21 @@ describe("Reducer", () => {
       })
     })
 
-    describe("directives", () => {
-      it("should add the directives to the reducer", () => {
+    describe("guards", () => {
+      it("should add the guards to the reducer", () => {
         const reducer = new Reducer()
 
         reducer.module({
-          directives: {
+          guards: {
             authenticate: {
               typeDef: "directive @authenticate on FIELD_DEFINITION",
-              resolver: async function (next, src, args, context) {
+              resolver: async function () {
                 throw new Error("AUTHENTICATE")
               },
             },
             admin: {
               typeDef: "directive @admin on FIELD_DEFINITION",
-              resolver: async function (next, src, args, context) {
+              resolver: async function () {
                 throw new Error("ADMIN")
               },
             },
@@ -115,9 +115,9 @@ describe("Reducer", () => {
         })
 
         const res = reducer.toReducible()
-        expect(res).toHaveProperty("directives")
+        expect(res).toHaveProperty("guards")
 
-        expect(res.directives).toEqual(
+        expect(res.guards).toEqual(
           expect.objectContaining({
             authenticate: expect.any(Object),
             admin: expect.any(Object),
@@ -138,7 +138,7 @@ describe("Reducer", () => {
                   params: { id: uuid() },
                   returns: type("Object"),
                 },
-                resolver: (next, src, args, context) => {},
+                resolver: () => {},
               },
             },
           })
@@ -158,7 +158,7 @@ describe("Reducer", () => {
                   params: { id: uuid() },
                   returns: type("Book"),
                 },
-                resolver: (next, src, args, context) => {},
+                resolver: () => {},
               },
             },
           })
@@ -222,52 +222,52 @@ describe("Reducer", () => {
       })
     })
 
-    describe("directives", () => {
-      it("should start with empty directives", () => {
+    describe("guards", () => {
+      it("should start with empty guards", () => {
         const reducer = new Reducer()
-        expect(reducer.toReducible()).toHaveProperty("directives")
+        expect(reducer.toReducible()).toHaveProperty("guards")
       })
 
       it("should add a directive", () => {
         const reducer = new Reducer()
 
         reducer.reduce({
-          directives: {
+          guards: {
             authenticate: {
               typeDef: "directive @authenticate on FIELD_DEFINITION",
-              resolver: async function (next, src, args, context) {},
+              resolver: async function () {},
             },
           },
         })
 
-        expect(reducer.toReducible().directives).toHaveProperty("authenticate")
+        expect(reducer.toReducible().guards).toHaveProperty("authenticate")
       })
 
-      it("should throw an error when two directives are the same name", () => {
+      it("should throw an error when two guards are the same name", () => {
         const reducer = new Reducer()
 
         reducer.reduce({
-          directives: {
+          guards: {
             authenticate: {
               typeDef: "directive @authenticate on FIELD_DEFINITION",
-              resolver: async function (next, src, args, context) {},
+              resolver: async function () {},
             },
           },
         })
 
         function testReducerAddThrowsError() {
           reducer.reduce({
-            directives: {
+            guards: {
               authenticate: {
                 typeDef: "directive @authenticate on TYPE_DEFINITION",
-                resolver: async function (next, src, args, context) {},
+                resolver: async function () {},
               },
             },
           })
         }
 
         expect(testReducerAddThrowsError).toThrowError(
-          "Directives currently cannot overwrite eachother"
+          "Guards currently cannot overwrite eachother"
         )
       })
     })

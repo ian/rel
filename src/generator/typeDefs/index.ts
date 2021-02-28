@@ -2,20 +2,17 @@ import _ from "lodash"
 import { formatSdl } from "format-graphql"
 import { ENDPOINTS, Reducible } from "~/types"
 
+import { generateDirectives } from "./directives"
 import { generateInput } from "./input"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
-  const { inputs, types, directives, endpoints } = reducible
+  const { inputs, types, guards, endpoints } = reducible
 
   const gql = []
 
-  if (directives) {
-    const gqlDirectives = Object.values(directives)
-      .map((d) => d.typeDef)
-      .join("\n")
-
-    gql.push(gqlDirectives)
+  if (guards) {
+    gql.push(generateDirectives(guards))
   }
 
   // add scalars

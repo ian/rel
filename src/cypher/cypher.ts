@@ -2,12 +2,7 @@ import { isInt } from "neo4j-driver/lib/integer.js"
 import { Result } from "neo4j-driver"
 import { Geo } from "../util/geo"
 import driver from "../connection"
-
-type Cypher1Response = {
-  [key: string]: any
-}
-
-type CypherResponse = Cypher1Response[]
+import { Cypher1Response, CypherResponse } from "~/types"
 
 export async function cypherRaw(query): Promise<Result> {
   function beautifyCypher(query) {

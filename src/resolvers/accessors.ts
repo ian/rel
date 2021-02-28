@@ -20,11 +20,13 @@ export function findResolver(label: string, opts: FindAccessor) {
   //   .map((f, i) => (i === 0 ? f : titleize(f)))
   //   .join("Or")
 
-  return async (obj, params, context) => {
-    // const { params } = runtime
+  return async (runtime) => {
+    const { params } = runtime
 
     const cypherQuery = []
     cypherQuery.push(`MATCH (node:${label})`)
+
+    // @todo - Object.entries the params and OR the clause
 
     // if (params[findParamName]) {
     //   const where = findBy
@@ -52,7 +54,8 @@ export function listResolver(opts: ListOpts) {
   const { label } = opts
   const defaultOrder = "id"
 
-  return async (obj, params, context) => {
+  return async (runtime) => {
+    const { params } = runtime
     const { limit, skip = 0, order = defaultOrder } = params
     const {
       // boundingBox,
