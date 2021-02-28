@@ -41,7 +41,8 @@ export class Runtime {
       console.error("ERROR", err.message)
       console.log(typeDefs)
 
-      throw new Error("Unable to compile typeDefs")
+      // throw new Error("Unable to compile typeDefs")
+      throw err
     }
   }
 }

@@ -6,7 +6,7 @@ export function generateInput(name: string, type: ReducedType) {
 
   Object.entries(type).forEach((fieldObj) => {
     const [name, property] = fieldObj
-    gqlFields.push(generateProperty(name, property))
+    gqlFields.push(generateProperty(name, property, { guards: false }))
   })
 
   return `input ${name} {

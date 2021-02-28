@@ -15,8 +15,6 @@ export default (): Module => ({
     User: {
       fields: {
         name: string().required(),
-        abbr: string(),
-        description: string(),
       },
     },
   },
