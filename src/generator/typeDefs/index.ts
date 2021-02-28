@@ -6,7 +6,6 @@ import { generateInput } from "./input"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
-  // console.log("reducible", reducible)
   const { inputs, types, directives, endpoints } = reducible
 
   const gql = []
