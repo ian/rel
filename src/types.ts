@@ -130,7 +130,6 @@ export type Endpoint = {
   type: string
   typeDef: TypeDef
   resolver: Resolver
-  // guard?: string
 }
 
 export type Endpoints = {
@@ -149,11 +148,8 @@ export type CallableModule = (/* @todo - this should take some JIT params */) =>
 // These are used internally to the Runtime engine.
 
 export type ReducedProperty = {
-  // params?: Params
-  // guard?: string
   typeDef: TypeDef
   resolver?: Resolver
-  // returns: Field
 }
 
 export type ReducedInput = {
@@ -179,10 +175,7 @@ export type Reducible = {
 
   // @todo remove / change these
   directives?: Directives
-  // resolvers?: ReducedResolvers
 }
-
-// Runtime - this is where the magic happens
 
 export type Resolvers = {
   Query?: {
@@ -208,10 +201,6 @@ export type RuntimeContext = {
 }
 
 export type RuntimeObject = any
-
-// export type RuntimeObject = {
-//   [key: string]: any
-// }
 
 export type RuntimeParams = {
   [key: string]: any

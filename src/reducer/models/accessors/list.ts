@@ -38,9 +38,6 @@ export function generateList(
     ...(typeof accessor === "boolean" ? {} : accessor),
   }
 
-  // const name = `List${pluralize(label)}`
-  // const resolver = makeResolver(label, _accessor)
-
   return {
     endpoints: {
       [`List${pluralize(label)}`]: {
@@ -49,15 +46,5 @@ export function generateList(
         resolver: makeResolver(label, _accessor),
       },
     },
-    // types: {
-    //   Query: {
-    //     [name]: makeType(label, _accessor),
-    //   },
-    // },
-    // resolvers: {
-    //   Query: {
-    //     [name]: resolver,
-    //   },
-    // },
   }
 }

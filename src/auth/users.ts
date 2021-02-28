@@ -35,7 +35,6 @@ export default (): Module => ({
   endpoints: {
     Login: {
       type: ENDPOINTS.MUTATOR,
-      // typeDef: "Login(token: String!): Auth",
       typeDef: {
         params: { token: string().required() },
         returns: type("Auth"),
@@ -49,7 +48,6 @@ export default (): Module => ({
     },
     Register: {
       type: ENDPOINTS.MUTATOR,
-      // typeDef: "Login(token: String!): Auth",
       typeDef: {
         params: { input: type("UserInput").required() },
         returns: type("Auth"),

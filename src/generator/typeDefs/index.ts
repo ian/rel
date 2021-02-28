@@ -45,7 +45,6 @@ scalar UUID`)
   }
 
   if (endpoints) {
-    // console.log("endpoints", endpoints)
     let queries = {},
       mutations = {}
 

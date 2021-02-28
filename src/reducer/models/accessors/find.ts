@@ -48,16 +48,4 @@ export function generateFind(
       },
     },
   }
-  // return {
-  //   types: {
-  //     Query: {
-  //       [name]: makeType(label, _accessor),
-  //     },
-  //   },
-  //   resolvers: {
-  //     Query: {
-  //       [name]: makeResolver(label, _accessor),
-  //     },
-  //   },
-  // }
 }

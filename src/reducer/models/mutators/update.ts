@@ -46,15 +46,5 @@ export function generateUpdate(
         resolver: makeResolver(label, _mutator),
       },
     },
-    // types: {
-    //   Mutation: {
-    //     [mutationName]: makeType(label, _mutator),
-    //   },
-    // },
-    // resolvers: {
-    //   Mutation: {
-    //     [mutationName]: makeResolver(label, _mutator),
-    //   },
-    // },
   }
 }

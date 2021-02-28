@@ -5,9 +5,6 @@ import {
   Endpoints,
   ReducedTypes,
   ReducedInputs,
-  // ReducedResolvers,
-  // ReducedDirectives,
-  ENDPOINTS,
 } from "~/types"
 
 import { reduceModel } from "./models"
