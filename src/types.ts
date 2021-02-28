@@ -129,7 +129,7 @@ export type Directives = {
 export type Endpoint = {
   type: string
   typeDef: TypeDef
-  resolver: (next, src, args, context) => void
+  resolver: Resolver
   // guard?: string
 }
 
@@ -184,6 +184,18 @@ export type Reducible = {
 
 // Runtime - this is where the magic happens
 
+export type Resolvers = {
+  Query?: {
+    [name: string]: Resolver
+  }
+  Mutation?: {
+    [name: string]: Resolver
+  }
+  [type: string]: {
+    [name: string]: Resolver
+  }
+}
+
 export type Resolver = (...RuntimeArgs) => RuntimeObject
 
 export type RuntimeAuthUser = {
@@ -195,9 +207,11 @@ export type RuntimeContext = {
   authUser?: RuntimeAuthUser
 }
 
-export type RuntimeObject = {
-  [key: string]: any
-}
+export type RuntimeObject = any
+
+// export type RuntimeObject = {
+//   [key: string]: any
+// }
 
 export type RuntimeParams = {
   [key: string]: any
