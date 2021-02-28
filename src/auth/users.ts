@@ -62,26 +62,4 @@ export default (): Module => ({
       },
     },
   },
-  // extend: {
-  //   Mutation: {
-  //     Login: {
-  //       typeDef: "Login(token: String!): Auth",
-  //       resolver: (obj, params, context) => {
-  //         return {
-  //           token: "FAKE123",
-  //           user: {},
-  //         }
-  //       },
-  //     },
-  //     Register: {
-  //       typeDef: "Login(token: String!): Auth",
-  //       resolver: (obj, params, context) => {
-  //         return {
-  //           token: "FAKE123",
-  //           user: {},
-  //         }
-  //       },
-  //     },
-  //   },
-  // },
 })
