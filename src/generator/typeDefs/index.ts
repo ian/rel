@@ -1,12 +1,13 @@
+import _ from "lodash"
 import { formatSdl } from "format-graphql"
-import { Reducible } from "~/types"
+import { ENDPOINTS, Reducible } from "~/types"
 
 import { generateInput } from "./input"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
   // console.log("reducible", reducible)
-  const { inputs, types, directives } = reducible
+  const { inputs, types, directives, endpoints } = reducible
 
   const gql = []
 
@@ -37,11 +38,36 @@ scalar UUID`)
   }
 
   if (types) {
-    Object.entries(inputs).forEach((entry) => {
+    Object.entries(types).forEach((entry) => {
       const [name, properties] = entry
       gql.push(generateType(name, properties))
-      // console.log("type", name, fields)
     })
+  }
+
+  if (endpoints) {
+    // console.log("endpoints", endpoints)
+    let queries = {},
+      mutations = {}
+
+    Object.entries(endpoints).forEach((entry) => {
+      const [name, endpoint] = entry
+      const { type } = endpoint
+
+      switch (type) {
+        case ENDPOINTS.ACCESSOR:
+          queries[name] = endpoint.typeDef
+          break
+
+        case ENDPOINTS.MUTATOR:
+          mutations[name] = endpoint.typeDef
+          break
+        default:
+          throw new Error(`Unknown endpoint type ${type} for ${name}`)
+      }
+    })
+
+    if (!_.isEmpty(queries)) gql.push(generateType("Query", queries))
+    if (!_.isEmpty(mutations)) gql.push(generateType("Mutation", mutations))
   }
 
   // if (types) {

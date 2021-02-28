@@ -11,6 +11,11 @@ export enum Direction {
 export enum ENDPOINTS {
   ACCESSOR = "ACCESSOR",
   MUTATOR = "MUTATOR",
+
+  // CREATE = "CREATE",
+  // READ = "READ",
+  // UPDATE = "UPDATE",
+  // DELETE = "DELETE",
 }
 
 export type FieldToGQLOpts = {

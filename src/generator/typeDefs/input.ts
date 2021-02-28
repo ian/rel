@@ -1,45 +1,15 @@
-import { Params, Field, ReducedType } from "~/types"
+import { ReducedType } from "~/types"
+import { generateProperty } from "./property"
 
-function generateParams(params: Params) {
-  return Object.entries(params)
-    .map((entry) => {
-      const [name, field] = entry
-      return `${name}: ${field.toGQL({ guards: false })}`
-    })
-    .join(", ")
-}
-
-function generateField(name, field: Field) {
-  // const { typeDef } = field
-  // if (!typeDef) throw new Error(`Missing typedef for ${name}`)
-  // if (typeof typeDef === "string") {
-  //   return typeDef
-  // } else {
-  //   const { params, returns } = typeDef
-  //   const fieldDef = [name]
-  //   if (params) {
-  //     fieldDef.push(`( ${generateParams(params)} )`)
-  //   }
-  //   fieldDef.push(": ")
-  //   fieldDef.push(returns.toGQL({ guards: false }))
-  //   return fieldDef.join("")
-  // }
-}
-
-export function generateFields(fields: ReducedType) {
-  // const { guards = true } = opts
+export function generateInput(name: string, type: ReducedType) {
   const gqlFields = []
 
-  Object.entries(fields).forEach((fieldObj) => {
-    const [name, def] = fieldObj
-    gqlFields.push(generateField(name, def))
+  Object.entries(type).forEach((fieldObj) => {
+    const [name, property] = fieldObj
+    gqlFields.push(generateProperty(name, property))
   })
 
-  return gqlFields.join("\n")
-}
-
-export function generateInput(name: string, fields: ReducedType) {
   return `input ${name} {
-  ${generateFields(fields)}
+  ${gqlFields.join("\n")}
 }`
 }

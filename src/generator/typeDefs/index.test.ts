@@ -1,87 +1,114 @@
+import { ENDPOINTS, Reducible } from "../../types"
 import { uuid, string } from "../../fields"
 import { generateTypeDefs } from "."
 
-const subject = (opts) => {
-  return generateTypeDefs(opts)
-}
-
 describe("typeDefs", () => {
   describe("Query", () => {
-    it("should generate a type Query", () => {
-      expect(
-        subject({
-          types: {
-            Query: {
-              TestQuery: {
-                typeDef: {
-                  params: {
-                    id: uuid(),
-                  },
-                  returns: string(),
-                },
+    const subject = () => {
+      return generateTypeDefs({
+        endpoints: {
+          TestQuery: {
+            type: ENDPOINTS.ACCESSOR,
+            typeDef: {
+              params: {
+                id: uuid(),
               },
+              returns: string(),
             },
+            resolver: () => {},
           },
-        })
-      ).toMatch(`type Query {
+        },
+      })
+    }
+
+    it("should generate the Query type", () => {
+      expect(subject()).toMatch(`type Query {
   TestQuery(id: UUID): String
 }`)
     })
-  })
-  
-  describe("Mutation", () => {
-    it("should generate a type Mutation", () => {
-      expect(
-        subject({
-          types: {
-            Mutation: {
-              TestMutation: {
-                typeDef: {
-                  params: {
-                    id: uuid(),
-                  },
-                  returns: string(),
-                },
-              },
-            },
-          },
-        })
-      ).toMatch(`type Mutation {
-  TestMutation(id: UUID): String
-}`)
+
+    it("should not have a Mutation generated", () => {
+      expect(subject()).not.toMatch(`type Mutation`)
     })
   })
 
-  describe("inputs", () => {
-    it("should generate an input", () => {
-      expect(
-        subject({
-          inputs: {
-            BookInput: {
-              name: {
-                typeDef: {
-                  returns: string(),
-                },
+  describe("Mutation", () => {
+    const subject = () => {
+      return generateTypeDefs({
+        endpoints: {
+          TestMutation: {
+            type: ENDPOINTS.MUTATOR,
+            typeDef: {
+              params: {
+                id: uuid(),
               },
+              returns: string(),
+            },
+            resolver: () => {},
+          },
+        },
+      })
+    }
+
+    it("should generate the Mutation type", () => {
+      expect(subject()).toMatch(`type Mutation {
+  TestMutation(id: UUID): String
+}`)
+    })
+
+    it("should not have a Query generated", () => {
+      expect(subject()).not.toMatch(`type Query`)
+    })
+    //     it("should generate a type Mutation", () => {
+    //       expect(
+    //         subject({
+    //           types: {
+    //             Mutation: {
+    //               TestMutation: {
+    //                 typeDef: {
+    //                   params: {
+    //                     id: uuid(),
+    //                   },
+    //                   returns: string(),
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         })
+    //       ).toMatch(`type Mutation {
+    //   TestMutation(id: UUID): String
+    // }`)
+    //     })
+  })
+
+  describe("inputs", () => {
+    const subject = () => {
+      return generateTypeDefs({
+        inputs: {
+          BookInput: {
+            name: {
+              returns: string(),
             },
           },
-        })
-      ).toMatch(`input BookInput {
+        },
+      })
+    }
+
+    it("should generate an input", () => {
+      expect(subject()).toMatch(`input BookInput {
   name: String
 }`)
     })
   })
-  
+
   describe("types", () => {
     it("should generate a type", () => {
       expect(
-        subject({
+        generateTypeDefs({
           types: {
             Book: {
               name: {
-                typeDef: {
-                  returns: string(),
-                },
+                returns: string(),
               },
             },
           },
@@ -90,16 +117,14 @@ describe("typeDefs", () => {
   name: String
 }`)
     })
-  
+
     it("should generate a type with a required field", () => {
       expect(
-        subject({
+        generateTypeDefs({
           types: {
             Book: {
               name: {
-                typeDef: {
-                  returns: string().required(),
-                },
+                returns: string().required(),
               },
             },
           },
@@ -110,4 +135,3 @@ describe("typeDefs", () => {
     })
   })
 })
-

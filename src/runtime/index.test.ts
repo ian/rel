@@ -9,28 +9,28 @@ describe("Runtime", () => {
     })
   })
 
-  describe("#generate", () => {
-    describe("typeDefs", () => {
-      it("should have a typedef for Book", () => {
-        const runtime = new Runtime()
+  //   describe("#generate", () => {
+  //     describe("typeDefs", () => {
+  //       it("should have a typedef for Book", () => {
+  //         const runtime = new Runtime()
 
-        runtime.module({
-          schema: {
-            Book: {
-              fields: {
-                name: string().required(),
-              },
-            },
-          },
-        })
-        const generated = runtime.generate()
-        expect(generated.typeDefs).toMatch(`type Book {
-  id: UUID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}`)
-      })
-    })
-  })
+  //         runtime.module({
+  //           schema: {
+  //             Book: {
+  //               fields: {
+  //                 name: string().required(),
+  //               },
+  //             },
+  //           },
+  //         })
+  //         const generated = runtime.generate()
+  //         expect(generated.typeDefs).toMatch(`type Book {
+  //   id: UUID!
+  //   name: String!
+  //   createdAt: DateTime!
+  //   updatedAt: DateTime!
+  // }`)
+  //       })
+  //     })
+  //   })
 })
