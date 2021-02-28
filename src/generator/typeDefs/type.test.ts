@@ -11,8 +11,10 @@ describe("#generateType", () => {
       expect(
         subject("Book", {
           name: {
-            params: null,
-            returns: string(),
+            typeDef: {
+              params: null,
+              returns: string(),
+            },
           },
         })
       ).toEqual(`type Book {

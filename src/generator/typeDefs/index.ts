@@ -55,11 +55,11 @@ scalar UUID`)
 
       switch (type) {
         case ENDPOINTS.ACCESSOR:
-          queries[name] = endpoint.typeDef
+          queries[name] = endpoint
           break
 
         case ENDPOINTS.MUTATOR:
-          mutations[name] = endpoint.typeDef
+          mutations[name] = endpoint
           break
         default:
           throw new Error(`Unknown endpoint type ${type} for ${name}`)
@@ -69,25 +69,6 @@ scalar UUID`)
     if (!_.isEmpty(queries)) gql.push(generateType("Query", queries))
     if (!_.isEmpty(mutations)) gql.push(generateType("Mutation", mutations))
   }
-
-  // if (types) {
-  //   const { Query, Mutation, ...restOfTypes } = types
-
-  //   if (Query) {
-  //     gql.push(generateType("Query", Query))
-  //   }
-
-  //   if (Mutation) {
-  //     gql.push(generateType("Mutation", Mutation))
-  //   }
-
-  //   if (restOfTypes) {
-  //     Object.entries(restOfTypes).forEach((entry) => {
-  //       const [name, fields] = entry
-  //       gql.push(generateType(name, fields))
-  //     })
-  //   }
-  // }
 
   return gql
     .map((typeStr) => {

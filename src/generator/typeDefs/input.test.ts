@@ -11,8 +11,10 @@ describe("#generateInput", () => {
       expect(
         subject("BookInput", {
           name: {
-            params: null,
-            returns: string(),
+            typeDef: {
+              params: null,
+              returns: string(),
+            },
           },
         })
       ).toEqual(`input BookInput {

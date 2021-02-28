@@ -60,12 +60,15 @@ export function reduceModel(label, model: Model): Reducible {
           [label]: {
             [relName]: {
               resolver: relationResolver(relation),
-              returns: singular
-                ? type(to.label)
-                : array(type(to.label)).required(),
+              typeDef: {
+                returns: singular
+                  ? type(to.label)
+                  : array(type(to.label)).required(),
+              },
             },
           },
         },
+        // @todo - add relation endpoints
       })
     })
   }

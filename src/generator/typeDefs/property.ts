@@ -11,7 +11,7 @@ function generateParams(params: Params) {
 
 export function generateProperty(name, property: ReducedProperty) {
   const fieldDef = [name]
-  const { params, returns } = property
+  const { params, returns } = property.typeDef
 
   if (params) {
     fieldDef.push(`( ${generateParams(params)} )`)

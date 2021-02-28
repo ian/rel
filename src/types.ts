@@ -148,62 +148,12 @@ export type CallableModule = (/* @todo - this should take some JIT params */) =>
 // Runtime Types
 // These are used internally to the Runtime engine.
 
-// export type ReducedTypeFieldParams = {
-//   [name: string]: Field
-// }
-
-// // We let typedefs specify themselves as compartementalized params + guard + returns, or a straight string pipe through
-// // Collisions are caught on the fieldName higher up
-// export type ReducedTypeDef = {
-//   params?: ReducedTypeFieldParams
-//   guard?: string
-//   returns: Field
-// }
-// // | string
-
-// export type ReducedField = {
-//   typeDef: ReducedTypeDef
-//   resolver?: Resolver
-// }
-
-// export type ReducedType = {
-//   [fieldName: string]: ReducedField
-// }
-
-// export type ReducedTypeQuery = {
-//   [queryName: string]: ReducedField
-// }
-
-// export type ReducedTypeMutation = {
-//   [mutationName: string]: ReducedField
-// }
-
-// export type ReducedTypes = {
-//   Query?: ReducedTypeQuery
-//   Mutation?: ReducedTypeMutation
-//   [objectName: string]: ReducedType
-// }
-
-// export type ReducedInputs = {
-//   [objectName: string]: ReducedType
-// }
-
-// export type ReducedResolvers = {
-//   [name: string]: any
-// }
-
-// export type ReducedDirectives = {
-//   [name: string]: {
-//     typeDef: string
-//     resolver: (next, src, args, context) => void
-//   }
-// }
-
 export type ReducedProperty = {
-  params?: Params
-  guard?: string
+  // params?: Params
+  // guard?: string
+  typeDef: TypeDef
   resolver?: Resolver
-  returns: Field
+  // returns: Field
 }
 
 export type ReducedInput = {

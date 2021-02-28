@@ -59,26 +59,6 @@ describe("typeDefs", () => {
     it("should not have a Query generated", () => {
       expect(subject()).not.toMatch(`type Query`)
     })
-    //     it("should generate a type Mutation", () => {
-    //       expect(
-    //         subject({
-    //           types: {
-    //             Mutation: {
-    //               TestMutation: {
-    //                 typeDef: {
-    //                   params: {
-    //                     id: uuid(),
-    //                   },
-    //                   returns: string(),
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         })
-    //       ).toMatch(`type Mutation {
-    //   TestMutation(id: UUID): String
-    // }`)
-    //     })
   })
 
   describe("inputs", () => {
@@ -87,7 +67,9 @@ describe("typeDefs", () => {
         inputs: {
           BookInput: {
             name: {
-              returns: string(),
+              typeDef: {
+                returns: string(),
+              },
             },
           },
         },
@@ -108,7 +90,9 @@ describe("typeDefs", () => {
           types: {
             Book: {
               name: {
-                returns: string(),
+                typeDef: {
+                  returns: string(),
+                },
               },
             },
           },
@@ -124,7 +108,9 @@ describe("typeDefs", () => {
           types: {
             Book: {
               name: {
-                returns: string().required(),
+                typeDef: {
+                  returns: string().required(),
+                },
               },
             },
           },
