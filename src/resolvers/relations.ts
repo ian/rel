@@ -1,15 +1,14 @@
+import camelcase from "camelcase"
 import _ from "lodash"
 import { resolveNode } from "./node"
-import { cypher1, cypher, cypherListRelationship } from "../cypher"
+import {
+  cypherListRelationship,
+  cypherCreateRelationship,
+  cypherDeleteRelationship,
+} from "../cypher"
 import { Rel, Relation, Resolver } from "~/types"
 
 export function resolveRel(rel: Rel) {
-  // if (typeof rel === "string")
-  //   return {
-  //     name: _.camelCase(rel) + "Rel",
-  //     label: rel,
-  //   }
-
   return {
     name: _.camelCase(rel.label) + "Rel",
     direction: rel.direction,
@@ -17,40 +16,65 @@ export function resolveRel(rel: Rel) {
   }
 }
 
-export function relationResolver(relation: Relation): Resolver {
-  const { from, to, singular = false, order, rel } = relation
+export function listRelationResolver(relation: Relation): Resolver {
+  const { from, to, rel, singular = false, order } = relation
 
   return async (runtime) => {
-    const { obj, params, context } = runtime
     const fromResolved = resolveNode("from", from, runtime, {
-      // default the from to be the current object
+      // always default the from to be the current object
       params: ({ obj }) => ({ id: obj.id }),
     })
     const toResolved = resolveNode("to", to, runtime)
     const relResolved = resolveRel(rel)
 
-    const cypherQuery = cypherListRelationship({
-      from: fromResolved,
-      to: toResolved,
-      rel: relResolved,
+    return cypherListRelationship(fromResolved, toResolved, relResolved, {
+      singular,
       order,
     })
+  }
+}
 
-    const mapper = (rec) => ({
-      __parent: obj,
-      // ...(direction === Direction.IN ? rec.from : rec.to),
-      ...rec.to,
-      [relResolved.name]: rec[relResolved.name],
+export function addRelationResolver(relation: Relation): Resolver {
+  const { from, to, singular = false, rel } = relation
+
+  const fromId = `${camelcase(from.label)}Id`
+  const toId = `${camelcase(to.label)}Id`
+
+  return async (runtime) => {
+    const { params } = runtime
+    console.log("addRelationResolver", params)
+
+    const fromResolved = resolveNode("from", from, runtime, {
+      params: ({ params }) => ({ id: params[fromId] }),
     })
+    const toResolved = resolveNode("to", to, runtime, {
+      params: ({ params }) => ({ id: params[toId] }),
+    })
+    const relResolved = resolveRel(rel)
 
-    if (singular) {
-      return cypher1(cypherQuery).then((rec) => {
-        // I'm pretty sure this shouldn't happen after we get all the restuarants in but if that happens then figure out why this occurs
-        if (!rec) return null
-        return mapper(rec)
-      })
-    } else {
-      return cypher(cypherQuery).then((records) => records.map(mapper))
-    }
+    return cypherCreateRelationship(fromResolved, toResolved, relResolved, {
+      singular,
+    }).then((res) => res?.to)
+  }
+}
+
+export function removeRelationResolver(relation: Relation): Resolver {
+  const { from, to, rel /*singular = false*/ } = relation
+
+  const fromId = `${camelcase(from.label)}Id`
+  const toId = `${camelcase(to.label)}Id`
+
+  return async (runtime) => {
+    const fromResolved = resolveNode("from", from, runtime, {
+      params: ({ params }) => ({ id: params[fromId] }),
+    })
+    const toResolved = resolveNode("to", to, runtime, {
+      params: ({ params }) => ({ id: params[toId] }),
+    })
+    const relResolved = resolveRel(rel)
+
+    return cypherDeleteRelationship(fromResolved, toResolved, relResolved).then(
+      (res) => res?.to
+    )
   }
 }

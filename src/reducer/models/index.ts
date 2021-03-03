@@ -6,7 +6,7 @@ import { reduceFields } from "./fields"
 import { reduceInput } from "./input"
 import { reduceAccessors } from "./accessors"
 import { reduceMutators } from "./mutators"
-import { relationResolver } from "../../resolvers"
+import { reduceRelations } from "./relations"
 import { Reducer } from ".."
 
 export function reduceModel(label, model: Model): Reducible {
@@ -51,26 +51,7 @@ export function reduceModel(label, model: Model): Reducible {
   }
 
   if (relations) {
-    Object.entries(relations).forEach((relObj) => {
-      const [relName, relation] = relObj
-      const { to, singular } = relation
-
-      reducer.reduce({
-        types: {
-          [label]: {
-            [relName]: {
-              resolver: relationResolver(relation),
-              typeDef: {
-                returns: singular
-                  ? type(to.label)
-                  : array(type(to.label)).required(),
-              },
-            },
-          },
-        },
-        // @todo - add relation endpoints
-      })
-    })
+    reducer.reduce(reduceRelations(label, relations))
   }
 
   if (accessors) {

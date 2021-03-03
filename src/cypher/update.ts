@@ -1,4 +1,5 @@
 import { isEmpty } from "lodash"
+import { Cypher1Response } from "~/types"
 import { cypher1 } from "./cypher"
 import { cypherFind } from "./find"
 import { isSlugAvailable, slugHandler } from "./slugs"
@@ -14,19 +15,31 @@ import { paramify, TIMESTAMPS } from "../util/params"
 // export type AfterOption = (obj: object) => Promise<void>
 
 export type UpdateOpts = {
+  id?: boolean
+  timestamps?: boolean
   // after?: AfterOption
   // geo?: string | ((object) => string)
   // slug?: string | SlugOpts
 }
 
-export async function cypherUpdate(label, id, params, opts: UpdateOpts = {}) {
+const DEFAULT_UPDATE_OPTS = {
+  id: false,
+  timestamps: TIMESTAMPS.UPDATED,
+}
+
+export async function cypherUpdate(
+  label,
+  id,
+  params,
+  opts: UpdateOpts = {}
+): Promise<Cypher1Response> {
   const node = await cypherFind(label, id)
 
   if (!node) {
     throw new Error(`Unknown ${label} id = ${id}`)
   }
 
-  const { id: _, createdAt, updatedAt, ...toParams } = diff(node, params, {
+  const toParams = diff(node, params, {
     ignore: ["id", "createdAt", "updatedAt", "__typename"],
   })
 
@@ -54,8 +67,7 @@ export async function cypherUpdate(label, id, params, opts: UpdateOpts = {}) {
   }
 
   const paramsCypher = paramify(toParams, {
-    id: false,
-    timestamps: TIMESTAMPS.UPDATED,
+    ...DEFAULT_UPDATE_OPTS,
     ...opts,
   })
 
@@ -68,5 +80,6 @@ export async function cypherUpdate(label, id, params, opts: UpdateOpts = {}) {
   )
 
   if (!res) throw new Error(`${label} not found`)
+
   return res.node
 }

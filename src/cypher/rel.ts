@@ -1,20 +1,26 @@
 import { Direction } from "~/types"
+import { paramify } from "../util/params"
 
 export type CypherRelOpts = {
   name: string
   direction?: Direction
   label: string
+  values?: object
 }
 
 export function cypherRel(rel: CypherRelOpts | string) {
-  // if (typeof rel === "string") return `-[:${rel}]-`
-  const { name, direction, label } = <CypherRelOpts>rel
+  const { name, direction, label, values } = <CypherRelOpts>rel
+
+  const inner = [`${name}:${label}`]
+  if (values) inner.push(`{ ${paramify(values)} }`)
+
   switch (direction) {
     case Direction.IN:
-      return `<-[${name}:${label}]-`
+      return `<-[${inner.join(" ")}]-`
     case Direction.OUT:
-      return `-[${name}:${label}]->`
+      return `-[${inner.join(" ")}]->`
+    case Direction.NONE:
     default:
-      return `-[${name}:${label}]-`
+      return `-[${inner.join(" ")}]-`
   }
 }

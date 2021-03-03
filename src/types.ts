@@ -6,6 +6,7 @@
 export enum Direction {
   IN = "IN",
   OUT = "OUT",
+  NONE = "NONE",
 }
 
 export enum ENDPOINTS {

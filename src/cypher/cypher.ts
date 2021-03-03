@@ -1,8 +1,9 @@
 import { isInt } from "neo4j-driver/lib/integer.js"
 import { Result } from "neo4j-driver"
 import { Geo } from "../util/geo"
-import driver from "../connection"
+// import driver from "../connection"
 import { Cypher1Response, CypherResponse } from "~/types"
+import { runQuery } from "~/connection"
 
 export async function cypherRaw(query): Promise<Result> {
   function beautifyCypher(query) {
@@ -12,12 +13,11 @@ export async function cypherRaw(query): Promise<Result> {
       .join("\n")
   }
 
-  if (process.env.NEO4J_DEBUG === "true") {
+  if (process.env.CYPHER_DEBUG === "true") {
     console.log(beautifyCypher(query))
   }
 
-  const session = driver.session()
-  return session.run(beautifyCypher(query))
+  return runQuery(beautifyCypher(query))
 }
 
 export async function cypher(query): Promise<CypherResponse> {
@@ -28,7 +28,7 @@ export async function cypher(query): Promise<CypherResponse> {
       case maybeObject === undefined:
         return null
       case isInt(maybeObject):
-        return maybeObject.toString()
+        return parseInt(maybeObject.toString())
       case maybeObject.constructor.name === "Point":
         return new Geo({
           lat: maybeObject.y,

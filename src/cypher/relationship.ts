@@ -1,118 +1,101 @@
 import _ from "lodash"
+import { cypher, cypher1 } from "./cypher"
 import { cypherNode, CypherNodeOpts } from "./node"
 import { cypherRel, CypherRelOpts } from "./rel"
 
-export type CypherRelationOpts = {
-  from: CypherNodeOpts
-  to: CypherNodeOpts
-  rel: CypherRelOpts
+type ListAssociationOpts = {
   where?: string
   order?: string
+  orderRaw?: string
   singular?: boolean
 }
 
-export function cypherListRelationship(opts: CypherRelationOpts) {
-  const { from, to, rel, where, order = "to.id", singular } = opts
-  const query = []
-
-  const matchCypher = [cypherNode(from), cypherRel(rel), cypherNode(to)]
-
-  query.push(`MATCH ${matchCypher.join("")}`)
-  if (where) query.push(`WHERE ${where}`)
-  query.push(`RETURN to, ${rel.name}`)
-  query.push(`ORDER BY ${order};`)
-
-  // @todo - add support for singular
-
-  return query.join("\n")
-}
-
-export type AddAssociationOpts = {
-  singular?: boolean
-}
-
-// export async function createAssociation(
-//   from: object | string,
-//   to: object | string,
-//   relLabel: string,
-//   relValues: object = {},
-//   opts: CrudAssociateOpts = { singular: false }
-// ) {
-//   if (opts.singular) {
-//     await clearAssociation(from, relLabel)
-//   }
-//   return cypher1(`
-//     MATCH (from {id: "${objectId(from)}"}), (to {id: "${objectId(to)}"})
-//     MERGE (from)-[rel:${relLabel} { ${paramify(relValues)} }]->(to)
-//     RETURN from, to, rel;
-//   `)
-// }
-
-export function cypherAddAssociation(
-  // from: object | string,
-  // to: object | string,
-  // relLabel: string,
-  // relValues: object = {},
+export async function cypherListRelationship(
   from: CypherNodeOpts,
   to: CypherNodeOpts,
   rel: CypherRelOpts,
-  opts: AddAssociationOpts = { singular: false }
+  opts?: ListAssociationOpts
 ) {
-  const query = []
-  // const matchCypher = [cypherNode(from), cypherRel(rel), cypherNode(to)]
-  // query.push(`MATCH ${matchCypher.join("")}`)
-  // // if (where) query.push(`WHERE ${where}`)
-  // query.push(`RETURN to, ${rel.name}`)
-  // query.push(`ORDER BY ${order};`)
+  const fromCypher = cypherNode(from)
+  const toCypher = cypherNode(to)
+  const relCypher = cypherRel(rel)
 
-  return query.join("\n")
+  const { singular, order, orderRaw, where } = opts || {}
+  const orderBy = orderRaw || `${to.name}.${order || "id"}`
 
-  //   const cypherQuery = []
-  //   if (opts.singular) {
-  //     cypherQuery.push(`
-  //     MATCH (from {id: "${objectId(from)}"})
-  //     OPTIONAL MATCH (from)-[prevRel:${relLabel}]-()
-  //     DELETE prevRel
-  //     RETURN from;
-  //     `)
-  //   }
-  //   return cypher1(`
-  //     MATCH (from {id: "${objectId(from)}"}), (to {id: "${objectId(to)}"})
-  //     MERGE (from)-[rel:${relLabel} { ${paramify(relValues)} }]->(to)
-  //     RETURN from, to, rel;
-  //   `)
+  if (singular) {
+    return cypher1(`
+    MATCH ${fromCypher}${relCypher}${toCypher}
+    RETURN ${to.name}
+    ORDER BY ${orderBy}
+    LIMIT 1
+    `).then((r) => r[to.name])
+  } else {
+    return cypher(`
+    MATCH ${fromCypher}${relCypher}${toCypher}
+    RETURN ${to.name}
+    ORDER BY ${orderBy}
+  `).then((res) => res.map((r) => r[to.name]))
+  }
 }
 
-export type RemoveAssociationOpts = {
+export async function clearRelationship(
+  from: CypherNodeOpts,
+  rel: CypherRelOpts
+) {
+  const fromCypher = cypherNode(from)
+  const relCypher = cypherRel(rel)
+
+  return cypher1(`
+  MATCH ${fromCypher}
+  OPTIONAL MATCH (from)${relCypher}()
+  DELETE ${rel.name}
+  RETURN ${from.name};
+`)
+}
+
+type CreateAssociationOpts = {
   singular?: boolean
 }
 
-// export async function deleteAssociation(
-//   from: object | string,
-//   to: object | string,
-//   relLabel: string,
-//   relValues = {}
-//   // opts: CrudAssociateOpts = { singular: false }
-// ) {
-//   return cypher1(`
-//     MATCH (from {id: "${objectId(from)}"}), (to {id: "${objectId(to)}"})
-//     MATCH (from)-[rel:${relLabel} { ${paramify(relValues)} }]->(to)
-//     DELETE rel
-//     RETURN from, to, rel;
-//   `)
-// }
-
-export async function cypherRemoveAssociation(
-  from: object | string,
-  to: object | string,
-  relLabel: string,
-  relValues = {}
-  // opts: CrudAssociateOpts = { singular: false }
+export async function cypherCreateRelationship(
+  from: CypherNodeOpts,
+  to: CypherNodeOpts,
+  rel: CypherRelOpts,
+  opts?: CreateAssociationOpts
 ) {
-  // return cypher1(`
-  //   MATCH (from {id: "${objectId(from)}"}), (to {id: "${objectId(to)}"})
-  //   MATCH (from)-[rel:${relLabel} { ${paramify(relValues)} }]->(to)
-  //   DELETE rel
-  //   RETURN from, to, rel;
-  // `)
+  const { singular } = opts || {}
+
+  const fromCypher = cypherNode(from)
+  const toCypher = cypherNode(to)
+  const relCypher = cypherRel(rel)
+
+  if (singular) {
+    await clearRelationship(from, rel)
+  }
+  return cypher1(`
+    MATCH ${fromCypher}, ${toCypher}
+    MERGE (${from.name})${relCypher}(${to.name})
+    RETURN ${from.name}, ${to.name}, ${rel.name};
+  `)
+}
+
+// type DeleteAssociationOpts = {}
+
+export async function cypherDeleteRelationship(
+  from: CypherNodeOpts,
+  to: CypherNodeOpts,
+  rel: CypherRelOpts
+  // opts?: DeleteAssociationOpts
+) {
+  const fromCypher = cypherNode(from)
+  const toCypher = cypherNode(to)
+  const relCypher = cypherRel(rel)
+
+  return cypher1(`
+    MATCH ${fromCypher}, ${toCypher}
+    MATCH (${from.name})${relCypher}(${to.name})
+    DELETE ${rel.name}
+    RETURN ${from.name}, ${to.name}, ${rel.name};
+  `)
 }

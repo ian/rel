@@ -1,3 +1,4 @@
+import { Cypher1Response } from "~/types"
 import { cypher1 } from "./cypher"
 import { isSlugAvailable, slugHandler } from "./slugs"
 // import { slugify } from "../util/slugs"
@@ -23,7 +24,11 @@ const DEFAULT_CREATE_OPTS = {
   timestamps: true,
 }
 
-export async function cypherCreate(label, params, opts: CreateOpts = {}) {
+export async function cypherCreate(
+  label,
+  params,
+  opts: CreateOpts = {}
+): Promise<Cypher1Response> {
   const toParams = {
     ...params,
   }
