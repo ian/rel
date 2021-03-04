@@ -1,9 +1,7 @@
 import Field from "./field"
-import { object } from "yup"
-
 export default class Type extends Field {
   _contains = null
-  _validator = object()
+  // _validator = object()
 
   constructor(contains: Field) {
     super(`[${contains._name}]`)

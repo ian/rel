@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { GraphQLSchema } from "graphql"
 import { Module, Reducible } from "~/types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 import {
@@ -8,6 +9,12 @@ import {
 } from "~/generator"
 
 import { Reducer } from "~/reducer"
+
+// temporary def
+type GraphQLRuntime = {
+  typeDefs: string
+  schema: GraphQLSchema
+}
 export class Runtime {
   reducer: Reducer
 
@@ -23,7 +30,7 @@ export class Runtime {
     this.reducer.module(module)
   }
 
-  generate() {
+  generate(): GraphQLRuntime {
     const reduced = this.reducer.toReducible()
 
     const typeDefs = generateTypeDefs(reduced)
