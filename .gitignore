@@ -4,3 +4,4 @@ dist/
 coverage/
 .vscode
 *.old
+yarn-error.log

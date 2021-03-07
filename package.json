@@ -1,7 +1,7 @@
 {
-  "name": "rel",
-  "version": "0.1.1",
-  "description": "React animated SMS conversation",
+  "name": "@reltool/rel",
+  "version": "0.1.2",
+  "description": "The backend platform for frontend developers",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

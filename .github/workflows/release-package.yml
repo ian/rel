@@ -1,0 +1,34 @@
+name: npm package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  # github complains without having this, but it's entirely redundant. We should probably add tests in here to make sure we're not shipping something broken.
+  # If we were able to reference other tests then that'd be fantastic, but github actions doesn't support this: https://github.com/actions/starter-workflows/issues/245
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: yarn install
+      - run: yarn build
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+          scope: "@reltool"
+      - run: yarn install
+      - run: yarn build
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

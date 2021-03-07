@@ -1,244 +1,70 @@
-# Internal notes for now
+# rel - The backend for frontend developers
 
-Questions Outstanding
+There has been quite the renaissance in the Javascript world over the past 10 years. New frontend tooling is pushing the boundaries of both native and web applications.
 
-- should we make label and id reserved keywords?
-
-# TODO
-
-## Fields
-
-- [x] generates type object
-- [ ] `uuid()`
-- [x] `string()`
-- [ ] `int()`
-- [ ] `boolean()`
-- [ ] `date()`
-- [ ] `time()`
-- [ ] `dateTime()`
-- [ ] `url()`
-- [x] `phoneNumber()`
-- [x] `geo()`
-- [ ] `slug({ from: "name" })`
-- [ ] `.unique()`
-- [x] `.guard("admin")`
-- [ ] `.guard((runtime) => ...)`
-- [x] `id: false`
-- [x] `timestamps: false`
-
-## ModelAccessors
-
-- [x] find
-- [x] list
-- [ ] popular?
-- [ ] where clauses https://graphcms.com/docs/content-api/queries
-- [x] Guards
-
-## Mutators
-
-- [x] create
-- [x] merge
-- [x] update
-- [x] delete
-- [ ] Guards
-
-## Relationships
-
-- [ ] object field (accessors)
-- [ ] mutators
-- [ ] out vs in
-- [ ] Guards
-
-## Publishing
-
-- [ ] publishedAt?
-
-## Extend
-
-- [ ] GQL extensions
-
-```
-server.extend({
-  CustomEndpoint: {
-    fields: {
-      [key:string]: Field
-    },
-    resolver: (runtime:Runtime) => object })
-    guard?: string
-  }
-})
-```
-
-## Auth
-
-- [ ] `server.auth({ model: "saas" | "accounts" | "users" })`
-- [ ] `server.plugin(require("rel-auth0")({ apiKey: ...))`
-- [ ] `server.plugin(require("rel-signalwire")({ apiKey: ... }))`
-
-## Images
-
-- [ ] `server.plugin(require("rel-imgix")({ apiKey: ... }))`
-
-## Video
-
-- [ ] `server.plugin(require("rel-mux")({ apiKey: ... }))`
-
-## Guards
-
-- [ ] Authenticate
-- [ ] Admin
-
-## Jobs
-
-- [ ] server.jobs({ ... })
+Our goal is to apply some of the foundations that have made frontend tooling successful to the backend. We want to have you up and running in minutes
 
 # Quickstart
 
-Install Rel
+To bootstrap a new project, type:
 
-`npx rel init`
+`npx create-rel-app`
 
-This will create the following in your project:
+This will run your though a few questions about your project and generate a runnable server.
 
-```
-.
-├── db                   # Compiled files (alternatively `dist`)
-|   ├── schema.ts        # Typescript definition of your project
-|   ├── server.ts        # Standalone server
-└── relconfig.json
-```
+Then run your project:
 
-./db/server.ts
+`rel run`
 
-```
-import Server, { Schema } from "@rel/server"
-import schema from "./schema"
+# Documentation
 
-const port = process.env.PORT || 4000
+Visit [https://rel.run](https://rel.run) to view the full documentation.
 
-Server.start({
-  port,
-  schema,
-})
+# Examples
 
-console.log(`Rel server running on localhost:${port}`)
-```
+We have written a number of example projects like Clubhouse, Instagram, Shopify, to show you how easy it is to get setup with rel.
 
-./db/schema.ts
+Visit [https://rel.run/examples](https://rel.run/examples)
 
-```
-export default {
-  // ...
-}
-```
+# What is rel?
 
-Then head on over to [http://localhost:4000/graphql](http://localhost:4000/graphql) to see your running backend.
+rel is a batteries-included, highly configurable and extensible backend-as-a-service for generating GraphQL, REST, and metal APIs. rel is written in [Typescript](https://www.typescriptlang.org/) and [Cypher](http://www.opencypher.org/) on [redis-graph](http://www.opencypher.org/).
 
-# Basic Example
+rel is designed to handle the 80%+ usecase for most applications. Out of the box it comes with a ton of configurable modules:
 
-This is using the [Neo4j The Movie Graph](https://github.com/reldb/server/doc/movies.cypher) example from [Neo4j](https://neo4j.com/)
+- Customizable domain model (e.g. Actors ACT IN Movies, Producers PRODUCE Movies, Movies have People)
+- Authentication models (social, saas, crypto, forum, etc.)
+- A privileges + guard system with controls at the model, field and endpoint level.
+- Background jobs
+- Module support for Images (via Imgix), Video (via Mux), Files (via S3, gCloud storage, etc)
+- Endpoints generated in your flavor of choise (REST, GraphQL)
 
-### Import the Dataset
+The name rel is an homage to the quintessential representation of a relationship in CYPHER. Quite frankly, we wouldn't be here without 'em.
 
-```
-rel import https://github.com/reldb/server/doc/movies.cypher --clean
-```
+## Why do I need this?
 
-### Edit your ./db/schema.ts file
+rel was born out of [01](https://01.studio) as a proof-of-concept backend for rapid frontend iteration and product ideation.
 
-```
-import { Schema } from "@rel/server"
+Generally, after a design sprint and engineering is ready to build, we find ourselves at the same moment on every project. OK I need a server, let's bolt in X. OK I need Auth, let's bolt in Y. Next generate models and ORM. Then wire up the endpoints to access/mutate data.
 
-export default  {
-  Director: {
-    fields: {
-      name: Schema.string().required(),
-    },
-    accessors: {
-      find: {
-        findBy: ["id", "name"],
-      },
-      list: true,
-      create: true,
-    },
-    relations: {
-      movies: {
-        from: "Director",
-        to: "Movie",
-        direction: "OUT" // default
-      }
-    }
-  },
-  Movie: {
-    fields: {
-      title: Schema.string().required(),
-      released: Schema.int().required(),
-      tagline: Schema.string(),
-    },
-    relations: {
-      director: {
-        from: "Movie",
-        to: "Director"
-        singular: true,
-        direction: "IN"
-      }
-    },
-    accessors: {
-      find: true,
-      list: true,
-      create: true,
-    },
-  },
-}
-```
+rel solves this via offering an extensible domain model and module architecture that provides the ability to customize these same "bolt-in" methodology.
 
-### Run the server
+## What is CYPHER?
 
-`rel dev`
+Quite simply, CYPHER is SQL for Graph Databases. It's a far more elegant and visually representative query language. We're big fans.
 
-This will create a GraphQL server with the following schema:
+Whereas a SQL database seeks to force data into a specific format via field and table constraints, a Graph DB seeks to "make sense" of your data by allowing you to look at it in different ways. We like to think of it as providing the 10,000 ft view all the way down to the
 
-```
-type Director {
-  id: UUID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
+You can read more on Why CYPHER on our documentation: [https://rel.run/docs/why-cypher](https://rel.run/docs/why-cypher)
 
-type Movie {
-  id: UUID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  director: Director
-}
+In general, using rel you will likely never have to write Cypher since the persistence layer is handled for you. However, there are advanced settings that let you drop into a CYPHER query from any endpoint or field.
 
-type Query {
-  GetDirector(id: UUID, name: String): Director
-  ListDirectors(limit: Int, skip: Int, order: String): [Director]!
+# Contributing
 
-  GetMovie(id: UUID): Movie
-  ListMovies(limit: Int, skip: Int, order: String): [Movie]!
-}
+We are always looking for backend and graph aficionados to help take rel to the next phase.
 
-type Mutation {
-  CreateDirector(values: DirectorInput!): Director
-  MergeDirector(id: UUID!, values: DirectorInput!): Director
-  UpdateDirector(id: UUID!, values: DirectorInput!): Director
-  DeleteDirector(id: UUID!): Director
+Please see our contributing.md.
 
-  # since this is a N:1 relationship of Movie:Director, the vernacular is Add/Remove
-  AddDirectorMovie(directorId: UUID!, movieId: UUID!): Movie
-  RemoveDirectorMovie(directorId: UUID!, movieId: UUID!): Movie
+# Authors
 
-  CreateMovie(values: AuthorInput!): Movie
-  MergeMovie(id: UUID!, values: MovieInput!): Movie
-  UpdateMovie(id: UUID!, values: MovieInput!): Movie
-  DeleteMovie(id: UUID!): Movie
-
-  # since this is a 1:N relationship of Director:Movie, the vernacular is Set/Remove
-  SetMovieDirector(directorId: UUID!, movieId: UUID!): Director
-  RemoveMovieDirector(directorId: UUID!, movieId: UUID!): Director
-}
-```
+- Ian Hunter [@ian](https://github.com/ian) - 01 Studio
