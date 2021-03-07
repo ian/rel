@@ -14,7 +14,7 @@ This will run your though a few questions about your project and generate a runn
 
 Then run your project:
 
-`rel run`
+`rel dev`
 
 # Documentation
 
