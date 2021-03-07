@@ -32,7 +32,7 @@ rel is a batteries-included, highly configurable and extensible backend-as-a-ser
 
 rel is designed to handle the 80%+ usecase for most applications. Out of the box it comes with a ton of configurable modules:
 
-- Customizable domain model (e.g. Actors ACT IN Movies, Producers PRODUCE Movies, Movies have People)
+- Customizable domain model (e.g. Users _HAVE_ Followers, )
 - Authentication models (social, saas, crypto, forum, etc.)
 - A privileges + guard system with controls at the model, field and endpoint level.
 - Background jobs
@@ -45,9 +45,11 @@ The name rel is an homage to the quintessential representation of a relationship
 
 rel was born out of [01](https://01.studio) as a proof-of-concept backend for rapid frontend iteration and product ideation.
 
-Generally, after a design sprint and engineering is ready to build, we find ourselves at the same moment on every project. OK I need a server, let's bolt in X. OK I need Auth, let's bolt in Y. Next generate models and ORM. Then wire up the endpoints to access/mutate data.
+Generally, after a design sprint and engineering is ready to build, we find ourselves at the same moment on every project. OK I need a server, let's bolt-in X. OK I need Auth, let's bolt-in Y. Next generate models and ORM. Then connect endpoints to access/mutate data.
 
-rel solves this via offering an extensible domain model and module architecture that provides the ability to customize these same "bolt-in" methodology.
+rel solves this via offering extensible domain models and plugins. It's been designed to be the fastest way to get started on backend.
+
+Concentrate on your product experience and your application domain, not backend infrastructure.
 
 ## What is CYPHER?
 
