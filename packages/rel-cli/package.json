@@ -1,6 +1,6 @@
 {
   "name": "@reldb/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Visit https://rel.run/docs to view the full documentation.",
   "main": "dist/cli.js",
   "repository": "https://github.com/runrel/rel",
