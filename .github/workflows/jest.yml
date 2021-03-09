@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: yarn run build
+      - run: yarn build
       - run: yarn test:ci
         env:
           NEO4J_URI: localhost:7687

@@ -1,0 +1,22 @@
+{
+  "name": "@reldb/cli",
+  "version": "0.0.2",
+  "description": "Visit https://rel.run/docs to view the full documentation.",
+  "main": "dist/cli.js",
+  "repository": "https://github.com/runrel/rel",
+  "author": "Ian Hunter <ian@rel.run>",
+  "license": "MIT",
+  "bin": {
+    "rel": ""
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --no-stdin --watch \"src/*.ts\"  --exec 'ts-node src/cli.ts' -e ts"
+  },
+  "dependencies": {
+    "commander": "^7.1.0"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1"
+  }
+}

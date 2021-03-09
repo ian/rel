@@ -1,0 +1,10 @@
+{
+  "name": "project_name",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "dev": "node ./dev"
+  },
+  "author": "",
+  "license": "ISC"
+}

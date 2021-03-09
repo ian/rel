@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es5",
+    "module": "commonjs",
     "moduleResolution": "node",
+    "removeComments": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": false,
-    "lib": ["es6", "DOM"]
+    "lib": ["es6", "DOM"],
+    "outDir": "./dist"
   },
+  "include": ["./src"],
   "exclude": ["**/node_modules", "**/*.test.ts"]
 }

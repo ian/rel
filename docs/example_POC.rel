@@ -1,0 +1,39 @@
+import { server, Fields, Auth, Direction } from "@reldb/core"
+const { phoneNumber, int, string, rel } = Fields
+
+server()
+  // by default, Auth.SOCIAL provides 
+  // user.following (User-[FOLLOWS]->User) and 
+  // user.followers (User)<-[FOLLOWS]-(User)
+  .auth(Auth.SOCIAL)
+  // Schema extends / adds new models to the overall schema
+  .schema({
+    User: {
+      fields: {
+        name: string().required(),
+        location: string(),
+        phone: phoneNumber(),
+        // polymorphic example
+        favorites: rel("FAVORITE").direction(Direction.OUT).to(["Movies","Books", ...])
+      }
+    },
+    Book: {
+      fields: {
+        title: string().required(),
+        favoriters: rel("FAVORITE").direction(Direction.IN).to("User")
+      }
+    },
+    Movie: {
+      fields: {
+        title: string().required(),
+        released: int().required()
+      }
+    }
+  })
+
+
+
+
+
+
+  

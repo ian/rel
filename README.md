@@ -32,14 +32,14 @@ rel is a batteries-included, highly configurable and extensible backend-as-a-ser
 
 rel is designed to handle the 80%+ usecase for most applications. Out of the box it comes with a ton of configurable modules:
 
-- Customizable domain model (e.g. Users _HAVE_ Followers, )
+- Customizable domain model (e.g. Users _HAVE_ Followers, Users \_BELONG_TO Accounts)
 - Authentication models (social, saas, crypto, forum, etc.)
 - A privileges + guard system with controls at the model, field and endpoint level.
 - Background jobs
 - Module support for Images (via Imgix), Video (via Mux), Files (via S3, gCloud storage, etc)
 - Endpoints generated in your flavor of choise (REST, GraphQL)
 
-The name rel is an homage to the quintessential representation of a relationship in CYPHER. Quite frankly, we wouldn't be here without 'em.
+The name rel is an homage to CYPHER relationship, the rel.
 
 ## Why do I need this?
 
