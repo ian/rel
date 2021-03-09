@@ -1,6 +1,10 @@
-import Questions from "./questions"
-import Install from "./install"
+// import Questions from "./questions"
+// import Install from "./install"
 
-Questions().then((answers) => {
-  Install(answers)
-})
+// Questions().then((answers) => {
+//   Install(answers)
+// })
+
+import Alpha from "./alpha"
+
+Alpha()

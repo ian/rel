@@ -9,7 +9,7 @@
     "publish": {
       "conventionalCommits": true,
       "message": "chore(release): publish",
-      "allowBranch": ["master", "ian/rel-36-cli"]
+      "allowBranch": ["main"]
     }
   }
 }
