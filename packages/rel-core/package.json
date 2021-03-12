@@ -1,7 +1,7 @@
 {
   "name": "@reldb/core",
   "description": "The backend platform for frontend developers",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
