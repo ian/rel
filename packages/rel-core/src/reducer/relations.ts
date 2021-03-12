@@ -1,12 +1,12 @@
 import camelcase from "camelcase"
-import { Reducer } from "../../reducer"
-import { type, array, uuid } from "../../fields"
+import { Reducer } from "."
+import { type, array, uuid } from "../fields"
 import {
   addRelationResolver,
   listRelationResolver,
   removeRelationResolver,
-} from "../../resolvers"
-import { Relations, Reducible, ENDPOINTS } from "../../types"
+} from "../resolvers"
+import { Relations, Reducible, ENDPOINTS } from "../types"
 
 export function reduceRelations(label, relations: Relations): Reducible {
   const reducer = new Reducer()

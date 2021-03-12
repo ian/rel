@@ -1,6 +1,6 @@
-import { type } from "../../../fields"
-import { ENDPOINTS, TypeDef, CreateMutator, Fields } from "../../../types"
-import { createResolver } from "../../../resolvers"
+import { type } from "../fields"
+import { ENDPOINTS, TypeDef, CreateMutator, Fields } from "../types"
+import { createResolver } from "../resolvers"
 
 const DEFAULT_MUTATOR = {}
 

@@ -1,6 +1,6 @@
 import { Reducible } from "../../src/types"
 import { string, uuid } from "../../src/fields"
-import { generateDelete } from "../../src/reducer/models/mutators/delete"
+import { generateDelete } from "../../src/reducer/delete"
 
 const subject = (mutator) => {
   return generateDelete("Book", mutator, { title: string() }) as Reducible

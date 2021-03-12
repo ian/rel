@@ -1,6 +1,6 @@
 import { string, type } from "../../src/fields"
 import { Reducible } from "../../src/types"
-import { reduceModel } from "../../src/reducer/models/index"
+import { reduceModel } from "../../src/reducer/models"
 
 describe("reduceModel", () => {
   const subject = (model): Reducible => {

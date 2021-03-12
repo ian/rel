@@ -1,13 +1,13 @@
 import _ from "lodash"
-import { type, array, uuid, dateTime } from "../../fields"
-import { Model, Reducible } from "../../types"
+import { type, array, uuid, dateTime } from "../fields"
+import { Model, Reducible } from "../types"
 
 import { reduceFields } from "./fields"
 import { reduceInput } from "./input"
 import { reduceAccessors } from "./accessors"
 import { reduceMutators } from "./mutators"
 import { reduceRelations } from "./relations"
-import { Reducer } from ".."
+import { Reducer } from "."
 
 export function reduceModel(label, model: Model): Reducible {
   const reducer = new Reducer()

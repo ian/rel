@@ -1,6 +1,6 @@
-import { Reducible, TypeDef, FindAccessor, ENDPOINTS } from "../../../types"
-import { uuid, type } from "../../../fields"
-import { findResolver } from "../../../resolvers"
+import { Reducible, TypeDef, FindAccessor, Fields, ENDPOINTS } from "../types"
+import { uuid, type } from "../fields"
+import { findResolver } from "../resolvers"
 import _ from "lodash"
 
 const DEFAULT_ACCESSOR = {
@@ -29,8 +29,8 @@ function makeType(label: string, accessor: FindAccessor): TypeDef {
 
 export function generateFind(
   label,
-  accessor: boolean | FindAccessor
-  // fields: Fields
+  accessor: boolean | FindAccessor,
+  fields: Fields
 ): Reducible {
   if (!accessor) return null
 

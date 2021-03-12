@@ -1,8 +1,8 @@
 import { string } from "../../src/fields"
-import { generateFind } from "../../src/reducer/models/accessors/find"
+import { generateFind } from "../../src/reducer/find"
 
 const subject = (accessor) => {
-  return generateFind("Book", accessor)
+  return generateFind("Book", accessor, {})
 }
 
 describe("generateFind", () => {

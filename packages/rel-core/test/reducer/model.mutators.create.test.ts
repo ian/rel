@@ -1,6 +1,6 @@
 import { Reducible } from "../../src/types"
 import { string, type } from "../../src/fields"
-import { generateCreate } from "../../src/reducer/models/mutators/create"
+import { generateCreate } from "../../src/reducer/create"
 
 const subject = (mutator) => {
   return generateCreate("Book", mutator, { title: string() }) as Reducible

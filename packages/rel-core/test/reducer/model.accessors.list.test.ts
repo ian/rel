@@ -1,8 +1,8 @@
 import { string, int } from "../../src/fields"
-import { generateList } from "../../src/reducer/models/accessors/list"
+import { generateList } from "../../src/reducer/list"
 
 const subject = (accessor) => {
-  return generateList("Book", accessor)
+  return generateList("Book", accessor, {})
 }
 
 describe("generateList", () => {

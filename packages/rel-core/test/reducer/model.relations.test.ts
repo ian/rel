@@ -1,6 +1,6 @@
 import { type, array } from "../../src/fields"
 import { Direction, Relations } from "../../src/types"
-import { reduceRelations } from "../../src/reducer/models/relations"
+import { reduceRelations } from "../../src/reducer/relations"
 
 describe("#reduceRelations", () => {
   const subject = (label: string, relations: Relations) => {

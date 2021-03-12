@@ -1,4 +1,4 @@
-import { Fields, ReducedType } from "../../types"
+import { Fields, ReducedType } from "../types"
 
 export function reduceInput(fields: Fields): ReducedType {
   const reduced = Object.entries(fields).reduce((acc, entry) => {

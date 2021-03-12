@@ -1,6 +1,6 @@
 import { Reducible } from "../../src/types"
 import { string, uuid, type } from "../../src/fields"
-import { generateUpdate } from "../../src/reducer/models/mutators/update"
+import { generateUpdate } from "../../src/reducer/update"
 
 const subject = (mutator) => {
   return generateUpdate("Book", mutator, { title: string() }) as Reducible

@@ -1,4 +1,4 @@
-import { Fields, ReducedType } from "../../types"
+import { Fields, ReducedType } from "../types"
 
 // type Opts = {
 //   guards?: boolean

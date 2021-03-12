@@ -1,5 +1,5 @@
 import { string } from "../../src/fields"
-import { reduceFields } from "../../src/reducer/models/fields"
+import { reduceFields } from "../../src/reducer/fields"
 
 describe("reduceFields", () => {
   const subject = (fields) => {

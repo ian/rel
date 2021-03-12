@@ -1,12 +1,6 @@
-import { type, uuid } from "../../../fields"
-import {
-  DeleteMutator,
-  ENDPOINTS,
-  Fields,
-  Reducible,
-  TypeDef,
-} from "../../../types"
-import { deleteResolver } from "../../../resolvers"
+import { type, uuid } from "../fields"
+import { DeleteMutator, ENDPOINTS, Fields, Reducible, TypeDef } from "../types"
+import { deleteResolver } from "../resolvers"
 
 const DEFAULT_MUTATOR = {}
 

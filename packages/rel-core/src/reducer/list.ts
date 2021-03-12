@@ -1,7 +1,7 @@
 import pluralize from "pluralize"
-import { int, array, type, string } from "../../../fields"
-import { listResolver } from "../../../resolvers"
-import { ListAccessor, Reducible, ENDPOINTS, TypeDef } from "../../../types"
+import { int, array, type, string } from "../fields"
+import { listResolver } from "../resolvers"
+import { ListAccessor, Reducible, ENDPOINTS, Fields, TypeDef } from "../types"
 
 const DEFAULT_ACCESSOR = {}
 
@@ -28,8 +28,8 @@ function makeType(label: string, accessor: ListAccessor): TypeDef {
 
 export function generateList(
   label: string,
-  accessor: boolean | ListAccessor
-  // fields: Fields
+  accessor: boolean | ListAccessor,
+  fields: Fields
 ): Reducible {
   if (!accessor) return null
 
