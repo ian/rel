@@ -3,7 +3,7 @@ import { cypher1 } from "."
 
 export async function findAvailableSlug(label, slugBase, tries = 0) {
   const trySlug = tries === 0 ? slugBase : `${slugBase}-${tries}`
-  if (isSlugAvailable(label, trySlug)) return trySlug
+  if (await isSlugAvailable(label, trySlug)) return trySlug
   return findAvailableSlug(label, slugBase, tries + 1)
 }
 
@@ -21,9 +21,6 @@ export function slugify(str: string) {
   })
 }
 
-export async function slugHandler(opts, label, params) {
-  if (typeof opts === "object" && !opts.distinct) {
-    return slugify(params[opts.from])
-  }
-  return await findAvailableSlug(label, slugify(params[opts]))
+export async function slugHandler(label, value) {
+  return findAvailableSlug(label, slugify(value))
 }

@@ -4,7 +4,7 @@ import { createResolver } from "../../../resolvers"
 
 const DEFAULT_MUTATOR = {}
 
-function makeResolver(label: string, mutator: CreateMutator) {
+function makeResolver(label: string, mutator: CreateMutator, fields: Fields) {
   const standardizedOpts = Object.assign(
     {
       label,
@@ -12,7 +12,7 @@ function makeResolver(label: string, mutator: CreateMutator) {
     mutator
   )
 
-  return createResolver(label, standardizedOpts)
+  return createResolver(label, standardizedOpts, fields)
 }
 
 function makeType(label: string, accessor: CreateMutator): TypeDef {
@@ -42,7 +42,7 @@ export function generateCreate(
       [`Create${label}`]: {
         type: ENDPOINTS.MUTATOR,
         typeDef: makeType(label, _mutator),
-        resolver: makeResolver(label, _mutator),
+        resolver: makeResolver(label, _mutator, fields),
       },
     },
   }

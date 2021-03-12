@@ -1,5 +1,5 @@
-import { cypherCreate } from "./create"
-import { cypherUpdate } from "./update"
+import { cypherCreate } from "../../src/cypher/create"
+import { cypherUpdate } from "../../src/cypher/update"
 
 const makeMovie = async (opts = {}) => {
   return cypherCreate("Movie", { title: "The Matrix" }, opts)

@@ -1,4 +1,4 @@
-import String from "./string"
+import String from "../../src/fields/string"
 
 describe("default properties", () => {
   const subject = () => {

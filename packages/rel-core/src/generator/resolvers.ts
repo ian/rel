@@ -1,5 +1,6 @@
 import { ENDPOINTS, Reducible, Resolver } from "../types"
 import { cypher, cypher1 } from "../cypher"
+import _ from "lodash"
 
 function augmentResolver(resolver) {
   return (obj, params, context) => {
@@ -80,10 +81,17 @@ export function generateResolvers(reduced: Reducible): Resolvers {
       }
     })
 
-    Object.assign(resolvers, {
-      Query: queries,
-      Mutation: mutations,
-    })
+    if (!_.isEmpty(queries)) {
+      Object.assign(resolvers, {
+        Query: queries,
+      })
+    }
+
+    if (!_.isEmpty(mutations)) {
+      Object.assign(resolvers, {
+        Mutation: mutations,
+      })
+    }
   }
 
   return resolvers

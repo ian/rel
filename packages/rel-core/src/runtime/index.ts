@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { GraphQLSchema } from "graphql"
-import { Module, Reducible } from "../types"
+import { Module, Reducible, ENDPOINTS } from "../types"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 import {
   generateDirectiveResolvers,
@@ -9,6 +9,7 @@ import {
 } from "../generator"
 
 import { Reducer } from "../reducer"
+import { string } from "../fields"
 
 // temporary def
 type GraphQLRuntime = {

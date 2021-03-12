@@ -1,9 +1,7 @@
 import { Cypher1Response } from "../types"
 import { cypher1 } from "./cypher"
-import { isSlugAvailable, slugHandler } from "./slugs"
-// import { slugify } from "../util/slugs"
 import { geoify } from "../util/geo"
-import { paramify, TIMESTAMPS } from "../util/params"
+import { paramify } from "../util/params"
 
 export type SlugOpts = {
   from: string
@@ -16,7 +14,6 @@ export type CreateOpts = {
   id?: boolean
   timestamps?: boolean
   geo?: string | ((object) => string)
-  slug?: string | SlugOpts
 }
 
 const DEFAULT_CREATE_OPTS = {
@@ -31,22 +28,6 @@ export async function cypherCreate(
 ): Promise<Cypher1Response> {
   const toParams = {
     ...params,
-  }
-
-  // always trim slugs
-  if (toParams.slug) {
-    Object.assign(toParams, {
-      slug: toParams.slug.trim(),
-    })
-  }
-
-  if (params.slug) {
-    if (!(await isSlugAvailable(label, params.slug)))
-      throw new Error("Slug already taken")
-  } else if (opts.slug) {
-    Object.assign(toParams, {
-      slug: await slugHandler(opts.slug, label, params),
-    })
   }
 
   if (opts.geo) {

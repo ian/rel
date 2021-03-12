@@ -2,24 +2,14 @@ import { isEmpty } from "lodash"
 import { Cypher1Response } from "../types"
 import { cypher1 } from "./cypher"
 import { cypherFind } from "./find"
-import { isSlugAvailable, slugHandler } from "./slugs"
-// import { slugify } from "../util/slugs"
+
 // import { geoify } from "../util/geo"
 import { diff } from "../util/compare"
 import { paramify, TIMESTAMPS } from "../util/params"
 
-// export type SlugOpts = {
-//   from: string
-//   distinct?: boolean
-// }
-// export type AfterOption = (obj: object) => Promise<void>
-
 export type UpdateOpts = {
   id?: boolean
   timestamps?: boolean
-  // after?: AfterOption
-  // geo?: string | ((object) => string)
-  // slug?: string | SlugOpts
 }
 
 const DEFAULT_UPDATE_OPTS = {
@@ -42,16 +32,6 @@ export async function cypherUpdate(
   const toParams = diff(node, params, {
     ignore: ["id", "createdAt", "updatedAt", "__typename"],
   })
-
-  // always trim slugs
-  // if (toParams.slug) {
-  //   if (!(await isSlugAvailable(label, params.slug)))
-  //     throw new Error("Slug already taken")
-
-  //   Object.assign(toParams, {
-  //     slug: toParams.slug.trim(),
-  //   })
-  // }
 
   // if (opts.geo) {
   //   const address =

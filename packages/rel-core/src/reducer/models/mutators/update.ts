@@ -10,7 +10,7 @@ import { updateResolver } from "../../../resolvers"
 
 const DEFAULT_MUTATOR = {}
 
-function makeResolver(label: string, mutator: UpdateMutator) {
+function makeResolver(label: string, mutator: UpdateMutator, fields: Fields) {
   const standardizedOpts = Object.assign(
     {
       label,
@@ -18,7 +18,7 @@ function makeResolver(label: string, mutator: UpdateMutator) {
     mutator
   )
 
-  return updateResolver(label, standardizedOpts)
+  return updateResolver(label, standardizedOpts, fields)
 }
 
 function makeType(label: string, accessor: UpdateMutator): TypeDef {
@@ -48,7 +48,7 @@ export function generateUpdate(
       [`Update${label}`]: {
         type: ENDPOINTS.MUTATOR,
         typeDef: makeType(label, _mutator),
-        resolver: makeResolver(label, _mutator),
+        resolver: makeResolver(label, _mutator, fields),
       },
     },
   }

@@ -24,6 +24,7 @@ export type FieldToGQLOpts = {
 }
 
 export type Field = {
+  resolve(label: string, fieldName: string, values: object): Promise<string>
   toGQL(opts?: FieldToGQLOpts): string
 }
 
@@ -138,7 +139,7 @@ export type Guards = {
 }
 
 export type Endpoint = {
-  type: string
+  type: ENDPOINTS
   typeDef: TypeDef
   resolver: Resolver
 }

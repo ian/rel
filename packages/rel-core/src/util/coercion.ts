@@ -1,7 +1,10 @@
+import moment from "moment"
 import { Geo } from "./geo"
 
 export function coerce(val) {
   switch (true) {
+    case val instanceof moment:
+      return `"${val.toISOString()}"`
     case val instanceof Geo:
       return `point({ latitude: ${val.lat}, longitude: ${val.lng}, crs: 'WGS-84' })`
     case typeof val === "string":

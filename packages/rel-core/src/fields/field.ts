@@ -4,6 +4,7 @@ export default class Field {
   _required: boolean = false
   _params: object
   _guard: string = null
+  _autogen: boolean = false
 
   constructor(name: string) {
     this._name = name
@@ -27,5 +28,9 @@ export default class Field {
     if (guards && this._guard) fieldDef.push(` @${this._guard}`)
 
     return fieldDef.join("")
+  }
+
+  async resolve(_, fieldName, values) {
+    return values[fieldName]
   }
 }

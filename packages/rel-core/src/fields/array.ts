@@ -1,5 +1,5 @@
 import Field from "./field"
-export default class Type extends Field {
+export default class Array extends Field {
   _contains = null
   // _validator = object()
 
