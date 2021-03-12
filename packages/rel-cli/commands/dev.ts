@@ -1,3 +1,5 @@
+require("dotenv").config({ path: ".env" })
+
 import ora from "ora"
 import spawn from "cross-spawn"
 
