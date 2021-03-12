@@ -3,12 +3,13 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
+    "removeComments": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": false,
-    "removeComments": true,
-    "declaration": true,
-    "lib": ["es6", "DOM"]
+    "lib": ["es6", "DOM"],
+    "outDir": "./dist"
   },
-  "exclude": ["**/node_modules", "dist", "test", "**/*.test.ts"]
+  "include": ["./rel"],
+  "exclude": ["**/node_modules", "**/*.test.ts"]
 }

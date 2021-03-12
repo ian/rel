@@ -62,7 +62,7 @@ export default async (answers: Answers) => {
   log("    Builds the app for production")
   log()
   log("  " + chalk.blueBright("yarn start"))
-  log("    Runs the built app in production mode.")
+  log("    Runs the built app in production mode")
   log()
   log("We suggest that you begin by typing:")
   log()

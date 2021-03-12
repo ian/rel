@@ -17,7 +17,7 @@
     "create-rel-app": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc; ./shebangify ./dist/cli.js ; chmod +x ./dist/cli.js",
+    "build": "tsc; chmod +x ./dist/cli.js",
     "dev": "ts-node src/cli.ts",
     "release": "yarn build",
     "prepublish": "yarn release"

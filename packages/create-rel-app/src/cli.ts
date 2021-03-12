@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // import Questions from "./questions"
 // import Install from "./install"
 

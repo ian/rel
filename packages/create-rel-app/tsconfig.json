@@ -1,15 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "skipLibCheck": false,
-    "lib": ["es6", "DOM"],
     "outDir": "./dist"
   },
-  "include": ["./src/cli.ts", "./src/alpha.ts"],
-  "exclude": ["**/node_modules", "**/*.test.ts"]
+  "include": ["./src/cli.ts", "./src/alpha.ts"]
 }
