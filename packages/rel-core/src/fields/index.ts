@@ -1,3 +1,4 @@
+import Boolean from "./boolean"
 import UUID from "./uuid"
 import Int from "./int"
 import DateTime from "./dateTime"
@@ -12,6 +13,7 @@ import Array from "./array"
 
 export type GeneratedField = (any?) => Field
 
+export const boolean: GeneratedField = () => new Boolean()
 export const uuid: GeneratedField = () => new UUID()
 export const int: GeneratedField = () => new Int()
 export const dateTime: GeneratedField = () => new DateTime()
@@ -23,12 +25,14 @@ export const array: GeneratedField = (contains) => new Array(contains)
 export const slug: GeneratedField = (opts) => new Slug(opts)
 
 export default {
+  boolean,
   uuid,
   int,
   dateTime,
   geo,
   phoneNumber,
   string,
+  slug,
   type,
   array,
 }

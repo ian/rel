@@ -1,15 +1,35 @@
 require("dotenv").config({ path: ".env" })
 
+import chokidar from "chokidar"
+import debounce from "debounce"
 import ora from "ora"
-import spawn from "cross-spawn"
+import { spawn } from "child_process"
+
+let server
+
+const handleDirChange = debounce(() => {
+  console.clear()
+  const compiling = ora("Compiling").start()
+
+  if (server) {
+    server.kill("SIGINT")
+  }
+
+  spawn("tsc", ["--project", "tsconfig.json"], {
+    stdio: ["inherit", "inherit", "inherit"],
+  }).on("close", async (code) => {
+    if (code === 0) {
+      compiling.succeed()
+
+      server = spawn("node", [`${__dirname}/../lib/devServer.js`], {
+        stdio: "inherit",
+      })
+    } else {
+      compiling.fail("Error: Compilation failed. Watching for changes")
+    }
+  })
+}, 300)
 
 export default () => {
-  const compiling = ora("Compiling").start()
-  spawn("tsc", ["--project", "tsconfig.json"]).on("close", (code) => {
-    compiling.succeed()
-
-    spawn.sync("node", ["./dist/server.js"], {
-      stdio: "inherit",
-    })
-  })
+  chokidar.watch("./rel", { persistent: true }).on("all", handleDirChange)
 }

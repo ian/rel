@@ -4,6 +4,7 @@ import { Geo } from "../util/geo"
 // import driver from "../connection"
 import { Cypher1Response, CypherResponse } from "../types"
 import { runQuery } from "../connection"
+import Events from "../util/events"
 
 export async function cypherRaw(query): Promise<Result> {
   function beautifyCypher(query) {
@@ -13,11 +14,13 @@ export async function cypherRaw(query): Promise<Result> {
       .join("\n")
   }
 
-  if (process.env.CYPHER_DEBUG === "true") {
-    console.log(beautifyCypher(query))
-  }
+  const startTime = process.hrtime()
+  const res = await runQuery(beautifyCypher(query))
+  const time = process.hrtime(startTime)
 
-  return runQuery(beautifyCypher(query))
+  Events.cypher(beautifyCypher(query), time)
+
+  return res
 }
 
 export async function cypher(query): Promise<CypherResponse> {
