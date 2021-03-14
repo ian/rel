@@ -12,21 +12,21 @@ export default class Slug extends String {
     super()
     const { from } = opts
     this._from = from
-  }
 
-  async resolve(label, fieldName, values) {
-    let slug
+    this.default(async (label, fieldName, values) => {
+      let slug
 
-    if (values[fieldName]) {
-      slug = values[fieldName].slug.trim()
-      const slugAvailable = await isSlugAvailable(label, slug)
-      if (!slugAvailable) {
-        throw new Error(`${label} slug "${slug}" is already taken`)
+      if (values[fieldName]) {
+        slug = values[fieldName].slug.trim()
+        const slugAvailable = await isSlugAvailable(label, slug)
+        if (!slugAvailable) {
+          throw new Error(`${label} slug "${slug}" is already taken`)
+        }
+      } else {
+        slug = await slugHandler(label, values[this._from])
       }
-    } else {
-      slug = await slugHandler(label, values[this._from])
-    }
 
-    return slug
+      return slug
+    })
   }
 }

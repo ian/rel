@@ -12,6 +12,7 @@ describe("models", () => {
       Book: {
         fields: {
           title: string(),
+          defaulted: string().default(() => "DEFAULTED"),
         },
         accessors: {
           find: true,
@@ -32,6 +33,7 @@ describe("models", () => {
     mutation TestCreate($book: BookInput!) {
       book: CreateBook(input: $book) {
         title
+        defaulted
       }
     }
   `,
@@ -43,7 +45,10 @@ describe("models", () => {
     )
 
     const { data } = res
-    expect(data.book).toEqual({ title: "The Great Gatsby" })
+    expect(data.book).toEqual({
+      title: "The Great Gatsby",
+      defaulted: "DEFAULTED",
+    })
   })
 
   it("should update a model", async () => {

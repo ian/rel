@@ -30,7 +30,7 @@ export function reduceRelations(label, relations: Relations): Reducible {
       },
       endpoints: {
         [singular ? `${label}Set${to.label}` : `${label}Add${to.label}`]: {
-          type: ENDPOINTS.MUTATOR,
+          target: ENDPOINTS.MUTATOR,
           typeDef: {
             params: {
               [`${camelcase(from.label)}Id`]: uuid().required(),
@@ -41,7 +41,7 @@ export function reduceRelations(label, relations: Relations): Reducible {
           resolver: addRelationResolver(relation),
         },
         [`${label}Remove${to.label}`]: {
-          type: ENDPOINTS.MUTATOR,
+          target: ENDPOINTS.MUTATOR,
           typeDef: {
             params: {
               [`${camelcase(from.label)}Id`]: uuid().required(),

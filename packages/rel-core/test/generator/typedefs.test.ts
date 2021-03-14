@@ -8,7 +8,7 @@ describe("typeDefs", () => {
       return generateTypeDefs({
         endpoints: {
           TestQuery: {
-            type: ENDPOINTS.ACCESSOR,
+            target: ENDPOINTS.ACCESSOR,
             typeDef: {
               params: {
                 id: uuid(),
@@ -37,7 +37,7 @@ describe("typeDefs", () => {
       return generateTypeDefs({
         endpoints: {
           TestMutation: {
-            type: ENDPOINTS.MUTATOR,
+            target: ENDPOINTS.MUTATOR,
             typeDef: {
               params: {
                 id: uuid(),

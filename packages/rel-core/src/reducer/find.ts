@@ -42,7 +42,7 @@ export function generateFind(
   return {
     endpoints: {
       [`Find${label}`]: {
-        type: ENDPOINTS.ACCESSOR,
+        target: ENDPOINTS.ACCESSOR,
         typeDef: makeType(label, _accessor),
         resolver: makeResolver(label, _accessor),
       },

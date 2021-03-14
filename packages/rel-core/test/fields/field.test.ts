@@ -40,15 +40,29 @@ describe("required", () => {
   })
 })
 
-// describe("params", () => {
-//   it.todo("should set the params")
-// })
-
 describe("guard", () => {
   it("should set the guard", () => {
     const field = new MyField()
     field.guard("admin")
     expect(field._guard).toBe("admin")
+  })
+})
+
+describe("default", () => {
+  it("should set the default", () => {
+    const field = new MyField()
+    field.default(() => "foo")
+    expect(field._default({})).toBe("foo")
+  })
+})
+
+describe("resolver", () => {
+  it("should set the resolver", () => {
+    const field = new MyField()
+    field.resolver(() => {
+      return "RESOLVER"
+    })
+    expect(field._resolver()).toBe("RESOLVER")
   })
 })
 

@@ -48,15 +48,16 @@ export function generateResolvers(reduced: Reducible): Resolvers {
 
   if (types) {
     Object.entries(types).forEach((entry) => {
-      const [name, type] = entry
+      const [typeName, type] = entry
       let typeResolver = {}
       Object.entries(type).forEach((propEntry) => {
-        const [name, property] = propEntry
+        const [fieldName, property] = propEntry
+
         if (property.resolver) {
-          typeResolver[name] = augmentResolver(property.resolver)
+          typeResolver[fieldName] = augmentResolver(property.resolver)
         }
       })
-      resolvers[name] = typeResolver
+      resolvers[typeName] = typeResolver
     })
   }
 
@@ -66,9 +67,9 @@ export function generateResolvers(reduced: Reducible): Resolvers {
 
     Object.entries(endpoints).forEach((entry) => {
       const [name, endpoint] = entry
-      const { type } = endpoint
+      const { target } = endpoint
 
-      switch (type) {
+      switch (target) {
         case ENDPOINTS.ACCESSOR:
           queries[name] = augmentResolver(endpoint.resolver)
           break
@@ -77,7 +78,7 @@ export function generateResolvers(reduced: Reducible): Resolvers {
           mutations[name] = augmentResolver(endpoint.resolver)
           break
         default:
-          throw new Error(`Unknown endpoint type ${type} for ${name}`)
+          throw new Error(`Unknown endpoint type ${target} for ${name}`)
       }
     })
 

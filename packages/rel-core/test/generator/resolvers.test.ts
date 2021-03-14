@@ -34,7 +34,7 @@ describe("#generateResolvers", () => {
       const resolvers = generateResolvers({
         endpoints: {
           TestQuery: {
-            type: ENDPOINTS.ACCESSOR,
+            target: ENDPOINTS.ACCESSOR,
             typeDef: {
               returns: string(),
             },

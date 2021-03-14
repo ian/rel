@@ -5,6 +5,7 @@ import { Fields, ReducedType } from "../types"
 // }
 
 export function reduceFields(
+  label: string,
   fields: Fields
   // opts: Opts = {}
 ): ReducedType {
@@ -17,6 +18,9 @@ export function reduceFields(
     gqlFields[name] = {
       typeDef: {
         returns: def,
+      },
+      resolver: async ({ obj }) => {
+        return def._resolver ? def._resolver(obj) : obj[name]
       },
     }
   })

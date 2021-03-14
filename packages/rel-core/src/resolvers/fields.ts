@@ -9,7 +9,11 @@ export async function resolveFieldsForCreate(
 
   for (const field of Object.entries(fields)) {
     const [fieldName, fieldDef] = field
-    values[fieldName] = await fieldDef.resolve(label, fieldName, input)
+    if (fieldDef._default) {
+      values[fieldName] = await fieldDef._default(label, fieldName, input)
+    } else {
+      values[fieldName] = input[fieldName]
+    }
   }
 
   return values

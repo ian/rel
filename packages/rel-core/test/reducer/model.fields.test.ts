@@ -3,7 +3,7 @@ import { reduceFields } from "../../src/reducer/fields"
 
 describe("reduceFields", () => {
   const subject = (fields) => {
-    return reduceFields(fields)
+    return reduceFields("Fake", fields)
   }
 
   it("should convert a Field to a ReducedTypeField", () => {

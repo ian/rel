@@ -28,7 +28,7 @@ export function reduceModel(label, model: Model): Reducible {
   }
 
   if (fields) {
-    Object.assign(modelType, reduceFields(fields))
+    Object.assign(modelType, reduceFields(label, fields))
   }
 
   if (timestamps !== false) {

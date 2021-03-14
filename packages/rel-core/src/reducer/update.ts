@@ -40,7 +40,7 @@ export function generateUpdate(
   return {
     endpoints: {
       [`Update${label}`]: {
-        type: ENDPOINTS.MUTATOR,
+        target: ENDPOINTS.MUTATOR,
         typeDef: makeType(label, _mutator),
         resolver: makeResolver(label, _mutator, fields),
       },

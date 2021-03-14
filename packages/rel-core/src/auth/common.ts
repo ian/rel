@@ -72,7 +72,7 @@ export default {
   },
   endpoints: {
     Me: {
-      type: ENDPOINTS.ACCESSOR,
+      target: ENDPOINTS.ACCESSOR,
       typeDef: {
         params: { token: string().required() },
         returns: type("Auth"),

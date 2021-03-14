@@ -133,7 +133,7 @@ describe("Reducer", () => {
           reducer.module({
             endpoints: {
               CustomFind: {
-                type: ENDPOINTS.ACCESSOR,
+                target: ENDPOINTS.ACCESSOR,
                 typeDef: {
                   params: { id: uuid() },
                   returns: type("Object"),
@@ -153,7 +153,7 @@ describe("Reducer", () => {
           reducer.module({
             endpoints: {
               CustomUpdate: {
-                type: ENDPOINTS.MUTATOR,
+                target: ENDPOINTS.MUTATOR,
                 typeDef: {
                   params: { id: uuid() },
                   returns: type("Book"),
@@ -189,7 +189,7 @@ describe("Reducer", () => {
         reducer.reduce({
           endpoints: {
             FindBook: {
-              type: ENDPOINTS.ACCESSOR,
+              target: ENDPOINTS.ACCESSOR,
               typeDef: {
                 returns: type("Book"),
               },
@@ -208,7 +208,7 @@ describe("Reducer", () => {
         reducer.reduce({
           endpoints: {
             CreateBook: {
-              type: ENDPOINTS.MUTATOR,
+              target: ENDPOINTS.MUTATOR,
               typeDef: {
                 returns: type("Book"),
               },

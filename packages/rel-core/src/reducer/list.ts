@@ -41,7 +41,7 @@ export function generateList(
   return {
     endpoints: {
       [`List${pluralize(label)}`]: {
-        type: ENDPOINTS.ACCESSOR,
+        target: ENDPOINTS.ACCESSOR,
         typeDef: makeType(label, _accessor),
         resolver: makeResolver(label, _accessor),
       },

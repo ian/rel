@@ -28,7 +28,7 @@ export default {
   },
   endpoints: {
     LoginViaEmailPassword: {
-      type: ENDPOINTS.MUTATOR,
+      target: ENDPOINTS.MUTATOR,
       typeDef: {
         params: { token: string().required() },
         returns: type("Auth"),
@@ -55,7 +55,7 @@ export default {
     },
 
     RegisterViaEmailPassword: {
-      type: ENDPOINTS.MUTATOR,
+      target: ENDPOINTS.MUTATOR,
       typeDef: {
         params: { input: type("UserInput").required() },
         returns: type("Auth"),

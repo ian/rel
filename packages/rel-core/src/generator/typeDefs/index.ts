@@ -46,9 +46,9 @@ scalar UUID`)
 
     Object.entries(endpoints).forEach((entry) => {
       const [name, endpoint] = entry
-      const { type } = endpoint
+      const { target } = endpoint
 
-      switch (type) {
+      switch (target) {
         case ENDPOINTS.ACCESSOR:
           queries[name] = endpoint
           break
@@ -57,7 +57,7 @@ scalar UUID`)
           mutations[name] = endpoint
           break
         default:
-          throw new Error(`Unknown endpoint type ${type} for ${name}`)
+          throw new Error(`Unknown endpoint type ${target} for ${name}`)
       }
     })
 
