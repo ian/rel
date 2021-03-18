@@ -19,43 +19,50 @@ Once finished, you will have the following project structure:
 ```
 ./myapp
 │
-├── rel
-│   ├── schema.ts
-│   └── server.ts
-│
+├── jobs
+│   └── .gitkeep
+├── schema
+│   └── .gitkeep
+├── server.ts
 ├── package.json
 ├── relconfig.json
-└── tsconfig.json
+├── tsconfig.json
+└── Dockerfile
 ```
 
-Please all model definitions in `./schema.ts`
+Add new models by running `rel model Book`
 
 ```
-import { fields, Direction } from "@reldb/core"
+// ./models/Book.ts
+
+import { Fields } from "@reldb/core"
 
 export default {
   Book: {
     fields: {
-      name: fields.string().required(),
-      //...
+      name: Fields.string().required(),
+      ...
     },
   }
 }
 ```
 
-Configure the server and extensions in `./server.ts`
+If you want to define Authentication models, change ports, etc, find in `./server.ts`
 
 ```
-import { auth, server } from "@reldb/core"
+import { Server } from "@reldb/core"
+import Auth from "@reldb/auth"
 
 import schema from "./schema"
 
 const port = process.env.PORT
 
-export default server({
-  auth: auth({
-    model: auth.models.SOCIAL,
-    methods: [auth.methods.EMAIL_PASSWORD],
+export default Server({
+  auth: Auth.Social({
+    include: [
+      Auth.Methods.EMAIL_PASSWORD,
+      Auth.Methods.EMAIL_LINK,
+    ],
   }),
   port,
   schema,
