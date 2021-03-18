@@ -29,13 +29,13 @@ export async function cypherListRelationship(
     RETURN ${to.name}
     ORDER BY ${orderBy}
     LIMIT 1
-    `).then((r) => r[to.name])
+    `).then((r) => r && r[to.name])
   } else {
     return cypher(`
     MATCH ${fromCypher}${relCypher}${toCypher}
     RETURN ${to.name}
     ORDER BY ${orderBy}
-  `).then((res) => res.map((r) => r[to.name]))
+  `).then((res) => res.map((r) => r && r[to.name]))
   }
 }
 

@@ -1,3 +1,3 @@
 # rel Examples
 
-- [Movies](movies)
+- [Social](social)

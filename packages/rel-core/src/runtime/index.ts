@@ -1,7 +1,7 @@
 import _ from "lodash"
-import { GraphQLSchema } from "graphql"
+// import { GraphQLSchema } from "graphql"
+import { IResolvers } from "apollo-server-fastify"
 import { Module, Reducible, ENDPOINTS } from "../types"
-import { makeExecutableSchema } from "@graphql-tools/schema"
 import {
   generateDirectiveResolvers,
   generateResolvers,
@@ -9,13 +9,7 @@ import {
 } from "../generator"
 
 import { Reducer } from "../reducer"
-import { string } from "../fields"
 
-// temporary def
-type GraphQLRuntime = {
-  typeDefs: string
-  schema: GraphQLSchema
-}
 export class Runtime {
   reducer: Reducer
 
@@ -31,7 +25,7 @@ export class Runtime {
     this.reducer.module(module)
   }
 
-  generate(): GraphQLRuntime {
+  generate(): GQLConfig {
     const reduced = this.reducer.toReducible()
 
     const typeDefs = generateTypeDefs(reduced)
@@ -39,15 +33,10 @@ export class Runtime {
     const directiveResolvers = generateDirectiveResolvers(reduced)
 
     try {
-      const schema = makeExecutableSchema({
+      return {
         typeDefs,
         resolvers,
         directiveResolvers,
-      })
-
-      return {
-        typeDefs,
-        schema,
       }
     } catch (err) {
       console.error("ERROR", err.message)
@@ -77,8 +66,9 @@ export function generate(opts: RuntimeOpts): GQLConfig {
 // @todo - make this more specific
 export type GQLTypeDefs = string
 export type GQLSchema = any
-
 export type GQLConfig = {
   typeDefs: GQLTypeDefs
-  schema: GQLSchema
+  // schema: GQLSchema
+  resolvers: IResolvers
+  directiveResolvers: any
 }

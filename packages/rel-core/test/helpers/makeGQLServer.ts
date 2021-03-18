@@ -1,8 +1,14 @@
 import { graphql, ExecutionResult } from "graphql"
+import { makeExecutableSchema } from "@graphql-tools/schema"
 import { generate, RuntimeOpts } from "../../src/runtime"
 
 export default function makeServer(config: RuntimeOpts) {
-  const { typeDefs, schema } = generate(config)
+  const { typeDefs, resolvers, directiveResolvers } = generate(config)
+  const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+    directiveResolvers,
+  })
 
   return async (query, variables?): Promise<ExecutionResult> => {
     const context = {}
