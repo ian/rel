@@ -1,8 +1,8 @@
-import Int from "../../src/fields/int"
+import { int } from "../../src/property/fields"
 
 describe("default properties", () => {
   const subject = () => {
-    return new Int()
+    return int()
   }
 
   it("should output the right GQL type", () => {

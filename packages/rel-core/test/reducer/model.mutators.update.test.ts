@@ -1,6 +1,7 @@
 import { Reducible } from "../../src/types"
-import { string, uuid, type } from "../../src/fields"
+import { Fields } from "../../src"
 import { generateUpdate } from "../../src/reducer/update"
+const { string, uuid, type } = Fields
 
 const subject = (mutator) => {
   return generateUpdate("Book", mutator, { title: string() }) as Reducible
@@ -46,7 +47,7 @@ describe("generateUpdate", () => {
       const _subject = subject({ guard: "admin" })
       expect(typeof _subject).toBe("object")
 
-      expect(_subject.endpoints.UpdateBook.typeDef.guard).toEqual("admin")
+      expect(_subject.endpoints.UpdateBook.guard).toEqual("admin")
     })
   })
 
@@ -54,7 +55,7 @@ describe("generateUpdate", () => {
     it("should allow findBy to be specified", () => {
       const _subject = subject({ title: string() })
 
-      expect(JSON.stringify(_subject.endpoints.UpdateBook.typeDef.params)).toBe(
+      expect(JSON.stringify(_subject.endpoints.UpdateBook.params)).toBe(
         JSON.stringify({ id: uuid(), input: type("BookInput") })
       )
     })

@@ -1,9 +1,11 @@
 import { Reducible } from "../../src/types"
-import { string, type } from "../../src/fields"
+import { Fields } from "../../src"
 import { generateCreate } from "../../src/reducer/create"
 
 const subject = (mutator) => {
-  return generateCreate("Book", mutator, { title: string() }) as Reducible
+  return generateCreate("Book", mutator, {
+    title: Fields.string(),
+  }) as Reducible
 }
 
 describe("generateCreate", () => {
@@ -48,16 +50,16 @@ describe("generateCreate", () => {
       const _subject = subject({ guard: "admin" })
 
       expect(typeof _subject).toBe("object")
-      expect(_subject.endpoints.CreateBook.typeDef.guard).toEqual("admin")
+      expect(_subject.endpoints.CreateBook.guard).toEqual("admin")
     })
   })
 
   describe("params", () => {
     it("should allow id to be specified", () => {
-      const _subject = subject({ title: string() })
+      const _subject = subject({ title: Fields.string() })
 
-      expect(JSON.stringify(_subject.endpoints.CreateBook.typeDef.params)).toBe(
-        JSON.stringify({ input: type("BookInput") })
+      expect(JSON.stringify(_subject.endpoints.CreateBook.params)).toBe(
+        JSON.stringify({ input: Fields.type("BookInput") })
       )
     })
   })

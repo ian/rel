@@ -1,6 +1,7 @@
 import { ENDPOINTS } from "../../src/types"
-import { string, type, uuid } from "../../src/fields"
+import { Fields } from "../../src/property"
 import { Reducer, intersection } from "../../src/reducer"
+const { string, type, uuid } = Fields
 
 describe("Reducer", () => {
   describe("#intersection", () => {
@@ -57,7 +58,7 @@ describe("Reducer", () => {
         })
 
         expect(reducer.inputs).toHaveProperty("BookInput")
-        expect(reducer.types).toHaveProperty("Book")
+        expect(reducer.outputs).toHaveProperty("Book")
       })
 
       it("should should allow a model to be extended", () => {
@@ -87,9 +88,9 @@ describe("Reducer", () => {
         expect(reducer.inputs.BookInput).toHaveProperty("name")
         expect(reducer.inputs.BookInput).toHaveProperty("publisher")
 
-        expect(reducer.types).toHaveProperty("Book")
-        expect(reducer.types.Book).toHaveProperty("name")
-        expect(reducer.types.Book).toHaveProperty("publisher")
+        expect(reducer.outputs).toHaveProperty("Book")
+        expect(reducer.outputs.Book).toHaveProperty("name")
+        expect(reducer.outputs.Book).toHaveProperty("publisher")
       })
     })
 
@@ -134,10 +135,8 @@ describe("Reducer", () => {
             endpoints: {
               CustomFind: {
                 target: ENDPOINTS.ACCESSOR,
-                typeDef: {
-                  params: { id: uuid() },
-                  returns: type("Object"),
-                },
+                params: { id: uuid() },
+                returns: type("Object"),
                 resolver: () => {},
               },
             },
@@ -154,10 +153,8 @@ describe("Reducer", () => {
             endpoints: {
               CustomUpdate: {
                 target: ENDPOINTS.MUTATOR,
-                typeDef: {
-                  params: { id: uuid() },
-                  returns: type("Book"),
-                },
+                params: { id: uuid() },
+                returns: type("Book"),
                 resolver: () => {},
               },
             },
@@ -190,9 +187,7 @@ describe("Reducer", () => {
           endpoints: {
             FindBook: {
               target: ENDPOINTS.ACCESSOR,
-              typeDef: {
-                returns: type("Book"),
-              },
+              returns: type("Book"),
               resolver: () => null,
             },
           },
@@ -209,9 +204,7 @@ describe("Reducer", () => {
           endpoints: {
             CreateBook: {
               target: ENDPOINTS.MUTATOR,
-              typeDef: {
-                returns: type("Book"),
-              },
+              returns: type("Book"),
               resolver: () => null,
             },
           },

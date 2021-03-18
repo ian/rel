@@ -1,4 +1,4 @@
-import { Resolver, FieldToGQLOpts } from "../types"
+import { Resolver } from "../../types"
 export default class Field {
   _name: string
   _required: boolean = false
@@ -32,12 +32,10 @@ export default class Field {
     return this
   }
 
-  toGQL(opts?: FieldToGQLOpts): string {
-    const { guards = true } = opts || {}
-
+  toGQL(): string {
     const fieldDef = [this._name]
     if (this._required) fieldDef.push("!")
-    if (guards && this._guard) fieldDef.push(` @${this._guard}`)
+    if (this._guard) fieldDef.push(` @${this._guard}`)
 
     return fieldDef.join("")
   }

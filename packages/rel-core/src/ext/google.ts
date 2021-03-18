@@ -16,7 +16,7 @@ export class Geo {
 // function addressComponentFor(addressComponents, anyOfThese: Array<string>) {
 //   for (const type of anyOfThese) {
 //     const addressComponent = addressComponents.find((a) =>
-//       a.types.includes(type)
+//       a.outputs.includes(type)
 //     )
 
 //     if (addressComponent) return addressComponent

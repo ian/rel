@@ -1,6 +1,8 @@
-import { type } from "../fields"
-import { ENDPOINTS, TypeDef, CreateMutator, Fields } from "../types"
+import Property from "../property"
+import { ENDPOINTS, CreateMutator, Fields } from "../types"
 import { createResolver } from "../resolvers"
+
+const { type } = Property.Fields
 
 const DEFAULT_MUTATOR = {}
 
@@ -15,16 +17,6 @@ function makeResolver(label: string, mutator: CreateMutator, fields: Fields) {
   return createResolver(label, standardizedOpts, fields)
 }
 
-function makeType(label: string, accessor: CreateMutator): TypeDef {
-  const { guard } = accessor
-
-  return {
-    params: { input: type(`${label}Input`) },
-    guard,
-    returns: type(label),
-  }
-}
-
 export function generateCreate(
   label: string,
   mutator: boolean | CreateMutator,
@@ -37,11 +29,15 @@ export function generateCreate(
     ...(typeof mutator === "boolean" ? {} : mutator),
   }
 
+  const { guard } = _mutator
+
   return {
     endpoints: {
       [`Create${label}`]: {
         target: ENDPOINTS.MUTATOR,
-        typeDef: makeType(label, _mutator),
+        params: { input: type(`${label}Input`) },
+        guard,
+        returns: type(label),
         resolver: makeResolver(label, _mutator, fields),
       },
     },

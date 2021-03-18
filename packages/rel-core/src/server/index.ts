@@ -6,6 +6,7 @@ import { generate } from "../runtime"
 import Events, { EVENTS } from "../util/events"
 
 import { logger } from "./logging"
+import { makeExecutableSchema } from "@graphql-tools/schema"
 
 type ServerConfig = Module & {
   port?: number
@@ -29,12 +30,17 @@ class Server {
   }
 
   async start() {
-    const { typeDefs, resolvers, directiveResolvers } = generate(this.config)
-
-    const server = new ApolloServer({
+    const { typeDefs, resolvers, directives } = generate(this.config)
+    const schema = makeExecutableSchema({
       typeDefs,
       resolvers,
-      schemaDirectives: directiveResolvers,
+      directiveResolvers: directives,
+    })
+
+    const server = new ApolloServer({
+      // typeDefs,
+      schema,
+      resolvers,
       plugins: [logger],
       formatError: (err) => {
         Events.error(err.originalError)

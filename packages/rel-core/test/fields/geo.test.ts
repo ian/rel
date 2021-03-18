@@ -1,8 +1,8 @@
-import Geo from "../../src/fields/geo"
+import { geo } from "../../src/property/fields"
 
 describe("default properties", () => {
   const subject = () => {
-    return new Geo()
+    return geo()
   }
 
   it("should output the right GQL type", () => {

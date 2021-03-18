@@ -1,5 +1,6 @@
-import { string, type } from "../../fields"
+import { Fields } from "../../property"
 import { Module } from "../../types"
+const { string, type } = Fields
 
 export default {
   schema: {

@@ -4,7 +4,7 @@ import { cypher1 } from "./cypher"
 import { cypherFind } from "./find"
 
 // import { geoify } from "../util/geo"
-import { diff } from "../util/compare"
+import { diff } from "../util/object"
 import { paramify, TIMESTAMPS } from "../util/params"
 
 export type UpdateOpts = {

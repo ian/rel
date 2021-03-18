@@ -1,4 +1,4 @@
-import { generateDirectives } from "../../src/generator/typeDefs/directives"
+import { generateDirectives } from "../../src/generator/directives"
 
 describe("#generateDirectives", () => {
   it("should generate directives with typeDef specified", () => {

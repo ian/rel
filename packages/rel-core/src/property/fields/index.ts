@@ -20,9 +20,10 @@ export const dateTime: GeneratedField = () => new DateTime()
 export const geo: GeneratedField = () => new Geo()
 export const phoneNumber: GeneratedField = () => new PhoneNumber()
 export const string: GeneratedField = () => new String()
+export const slug: GeneratedField = (opts) => new Slug(opts)
+
 export const type: GeneratedField = (model) => new Type(model)
 export const array: GeneratedField = (contains) => new Array(contains)
-export const slug: GeneratedField = (opts) => new Slug(opts)
 
 export default {
   boolean,
@@ -33,6 +34,7 @@ export default {
   phoneNumber,
   string,
   slug,
+
   type,
   array,
 }

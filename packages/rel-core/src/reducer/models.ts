@@ -1,5 +1,6 @@
 import _ from "lodash"
-import { type, array, uuid, dateTime } from "../fields"
+import Property from "../property"
+
 import { Model, Reducible } from "../types"
 
 import { reduceFields } from "./fields"
@@ -9,12 +10,15 @@ import { reduceMutators } from "./mutators"
 import { reduceRelations } from "./relations"
 import { Reducer } from "."
 
+const { uuid, dateTime } = Property.Fields
+
 export function reduceModel(label, model: Model): Reducible {
   const reducer = new Reducer()
   const {
     id,
     timestamps,
     input = true,
+    output = true,
     fields,
     relations,
     accessors,
@@ -24,7 +28,7 @@ export function reduceModel(label, model: Model): Reducible {
   const modelType = {}
 
   if (id !== false) {
-    modelType["id"] = { typeDef: { returns: uuid().required() } }
+    modelType["id"] = { returns: uuid().required() }
   }
 
   if (fields) {
@@ -32,20 +36,22 @@ export function reduceModel(label, model: Model): Reducible {
   }
 
   if (timestamps !== false) {
-    modelType["createdAt"] = { typeDef: { returns: dateTime().required() } }
-    modelType["updatedAt"] = { typeDef: { returns: dateTime().required() } }
+    modelType["createdAt"] = { returns: dateTime().required() }
+    modelType["updatedAt"] = { returns: dateTime().required() }
   }
-
-  reducer.reduce({
-    types: {
-      [label]: modelType,
-    },
-  })
 
   if (input && fields) {
     reducer.reduce({
       inputs: {
         [`${label}Input`]: reduceInput(fields),
+      },
+    })
+  }
+
+  if (output) {
+    reducer.reduce({
+      outputs: {
+        [label]: modelType,
       },
     })
   }

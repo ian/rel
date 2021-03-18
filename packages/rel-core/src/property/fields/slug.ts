@@ -1,5 +1,5 @@
 import String from "./string"
-import { isSlugAvailable, slugHandler } from "../cypher/slugs"
+import { isSlugAvailable, slugHandler } from "../../cypher/slugs"
 
 type Opts = {
   from: string

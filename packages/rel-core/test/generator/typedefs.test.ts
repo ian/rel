@@ -1,6 +1,7 @@
 import { ENDPOINTS, Reducible } from "../../src/types"
-import { uuid, string } from "../../src/fields"
+import { Fields } from "../../src"
 import { generateTypeDefs } from "../../src/generator/typeDefs"
+const { uuid, string } = Fields
 
 describe("typeDefs", () => {
   describe("Query", () => {
@@ -9,12 +10,10 @@ describe("typeDefs", () => {
         endpoints: {
           TestQuery: {
             target: ENDPOINTS.ACCESSOR,
-            typeDef: {
-              params: {
-                id: uuid(),
-              },
-              returns: string(),
+            params: {
+              id: uuid(),
             },
+            returns: string(),
             resolver: () => {},
           },
         },
@@ -38,12 +37,10 @@ describe("typeDefs", () => {
         endpoints: {
           TestMutation: {
             target: ENDPOINTS.MUTATOR,
-            typeDef: {
-              params: {
-                id: uuid(),
-              },
-              returns: string(),
+            params: {
+              id: uuid(),
             },
+            returns: string(),
             resolver: () => {},
           },
         },
@@ -67,9 +64,7 @@ describe("typeDefs", () => {
         inputs: {
           BookInput: {
             name: {
-              typeDef: {
-                returns: string(),
-              },
+              returns: string(),
             },
           },
         },
@@ -87,12 +82,10 @@ describe("typeDefs", () => {
     it("should generate a type", () => {
       expect(
         generateTypeDefs({
-          types: {
+          outputs: {
             Book: {
               name: {
-                typeDef: {
-                  returns: string(),
-                },
+                returns: string(),
               },
             },
           },
@@ -105,12 +98,10 @@ describe("typeDefs", () => {
     it("should generate a type with a required field", () => {
       expect(
         generateTypeDefs({
-          types: {
+          outputs: {
             Book: {
               name: {
-                typeDef: {
-                  returns: string().required(),
-                },
+                returns: string().required(),
               },
             },
           },

@@ -1,5 +1,6 @@
-import { string } from "../../src/fields"
+import { Fields } from "../../src/property"
 import { generateFind } from "../../src/reducer/find"
+const { string } = Fields
 
 const subject = (accessor) => {
   return generateFind("Book", accessor, {})
@@ -32,13 +33,13 @@ describe("generateFind", () => {
     it("should allow guard to be specified", () => {
       const _subject = subject({ guard: "admin" })
       expect(typeof _subject).toBe("object")
-      expect(_subject.endpoints.FindBook.typeDef.guard).toBe("admin")
+      expect(_subject.endpoints.FindBook.guard).toBe("admin")
     })
 
     it("should allow findBy to be specified", () => {
       const findBy = { title: string() }
       const _subject = subject({ findBy })
-      expect(JSON.stringify(_subject.endpoints.FindBook.typeDef.params)).toBe(
+      expect(JSON.stringify(_subject.endpoints.FindBook.params)).toBe(
         JSON.stringify({ title: string() })
       )
     })

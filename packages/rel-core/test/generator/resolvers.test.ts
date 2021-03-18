@@ -1,22 +1,19 @@
-import { string } from "../../src/fields"
+import { Fields } from "../../src"
 import { ENDPOINTS } from "../../src/types"
 import { generateResolvers } from "../../src/generator/resolvers"
+const { string } = Fields
 
 describe("#generateResolvers", () => {
   describe("types", () => {
     it("should create the resolver for the type", () => {
       const resolvers = generateResolvers({
-        types: {
+        outputs: {
           Book: {
             name: {
-              typeDef: {
-                returns: string(),
-              },
+              returns: string(),
             },
             customProp: {
-              typeDef: {
-                returns: string(),
-              },
+              returns: string(),
               resolver: () => "CUSTOM PROP",
             },
           },
@@ -35,9 +32,7 @@ describe("#generateResolvers", () => {
         endpoints: {
           TestQuery: {
             target: ENDPOINTS.ACCESSOR,
-            typeDef: {
-              returns: string(),
-            },
+            returns: string(),
             resolver: () => "HI",
           },
         },

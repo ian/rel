@@ -1,9 +1,10 @@
 import pluralize from "pluralize"
-import { int, array, type, string } from "../fields"
+import Property from "../property"
 import { listResolver } from "../resolvers"
-import { ListAccessor, Reducible, ENDPOINTS, Fields, TypeDef } from "../types"
+import { ListAccessor, Reducible, ENDPOINTS, Fields } from "../types"
 
 const DEFAULT_ACCESSOR = {}
+const { int, array, type, string } = Property.Fields
 
 function makeResolver(label: string, accessor: ListAccessor) {
   const standardizedOpts = Object.assign(
@@ -14,16 +15,6 @@ function makeResolver(label: string, accessor: ListAccessor) {
   )
 
   return listResolver(standardizedOpts)
-}
-
-function makeType(label: string, accessor: ListAccessor): TypeDef {
-  const { guard } = accessor
-
-  return {
-    params: { limit: int(), skip: int(), order: string() },
-    guard,
-    returns: array(type(label)).required(),
-  }
 }
 
 export function generateList(
@@ -38,11 +29,15 @@ export function generateList(
     ...(typeof accessor === "boolean" ? {} : accessor),
   }
 
+  const { guard } = _accessor
+
   return {
     endpoints: {
       [`List${pluralize(label)}`]: {
         target: ENDPOINTS.ACCESSOR,
-        typeDef: makeType(label, _accessor),
+        params: { limit: int(), skip: int(), order: string() },
+        guard,
+        returns: array(type(label)).required(),
         resolver: makeResolver(label, _accessor),
       },
     },

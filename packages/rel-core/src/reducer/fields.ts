@@ -1,4 +1,4 @@
-import { Fields, ReducedType } from "../types"
+import { Fields, Output } from "../types"
 
 // type Opts = {
 //   guards?: boolean
@@ -8,7 +8,7 @@ export function reduceFields(
   label: string,
   fields: Fields
   // opts: Opts = {}
-): ReducedType {
+): Output {
   // const { guards = true } = opts
   const gqlFields = {}
 
@@ -16,9 +16,7 @@ export function reduceFields(
     const [name, def] = fieldObj
 
     gqlFields[name] = {
-      typeDef: {
-        returns: def,
-      },
+      returns: def,
       resolver: async ({ obj }) => {
         return def._resolver ? def._resolver(obj) : obj[name]
       },

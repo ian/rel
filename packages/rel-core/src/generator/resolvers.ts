@@ -43,11 +43,11 @@ type Resolvers = {
 }
 
 export function generateResolvers(reduced: Reducible): Resolvers {
-  const { types, endpoints } = reduced
+  const { outputs, endpoints } = reduced
   let resolvers = {}
 
-  if (types) {
-    Object.entries(types).forEach((entry) => {
+  if (outputs) {
+    Object.entries(outputs).forEach((entry) => {
       const [typeName, type] = entry
       let typeResolver = {}
       Object.entries(type).forEach((propEntry) => {

@@ -1,5 +1,6 @@
-import { string, int } from "../../src/fields"
+import { Fields } from "../../src"
 import { generateList } from "../../src/reducer/list"
+const { string, int } = Fields
 
 const subject = (accessor) => {
   return generateList("Book", accessor, {})
@@ -29,13 +30,13 @@ describe("generateList", () => {
   describe("accessor options", () => {
     it("should allow guard to be specified", () => {
       const _subject = subject({ guard: "admin" })
-      expect(_subject.endpoints.ListBooks.typeDef.guard).toBe("admin")
+      expect(_subject.endpoints.ListBooks.guard).toBe("admin")
     })
 
     it("should allow findBy to be specified", () => {
       const findBy = { title: string() }
       const _subject = subject({ findBy })
-      expect(JSON.stringify(_subject.endpoints.ListBooks.typeDef.params)).toBe(
+      expect(JSON.stringify(_subject.endpoints.ListBooks.params)).toBe(
         JSON.stringify({ limit: int(), skip: int(), order: string() })
       )
     })

@@ -1,7 +1,7 @@
-import { ReducedType } from "../../types"
+import { Output } from "../types"
 import { generateProperty } from "./property"
 
-export function generateType(name: string, type: ReducedType) {
+export function generateType(name: string, type: Output) {
   const gqlFields = []
 
   Object.entries(type).forEach((fieldObj) => {

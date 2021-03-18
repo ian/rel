@@ -6,9 +6,9 @@ import {
   cypherCreateRelationship,
   cypherDeleteRelationship,
 } from "../cypher"
-import { Rel, Relation, Resolver } from "../types"
+import { ResolvedRel, Resolver } from "../types"
 
-export function resolveRel(rel: Rel) {
+export function resolveRel(rel) {
   return {
     name: _.camelCase(rel.label) + "Rel",
     direction: rel.direction,
@@ -16,7 +16,7 @@ export function resolveRel(rel: Rel) {
   }
 }
 
-export function listRelationResolver(relation: Relation): Resolver {
+export function listRelationResolver(relation: ResolvedRel): Resolver {
   const { from, to, rel, singular = false, order } = relation
 
   return async (runtime) => {
@@ -34,7 +34,7 @@ export function listRelationResolver(relation: Relation): Resolver {
   }
 }
 
-export function addRelationResolver(relation: Relation): Resolver {
+export function addRelationResolver(relation: ResolvedRel): Resolver {
   const { from, to, singular = false, rel } = relation
 
   const fromId = `${camelcase(from.label)}Id`
@@ -58,7 +58,7 @@ export function addRelationResolver(relation: Relation): Resolver {
   }
 }
 
-export function removeRelationResolver(relation: Relation): Resolver {
+export function removeRelationResolver(relation: ResolvedRel): Resolver {
   const { from, to, rel /*singular = false*/ } = relation
 
   const fromId = `${camelcase(from.label)}Id`

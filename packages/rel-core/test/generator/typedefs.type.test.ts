@@ -1,20 +1,18 @@
-import { string } from "../../src/fields"
-import { generateType } from "../../src/generator/typeDefs/type"
+import { Fields } from "../../src"
+import { generateType } from "../../src/generator/type"
 
 const subject = (name, type) => {
   return generateType(name, type)
 }
 
 describe("#generateType", () => {
-  describe("ReducedTypeDef as fields", () => {
+  describe("fields", () => {
     it("should generate the type name", () => {
       expect(
         subject("Book", {
           name: {
-            typeDef: {
-              params: null,
-              returns: string(),
-            },
+            params: null,
+            returns: Fields.string(),
           },
         })
       ).toEqual(`type Book {

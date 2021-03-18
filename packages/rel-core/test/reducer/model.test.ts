@@ -1,9 +1,11 @@
-import { string, type } from "../../src/fields"
-import { Reducible } from "../../src/types"
+import { Rel, Fields } from "../../src/property"
+import { Model, Reducible } from "../../src/types"
 import { reduceModel } from "../../src/reducer/models"
 
+const { string, type } = Fields
+
 describe("reduceModel", () => {
-  const subject = (model): Reducible => {
+  const subject = (model: Model): Reducible => {
     return reduceModel("MyObject", model)
   }
 
@@ -13,7 +15,7 @@ describe("reduceModel", () => {
         fields: {},
       })
 
-      expect(Object.keys(_subject.types.MyObject)).toEqual([
+      expect(Object.keys(_subject.outputs.MyObject)).toEqual([
         "id",
         "createdAt",
         "updatedAt",
@@ -33,7 +35,7 @@ describe("reduceModel", () => {
     it("by default it should generate", () => {
       const _subject = subject({})
 
-      expect(_subject.types.MyObject).toHaveProperty("id")
+      expect(_subject.outputs.MyObject).toHaveProperty("id")
     })
 
     it("should add id if set to true", () => {
@@ -41,7 +43,7 @@ describe("reduceModel", () => {
         id: true,
       })
 
-      expect(_subject.types.MyObject).toHaveProperty("id")
+      expect(_subject.outputs.MyObject).toHaveProperty("id")
     })
 
     it("should allow id to be turned off", () => {
@@ -49,7 +51,7 @@ describe("reduceModel", () => {
         id: false,
       })
 
-      expect(_subject.types.MyObject).not.toHaveProperty("id")
+      expect(_subject.outputs.MyObject).not.toHaveProperty("id")
     })
   })
 
@@ -57,16 +59,16 @@ describe("reduceModel", () => {
     it("by default it should generate createdAt and updatedAt", () => {
       const _subject = subject({})
 
-      expect(_subject.types.MyObject).toHaveProperty("createdAt")
-      expect(_subject.types.MyObject).toHaveProperty("updatedAt")
+      expect(_subject.outputs.MyObject).toHaveProperty("createdAt")
+      expect(_subject.outputs.MyObject).toHaveProperty("updatedAt")
     })
 
     it("should add id if set to true", () => {
       const _subject = subject({
         timestamps: true,
       })
-      expect(_subject.types.MyObject).toHaveProperty("createdAt")
-      expect(_subject.types.MyObject).toHaveProperty("updatedAt")
+      expect(_subject.outputs.MyObject).toHaveProperty("createdAt")
+      expect(_subject.outputs.MyObject).toHaveProperty("updatedAt")
     })
 
     it("should allow id to be turned off", () => {
@@ -74,8 +76,8 @@ describe("reduceModel", () => {
         timestamps: false,
       })
 
-      expect(_subject.types.MyObject).not.toHaveProperty("createdAt")
-      expect(_subject.types.MyObject).not.toHaveProperty("updatedAt")
+      expect(_subject.outputs.MyObject).not.toHaveProperty("createdAt")
+      expect(_subject.outputs.MyObject).not.toHaveProperty("updatedAt")
     })
   })
 
@@ -85,7 +87,7 @@ describe("reduceModel", () => {
         fields: {
           customField: string(),
         },
-      }).types.MyObject
+      }).outputs.MyObject
 
       expect(_subject).toHaveProperty("customField")
     })
@@ -102,29 +104,19 @@ describe("reduceModel", () => {
   })
 
   describe("relations", () => {
-    const subject = (model): Reducible => {
+    const subject = (model: Model): Reducible => {
       return reduceModel("Book", model)
     }
 
     it("should generate a field", () => {
       const _subject = subject({
         relations: {
-          author: {
-            from: {
-              label: "Actor",
-            },
-            to: {
-              label: "Movie",
-            },
-            rel: {
-              label: "ACTED_IN",
-            },
-          },
+          author: Rel("ACTED_IN").to("Movie"),
         },
       })
 
-      expect(_subject.types.Book).toHaveProperty("author")
-      // expect(_subject.types.Book.author).toHaveProperty("returns")
+      expect(_subject.outputs.Book).toHaveProperty("author")
+      // expect(_subject.outputs.Book.author).toHaveProperty("returns")
     })
 
     it("should be additive with fields", () => {
@@ -133,47 +125,27 @@ describe("reduceModel", () => {
           name: string(),
         },
         relations: {
-          author: {
-            from: {
-              label: "Actor",
-            },
-            to: {
-              label: "Movie",
-            },
-            rel: {
-              label: "ACTED_IN",
-            },
-          },
+          author: Rel("ACTED_IN").to("Movie"),
         },
       })
 
-      expect(_subject.types.Book).toHaveProperty("name")
-      expect(_subject.types.Book).toHaveProperty("author")
+      expect(_subject.outputs.Book).toHaveProperty("name")
+      expect(_subject.outputs.Book).toHaveProperty("author")
     })
 
     it("should have a resolver", () => {
       const _subject = subject({
         relations: {
-          author: {
-            from: {
-              label: "Actor",
-            },
-            to: {
-              label: "Movie",
-            },
-            rel: {
-              label: "ACTED_IN",
-            },
-          },
+          author: Rel("ACTED_IN").to("Movie"),
         },
       })
 
-      expect(_subject.types.Book.author).toHaveProperty("resolver")
+      expect(_subject.outputs.Book.author).toHaveProperty("resolver")
     })
   })
 
   describe("accessors", () => {
-    const subject = (model): Reducible => {
+    const subject = (model: Model): Reducible => {
       return reduceModel("Book", model)
     }
 
@@ -186,8 +158,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("FindBook")
-        expect(_subject.endpoints.FindBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.FindBook.typeDef.returns.toGQL()).toBe("Book")
+        expect(_subject.endpoints.FindBook.guard).toBe(undefined)
+        expect(_subject.endpoints.FindBook.returns.toGQL()).toBe("Book")
       })
 
       it("should generate on empty Accessor input", () => {
@@ -198,8 +170,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("FindBook")
-        expect(_subject.endpoints.FindBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.FindBook.typeDef.returns.toGQL()).toBe("Book")
+        expect(_subject.endpoints.FindBook.guard).toBe(undefined)
+        expect(_subject.endpoints.FindBook.returns.toGQL()).toBe("Book")
         expect(_subject.endpoints.FindBook.resolver).toBeDefined()
       })
 
@@ -212,7 +184,7 @@ describe("reduceModel", () => {
           },
         })
 
-        expect(_subject.endpoints.FindBook.typeDef.guard).toBe("admin")
+        expect(_subject.endpoints.FindBook.guard).toBe("admin")
       })
     })
 
@@ -225,10 +197,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("ListBooks")
-        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.ListBooks.typeDef.returns.toGQL()).toBe(
-          "[Book]!"
-        )
+        expect(_subject.endpoints.ListBooks.guard).toBe(undefined)
+        expect(_subject.endpoints.ListBooks.returns.toGQL()).toBe("[Book]!")
       })
 
       it("should generate on empty Accessor input", () => {
@@ -239,10 +209,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("ListBooks")
-        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.ListBooks.typeDef.returns.toGQL()).toBe(
-          "[Book]!"
-        )
+        expect(_subject.endpoints.ListBooks.guard).toBe(undefined)
+        expect(_subject.endpoints.ListBooks.returns.toGQL()).toBe("[Book]!")
         expect(_subject.endpoints.ListBooks.resolver).toBeDefined()
       })
 
@@ -255,13 +223,13 @@ describe("reduceModel", () => {
           },
         })
 
-        expect(_subject.endpoints.ListBooks.typeDef.guard).toBe("admin")
+        expect(_subject.endpoints.ListBooks.guard).toBe("admin")
       })
     })
   })
 
   describe("mutators", () => {
-    const subject = (model): Reducible => {
+    const subject = (model: Model): Reducible => {
       return reduceModel("Book", model)
     }
 
@@ -274,10 +242,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("CreateBook")
-        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.CreateBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.CreateBook.guard).toBe(undefined)
+        expect(_subject.endpoints.CreateBook.returns.toGQL()).toBe("Book")
       })
 
       it("should generate on empty Accessor input", () => {
@@ -288,10 +254,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("CreateBook")
-        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.CreateBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.CreateBook.guard).toBe(undefined)
+        expect(_subject.endpoints.CreateBook.returns.toGQL()).toBe("Book")
         expect(_subject.endpoints.CreateBook.resolver).toBeDefined()
       })
 
@@ -304,7 +268,7 @@ describe("reduceModel", () => {
           },
         })
 
-        expect(_subject.endpoints.CreateBook.typeDef.guard).toBe("admin")
+        expect(_subject.endpoints.CreateBook.guard).toBe("admin")
       })
     })
 
@@ -317,10 +281,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("UpdateBook")
-        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.UpdateBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.UpdateBook.guard).toBe(undefined)
+        expect(_subject.endpoints.UpdateBook.returns.toGQL()).toBe("Book")
       })
 
       it("should generate on empty Accessor input", () => {
@@ -331,10 +293,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("UpdateBook")
-        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.UpdateBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.UpdateBook.guard).toBe(undefined)
+        expect(_subject.endpoints.UpdateBook.returns.toGQL()).toBe("Book")
         expect(_subject.endpoints.UpdateBook.resolver).toBeDefined()
       })
 
@@ -347,7 +307,7 @@ describe("reduceModel", () => {
           },
         })
 
-        expect(_subject.endpoints.UpdateBook.typeDef.guard).toBe("admin")
+        expect(_subject.endpoints.UpdateBook.guard).toBe("admin")
       })
     })
 
@@ -360,10 +320,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("DeleteBook")
-        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.DeleteBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.DeleteBook.guard).toBe(undefined)
+        expect(_subject.endpoints.DeleteBook.returns.toGQL()).toBe("Book")
       })
 
       it("should generate on empty Accessor input", () => {
@@ -374,10 +332,8 @@ describe("reduceModel", () => {
         })
 
         expect(_subject.endpoints).toHaveProperty("DeleteBook")
-        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe(undefined)
-        expect(_subject.endpoints.DeleteBook.typeDef.returns.toGQL()).toBe(
-          "Book"
-        )
+        expect(_subject.endpoints.DeleteBook.guard).toBe(undefined)
+        expect(_subject.endpoints.DeleteBook.returns.toGQL()).toBe("Book")
         expect(_subject.endpoints.DeleteBook.resolver).toBeDefined()
       })
 
@@ -390,7 +346,7 @@ describe("reduceModel", () => {
           },
         })
 
-        expect(_subject.endpoints.DeleteBook.typeDef.guard).toBe("admin")
+        expect(_subject.endpoints.DeleteBook.guard).toBe("admin")
       })
     })
   })

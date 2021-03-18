@@ -1,5 +1,6 @@
-import { string } from "../../src/fields"
+import { Fields } from "../../src"
 import { Runtime } from "../../src/runtime/index"
+const { string } = Fields
 
 describe("Runtime", () => {
   describe("initialization", () => {

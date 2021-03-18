@@ -1,9 +1,9 @@
-import String from "../../src/fields/string"
-import Array from "../../src/fields/array"
+import { Fields } from "../../src"
+const { array, string } = Fields
 
 describe("default properties", () => {
   const subject = () => {
-    return new Array(new String())
+    return array(string())
   }
 
   it("should output the right GQL type", () => {

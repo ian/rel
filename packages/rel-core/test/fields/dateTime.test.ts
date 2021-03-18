@@ -1,8 +1,9 @@
-import DateTime from "../../src/fields/dateTime"
+import { Fields } from "../../src/property"
+const { dateTime } = Fields
 
 describe("default properties", () => {
   const subject = () => {
-    return new DateTime()
+    return dateTime()
   }
 
   it("should output the right GQL type", () => {

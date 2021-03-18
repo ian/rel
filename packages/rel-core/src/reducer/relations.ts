@@ -1,6 +1,6 @@
 import camelcase from "camelcase"
 import { Reducer } from "."
-import { type, array, uuid } from "../fields"
+import { Fields } from "../property"
 import {
   addRelationResolver,
   listRelationResolver,
@@ -13,43 +13,42 @@ export function reduceRelations(label, relations: Relations): Reducible {
 
   Object.entries(relations).forEach((relObj) => {
     const [relName, relation] = relObj
-    const { from, to, singular } = relation
+    const resolved = {
+      from: { label },
+      ...relation.toResolved(),
+    }
+
+    const { from, to, singular, guard } = resolved
 
     reducer.reduce({
-      types: {
+      outputs: {
         [label]: {
           [relName]: {
-            resolver: listRelationResolver(relation),
-            typeDef: {
-              returns: singular
-                ? type(to.label)
-                : array(type(to.label)).required(),
-            },
+            resolver: listRelationResolver(resolved),
+            returns: resolved.singular
+              ? Fields.type(to.label).guard(guard)
+              : Fields.array(Fields.type(to.label)).required().guard(guard),
           },
         },
       },
       endpoints: {
         [singular ? `${label}Set${to.label}` : `${label}Add${to.label}`]: {
           target: ENDPOINTS.MUTATOR,
-          typeDef: {
-            params: {
-              [`${camelcase(from.label)}Id`]: uuid().required(),
-              [`${camelcase(to.label)}Id`]: uuid().required(),
-            },
-            returns: type(to.label),
+          params: {
+            [`${camelcase(from.label)}Id`]: Fields.uuid().required(),
+            [`${camelcase(to.label)}Id`]: Fields.uuid().required(),
           },
-          resolver: addRelationResolver(relation),
+          returns: Fields.type(to.label),
+          resolver: addRelationResolver(resolved),
         },
         [`${label}Remove${to.label}`]: {
           target: ENDPOINTS.MUTATOR,
-          typeDef: {
-            params: {
-              [`${camelcase(from.label)}Id`]: uuid().required(),
-              [`${camelcase(to.label)}Id`]: uuid().required(),
-            },
-            returns: type(to.label),
+          params: {
+            [`${camelcase(from.label)}Id`]: Fields.uuid().required(),
+            [`${camelcase(to.label)}Id`]: Fields.uuid().required(),
           },
-          resolver: removeRelationResolver(relation),
+          returns: Fields.type(to.label),
+          resolver: removeRelationResolver(resolved),
         },
       },
     })

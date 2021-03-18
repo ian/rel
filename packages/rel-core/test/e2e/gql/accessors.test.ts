@@ -1,7 +1,8 @@
-import { string } from "../../../src/fields"
+import { Fields } from "../../../src"
 import makeServer from "../../helpers/makeGQLServer"
 import * as Cypher from "../../../src/cypher"
 import moment from "moment"
+const { string } = Fields
 
 describe("Query", () => {
   beforeEach(async () => {

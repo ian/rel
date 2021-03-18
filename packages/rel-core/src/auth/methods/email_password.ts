@@ -1,7 +1,8 @@
-import { string, type } from "../../fields"
+import { Fields } from "../../property"
 import { ENDPOINTS, Module } from "../../types"
 import { cypher1, cypherCreate } from "../../cypher"
 import crypto from "../../util/crypto"
+const { string, type } = Fields
 
 export async function createUser(params): Promise<object> {
   return cypherCreate("User", params)
@@ -29,10 +30,8 @@ export default {
   endpoints: {
     LoginViaEmailPassword: {
       target: ENDPOINTS.MUTATOR,
-      typeDef: {
-        params: { token: string().required() },
-        returns: type("Auth"),
-      },
+      params: { token: string().required() },
+      returns: type("Auth"),
       resolver: async ({ params }) => {
         const { email, password } = params
         const user = await findUserByEmail(email)
@@ -56,10 +55,8 @@ export default {
 
     RegisterViaEmailPassword: {
       target: ENDPOINTS.MUTATOR,
-      typeDef: {
-        params: { input: type("UserInput").required() },
-        returns: type("Auth"),
-      },
+      params: { input: type("UserInput").required() },
+      returns: type("Auth"),
       resolver: async ({ params }) => {
         const { input } = params
 

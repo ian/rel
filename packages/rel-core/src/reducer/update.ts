@@ -1,6 +1,8 @@
-import { uuid, type } from "../fields"
-import { TypeDef, UpdateMutator, Fields, Reducible, ENDPOINTS } from "../types"
+import Property from "../property"
+import { UpdateMutator, Fields, Reducible, ENDPOINTS } from "../types"
 import { updateResolver } from "../resolvers"
+
+const { uuid, type } = Property.Fields
 
 const DEFAULT_MUTATOR = {}
 
@@ -15,16 +17,6 @@ function makeResolver(label: string, mutator: UpdateMutator, fields: Fields) {
   return updateResolver(label, standardizedOpts, fields)
 }
 
-function makeType(label: string, accessor: UpdateMutator): TypeDef {
-  const { guard } = accessor
-
-  return {
-    params: { id: uuid(), input: type(`${label}Input`) },
-    guard,
-    returns: type(label),
-  }
-}
-
 export function generateUpdate(
   label: string,
   mutator: boolean | UpdateMutator,
@@ -37,11 +29,17 @@ export function generateUpdate(
     ...(typeof mutator === "boolean" ? {} : mutator),
   }
 
+  const { guard } = _mutator
+
   return {
     endpoints: {
       [`Update${label}`]: {
         target: ENDPOINTS.MUTATOR,
-        typeDef: makeType(label, _mutator),
+
+        guard,
+        params: { id: uuid(), input: type(`${label}Input`) },
+        returns: type(label),
+
         resolver: makeResolver(label, _mutator, fields),
       },
     },

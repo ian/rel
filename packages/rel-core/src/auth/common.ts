@@ -1,8 +1,9 @@
 import moment from "moment"
 import { ENDPOINTS } from "../types"
-import { string, type } from "../fields"
+import { Fields } from "../property"
 import { cypher1 } from "../cypher"
 import crypto from "../util/crypto"
+const { string, type } = Fields
 
 export class AuthError extends Error {
   constructor(message) {
@@ -73,10 +74,8 @@ export default {
   endpoints: {
     Me: {
       target: ENDPOINTS.ACCESSOR,
-      typeDef: {
-        params: { token: string().required() },
-        returns: type("Auth"),
-      },
+      params: { token: string().required() },
+      returns: type("Auth"),
       resolver: async ({ params }) => {
         const decoded = await crypto.decode(params.token)
 

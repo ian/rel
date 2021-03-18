@@ -3,30 +3,17 @@
 // Global types used across multiple areas
 // Rel supports inbound and outbound directions for relationships
 
-export enum Direction {
-  IN = "IN",
-  OUT = "OUT",
-  NONE = "NONE",
-}
-
-export enum ENDPOINTS {
-  ACCESSOR = "ACCESSOR",
-  MUTATOR = "MUTATOR",
-
-  // CREATE = "CREATE",
-  // READ = "READ",
-  // UPDATE = "UPDATE",
-  // DELETE = "DELETE",
-}
-
-export type FieldToGQLOpts = {
-  guards?: boolean
-}
-
 export type Field = {
   _default?: (label, fieldName, values) => Promise<any>
   _resolver?: (object) => Promise<any>
-  toGQL(opts?: FieldToGQLOpts): string
+  toGQL(): string
+}
+
+export type Property = {
+  params?: Params
+  guard?: string
+  returns: Field
+  resolver?: Resolver
 }
 
 export type Fields = {
@@ -37,13 +24,52 @@ export type Params = {
   [name: string]: Field
 }
 
-export type TypeDef = {
-  params?: Params
-  guard?: string
-  returns: Field
+export type Input = {
+  [propName: string]: Property
 }
 
-// Configuration
+export type Inputs = {
+  [inputName: string]: Input
+}
+
+export type Output = {
+  [propName: string]: Property
+}
+
+export type Outputs = {
+  [inputName: string]: Output
+}
+
+//////////////////////
+// Relations
+//////////////////////
+
+export type Rel = {
+  from: (Field) => Rel
+  to: (Field) => Rel
+  direction: (Direction) => Rel
+  singular: (boolean) => Rel
+  order: (string) => Rel
+  guard: (string) => Rel
+
+  toResolved(): ResolvedRel
+}
+
+export type ResolvedRel = {
+  from: {
+    label: string
+  } | null
+  to: {
+    label: string
+  }
+  rel: {
+    label: string
+    direction: Direction
+  }
+  singular: boolean
+  order: string
+  guard?: string
+}
 
 export type RelationFrom = {
   label: string
@@ -55,22 +81,23 @@ export type RelationTo = {
   params?: (any) => object
 }
 
-export type Rel = {
-  label: string
-  direction?: Direction
-}
-
-export type Relation = {
-  from: RelationFrom
-  to: RelationTo
-  rel: Rel
-  direction?: Direction
-  singular?: boolean
-  order?: string
-}
-
 export type Relations = {
-  [key: string]: Relation
+  [key: string]: Rel
+}
+
+export enum Direction {
+  IN = "IN",
+  OUT = "OUT",
+  NONE = "NONE",
+}
+
+//////////////////////
+// Accessors
+//////////////////////
+
+export type Accessors = {
+  find?: FindAccessor | boolean
+  list?: ListAccessor | boolean
 }
 
 export type FindAccessor = Accessor & {
@@ -82,14 +109,18 @@ export type ListAccessor = Accessor & {
 }
 
 export type Accessor = {
-  // params?: Fields
   guard?: string
   after?: (obj: object) => Promise<void>
 }
 
-export type Accessors = {
-  find?: FindAccessor | boolean
-  list?: ListAccessor | boolean
+//////////////////////
+// Mutators
+//////////////////////
+
+export type Mutators = {
+  create?: CreateMutator | boolean
+  update?: UpdateMutator | boolean
+  delete?: DeleteMutator | boolean
 }
 
 export type CreateMutator = Mutator & {}
@@ -101,28 +132,30 @@ export type Mutator = {
   after?: (obj: object) => Promise<void>
 }
 
-export type Mutators = {
-  create?: CreateMutator | boolean
-  update?: UpdateMutator | boolean
-  delete?: DeleteMutator | boolean
-}
-
-export type Model = {
-  id?: boolean
-  timestamps?: boolean
-  input?: boolean
-  fields: Fields
-  relations?: Relations
-  accessors?: Accessors
-  mutators?: Mutators
-}
+//////////////////////
+// Schema
+//////////////////////
 
 export type Schema = {
   [name: string]: Model
 }
 
+export type Model = {
+  id?: boolean
+  timestamps?: boolean
+
+  // should these even exist?
+  input?: boolean
+  output?: boolean
+
+  fields?: Fields
+  relations?: Relations
+  accessors?: Accessors
+  mutators?: Mutators
+}
+
 export type ResolverArgs = {
-  src: string
+  // src: string
   args: object
   context: object
   cypher: (c: string) => Promise<CypherResponse>
@@ -139,9 +172,20 @@ export type Guards = {
   }
 }
 
+//////////////////////
+// Endpoints
+//////////////////////
+
+export enum ENDPOINTS {
+  ACCESSOR = "ACCESSOR",
+  MUTATOR = "MUTATOR",
+}
+
 export type Endpoint = {
   target: ENDPOINTS
-  typeDef: TypeDef
+  params?: Params
+  guard?: string
+  returns: Field
   resolver: Resolver
 }
 
@@ -149,44 +193,29 @@ export type Endpoints = {
   [queryName: string]: Endpoint
 }
 
+//////////////////////
+// Modules
+//////////////////////
+
 export type Module = {
   schema?: Schema
+  inputs?: Inputs
+  outputs?: Outputs
   guards?: Guards
   endpoints?: Endpoints
 }
 
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
 
+//////////////////////
 // Reducer
-
-export type ReducedProperty = {
-  typeDef: TypeDef
-  resolver?: Resolver
-}
-
-export type ReducedInput = {
-  [propName: string]: ReducedProperty
-}
-
-export type ReducedInputs = {
-  [inputName: string]: ReducedInput
-}
-
-export type ReducedType = {
-  [propName: string]: ReducedProperty
-}
-
-export type ReducedTypes = {
-  [inputName: string]: ReducedType
-}
-
-export type ReducedGuards = Guards
+//////////////////////
 
 export type Reducible = {
-  inputs?: ReducedInputs
-  types?: ReducedTypes
+  inputs?: Inputs
+  outputs?: Outputs
   endpoints?: Endpoints
-  guards?: ReducedGuards
+  guards?: Guards
 }
 
 // Cypher

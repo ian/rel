@@ -1,8 +1,8 @@
-import PhoneNumber from "../../src/fields/phoneNumber"
+import { phoneNumber } from "../../src/property/fields"
 
 describe("default properties", () => {
   const subject = () => {
-    return new PhoneNumber()
+    return phoneNumber()
   }
 
   it("should output the right GQL type", () => {

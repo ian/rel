@@ -1,6 +1,7 @@
-import { string } from "../../../src/fields"
+import { Fields } from "../../../src"
 import makeServer from "../../helpers/makeGQLServer"
 import * as Cypher from "../../../src/cypher"
+const { string } = Fields
 
 describe("slugs", () => {
   beforeEach(async () => {

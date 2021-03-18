@@ -1,5 +1,7 @@
-import { string, type } from "../../fields"
+import { Rel, Fields } from "../../property"
 import { Module, Direction } from "../../types"
+
+const { string, type } = Fields
 
 export default {
   schema: {
@@ -17,29 +19,8 @@ export default {
         name: string().required(),
       },
       relations: {
-        following: {
-          from: {
-            label: "User",
-          },
-          to: {
-            label: "User",
-          },
-          rel: {
-            label: "FOLLOWS",
-          },
-        },
-        followers: {
-          from: {
-            label: "User",
-          },
-          to: {
-            label: "User",
-          },
-          rel: {
-            label: "FOLLOWS",
-            direction: Direction.IN,
-          },
-        },
+        following: Rel("FOLLOWS").to("User"),
+        followers: Rel("FOLLOWS").to("User").direction(Direction.IN),
       },
     },
   },

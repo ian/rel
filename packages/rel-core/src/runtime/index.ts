@@ -1,7 +1,6 @@
 import _ from "lodash"
-// import { GraphQLSchema } from "graphql"
-import { IResolvers } from "apollo-server-fastify"
-import { Module, Reducible, ENDPOINTS } from "../types"
+// import { Config } from "apollo-server-core"
+import { Module, Reducible } from "../types"
 import {
   generateDirectiveResolvers,
   generateResolvers,
@@ -25,24 +24,21 @@ export class Runtime {
     this.reducer.module(module)
   }
 
-  generate(): GQLConfig {
+  generate() {
     const reduced = this.reducer.toReducible()
 
     const typeDefs = generateTypeDefs(reduced)
     const resolvers = generateResolvers(reduced)
-    const directiveResolvers = generateDirectiveResolvers(reduced)
+    const directives = generateDirectiveResolvers(reduced)
 
     try {
       return {
         typeDefs,
         resolvers,
-        directiveResolvers,
+        directives,
       }
     } catch (err) {
-      console.error("ERROR", err.message)
-      console.log(typeDefs)
-
-      // throw new Error("Unable to compile typeDefs")
+      // console.error("ERROR", err.message)
       throw err
     }
   }
@@ -52,7 +48,7 @@ export type RuntimeOpts = {
   auth?: Module
 } & Module
 
-export function generate(opts: RuntimeOpts): GQLConfig {
+export function generate(opts: RuntimeOpts) {
   const { auth, ...config } = opts
   const runtime = new Runtime()
 
@@ -61,14 +57,4 @@ export function generate(opts: RuntimeOpts): GQLConfig {
   runtime.module(config)
 
   return runtime.generate()
-}
-
-// @todo - make this more specific
-export type GQLTypeDefs = string
-export type GQLSchema = any
-export type GQLConfig = {
-  typeDefs: GQLTypeDefs
-  // schema: GQLSchema
-  resolvers: IResolvers
-  directiveResolvers: any
 }

@@ -1,4 +1,4 @@
-import { cypher, cypherFind, cypherList, queryBuilder } from "../cypher"
+import { cypherFind, cypherList } from "../cypher"
 import { FindAccessor } from "../types"
 
 // type FindOpts = {

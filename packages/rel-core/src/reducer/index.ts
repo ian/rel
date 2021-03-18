@@ -1,12 +1,5 @@
 import _ from "lodash"
-import {
-  Module,
-  Reducible,
-  Endpoints,
-  ReducedGuards,
-  ReducedTypes,
-  ReducedInputs,
-} from "../types"
+import { Module, Reducible, Endpoints, Guards, Outputs, Inputs } from "../types"
 
 import { reduceModel } from "./models"
 
@@ -15,9 +8,9 @@ export function intersection(o1, o2) {
 }
 
 export class Reducer {
-  inputs: ReducedInputs = {}
-  types: ReducedTypes = {}
-  guards: ReducedGuards = {}
+  inputs: Inputs = {}
+  outputs: Outputs = {}
+  guards: Guards = {}
   endpoints: Endpoints = {}
 
   module(module: Module) {
@@ -56,14 +49,14 @@ export class Reducer {
     }
 
     _.merge(this.inputs, reducible.inputs)
-    _.merge(this.types, reducible.types)
+    _.merge(this.outputs, reducible.outputs)
     _.merge(this.endpoints, reducible.endpoints)
   }
 
   toReducible(): Reducible {
     return {
       inputs: this.inputs,
-      types: this.types,
+      outputs: this.outputs,
       endpoints: this.endpoints,
       guards: this.guards,
     }

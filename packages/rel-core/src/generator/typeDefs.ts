@@ -1,13 +1,13 @@
 import _ from "lodash"
 import { formatSdl } from "format-graphql"
-import { ENDPOINTS, Reducible } from "../../types"
+import { ENDPOINTS, Reducible } from "../types"
 
 import { generateDirectives } from "./directives"
 import { generateInput } from "./input"
 import { generateType } from "./type"
 
 export function generateTypeDefs(reducible: Reducible) {
-  const { inputs, types, guards, endpoints } = reducible
+  const { inputs, outputs, guards, endpoints } = reducible
 
   const gql = []
 
@@ -33,8 +33,8 @@ scalar UUID`)
     })
   }
 
-  if (types) {
-    Object.entries(types).forEach((entry) => {
+  if (outputs) {
+    Object.entries(outputs).forEach((entry) => {
       const [name, properties] = entry
       gql.push(generateType(name, properties))
     })

@@ -1,12 +1,10 @@
-import { Fields, ReducedType } from "../types"
+import { Fields, Input } from "../types"
 
-export function reduceInput(fields: Fields): ReducedType {
+export function reduceInput(fields: Fields): Input {
   const reduced = Object.entries(fields).reduce((acc, entry) => {
     const [fieldName, field] = entry
     acc[fieldName] = {
-      typeDef: {
-        returns: field,
-      },
+      returns: field,
     }
     return acc
   }, {})

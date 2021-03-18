@@ -1,8 +1,9 @@
-import Type from "../../src/fields/type"
+import { Fields } from "../../src"
+const { type } = Fields
 
 describe("default properties", () => {
   const subject = () => {
-    return new Type("RandomType")
+    return type("RandomType")
   }
 
   it("should output the right GQL type", () => {

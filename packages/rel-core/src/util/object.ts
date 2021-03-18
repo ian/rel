@@ -1,3 +1,9 @@
+import _ from "lodash"
+
+type DiffOpts = {
+  ignore?: string[]
+}
+
 /*!
  * Find the differences between two objects and push to a new object
  * (c) 2019 Chris Ferdinandi & Jascha Brinkmann, MIT License, https://gomakethings.com & https://twitter.com/jaschaio
@@ -6,11 +12,7 @@
  * @return {Object}      An object of differences between the two
  */
 
-type Opts = {
-  ignore?: string[]
-}
-
-export const diff = function (obj1, obj2, opts: Opts = {}) {
+export const diff = function (obj1, obj2, opts: DiffOpts = {}) {
   const { ignore = [] } = opts
   const changed = {}
 
@@ -25,4 +27,10 @@ export const diff = function (obj1, obj2, opts: Opts = {}) {
   })
 
   return changed
+}
+
+export const clean = (obj) => {
+  return _.pickBy(obj, function (value, key) {
+    return !(value === undefined || value === null)
+  })
 }

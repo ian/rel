@@ -49,6 +49,7 @@ async function run() {
   }
 
   return server.start().then(({ typeDefs, port }) => {
+    console.log(typeDefs)
     console.log(`rel running on http://localhost:${port}`)
   })
 }

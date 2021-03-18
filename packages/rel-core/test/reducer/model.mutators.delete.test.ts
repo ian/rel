@@ -1,6 +1,7 @@
 import { Reducible } from "../../src/types"
-import { string, uuid } from "../../src/fields"
+import { Fields } from "../../src"
 import { generateDelete } from "../../src/reducer/delete"
+const { string, uuid } = Fields
 
 const subject = (mutator) => {
   return generateDelete("Book", mutator, { title: string() }) as Reducible
@@ -48,7 +49,7 @@ describe("generateDelete", () => {
       const _subject = subject({ guard: "admin" })
       expect(typeof _subject).toBe("object")
 
-      expect(_subject.endpoints.DeleteBook.typeDef.guard).toEqual("admin")
+      expect(_subject.endpoints.DeleteBook.guard).toEqual("admin")
     })
   })
 
@@ -56,7 +57,7 @@ describe("generateDelete", () => {
     it("should allow id to be specified", () => {
       const _subject = subject({ title: string() })
 
-      expect(JSON.stringify(_subject.endpoints.DeleteBook.typeDef.params)).toBe(
+      expect(JSON.stringify(_subject.endpoints.DeleteBook.params)).toBe(
         JSON.stringify({ id: uuid() })
       )
     })
