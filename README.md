@@ -20,9 +20,9 @@ Once finished, you will have the following project structure:
 ./myapp
 │
 ├── jobs
-│   └── .gitkeep
+│   └── ...
 ├── schema
-│   └── .gitkeep
+│   └── ...
 ├── server.ts
 ├── package.json
 ├── relconfig.json
