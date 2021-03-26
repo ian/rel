@@ -1,13 +1,13 @@
-import { Fields, Rel } from "@reldb/core"
+import { string, int, rel } from "@reldb/core"
 
 export default {
   Author: {
     fields: {
-      name: Fields.string().required(),
-      born: Fields.int(),
+      name: string().required(),
+      born: int(),
     },
     relations: {
-      books: Rel("WROTE").to("Author"),
+      books: rel("WROTE").to("Author"),
     },
     accessors: {
       find: true,
@@ -21,11 +21,11 @@ export default {
   },
   Book: {
     fields: {
-      title: Fields.string().required(),
-      released: Fields.int(),
+      title: string().required(),
+      released: int(),
     },
     relations: {
-      author: Rel("WROTE").to("Author").direction(Rel.Direction.IN),
+      author: rel("WROTE").to("Author").direction(Rel.Direction.IN),
     },
     accessors: {
       find: true,

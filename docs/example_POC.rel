@@ -1,4 +1,4 @@
-import { server, Fields, Auth, Direction } from "@reldb/core"
+import { server, Fields, Auth, Direction } from "@reldb/run"
 const { phoneNumber, int, string, rel } = Fields
 
 server()

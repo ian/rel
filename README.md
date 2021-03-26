@@ -35,12 +35,12 @@ Add new models by running `rel model Book`
 ```
 // ./models/Book.ts
 
-import { Fields } from "@reldb/core"
+import { string } from "@reldb/meta"
 
 export default {
   Book: {
     fields: {
-      name: Fields.string().required(),
+      name: string().required(),
       ...
     },
   }
@@ -50,7 +50,7 @@ export default {
 If you want to define Authentication models, change ports, etc, find in `./server.ts`
 
 ```
-import { Server } from "@reldb/core"
+import { Server } from "@reldb/run"
 import Auth from "@reldb/auth"
 
 import schema from "./schema"
@@ -76,7 +76,6 @@ rel dev
 ```
 
 <!-- See all configuration options here: https://rel.run/docs/config -->
-
 
 # Examples
 

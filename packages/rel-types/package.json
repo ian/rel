@@ -1,0 +1,28 @@
+{
+  "name": "@reldb/types",
+  "version": "0.0.1",
+  "description": "Typescript support for Rel",
+  "keywords": [
+    "rel"
+  ],
+  "author": "Ian Hunter <ianhunter@gmail.com>",
+  "homepage": "https://rel.run",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/runrel/rel.git"
+  },
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "yarn clean && tsc",
+    "build:watch": "yarn clean && tsc --watch"  
+  },
+  "bugs": {
+    "url": "https://github.com/runrel/rel/issues"
+  }
+}

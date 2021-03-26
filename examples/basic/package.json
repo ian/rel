@@ -9,7 +9,7 @@
     "dev": "rel dev"
   },
   "dependencies": {
-    "@reldb/core": "^0.4.1"
+    "@reldb/run": "^0.4.1"
   },
   "devDependencies": {
     "@reldb/cli": "^0.2.0",

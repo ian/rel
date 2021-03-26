@@ -6,8 +6,9 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "test": "lerna run test",
-    "test:ci": "lerna run test:ci"
+    "test": "lerna run test -- --color",
+    "test:ci": "lerna run test:ci",
+    "test:coverage": "lerna run test:coverage"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

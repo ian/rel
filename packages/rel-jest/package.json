@@ -1,0 +1,34 @@
+{
+  "name": "@reldb/jest",
+  "version": "0.0.1",
+  "description": "Jest bindings for testing Rel",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "yarn clean && tsc",
+    "build:watch": "yarn clean && tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/runrel/rel.git"
+  },
+  "keywords": [
+    "rel"
+  ],
+  "dependencies": {
+    "@reldb/run": "^0.5.1"
+  },
+  "devDependencies": {
+    "@reldb/types": "^0.0.1"
+  },
+  "author": "Ian Hunter <ian@rel.run>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/runrel/rel/issues"
+  },
+  "homepage": "https://rel.run"
+}

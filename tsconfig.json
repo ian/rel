@@ -8,7 +8,9 @@
     "skipLibCheck": true,
     "removeComments": true,
     "declaration": true,
-    "lib": ["es6", "DOM"]
+    "sourceMap": true,
+    "lib": ["es6", "DOM"],
   },
-  "exclude": ["**/node_modules", "dist", "test", "**/*.test.ts"]
+  "include": [],
+  "exclude": ["**/node_modules", "dist", "test"]
 }

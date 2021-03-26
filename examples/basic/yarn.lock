@@ -75,15 +75,15 @@
     dotenv "^8.2.0"
     ora "^5.3.0"
 
-"@reldb/core@^0.4.1":
+"@reldb/run@^0.4.1":
   version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@reldb/core/-/core-0.4.1.tgz#543eaeef917bd25354030d5165653606625ed003"
+  resolved "https://registry.yarnpkg.com/@reldb/run/-/core-0.4.1.tgz#543eaeef917bd25354030d5165653606625ed003"
   integrity sha512-6F3XyeP2aLXKAYMD+CDkO8nVSBpwB/9PBVqofdOrTIrEH45KMjOGFVmrZx0fCcZrBvufL7u/XTH7fhu1SS/bzg==
   dependencies:
     "@google/maps" "^1.1.3"
     "@graphql-tools/merge" "^6.2.7"
     "@graphql-tools/schema" "^7.1.3"
-    "@reldb/core" "^0.4.1"
+    "@reldb/run" "^0.4.1"
     bcryptjs "^2.4.3"
     fastify "^3.11.0"
     format-graphql "^1.4.0"

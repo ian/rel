@@ -1,4 +1,4 @@
-import { server } from "@reldb/core"
+import { server } from "@reldb/run"
 import schema from "./schema"
 
 const port = process.env.PORT

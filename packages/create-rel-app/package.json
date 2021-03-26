@@ -24,6 +24,8 @@
   },
   "gitHead": "c9d70e09647448950cc3ed6a0ab6450185111545",
   "dependencies": {
+    "@reldb/meta": "^0.0.1",
+    "@reldb/types": "^0.0.1",
     "chalk": "^4.1.0",
     "fs-extra": "^9.1.0",
     "inquirer": "^8.0.0",

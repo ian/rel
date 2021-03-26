@@ -18,6 +18,8 @@
     "build:watch": "tsc --watch"
   },
   "dependencies": {
+    "@reldb/meta": "^0.0.1",
+    "@reldb/types": "^0.0.1",
     "child_process": "^1.0.2",
     "chokidar": "^3.5.1",
     "commander": "^7.1.0",
