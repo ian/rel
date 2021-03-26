@@ -6,4 +6,6 @@ module.exports = {
   displayName: pack.name,
   name: pack.name,
   testMatch: ['**/*.test.ts'],
+  setupFilesAfterEnv: [__dirname + "/.jest/db.js"],
+  setupFiles: [__dirname + "/.jest/env.js"],
 };

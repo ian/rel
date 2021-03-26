@@ -1,8 +1,6 @@
 import toSlug from "slugify"
 import String from "./string"
 
-// import { isSlugAvailable, slugHandler } from "../../cypher/slugs"
-
 type Opts = {
   from: string
 }
@@ -10,39 +8,57 @@ type Opts = {
 export default class Slug extends String {
   constructor(opts: Opts) {
     super()
-    const { from } = opts
+    if (!opts?.from) {
+      throw new Error('slug() requires { from: "..." } param')
+    }
 
     this.default(async (runtime) => {
       const { label, fieldName, values, cypher1 } = runtime
 
-      const findAvailableSlug = async (label, slugBase, tries = 0) => {
-        const trySlug = tries === 0 ? slugBase : `${slugBase}-${tries}`
-        if (await isSlugAvailable(label, trySlug)) return trySlug
-        return findAvailableSlug(label, slugBase, tries + 1)
-      }
-
-      const isSlugAvailable = async (label, slug) => {
-        const res = await cypher1(
-          `MATCH (n:${label}) WHERE n.slug = "${slug}" RETURN n`
-        )
-        return !res
-      }
-
-      let slug
-
       if (values[fieldName]) {
-        slug = values[fieldName].slug.trim()
-        const slugAvailable = await isSlugAvailable(label, slug)
+        const slug = values[fieldName].slug.trim()
+        const slugAvailable = await isSlugAvailable(cypher1, label, slug)
         if (!slugAvailable) {
           throw new Error(`${label} slug "${slug}" is already taken`)
         }
       } else {
-        slug = await findAvailableSlug(label, slugify(values[from]))
+        return findNextAvailableSlug(cypher1, label, slugify(values[opts.from]))
       }
-
-      return slug
     })
   }
+}
+
+async function findNextAvailableSlug(cypher1, label, slugBase, tries = 0) {
+  const taken = await cypher1(
+    `MATCH (n:${label}) WHERE n.slug =~ '${slugBase}-?.*' RETURN n`
+  ).then((res) => res?.n.slug)
+
+  if (taken) {
+    const tokens = makeTries(slugBase, tries)
+    const avail = tokens.find((tok) => !taken.includes(tok))
+    if (avail) {
+      return avail
+    }
+    return findNextAvailableSlug(cypher1, label, slugBase, tries + 1)
+  } else {
+    return slugBase // requested slug is available
+  }
+}
+
+const PER_PAGE = 10
+
+function makeTries(slugBase, tries = 0) {
+  return [...Array(PER_PAGE)].map(
+    (_, i) =>
+      `${slugBase}${tries === 0 && i === 0 ? "" : `-${tries * PER_PAGE + i}`}`
+  )
+}
+
+async function isSlugAvailable(cypher1, label, slug) {
+  const res = await cypher1(
+    `MATCH (n:${label}) WHERE n.slug = "${slug}" RETURN n`
+  )
+  return !res
 }
 
 function slugify(str: string) {
