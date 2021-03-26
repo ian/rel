@@ -22,7 +22,7 @@
     "release": "yarn build",
     "prepublish": "yarn release"
   },
-  "gitHead": "c9d70e09647448950cc3ed6a0ab6450185111545",
+  "gitHead": "5e37d0fda7603768722e40c2e0f4c409533ff26a",
   "dependencies": {
     "@reldb/meta": "^0.1.1",
     "@reldb/types": "^0.1.1",
