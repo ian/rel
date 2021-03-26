@@ -1,6 +1,6 @@
 {
   "name": "create-rel-app",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Create rel powered API with one command",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",
@@ -24,8 +24,8 @@
   },
   "gitHead": "c9d70e09647448950cc3ed6a0ab6450185111545",
   "dependencies": {
-    "@reldb/meta": "^0.0.1",
-    "@reldb/types": "^0.0.1",
+    "@reldb/meta": "^0.1.0",
+    "@reldb/types": "^0.1.0",
     "chalk": "^4.1.0",
     "fs-extra": "^9.1.0",
     "inquirer": "^8.0.0",

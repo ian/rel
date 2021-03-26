@@ -1,6 +1,6 @@
 {
   "name": "@reldb/types",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Typescript support for Rel",
   "keywords": [
     "rel"
@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "yarn clean && tsc",
-    "build:watch": "yarn clean && tsc --watch"  
+    "build:watch": "yarn clean && tsc --watch"
   },
   "bugs": {
     "url": "https://github.com/runrel/rel/issues"

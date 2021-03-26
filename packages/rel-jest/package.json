@@ -1,6 +1,6 @@
 {
   "name": "@reldb/jest",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Jest bindings for testing Rel",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,10 +20,10 @@
     "rel"
   ],
   "dependencies": {
-    "@reldb/run": "^0.5.1"
+    "@reldb/run": "^0.6.0"
   },
   "devDependencies": {
-    "@reldb/types": "^0.0.1"
+    "@reldb/types": "^0.1.0"
   },
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",

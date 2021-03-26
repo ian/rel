@@ -1,7 +1,7 @@
 {
   "name": "@reldb/meta",
   "description": "Meta properties to be used with Rel",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -32,12 +32,10 @@
     "url": "https://github.com/runrel/rel/issues"
   },
   "homepage": "https://github.com/runrel/rel#readme",
-  "dependencies": {
-  },
   "devDependencies": {
+    "@reldb/types": "^0.1.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.28",
-    "@reldb/types": "^0.0.1",
     "env-cmd": "^10.1.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.5.3",
