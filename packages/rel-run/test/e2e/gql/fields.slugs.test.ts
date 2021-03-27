@@ -1,5 +1,5 @@
 import { slug, string } from "@reldb/meta"
-import { makeServer } from "@reldb/jest"
+import { makeServer } from "@reldb/testing"
 import * as Cypher from "../../../src/cypher"
 
 describe("slugs", () => {

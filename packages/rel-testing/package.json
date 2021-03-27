@@ -1,5 +1,5 @@
 {
-  "name": "@reldb/jest",
+  "name": "@reldb/testing",
   "version": "0.1.1",
   "description": "Jest bindings for testing Rel",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "rel"
   ],
   "dependencies": {
-    "@reldb/run": "^0.6.1"
+    "@reldb/run": "0.6.1"
   },
   "devDependencies": {
     "@reldb/types": "^0.1.1"

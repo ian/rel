@@ -1,4 +1,4 @@
-import { makeServer } from "@reldb/jest"
+import { makeServer } from "@reldb/testing"
 import { Geo } from "@reldb/meta"
 import { string } from "@reldb/meta"
 

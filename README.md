@@ -19,6 +19,8 @@ Once finished, you will have the following project structure:
 ```
 ./myapp
 │
+├── auth
+│   └── auth.ts
 ├── jobs
 │   └── ...
 ├── schema
@@ -35,37 +37,35 @@ Add new models by running `rel model Book`
 ```
 // ./models/Book.ts
 
-import { string } from "@reldb/meta"
+import { model, string } from "@reldb/meta"
 
-export default {
-  Book: {
-    fields: {
-      name: string().required(),
-      ...
-    },
-  }
-}
+export default model("Book").fields({
+  name: string().required(),
+  // ... add other fields
+})
 ```
 
 If you want to define Authentication models, change ports, etc, find in `./server.ts`
 
 ```
-import { Server } from "@reldb/run"
-import Auth from "@reldb/auth"
-
-import schema from "./schema"
+import { server, loadSchema } from "@reldb/run"
+import { Social, Methods } from "@reldb/auth"
 
 const port = process.env.PORT
 
-export default Server({
-  auth: Auth.Social({
-    include: [
-      Auth.Methods.EMAIL_PASSWORD,
-      Auth.Methods.EMAIL_LINK,
+export default server({
+  auth: Social({
+    providers: {
+      email: Mailgun({
+        apiKey: "..."
+      })
+    },
+    methods: [
+      Methods.EmailPassword(),
+      Methods.EmailLink(),
     ],
   }),
-  port,
-  schema,
+  port
 })
 ```
 
@@ -100,7 +100,7 @@ The name rel is an homage to CYPHER relationship, the rel.
 
 ## What is CYPHER?
 
-Quite simply, CYPHER is SQL for Graph Databases. It's a far more elegant and visually representative query language. We're big fans.
+Quite simply, CYPHER is SQL for Graph Databases, but infinitely better. It's a far more elegant and visually representative query language. We're big fans.
 
 Whereas a SQL database seeks to force data into a specific format via field and table constraints, a Graph DB seeks to "make sense" of your data by allowing you to look at it in different ways. We like to think of it as providing the 10,000 ft view all the way down to the
 
@@ -108,12 +108,16 @@ You can read more on Why CYPHER on our documentation: [https://rel.run/docs/why-
 
 In general, using rel you will likely never have to write Cypher since the persistence layer is handled for you. However, there are advanced settings that let you drop into a CYPHER query from any endpoint or field.
 
+## Architecture
+
+![Rel Architecture](docs/Architecture.png)
+
 # Contributing
 
 We are always looking for backend and graph aficionados to help take rel to the next phase.
 
 Please see our contributing.md.
 
-# Authors
+# Contributors
 
-- Ian Hunter [@ian](https://github.com/ian) - 01 Studio
+- Ian Hunter [@ian](https://github.com/ian) - Rel
