@@ -1,6 +1,6 @@
 import { ENDPOINTS } from "@reldb/types"
 import { string, uuid } from "@reldb/meta"
-import { generateTypeDefs } from "../../src/generator/typeDefs"
+import { generateTypeDefs } from "../../src/runtime/typeDefs"
 
 describe("typeDefs", () => {
   describe("Query", () => {
@@ -62,9 +62,7 @@ describe("typeDefs", () => {
       return generateTypeDefs({
         inputs: {
           BookInput: {
-            name: {
-              returns: string(),
-            },
+            name: string(),
           },
         },
       })
@@ -83,9 +81,7 @@ describe("typeDefs", () => {
         generateTypeDefs({
           outputs: {
             Book: {
-              name: {
-                returns: string(),
-              },
+              name: string(),
             },
           },
         })
@@ -99,9 +95,7 @@ describe("typeDefs", () => {
         generateTypeDefs({
           outputs: {
             Book: {
-              name: {
-                returns: string().required(),
-              },
+              name: string().required(),
             },
           },
         })

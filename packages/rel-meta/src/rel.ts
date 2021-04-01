@@ -1,7 +1,11 @@
-import { Direction, ResolvedRel } from "@reldb/types"
-import { clean } from "./util/object"
+import camelcase from "camelcase"
+import { Direction, Rel, ENDPOINTS } from "@reldb/types"
+import { array, uuid, type } from "./fields"
+import { addRelationResolver } from "./relations/add"
+import { removeRelationResolver } from "./relations/remove"
+import { listRelationResolver } from "./relations/list"
 
-export default class Rel {
+export default class RelField implements Rel {
   _guard: string = null
 
   _label: string
@@ -19,7 +23,7 @@ export default class Rel {
     this._label = label
   }
 
-  guard(scope): Rel {
+  guard(scope: string) {
     this._guard = scope
     return this
   }
@@ -53,9 +57,9 @@ export default class Rel {
     return this
   }
 
-  toResolved(): ResolvedRel {
-    return clean({
-      from: this._from,
+  reduce(reducer, { fieldName, modelName }) {
+    const relation = {
+      from: this._from || { label: modelName },
       to: this._to,
       rel: {
         label: this._label,
@@ -64,6 +68,47 @@ export default class Rel {
       guard: this._guard,
       singular: this._singular,
       order: this._order,
-    }) as ResolvedRel
+    }
+
+    const fromLabel = relation.from.label
+    const toLabel = relation.to.label
+
+    const createRelEndpoint = this._singular
+      ? `${relation.from.label}Set${this._to.label}`
+      : `${relation.from.label}Add${this._to.label}`
+    const removeRelEndpoint = `${relation.from.label}Remove${this._to.label}`
+
+    const fieldResolver = listRelationResolver(relation)
+
+    reducer({
+      outputs: {
+        [modelName]: {
+          [fieldName]: (this._singular
+            ? type(relation.to.label)
+            : array(type(relation.to.label)).required()
+          ).resolver(fieldResolver),
+        },
+      },
+      endpoints: {
+        [createRelEndpoint]: {
+          target: ENDPOINTS.MUTATOR,
+          params: {
+            [`${camelcase(fromLabel)}Id`]: uuid().required(),
+            [`${camelcase(toLabel)}Id`]: uuid().required(),
+          },
+          returns: type(toLabel),
+          resolver: addRelationResolver(relation),
+        },
+        [removeRelEndpoint]: {
+          target: ENDPOINTS.MUTATOR,
+          params: {
+            [`${camelcase(fromLabel)}Id`]: uuid().required(),
+            [`${camelcase(toLabel)}Id`]: uuid().required(),
+          },
+          returns: type(toLabel),
+          resolver: removeRelationResolver(relation),
+        },
+      },
+    })
   }
 }

@@ -1,11 +1,19 @@
-import { type } from "../../src"
+import { type, model, string } from "../../src"
+import { makeServer } from "@reldb/testing"
 
 describe("default properties", () => {
-  const subject = () => {
-    return type("RandomType")
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
   }
 
-  it("should output the right GQL type", () => {
-    expect(subject().toGQL()).toBe("RandomType")
-  })
+  // I'm not sure how to test this yet. It's tested via relationships right now but testing solo is proving to be tricky
+
+  it.todo("should output the right GQL type")
 })

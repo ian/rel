@@ -1,19 +1,16 @@
 import { string } from "@reldb/meta"
-import { generateType } from "../../src/generator/type"
+import { outputToGQL } from "../../src/typeDefs"
 
 const subject = (name, type) => {
-  return generateType(name, type)
+  return outputToGQL(name, type)
 }
 
-describe("#generateType", () => {
+describe("#outputToGQL", () => {
   describe("fields", () => {
     it("should generate the type name", () => {
       expect(
         subject("Book", {
-          name: {
-            params: null,
-            returns: string(),
-          },
+          name: string(),
         })
       ).toEqual(`type Book {
   name: String

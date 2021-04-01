@@ -1,9 +1,9 @@
-import { generateDirectives } from "../../src/generator/directives"
+import { directivesToGQL } from "../../src/typeDefs/directives"
 
-describe("#generateDirectives", () => {
+describe("#directivesToGQL", () => {
   it("should generate directives with typeDef specified", () => {
     expect(
-      generateDirectives({
+      directivesToGQL({
         admin: {
           typeDef: "directive @admin on OBJECT",
           resolver: async () => {},
@@ -14,7 +14,7 @@ describe("#generateDirectives", () => {
 
   it("should generate directives with NO typeDef specified and use default everything", () => {
     expect(
-      generateDirectives({
+      directivesToGQL({
         admin: {
           typeDef:
             "directive @admin on OBJECT | FIELD_DEFINITION | INPUT_OBJECT | INPUT_FIELD_DEFINITION",

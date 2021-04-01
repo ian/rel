@@ -39,7 +39,7 @@ Add new models by running `rel model Book`
 
 import { model, string } from "@reldb/meta"
 
-export default model("Book").fields({
+export default model().fields({
   name: string().required(),
   // ... add other fields
 })

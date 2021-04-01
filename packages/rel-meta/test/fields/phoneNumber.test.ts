@@ -1,11 +1,28 @@
-import { phoneNumber } from "../../src"
+import { phoneNumber, model } from "../../src"
+import { makeServer } from "@reldb/testing"
 
 describe("default properties", () => {
-  const subject = () => {
-    return phoneNumber()
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
   }
 
   it("should output the right GQL type", () => {
-    expect(subject().toGQL()).toBe("PhoneNumber")
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: phoneNumber(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: PhoneNumber
+}
+`)
   })
 })

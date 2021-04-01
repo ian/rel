@@ -1,5 +1,10 @@
 import inquirer from "inquirer"
-import { Answers } from "./types"
+
+export type Answers = {
+  projectName: string
+  auth: string
+  plugins: string[]
+}
 
 export default (): Promise<Answers> => {
   return inquirer.prompt([

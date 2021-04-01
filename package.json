@@ -5,7 +5,10 @@
     "packages/*"
   ],
   "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "link": "lerna link",
     "build": "lerna run build",
+    "build:watch": "lerna run build:watch",
     "test": "lerna run test -- --color",
     "test:ci": "lerna run test:ci",
     "test:coverage": "lerna run test:coverage"

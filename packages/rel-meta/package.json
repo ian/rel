@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && tsc",
-    "build:watch": "yarn clean && tsc --watch",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "test": "jest --detectOpenHandles --runInBand",
     "test:watch": "jest --watch --detectOpenHandles --runInBand",
     "test:ci": "jest --detectOpenHandles --runInBand",
@@ -32,8 +32,12 @@
     "url": "https://github.com/runrel/rel/issues"
   },
   "homepage": "https://github.com/runrel/rel#readme",
+  "dependencies": {
+    "@reldb/cypher": "0.0.1"
+  },
   "devDependencies": {
     "@reldb/types": "0.1.1",
+    "@reldb/testing": "^0.1.1",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.28",
     "env-cmd": "^10.1.0",

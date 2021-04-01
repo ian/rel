@@ -19,8 +19,8 @@
   },
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && tsc",
-    "build:watch": "yarn clean && tsc --watch"
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "bugs": {
     "url": "https://github.com/runrel/rel/issues"

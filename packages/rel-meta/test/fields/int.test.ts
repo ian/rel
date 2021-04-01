@@ -1,11 +1,28 @@
-import { int } from "../../src"
+import { int, model } from "../../src"
+import { makeServer } from "@reldb/testing"
 
 describe("default properties", () => {
-  const subject = () => {
-    return int()
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
   }
 
   it("should output the right GQL type", () => {
-    expect(subject().toGQL()).toBe("Int")
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: int(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: Int
+}
+`)
   })
 })

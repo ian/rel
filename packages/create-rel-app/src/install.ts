@@ -3,7 +3,7 @@ import ora from "ora"
 import fs from "fs-extra"
 import path from "path"
 
-import { Answers } from "./types"
+import { Answers } from "./questions"
 
 const log = console.log
 

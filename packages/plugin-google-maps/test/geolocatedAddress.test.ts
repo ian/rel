@@ -1,6 +1,5 @@
 import { makeServer } from "@reldb/testing"
-import { Geo } from "@reldb/meta"
-import { string } from "@reldb/meta"
+import { string, model } from "@reldb/meta"
 
 import GoogleMaps, { geolocatedAddress } from "../src"
 
@@ -30,44 +29,24 @@ describe("#geolocatedAddress", () => {
     })
 
     it("should have a reduced type of String", () => {
-      GoogleMaps({
-        apiKey: "FAKE123",
-      })
+      // GoogleMaps({
+      //   apiKey: "FAKE123",
+      // })
 
-      expect(geolocatedAddress({ from: "fake" }).toGQL()).toBe("String")
+      // expect(geolocatedAddress({ from: "fake" }).toGQL()).toBe("String")
+      const { typeDefs } = server()
+      expect(typeDefs).toMatch(`type Restaurant {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  address: String!
+  geo: String
+}
+`)
     })
   })
 
   describe("with server running", () => {
-    const server = (extras = {}) => {
-      return makeServer(
-        {
-          schema: {
-            Restaurant: {
-              fields: {
-                address: string().required(),
-                geo: geolocatedAddress({ from: "address" }),
-              },
-              accessors: {
-                find: true,
-              },
-              mutators: {
-                create: true,
-              },
-            },
-          },
-          plugins: [
-            GoogleMaps({
-              apiKey: process.env.GOOGLE_MAPS_API_KEY,
-            }),
-          ],
-        },
-        {
-          // log: true,
-        }
-      )
-    }
-
     it("should geolocate the address", async () => {
       const { data } = await server()(
         `
@@ -105,3 +84,27 @@ describe("#geolocatedAddress", () => {
     })
   })
 })
+
+const server = (extras = {}) => {
+  return makeServer(
+    {
+      schema: {
+        Restaurant: model("Restaurant")
+          .fields({
+            address: string().required(),
+            geo: geolocatedAddress({ from: "address" }),
+          })
+          .accessors()
+          .mutators(),
+      },
+      plugins: [
+        GoogleMaps({
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        }),
+      ],
+    },
+    {
+      // log: true,
+    }
+  )
+}

@@ -1,41 +1,58 @@
+import { model, slug, string } from "../../src"
 import { makeServer } from "@reldb/testing"
-import { slug, string } from "../../src"
+
+describe("error handling", () => {
+  it("should error when not given a from", () => {
+    expect(() => slug(null)).toThrowError(
+      'slug() requires { from: "..." } param'
+    )
+  })
+})
+
+describe("runtime", () => {
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
+  }
+
+  it("should output the right GQL type", () => {
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        title: string().required(),
+        slug: slug({ from: "title" }),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  title: String!
+  slug: String
+}
+`)
+  })
+})
 
 describe("default properties", () => {
   const server = makeServer(
     {
       schema: {
-        Book: {
-          fields: {
+        Book: model()
+          .fields({
             title: string().required(),
             slug: slug({ from: "title" }),
-          },
-          accessors: {
-            find: true,
-            list: true,
-          },
-          mutators: {
-            create: true,
-            update: true,
-            delete: true,
-          },
-        },
+          })
+          .mutators(),
       },
     },
     {
       // log: true,
     }
   )
-
-  it("should error when not given a from", () => {
-    expect(() => slug(null)).toThrowError(
-      'slug() requires { from: "..." } param'
-    )
-  })
-
-  it("should output the GQL type String", () => {
-    expect(slug({ from: "fake" }).toGQL()).toBe("String")
-  })
 
   it("should set the slug using from param", async () => {
     const res = await server(`
@@ -46,9 +63,9 @@ describe("default properties", () => {
         }
       }
     `)
-    const { book } = res.data
-    expect(book.title).toBe("The Great Gatsby")
-    expect(book.slug).toBe("the-great-gatsby")
+
+    expect(res.data?.book.title).toBe("The Great Gatsby")
+    expect(res.data?.book.slug).toBe("the-great-gatsby")
   })
 
   it("handle collisions", async () => {
@@ -60,8 +77,8 @@ describe("default properties", () => {
         }
       }
     `)
-    expect(firstBook.data.book.title).toBe("The Great Gatsby")
-    expect(firstBook.data.book.slug).toBe("the-great-gatsby")
+    expect(firstBook?.data.book.title).toBe("The Great Gatsby")
+    expect(firstBook?.data.book.slug).toBe("the-great-gatsby")
 
     const secondBook = await server(`
       mutation {
@@ -71,7 +88,7 @@ describe("default properties", () => {
         }
       }
     `)
-    expect(secondBook.data.book.title).toBe("The Great Gatsby")
-    expect(secondBook.data.book.slug).toBe("the-great-gatsby-1")
+    expect(secondBook?.data.book.title).toBe("The Great Gatsby")
+    expect(secondBook?.data.book.slug).toBe("the-great-gatsby-1")
   })
 })

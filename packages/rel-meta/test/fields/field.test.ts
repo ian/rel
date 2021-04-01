@@ -1,81 +1,167 @@
-import Field from "../../src/field"
-
+import { Field } from "../../src"
+import { model } from "../../src"
+import { makeServer } from "@reldb/testing"
 class MyField extends Field {
   constructor() {
-    super("MyField")
+    super("String")
   }
 }
 
-const subject = () => {
-  return new MyField()
+const server = (schema) => {
+  return makeServer(
+    {
+      schema,
+      guards: {
+        admin: {
+          resolver: async () => {},
+        },
+      },
+    },
+    {
+      // log: true,
+    }
+  )
 }
 
 describe("functions", () => {
   it("should define required", () => {
-    expect(subject().required).toBeDefined()
+    expect(new MyField().required).toBeDefined()
   })
 
   it("should define guard", () => {
-    expect(subject().guard).toBeDefined()
+    expect(new MyField().guard).toBeDefined()
   })
 })
 
 describe("defaults", () => {
-  const s = subject()
-  expect(s._name).toBe("MyField")
-  expect(s._required).toBe(false)
-  expect(s._guard).toBe(null)
+  it("should have default values", () => {
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: String
+}`)
+  })
 })
 
 describe("required", () => {
   it("should set required", () => {
-    const field = new MyField().required()
-    expect(field._required).toBe(true)
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().required(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: String!
+}`)
   })
 
-  it("should allow an optional param to required", () => {
-    const field = new MyField()
-    expect(field.required(true)._required).toBe(true)
-    expect(field.required(false)._required).toBe(false)
+  it("should allow it to be specified false", () => {
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().required(false),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: String
+}`)
+  })
+
+  it("should allow it to be specified true", () => {
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().required(true),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: String!
+}`)
   })
 })
 
 describe("guard", () => {
   it("should set the guard", () => {
-    const field = new MyField()
-    field.guard("admin")
-    expect(field._guard).toBe("admin")
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().guard("admin"),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: String @admin
+}`)
   })
 })
 
 describe("default", () => {
-  it("should set the default", () => {
-    const field = new MyField()
-    field.default(() => "foo")
-    expect(field._default({})).toBe("foo")
+  it("should set the default when const", async (done) => {
+    const query = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().default("const"),
+      }),
+    })
+
+    const { data, errors } = await query(`
+mutation {
+  book: CreateBook(input: { }) {
+    field
+  }
+}
+    `)
+
+    expect(errors).not.toBeDefined()
+    expect(data.book).toEqual({ field: "const" })
+
+    done()
+  })
+
+  it("should set the default when function", async (done) => {
+    const query = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().default(() => "function"),
+      }),
+    })
+
+    const { data, errors } = await query(`
+mutation {
+  book: CreateBook(input: { }) {
+    field
+  }
+}
+    `)
+
+    expect(errors).not.toBeDefined()
+    expect(data.book).toEqual({ field: "function" })
+
+    done()
   })
 })
 
 describe("resolver", () => {
-  it("should set the resolver", () => {
-    const field = new MyField()
-    field.resolver(() => {
-      return "RESOLVER"
+  it("should use the resolver value", async (done) => {
+    const query = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: new MyField().resolver(() => "resolved"),
+      }),
     })
-    expect(field._resolver()).toBe("RESOLVER")
-  })
-})
 
-describe("toGQL", () => {
-  it("should output the base type", () => {
-    expect(subject().toGQL()).toBe("MyField")
-  })
+    const { data, errors } = await query(`
+mutation {
+  book: CreateBook(input: { }) {
+    field
+  }
+}
+    `)
 
-  it("should add the ! when required", () => {
-    expect(subject().required().toGQL()).toBe("MyField!")
-  })
+    expect(errors).not.toBeDefined()
+    expect(data.book).toEqual({ field: "resolved" })
 
-  it("should add the guard as @guard", () => {
-    expect(subject().guard("admin").toGQL()).toBe("MyField @admin")
+    done()
   })
 })

@@ -1,11 +1,28 @@
-import { dateTime } from "../../src"
+import { dateTime, model } from "../../src"
+import { makeServer } from "@reldb/testing"
 
 describe("default properties", () => {
-  const subject = () => {
-    return dateTime()
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
   }
 
   it("should output the right GQL type", () => {
-    expect(subject().toGQL()).toBe("DateTime")
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: dateTime(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: DateTime
+}
+`)
   })
 })

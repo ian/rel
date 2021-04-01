@@ -3,7 +3,7 @@ import { ApolloServer } from "apollo-server-fastify"
 
 import { Module, EVENTS } from "@reldb/types"
 import { generate } from "../runtime"
-import Events from "../util/events"
+import Events from "./events"
 
 import { logger } from "./logging"
 import { makeExecutableSchema } from "@graphql-tools/schema"
@@ -39,40 +39,46 @@ class Server {
 
   runtime() {
     const { typeDefs, resolvers, directives } = generate(this.config)
-    const schema = makeExecutableSchema({
-      typeDefs,
-      resolvers,
-      directiveResolvers: directives,
-    })
+    try {
+      const schema = makeExecutableSchema({
+        typeDefs,
+        resolvers,
+        directiveResolvers: directives,
+      })
 
-    const server = new ApolloServer({
-      schema,
-      resolvers,
-      plugins: [logger],
-      formatError: (err) => {
-        Events.error(err.originalError)
+      const server = new ApolloServer({
+        schema,
+        resolvers,
+        plugins: [logger],
+        formatError: (err) => {
+          // Don't give the specific errors to the client.
+          if (err.message.startsWith("Database Error: ")) {
+            return new Error("Internal server error")
+          }
 
-        // Don't give the specific errors to the client.
-        if (err.message.startsWith("Database Error: ")) {
-          return new Error("Internal server error")
-        }
+          // Otherwise return the original error. The error can also
+          // be manipulated in other ways, as long as it's returned.
+          return err
+        },
+      })
 
-        // Otherwise return the original error. The error can also
-        // be manipulated in other ways, as long as it's returned.
-        return err
-      },
-    })
-
-    return {
-      typeDefs,
-      server,
+      return {
+        typeDefs,
+        server,
+      }
+    } catch (err) {
+      Events.error(err)
     }
   }
 
   start() {
     const { typeDefs, server } = this.runtime()
 
-    this.app.register(server.createHandler())
+    this.app.register(
+      server.createHandler({
+        disableHealthCheck: true,
+      })
+    )
 
     return this.app
       .listen(this.port)

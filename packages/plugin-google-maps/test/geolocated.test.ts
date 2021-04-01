@@ -1,6 +1,5 @@
 import { makeServer } from "@reldb/testing"
-import { Geo } from "@reldb/meta"
-import { string } from "@reldb/meta"
+import { Geo, string, model } from "@reldb/meta"
 
 import GoogleMaps, { geolocated } from "../src"
 
@@ -30,44 +29,19 @@ describe("#geolocated", () => {
     })
 
     it("should have a reduced type of Geo", () => {
-      GoogleMaps({
-        apiKey: "FAKE123",
-      })
-
-      expect(geolocated({ from: "fake" }).toGQL()).toBe("Geo")
+      const { typeDefs } = server()
+      expect(typeDefs).toMatch(`type Restaurant {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  address: String!
+  geo: Geo
+}
+`)
     })
   })
 
   describe("with server running", () => {
-    const server = (extras = {}) => {
-      return makeServer(
-        {
-          schema: {
-            Restaurant: {
-              fields: {
-                address: string().required(),
-                geo: geolocated({ from: "address" }),
-              },
-              accessors: {
-                find: true,
-              },
-              mutators: {
-                create: true,
-              },
-            },
-          },
-          plugins: [
-            GoogleMaps({
-              apiKey: process.env.GOOGLE_MAPS_API_KEY,
-            }),
-          ],
-        },
-        {
-          // log: true,
-        }
-      )
-    }
-
     it("should geolocate the address", async () => {
       const { data } = await server()(
         `
@@ -108,3 +82,27 @@ describe("#geolocated", () => {
     })
   })
 })
+
+const server = () => {
+  return makeServer(
+    {
+      schema: {
+        Restaurant: model()
+          .fields({
+            address: string().required(),
+            geo: geolocated({ from: "address" }),
+          })
+          .accessors()
+          .mutators(),
+      },
+      plugins: [
+        GoogleMaps({
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        }),
+      ],
+    },
+    {
+      // log: true,
+    }
+  )
+}

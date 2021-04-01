@@ -1,4 +1,4 @@
-import { Runtime } from "../../src/runtime/index"
+import Runtime from "../../src/runtime/runtime"
 
 describe("Runtime", () => {
   describe("initialization", () => {

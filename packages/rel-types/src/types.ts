@@ -3,82 +3,43 @@
 // Global types used across multiple areas
 // Rel supports inbound and outbound directions for relationships
 
-export type Field = {
-  _default?: (runtime) => Promise<any>
-  _resolver?: (object) => Promise<any>
-  toGQL(): string
-}
+export interface Model {
+  fields(fields: Fields): Model
+  relations(relations: Relations): Model
+  accessors(accessors?: Accessors | boolean): Model
+  mutators(mutators?: Mutators | boolean): Model
+  guard(scope: string): Model
 
-export type Property = {
-  params?: Params
-  guard?: string
-  returns: Field
-  resolver?: Resolver
+  reduce(reducer: Reducer, opts: { modelName: string }): void
 }
 
 export type Fields = {
   [name: string]: Field
 }
 
-export type Params = {
-  [name: string]: Field
-}
+export type Field = {
+  label: string
+  guard: (string) => Field
+  default: (valueOrFn: DefaultValue | CallableDefaultValue) => Field
+  resolver?: Resolver
 
-export type Input = {
-  [propName: string]: Property
+  // @todo - rely on FieldImpl for these
+  _label: string
+  _required?: boolean
+  _guard?: string
+  _default?: (runtime) => Promise<any>
+  _resolver?: (runtime) => Promise<any>
 }
-
-export type Inputs = {
-  [inputName: string]: Input
-}
-
-export type Output = {
-  [propName: string]: Property
-}
-
-export type Outputs = {
-  [inputName: string]: Output
-}
-
-//////////////////////
-// Relations
-//////////////////////
 
 export type Rel = {
-  from: (Field) => Rel
-  to: (Field) => Rel
-  direction: (Direction) => Rel
-  singular: (boolean) => Rel
-  order: (string) => Rel
-  guard: (string) => Rel
+  from(from: string): Rel
+  to(to: string): Rel
+  direction(direction: Direction): Rel
+  singular(boolean?): Rel
+  order(string): Rel
+  guard(scope: string): Rel
 
-  toResolved(): ResolvedRel
-}
-
-export type ResolvedRel = {
-  from: {
-    label: string
-  } | null
-  to: {
-    label: string
-  }
-  rel: {
-    label: string
-    direction: Direction
-  }
-  singular: boolean
-  order: string
-  guard?: string
-}
-
-export type RelationFrom = {
-  label: string
-  params?: (any) => object
-}
-
-export type RelationTo = {
-  label: string
-  params?: (any) => object
+  reduce(reducer: Reducer, opts: { modelName: string; fieldName: string }): void
 }
 
 export type Relations = {
@@ -91,9 +52,40 @@ export enum Direction {
   NONE = "NONE",
 }
 
-//////////////////////
+export type DefaultValue = string | number
+export type CallableDefaultValue = (runtime: ResolverArgs) => DefaultValue
+
+export type Params = {
+  [name: string]: Field
+}
+
+export type Input = {
+  [propName: string]: Field
+}
+
+export type Inputs = {
+  [inputName: string]: Input
+}
+
+export type Output = {
+  [propName: string]: Field
+}
+
+export type Outputs = {
+  [inputName: string]: Output
+}
+
+export type RelationFrom = {
+  label: string
+  params?: (any) => object
+}
+
+export type RelationTo = {
+  label: string
+  params?: (any) => object
+}
+
 // Accessors
-//////////////////////
 
 export type Accessors = {
   find?: FindAccessor | boolean
@@ -113,9 +105,7 @@ export type Accessor = {
   after?: (obj: object) => Promise<void>
 }
 
-//////////////////////
 // Mutators
-//////////////////////
 
 export type Mutators = {
   create?: CreateMutator | boolean
@@ -123,35 +113,25 @@ export type Mutators = {
   delete?: DeleteMutator | boolean
 }
 
-export type CreateMutator = Mutator & {}
-export type UpdateMutator = Mutator & {}
-export type DeleteMutator = Mutator & {}
+export type CreateMutator = Mutator & {
+  /* @todo opts */
+}
+export type UpdateMutator = Mutator & {
+  /* @todo opts */
+}
+export type DeleteMutator = Mutator & {
+  /* @todo opts */
+}
 
 export type Mutator = {
   guard?: string
   after?: (obj: object) => Promise<void>
 }
 
-//////////////////////
 // Schema
-//////////////////////
 
 export type Schema = {
   [name: string]: Model
-}
-
-export type Model = {
-  id?: boolean
-  timestamps?: boolean
-
-  // should these even exist?
-  input?: boolean
-  output?: boolean
-
-  fields?: Fields
-  relations?: Relations
-  accessors?: Accessors
-  mutators?: Mutators
 }
 
 export type ResolverArgs = {
@@ -172,9 +152,7 @@ export type Guards = {
   }
 }
 
-//////////////////////
 // Endpoints
-//////////////////////
 
 export enum ENDPOINTS {
   ACCESSOR = "ACCESSOR",
@@ -193,26 +171,17 @@ export type Endpoints = {
   [queryName: string]: Endpoint
 }
 
-//////////////////////
 // Modules
-//////////////////////
 
 export type Module = {
   schema?: Schema
-  inputs?: Inputs
-  outputs?: Outputs
-  guards?: Guards
-  endpoints?: Endpoints
   plugins?: Plugin[]
-}
+} & Reducible
 
 export type Plugin = Module
-
 export type CallableModule = (/* @todo - this should take some JIT params */) => Module
 
-//////////////////////
-// Reducer
-//////////////////////
+// Reduction
 
 export type Reducible = {
   inputs?: Inputs
@@ -220,6 +189,8 @@ export type Reducible = {
   endpoints?: Endpoints
   guards?: Guards
 }
+
+export type Reducer = (Reducible) => void
 
 // Cypher
 
@@ -236,21 +207,18 @@ export type Geo = {
   lng: number
 }
 
-//////////////////////
 // Runtime
-//////////////////////
 
 export type RuntimeOpts = {
   auth?: Module
 } & Module
 
-//////////////////////
 // Server
-//////////////////////
 
 export enum EVENTS {
-  LOG = "log",
-  ERROR = "error",
-  CYPHER = "cypher",
-  GRAPHQL = "graphql",
+  LOG = "LOG",
+  ERROR = "ERROR",
+  CYPHER = "CYPHER",
+  GRAPHQL = "GQL",
+  GRAPHQL_ERROR = "GQL-ERROR",
 }

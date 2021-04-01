@@ -1,11 +1,28 @@
-import { geo } from "../../src"
+import { geo, model } from "../../src"
+import { makeServer } from "@reldb/testing"
 
 describe("default properties", () => {
-  const subject = () => {
-    return geo()
+  const server = (schema) => {
+    return makeServer(
+      {
+        schema,
+      },
+      {
+        // log: true,
+      }
+    )
   }
 
   it("should output the right GQL type", () => {
-    expect(subject().toGQL()).toBe("Geo")
+    const { typeDefs } = server({
+      Book: model({ id: false, timestamps: false }).fields({
+        field: geo(),
+      }),
+    })
+
+    expect(typeDefs).toMatch(`type Book {
+  field: Geo
+}
+`)
   })
 })
