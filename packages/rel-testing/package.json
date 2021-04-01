@@ -1,6 +1,6 @@
 {
   "name": "@reldb/testing",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Jest bindings for testing Rel",
   "main": "dist/rel-testing/src/index.js",
   "types": "dist/rel-testing/src/index.d.ts",
@@ -20,11 +20,11 @@
     "rel"
   ],
   "dependencies": {
-    "@reldb/cypher": "0.0.1",
-    "@reldb/meta": "0.1.1"
+    "@reldb/cypher": "^0.1.0",
+    "@reldb/meta": "^0.2.0"
   },
   "devDependencies": {
-    "@reldb/types": "^0.1.1"
+    "@reldb/types": "^0.2.0"
   },
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",
