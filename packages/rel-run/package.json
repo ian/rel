@@ -38,7 +38,7 @@
     "@reldb/cypher": "^0.1.0",
     "@reldb/meta": "^0.2.0",
     "apollo-server": "^2.21.1",
-    "apollo-server-fastify": "^2.21.1",
+    "apollo-server-fastify": "^2.22.2",
     "apollo-server-plugin-base": "^0.10.4",
     "bcryptjs": "^2.4.3",
     "fastify": "^3.11.0",

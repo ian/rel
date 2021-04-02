@@ -12,11 +12,6 @@ export class GelocatedField extends GeoField {
   constructor(opts: GeolocationOpts) {
     super()
 
-    if (!key)
-      throw new Error(
-        "GoogleMaps was not initialized, make sure to add it to { plugins: [GoogleMaps(...)]}"
-      )
-
     if (!opts?.from)
       throw new Error("Geolocation requires { from: '...' } to be specified")
 
@@ -36,11 +31,6 @@ export class GelocatedField extends GeoField {
 export class GelocatedAddressField extends StringField {
   constructor(opts: GeolocationOpts) {
     super()
-
-    if (!key)
-      throw new Error(
-        "GoogleMaps was not initialized, make sure to add it to { plugins: [GoogleMaps(...)]}"
-      )
 
     if (!opts?.from)
       throw new Error("Geolocation requires { from: '...' } to be specified")

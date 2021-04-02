@@ -48,9 +48,16 @@ async function run() {
     })
   }
 
-  return server.start().then(({ typeDefs, port }) => {
-    console.log(typeDefs)
-    console.log(`rel running on http://localhost:${port}`)
+  return server.start().then((runtime) => {
+    if (runtime) {
+      const { typeDefs, port } = runtime
+      console.log(typeDefs)
+      console.log(`rel running on http://localhost:${port}`)
+    } else {
+      console.error(
+        "Runtime was unable to be started, please see error logs for more info."
+      )
+    }
   })
 }
 

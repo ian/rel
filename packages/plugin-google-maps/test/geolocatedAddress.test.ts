@@ -4,37 +4,42 @@ import { string, model } from "@reldb/meta"
 import GoogleMaps, { geolocatedAddress } from "../src"
 
 describe("#geolocatedAddress", () => {
-  it("should error if google was not initialized", () => {
-    expect(() => geolocatedAddress({ from: "fake" })).toThrowError(
+  it("should error if google was not initialized", async (done) => {
+    const { errors } = await server(
+      geolocatedAddress({ from: "address" }),
+      false
+    )(
+      `
+    mutation {
+      restaurant: CreateRestaurant(input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }) {
+        address
+        geo
+      }
+    }
+  `
+    )
+
+    expect(errors[0].message).toEqual(
       "GoogleMaps was not initialized, make sure to add it to { plugins: [GoogleMaps(...)]}"
     )
+
+    done()
   })
 
   describe("with initialized google maps", () => {
-    beforeAll(() => {
-      GoogleMaps({
-        apiKey: process.env.GOOGLE_MAPS_API_KEY,
-      })
-    })
-
     it("should require from", () => {
-      expect(() => geolocatedAddress(null)).toThrowError(
+      expect(() => server(geolocatedAddress(null))).toThrowError(
         "Geolocation requires { from: '...' } to be specified"
       )
 
       // @ts-ignore
-      expect(() => geolocatedAddress({})).toThrowError(
+      expect(() => server(geolocatedAddress({}))).toThrowError(
         "Geolocation requires { from: '...' } to be specified"
       )
     })
 
     it("should have a reduced type of String", () => {
-      // GoogleMaps({
-      //   apiKey: "FAKE123",
-      // })
-
-      // expect(geolocatedAddress({ from: "fake" }).toGQL()).toBe("String")
-      const { typeDefs } = server()
+      const { typeDefs } = server(geolocatedAddress({ from: "address" }))
       expect(typeDefs).toMatch(`type Restaurant {
   id: UUID!
   createdAt: DateTime!
@@ -48,7 +53,7 @@ describe("#geolocatedAddress", () => {
 
   describe("with server running", () => {
     it("should geolocate the address", async () => {
-      const { data } = await server()(
+      const { data } = await server(geolocatedAddress({ from: "address" }))(
         `
       mutation {
         restaurant: CreateRestaurant(input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }) {
@@ -66,7 +71,7 @@ describe("#geolocatedAddress", () => {
     })
 
     it("should fail gracefully if google errors", async () => {
-      const { data } = await server()(
+      const { data } = await server(geolocatedAddress({ from: "address" }))(
         `
       mutation {
         restaurant: CreateRestaurant(input: { address: "dfskljdsfkljsdflkjfdskljfdskljsfd" }) {
@@ -85,22 +90,21 @@ describe("#geolocatedAddress", () => {
   })
 })
 
-const server = (extras = {}) => {
+const server = (geo, addPlugin: boolean = true) => {
   return makeServer(
     {
       schema: {
-        Restaurant: model("Restaurant")
-          .fields({
-            address: string().required(),
-            geo: geolocatedAddress({ from: "address" }),
-          })
-          .accessors()
-          .mutators(),
+        Restaurant: model("Restaurant").fields({
+          address: string().required(),
+          geo,
+        }),
       },
       plugins: [
-        GoogleMaps({
-          apiKey: process.env.GOOGLE_MAPS_API_KEY,
-        }),
+        addPlugin
+          ? GoogleMaps({
+              apiKey: process.env.GOOGLE_MAPS_API_KEY,
+            })
+          : null,
       ],
     },
     {

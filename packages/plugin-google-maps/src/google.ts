@@ -17,6 +17,11 @@ export async function geocodeAddress(
   rawAddress: string,
   tries: number = 0
 ): Promise<GeocodeResponse> {
+  if (!key)
+    throw new Error(
+      "GoogleMaps was not initialized, make sure to add it to { plugins: [GoogleMaps(...)]}"
+    )
+
   if (!rawAddress || rawAddress === "") return null
 
   let res

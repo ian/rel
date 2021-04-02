@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance } from "fastify"
 import { ApolloServer } from "apollo-server-fastify"
 
 import { Module, EVENTS } from "@reldb/types"
+import { init } from "@reldb/cypher"
 import { generate } from "../runtime"
 import Events from "./events"
 
@@ -39,6 +40,7 @@ class Server {
 
   runtime() {
     const { typeDefs, resolvers, directives } = generate(this.config)
+
     try {
       const schema = makeExecutableSchema({
         typeDefs,
@@ -71,18 +73,40 @@ class Server {
     }
   }
 
-  start() {
-    const { typeDefs, server } = this.runtime()
-
-    this.app.register(
-      server.createHandler({
-        disableHealthCheck: true,
+  async start() {
+    if (
+      process.env.NEO4J_URI &&
+      process.env.NEO4J_USERNAME &&
+      process.env.NEO4J_PASSWORD
+    ) {
+      init({
+        url: process.env.NEO4J_URI,
+        username: process.env.NEO4J_USERNAME,
+        password: process.env.NEO4J_PASSWORD,
+        logger: Events.cypher,
       })
-    )
+      const runtime = this.runtime()
 
-    return this.app
-      .listen(this.port)
-      .then(() => ({ events: Events, typeDefs, port: this.port }))
+      if (runtime) {
+        const { typeDefs, server } = runtime
+
+        this.app.register(
+          server.createHandler({
+            disableHealthCheck: true,
+          })
+        )
+
+        return this.app
+          .listen(this.port)
+          .then(() => ({ events: Events, typeDefs, port: this.port }))
+      }
+    } else {
+      Events.error(
+        new Error(
+          "Missing Neo4j Connection details, please set NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD"
+        )
+      )
+    }
   }
 
   async stop() {
