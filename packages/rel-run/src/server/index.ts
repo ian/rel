@@ -1,45 +1,76 @@
 import Fastify, { FastifyInstance } from "fastify"
 import { ApolloServer } from "apollo-server-fastify"
 
-import { Module, EVENTS } from "@reldb/types"
+import {
+  AuthModel,
+  AuthStrategy,
+  Guards,
+  Plugin,
+  Schema,
+  EVENTS,
+} from "@reldb/types"
 import { init } from "@reldb/cypher"
-import { generate } from "../runtime"
+import { runtime } from "../runtime"
 import Events from "./events"
 
 import { logger } from "./logging"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 
-type ServerConfig = Module & {
+type ServerConfig = {
   port?: number
 }
 
 class Server {
-  port: number
-  config: Module
-  plugins: Module[] = []
-  app: FastifyInstance
+  _port: number
+  _app: FastifyInstance
+  _auth: { model: AuthModel; strategies?: AuthStrategy[] } = null
+  _guards: Guards = {}
+  _plugins: Plugin[] = []
+  _schema: Schema
 
-  constructor(server: ServerConfig) {
-    const { port = 3282, ...config } = server
+  constructor(config: ServerConfig) {
+    const { port = 3282 } = config
 
-    this.port = port
-    this.config = config
-    this.app = Fastify({ logger: false })
+    this._port = port
+    this._app = Fastify({ logger: false })
   }
 
   on(event: EVENTS, handler) {
     return Events.on(event, handler)
   }
 
-  plugin(plugin: Module) {
-    this.config.plugins ||= []
-    this.config.plugins.push(plugin)
+  auth(model: AuthModel, strategies?: AuthStrategy[]) {
+    this._auth = {
+      model,
+      strategies,
+    }
+
+    return this
+  }
+
+  guards(guards: Guards) {
+    this._guards = guards
+  }
+
+  schema(schema: Schema) {
+    this._schema = schema
+
+    return this
+  }
+
+  plugin(plugin: Plugin) {
+    this._plugins.push(plugin)
 
     return this
   }
 
   runtime() {
-    const { typeDefs, resolvers, directives } = generate(this.config)
+    const { typeDefs, resolvers, directives } = runtime({
+      auth: this._auth,
+      guards: this._guards,
+      schema: this._schema,
+      // plugins: this._plugins,
+    })
 
     try {
       const schema = makeExecutableSchema({
@@ -69,6 +100,7 @@ class Server {
         server,
       }
     } catch (err) {
+      console.log(typeDefs)
       Events.error(err)
     }
   }
@@ -90,15 +122,15 @@ class Server {
       if (runtime) {
         const { typeDefs, server } = runtime
 
-        this.app.register(
+        this._app.register(
           server.createHandler({
             disableHealthCheck: true,
           })
         )
 
-        return this.app
-          .listen(this.port)
-          .then(() => ({ events: Events, typeDefs, port: this.port }))
+        return this._app
+          .listen(this._port)
+          .then(() => ({ events: Events, typeDefs, port: this._port }))
       }
     } else {
       Events.error(
@@ -110,8 +142,8 @@ class Server {
   }
 
   async stop() {
-    return this.app?.close()
+    return this._app?.close()
   }
 }
 
-export default (config) => new Server(config)
+export default (config: ServerConfig) => new Server(config)

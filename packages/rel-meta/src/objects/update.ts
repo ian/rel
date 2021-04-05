@@ -1,5 +1,5 @@
 import { uuid, type } from "../fields"
-import { UpdateMutator, Fields, Reducible, ENDPOINTS } from "@reldb/types"
+import { UpdateMutator, Fields, Reduced, ENDPOINTS } from "@reldb/types"
 import { cypherUpdate } from "@reldb/cypher"
 
 const DEFAULT_MUTATOR = {}
@@ -42,7 +42,7 @@ export function updateEndpoints(
   label: string,
   mutator: boolean | UpdateMutator,
   fields: Fields
-): Reducible {
+): Reduced {
   if (!mutator) return null
 
   let _mutator = {

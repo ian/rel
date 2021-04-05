@@ -21,8 +21,8 @@ describe("Reducer", () => {
     })
   })
 
-  describe("#module", () => {
-    it("shouldn't error when adding a null module", () => {
+  describe("#reduce", () => {
+    it("shouldn't error when adding a null reduce", () => {
       const reducer = new Reducer()
 
       expect(() => {
@@ -32,7 +32,7 @@ describe("Reducer", () => {
       expect(reducer.endpoints).toBeDefined()
     })
 
-    it("shouldn't error when adding an empty module", () => {
+    it("shouldn't error when adding an empty reduce", () => {
       const reducer = new Reducer()
 
       expect(() => {
@@ -46,7 +46,7 @@ describe("Reducer", () => {
       it("should have a type and input for Book", () => {
         const reducer = new Reducer()
 
-        reducer.module({
+        reducer.reduce({
           schema: {
             Book: model("Book").fields({
               name: string().required(),
@@ -61,7 +61,7 @@ describe("Reducer", () => {
       it("should should allow a model to be extended", () => {
         const reducer = new Reducer()
 
-        reducer.module({
+        reducer.reduce({
           schema: {
             Book: model("Book").fields({
               name: string().required(),
@@ -69,7 +69,7 @@ describe("Reducer", () => {
           },
         })
 
-        reducer.module({
+        reducer.reduce({
           schema: {
             Book: model("Book").fields({
               publisher: string(),
@@ -91,7 +91,7 @@ describe("Reducer", () => {
       it("should add the guards to the reducer", () => {
         const reducer = new Reducer()
 
-        reducer.module({
+        reducer.reduce({
           guards: {
             authenticate: {
               typeDef: "directive @authenticate on FIELD_DEFINITION",
@@ -124,7 +124,7 @@ describe("Reducer", () => {
       describe("queries", () => {
         it("should add the query", () => {
           const reducer = new Reducer()
-          reducer.module({
+          reducer.reduce({
             endpoints: {
               CustomFind: {
                 target: ENDPOINTS.ACCESSOR,
@@ -142,7 +142,7 @@ describe("Reducer", () => {
       describe("mutations", () => {
         it("should add the mutation", () => {
           const reducer = new Reducer()
-          reducer.module({
+          reducer.reduce({
             endpoints: {
               CustomUpdate: {
                 target: ENDPOINTS.MUTATOR,

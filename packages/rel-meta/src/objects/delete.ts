@@ -1,5 +1,5 @@
 import { type, uuid } from "../fields"
-import { DeleteMutator, ENDPOINTS, Fields, Reducible } from "@reldb/types"
+import { DeleteMutator, ENDPOINTS, Fields, Reduced } from "@reldb/types"
 import { cypherDelete } from "@reldb/cypher"
 
 const DEFAULT_MUTATOR = {}
@@ -20,7 +20,7 @@ export function deleteEndpoints(
   label: string,
   mutator: boolean | DeleteMutator,
   fields: Fields
-): Reducible {
+): Reduced {
   if (!mutator) return null
 
   let _mutator = {

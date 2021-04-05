@@ -1,7 +1,7 @@
 {
-  "name": "@reldb/run",
-  "description": "The backend platform for frontend developers",
-  "version": "0.7.0",
+  "name": "@reldb/auth",
+  "description": "Authentication for Rel",
+  "version": "0.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -26,33 +26,23 @@
   "keywords": [
     "rel"
   ],
-  "author": "Ian Hunter",
+  "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/runrel/rel/issues"
   },
   "homepage": "https://github.com/runrel/rel#readme",
   "dependencies": {
-    "@graphql-tools/merge": "^6.2.7",
-    "@graphql-tools/schema": "^7.1.3",
     "@reldb/cypher": "^0.1.0",
     "@reldb/meta": "^0.2.0",
-    "apollo-server": "^2.21.1",
-    "apollo-server-fastify": "^2.22.2",
-    "apollo-server-plugin-base": "^0.10.4",
-    "fastify": "^3.11.0",
-    "format-graphql": "^1.4.0",
-    "lerna": "^4.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
-    "neo4j-driver": "^4.2.2",
-    "pluralize": "^8.0.0",
-    "slugify": "^1.4.6",
-    "titleize": "^2.1.0",
-    "yup": "^0.32.8"
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "@reldb/types": "^0.2.0",
+    "@reldb/testing": "^0.2.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.28",
     "env-cmd": "^10.1.0",
@@ -61,6 +51,5 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "typescript-transform-paths": "^2.2.3"
-  },
-  "gitHead": "5e37d0fda7603768722e40c2e0f4c409533ff26a"
+  }
 }

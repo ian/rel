@@ -1,5 +1,5 @@
 import { server, Fields, Auth, Direction } from "@reldb/run"
-const { phoneNumber, int, string, rel } = Fields
+const { phoneNumber, int, string, relation } = Fields
 
 server()
   // by default, Auth.SOCIAL provides 
@@ -14,13 +14,13 @@ server()
         location: string(),
         phone: phoneNumber(),
         // polymorphic example
-        favorites: rel("FAVORITE").direction(Direction.OUT).to(["Movies","Books", ...])
+        favorites: relation("FAVORITE").to(["Movies","Books", ...])
       }
     },
     Book: {
       fields: {
         title: string().required(),
-        favoriters: rel("FAVORITE").direction(Direction.IN).to("User")
+        favoriters: relation("FAVORITE").inbound().to("User")
       }
     },
     Movie: {

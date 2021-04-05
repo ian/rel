@@ -1,12 +1,12 @@
 import camelcase from "camelcase"
-import { resolveNode } from "../models/node"
+import { resolveNode } from "../objects/node"
 
 import { cypherCreateRelationship } from "@reldb/cypher"
 import { Resolver } from "@reldb/types"
 
-import { ResolvedRel, resolveRel } from "./rel"
+import { ResolvedRelation, resolveRel } from "./relation"
 
-export function addRelationResolver(relation: ResolvedRel): Resolver {
+export function addRelationResolver(relation: ResolvedRelation): Resolver {
   const { from, to, singular = false, rel } = relation
 
   const fromId = `${camelcase(from.label)}Id`

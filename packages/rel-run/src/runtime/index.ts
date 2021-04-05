@@ -1,15 +1,41 @@
-import { RuntimeOpts } from "@reldb/types"
-import Runtime from "./runtime"
+import { AuthModel, AuthStrategy, Guards, Plugin, Schema } from "@reldb/types"
+import { generateResolvers, generateDirectiveResolvers } from "./resolvers"
+import { generateTypeDefs } from "./typeDefs"
+import Reducer from "./reducer"
 
 export { default as Reducer } from "./reducer"
 
-export function generate(opts: RuntimeOpts) {
-  const { auth, ...config } = opts
-  const runtime = new Runtime()
+export type RuntimeOpts = {
+  auth?: { model: AuthModel; strategies?: AuthStrategy[] }
+  schema?: Schema
+  guards?: Guards
+  plugins?: Plugin[]
+}
 
-  if (auth) runtime.auth(auth)
+export function runtime(opts: RuntimeOpts) {
+  const { auth, guards, schema } = opts
+  const reducer = new Reducer()
 
-  runtime.module(config)
+  if (auth) {
+    auth.model?.reduce(reducer.reduce)
+    auth.strategies?.forEach((strategy) => strategy.reduce(reducer.reduce))
+  }
 
-  return runtime.generate()
+  reducer.reduce({ guards, schema })
+
+  const reduced = reducer.toReducible()
+
+  const typeDefs = generateTypeDefs(reduced)
+  const resolvers = generateResolvers(reduced)
+  const directives = generateDirectiveResolvers(reduced)
+
+  try {
+    return {
+      typeDefs,
+      resolvers,
+      directives,
+    }
+  } catch (err) {
+    throw err
+  }
 }

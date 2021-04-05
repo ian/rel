@@ -1,14 +1,38 @@
+import _ from "lodash"
 import camelcase from "camelcase"
-import { Direction, Rel, ENDPOINTS } from "@reldb/types"
-import { array, uuid, type } from "./fields"
-import { addRelationResolver } from "./relations/add"
-import { removeRelationResolver } from "./relations/remove"
-import { listRelationResolver } from "./relations/list"
+import { Direction, Relation, ENDPOINTS } from "@reldb/types"
+import { array, uuid, type } from "../fields"
+import { addRelationResolver } from "./add"
+import { removeRelationResolver } from "./remove"
+import { listRelationResolver } from "./list"
 
-export default class RelField implements Rel {
-  _guard: string = null
+export type ResolvedRelation = {
+  from: {
+    label: string
+  } | null
+  to: {
+    label: string
+  }
+  rel: {
+    label: string
+    direction: Direction
+  }
+  singular: boolean
+  order: string
+  guard?: string
+}
 
+export function resolveRel(rel) {
+  return {
+    name: _.camelCase(rel.label) + "Rel",
+    direction: rel.direction,
+    label: rel.label,
+  }
+}
+
+export default class RelationField implements Relation {
   _label: string
+  _guard: string = null
   _from: {
     label: string
   } = null
@@ -19,8 +43,9 @@ export default class RelField implements Rel {
   _singular: boolean = false
   _order: string = null
 
-  constructor(label: string) {
+  constructor(label: string, to?: string) {
     this._label = label
+    this.to(to)
   }
 
   guard(scope: string) {
@@ -44,6 +69,11 @@ export default class RelField implements Rel {
 
   singular() {
     this._singular = true
+    return this
+  }
+
+  inbound() {
+    this._direction = Direction.IN
     return this
   }
 

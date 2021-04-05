@@ -1,4 +1,4 @@
-import { string, int, rel } from "@reldb/core"
+import { string, int, relation } from "@reldb/meta"
 
 export default {
   Author: {
@@ -7,7 +7,7 @@ export default {
       born: int(),
     },
     relations: {
-      books: rel("WROTE").to("Author"),
+      books: relation("WROTE").to("Author"),
     },
     accessors: {
       find: true,
@@ -25,7 +25,7 @@ export default {
       released: int(),
     },
     relations: {
-      author: rel("WROTE").to("Author").direction(Rel.Direction.IN),
+      author: relation("WROTE", "Author").inbound(),
     },
     accessors: {
       find: true,

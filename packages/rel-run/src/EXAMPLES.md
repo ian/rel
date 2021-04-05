@@ -1,40 +1,40 @@
-// fields 
+// fields
 
 {
-  Book: {
-    fields: {
-      name: string()
-    }
-  }
+Book: {
+fields: {
+name: string()
+}
+}
 }
 
-// relations 
+// relations
 
 {
-  Book: {
-    relations: {
-      followers: rel("FOLLOWING").from("User").to("User")
-    }
-  }
+Book: {
+relations: {
+followers: relation("FOLLOWING").from("User").to("User")
+}
+}
 }
 
-// accessors 
-
-{ 
-  Book: {
-    accessors: {
-      find: true,
-      list: true
-    }
-  }
-}
-
-// mutators 
+// accessors
 
 {
-  Book: {
-    mutators: {
-      create: true
-    }
-  }
+Book: {
+accessors: {
+find: true,
+list: true
+}
+}
+}
+
+// mutators
+
+{
+Book: {
+mutators: {
+create: true
+}
+}
 }

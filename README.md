@@ -93,7 +93,7 @@ rel is designed to handle the 80%+ usecase for most applications. Out of the box
 - Authentication models (social, saas, crypto, forum, etc.)
 - A privileges + guard system with controls at the model, field and endpoint level.
 - Background jobs
-- Module support for Images (via Imgix), Video (via Mux), Files (via S3, gCloud storage, etc)
+- Plugin support for Images (via Imgix), Video (via Mux), Files (via S3, gCloud storage, etc)
 - Endpoints generated in your flavor of choise (REST, GraphQL)
 
 The name rel is an homage to CYPHER relationship, the rel.

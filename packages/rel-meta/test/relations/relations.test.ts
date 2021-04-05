@@ -1,4 +1,4 @@
-import { model, rel, string } from "../../src"
+import { model, relation, string } from "../../src"
 import { makeServer } from "@reldb/testing"
 
 describe("model relations", () => {
@@ -300,12 +300,12 @@ const server = () => {
         Author: model({ timestamps: false })
           .fields({ name: string() })
           .relations({
-            books: rel("AUTHORED").to("Book"),
+            books: relation("AUTHORED").to("Book"),
           }),
         Book: model({ timestamps: false })
           .fields({ title: string() })
           .relations({
-            author: rel.Inbound("AUTHORED").to("Author").singular(),
+            author: relation("AUTHORED", "Author").inbound().singular(),
           }),
       },
     },

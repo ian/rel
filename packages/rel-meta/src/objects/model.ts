@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { uuid, dateTime, type } from "./index"
+import { uuid, dateTime, type } from "../index"
 import { Accessors, Fields, Model, Mutators, Relations } from "@reldb/types"
 
 import {
@@ -8,16 +8,20 @@ import {
   createEndpoints,
   updateEndpoints,
   deleteEndpoints,
-} from "./models"
+} from "."
 
 type Opts = {
   id?: boolean
   timestamps?: boolean
+  input?: boolean
+  output?: boolean
 }
 
 const DEFAULT_OPTS = {
   id: true,
   timestamps: true,
+  input: true,
+  output: true,
 }
 
 const DEFAULT_ACCESSORS = {
@@ -52,30 +56,29 @@ export default class ModelImpl implements Model {
       this._autogen.createdAt = dateTime().required()
       this._autogen.updatedAt = dateTime().required()
     }
+
+    this._opts = _opts
   }
 
-  guard(scope: string): Model {
+  guard(scope: string): ModelImpl {
     this._guard = scope
     return this
   }
 
-  fields(fields: Fields): Model {
+  fields(fields: Fields): ModelImpl {
     this._fields = fields
     return this
   }
 
-  relations(relations: Relations): Model {
+  relations(relations: Relations): ModelImpl {
     this._relations = relations
     return this
   }
 
-  accessors(accessors?: Accessors | boolean) {
+  accessors(accessors?: Accessors | boolean): ModelImpl {
     if (accessors === false) {
       this._accessors = null
-      return
-    }
-
-    if (!accessors || accessors === true) {
+    } else if (!accessors || accessors === true) {
       Object.assign(this._accessors, DEFAULT_ACCESSORS)
     } else {
       Object.assign(this._accessors, accessors)
@@ -84,13 +87,10 @@ export default class ModelImpl implements Model {
     return this
   }
 
-  mutators(mutators?: Mutators | boolean) {
+  mutators(mutators?: Mutators | boolean): ModelImpl {
     if (mutators === false) {
       this._mutators = null
-      return
-    }
-
-    if (!mutators || mutators === true) {
+    } else if (!mutators || mutators === true) {
       Object.assign(this._mutators, DEFAULT_MUTATORS)
     } else {
       Object.assign(this._mutators, mutators)
@@ -115,18 +115,25 @@ export default class ModelImpl implements Model {
       ...this._relations,
     }
 
-    reducer({
-      inputs: {
-        [`${modelName}Input`]: {
-          ...inputFields,
+    if (this._opts.input) {
+      reducer({
+        inputs: {
+          [`${modelName}Input`]: {
+            ...inputFields,
+          },
         },
-      },
-      outputs: {
-        [modelName]: {
-          ...outputFields,
+      })
+    }
+
+    if (this._opts.output) {
+      reducer({
+        outputs: {
+          [modelName]: {
+            ...outputFields,
+          },
         },
-      },
-    })
+      })
+    }
 
     if (this._relations) {
       Object.entries(this._relations).forEach((entry) => {

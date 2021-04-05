@@ -1,23 +1,43 @@
-import { RuntimeOpts, EVENTS } from "@reldb/types"
+import { EVENTS } from "@reldb/types"
 import Server from "../../rel-run/src/server"
+import { RuntimeOpts } from "../../rel-run/src/runtime"
 
 type JestServerOpts = {
   log?: true
 }
 
+export { RuntimeOpts } from "../../rel-run/src/runtime"
+
 export function makeServer(config: RuntimeOpts, opts?: JestServerOpts) {
-  const instance = Server(config)
+  const instance = Server({ port: 1234 })
 
-  instance.on(EVENTS.ERROR, (err) => {
-    console.log("\x1b[31m", err, "\x1b[0m")
-  })
+  const { auth, guards, plugins, schema } = config
+  if (auth) {
+    const { model, strategies } = auth
+    instance.auth(model, strategies)
+  }
 
-  instance.on(EVENTS.GRAPHQL_ERROR, ({ query, errors }) => {
-    console.error(errors[0].message, "\n", query)
-  })
+  if (guards) {
+    instance.guards(guards)
+  }
 
-  // Always output errors above, but only log GQL/cypher when log=true
+  if (plugins) {
+    plugins.forEach((p) => instance.plugin(p))
+  }
+
+  if (schema) {
+    instance.schema(schema)
+  }
+
   if (opts?.log) {
+    instance.on(EVENTS.ERROR, (err) => {
+      console.log("\x1b[31m", err, "\x1b[0m")
+    })
+
+    instance.on(EVENTS.GRAPHQL_ERROR, ({ query, errors }) => {
+      console.error(errors[0].message, "\n", query)
+    })
+
     instance.on(EVENTS.GRAPHQL, (gql, time) => {
       console.log(
         gql.query,

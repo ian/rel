@@ -1,7 +1,7 @@
 // Following a global types definition file like how the TypeScript team uses: https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts
 
-// Global types used across multiple areas
-// Rel supports inbound and outbound directions for relationships
+export type AuthModel = {} & Reducible
+export type AuthStrategy = {} & Reducible
 
 export interface Model {
   fields(fields: Fields): Model
@@ -11,10 +11,6 @@ export interface Model {
   guard(scope: string): Model
 
   reduce(reducer: Reducer, opts: { modelName: string }): void
-}
-
-export type Fields = {
-  [name: string]: Field
 }
 
 export type Field = {
@@ -31,19 +27,24 @@ export type Field = {
   _resolver?: (runtime) => Promise<any>
 }
 
-export type Rel = {
-  from(from: string): Rel
-  to(to: string): Rel
-  direction(direction: Direction): Rel
-  singular(boolean?): Rel
-  order(string): Rel
-  guard(scope: string): Rel
+export type Fields = {
+  [name: string]: Field
+}
+
+export type Relation = {
+  from(from: string): Relation
+  to(to: string): Relation
+  inbound(): Relation
+  direction(direction: Direction): Relation
+  singular(boolean?): Relation
+  order(string): Relation
+  guard(scope: string): Relation
 
   reduce(reducer: Reducer, opts: { modelName: string; fieldName: string }): void
 }
 
 export type Relations = {
-  [key: string]: Rel
+  [key: string]: Relation
 }
 
 export enum Direction {
@@ -54,6 +55,12 @@ export enum Direction {
 
 export type DefaultValue = string | number
 export type CallableDefaultValue = (runtime: ResolverArgs) => DefaultValue
+
+// Schema
+
+export type Schema = {
+  [name: string]: Model
+}
 
 export type Params = {
   [name: string]: Field
@@ -73,16 +80,6 @@ export type Output = {
 
 export type Outputs = {
   [inputName: string]: Output
-}
-
-export type RelationFrom = {
-  label: string
-  params?: (any) => object
-}
-
-export type RelationTo = {
-  label: string
-  params?: (any) => object
 }
 
 // Accessors
@@ -128,14 +125,7 @@ export type Mutator = {
   after?: (obj: object) => Promise<void>
 }
 
-// Schema
-
-export type Schema = {
-  [name: string]: Model
-}
-
 export type ResolverArgs = {
-  // src: string
   args: object
   context: object
   cypher: (c: string) => Promise<CypherResponse>
@@ -171,26 +161,31 @@ export type Endpoints = {
   [queryName: string]: Endpoint
 }
 
-// Modules
+// Plugins
 
-export type Module = {
+export type Plugin = {
   schema?: Schema
   plugins?: Plugin[]
-} & Reducible
+} & Reduced
 
-export type Plugin = Module
-export type CallableModule = (/* @todo - this should take some JIT params */) => Module
+export type CallablePlugin = (/* @todo - this should take some JIT params */) => Plugin
 
 // Reduction
 
 export type Reducible = {
+  reduce(reducer: Reducer): void
+}
+
+export type Reduced = {
+  // server?: Server
+  schema?: Schema
   inputs?: Inputs
   outputs?: Outputs
   endpoints?: Endpoints
   guards?: Guards
 }
 
-export type Reducer = (Reducible) => void
+export type Reducer = (Reduced) => void
 
 // Cypher
 
@@ -206,12 +201,6 @@ export type Geo = {
   lat: number
   lng: number
 }
-
-// Runtime
-
-export type RuntimeOpts = {
-  auth?: Module
-} & Module
 
 // Server
 

@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Reducible, FindAccessor, Fields, ENDPOINTS } from "@reldb/types"
+import { Reduced, FindAccessor, Fields, ENDPOINTS } from "@reldb/types"
 import { uuid, type } from "../fields"
 import { cypherFind } from "@reldb/cypher"
 
@@ -23,7 +23,7 @@ export function findEndpoints(
   label,
   accessor: boolean | FindAccessor,
   fields: Fields
-): Reducible {
+): Reduced {
   if (!accessor) return null
 
   let _accessor = {

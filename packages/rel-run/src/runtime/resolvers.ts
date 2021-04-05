@@ -1,4 +1,4 @@
-import { ENDPOINTS, Reducible, Resolver } from "@reldb/types"
+import { ENDPOINTS, Reduced, Resolver } from "@reldb/types"
 import { cypher, cypher1 } from "@reldb/cypher"
 import _ from "lodash"
 
@@ -35,7 +35,7 @@ type Resolvers = {
   }
 }
 
-export function generateResolvers(reduced: Reducible): Resolvers {
+export function generateResolvers(reduced: Reduced): Resolvers {
   const { outputs, endpoints } = reduced
   let resolvers = {}
 
@@ -106,7 +106,7 @@ export function generateResolvers(reduced: Reducible): Resolvers {
   return resolvers
 }
 
-export function generateDirectiveResolvers(reduced: Reducible) {
+export function generateDirectiveResolvers(reduced: Reduced) {
   return Object.entries(reduced.guards).reduce((acc, dir) => {
     const [name, { resolver }] = dir
     acc[name] = (runtime) => resolver({ ...DEFAULT_RUNTIME, ...runtime })

@@ -1,5 +1,5 @@
 import { Client as GoogleMaps } from "@googlemaps/google-maps-services-js"
-import { Module } from "@reldb/types"
+import { Plugin } from "@reldb/types"
 import { GeoField, StringField } from "@reldb/meta"
 
 import { geocodeAddress } from "./google"
@@ -60,7 +60,7 @@ type Config = {
   apiKey: string
 }
 
-export default (init: Config): Module => {
+export default (init: Config): Plugin => {
   if (!init?.apiKey)
     throw new Error("GoogleMaps requires { apiKey: '...' } to be specified")
 

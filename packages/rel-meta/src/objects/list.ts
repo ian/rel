@@ -1,6 +1,6 @@
 import pluralize from "pluralize"
 import { int, array, type, string } from "../fields"
-import { ListAccessor, Reducible, ENDPOINTS, Fields } from "@reldb/types"
+import { ListAccessor, Reduced, ENDPOINTS, Fields } from "@reldb/types"
 import { cypherList } from "@reldb/cypher"
 
 const DEFAULT_ACCESSOR = {}
@@ -22,7 +22,7 @@ export function listEndpoints(
   label: string,
   accessor: boolean | ListAccessor,
   fields: Fields
-): Reducible {
+): Reduced {
   if (!accessor) return null
 
   let _accessor = {

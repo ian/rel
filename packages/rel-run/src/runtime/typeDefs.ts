@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { formatSdl } from "format-graphql"
-import { ENDPOINTS, Reducible } from "@reldb/types"
+import { ENDPOINTS, Reduced } from "@reldb/types"
 
 import {
   directivesToGQL,
@@ -10,7 +10,7 @@ import {
   mutationToGQL,
 } from "../typeDefs"
 
-export function generateTypeDefs(reducible: Reducible) {
+export function generateTypeDefs(reducible: Reduced) {
   const { inputs, outputs, guards, endpoints } = reducible
 
   const gql = []
@@ -33,6 +33,11 @@ scalar UUID`)
   if (inputs) {
     Object.entries(inputs).forEach((entry) => {
       const [name, properties] = entry
+      if (_.isEmpty(properties)) {
+        throw new Error(
+          `${name} has no fields or relations, please add at least one.`
+        )
+      }
       const input = inputToGQL(name, properties)
       gql.push(input)
     })

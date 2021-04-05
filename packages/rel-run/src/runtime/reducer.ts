@@ -1,7 +1,7 @@
 import _ from "lodash"
 import {
-  Module,
-  Reducible,
+  Plugin,
+  Reduced,
   Endpoints,
   Guards,
   Outputs,
@@ -17,31 +17,22 @@ export default class Reducer {
   guards: Guards = {}
   endpoints: Endpoints = {}
 
-  module(module: Module) {
-    const { schema, guards, endpoints } = module
+  constructor() {
+    this.reduce = this.reduce.bind(this)
+  }
 
-    if (schema) {
-      // Schema needs to be generated from the definition
-      Object.entries(schema).forEach((entry) => {
+  reduce(reduced: Reduced) {
+    if (!reduced) return
+
+    if (reduced.schema) {
+      Object.entries(reduced.schema).forEach((entry) => {
         const [modelName, model] = entry
-        model.reduce(this.reduce.bind(this), { modelName })
+        model.reduce(this.reduce, { modelName })
       })
     }
 
-    if (guards) {
-      this.reduce({ guards })
-    }
-
-    if (endpoints) {
-      this.reduce({ endpoints })
-    }
-  }
-
-  reduce(reducible: Reducible) {
-    if (!reducible) return
-
-    if (reducible.guards) {
-      const intersect = intersection(this.guards, reducible.guards)
+    if (reduced.guards) {
+      const intersect = intersection(this.guards, reduced.guards)
       if (intersect.length > 0)
         throw new Error(
           `Guards currently cannot overwrite eachother, they must be unique. Collision guards: ${intersect.join(
@@ -49,15 +40,15 @@ export default class Reducer {
           )}`
         )
 
-      _.merge(this.guards, reducible.guards)
+      _.merge(this.guards, reduced.guards)
     }
 
-    _.merge(this.inputs, reducible.inputs)
-    _.merge(this.outputs, reducible.outputs)
-    _.merge(this.endpoints, reducible.endpoints)
+    _.merge(this.inputs, reduced.inputs)
+    _.merge(this.outputs, reduced.outputs)
+    _.merge(this.endpoints, reduced.endpoints)
   }
 
-  toReducible(): Reducible {
+  toReducible(): Reduced {
     return {
       inputs: this.inputs,
       outputs: this.outputs,

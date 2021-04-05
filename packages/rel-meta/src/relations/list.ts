@@ -1,11 +1,11 @@
-import { resolveNode } from "../models/node"
+import { resolveNode } from "../objects/node"
 
 import { cypherListRelationship } from "@reldb/cypher"
 import { Resolver } from "@reldb/types"
 
-import { ResolvedRel, resolveRel } from "./rel"
+import { ResolvedRelation, resolveRel } from "./relation"
 
-export function listRelationResolver(relation: ResolvedRel): Resolver {
+export function listRelationResolver(relation: ResolvedRelation): Resolver {
   const { from, to, rel, singular = false, order } = relation
 
   return async (runtime) => {
