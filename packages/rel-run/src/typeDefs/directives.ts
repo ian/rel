@@ -1,4 +1,4 @@
-import { Guards } from "@reldb/types"
+import { Guards } from "../types"
 
 export function directivesToGQL(guards: Guards) {
   return Object.entries(guards)

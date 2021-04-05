@@ -8,31 +8,34 @@ import {
   Plugin,
   Schema,
   EVENTS,
-} from "@reldb/types"
-import { init } from "@reldb/cypher"
+} from "../types"
 import { runtime } from "../runtime"
 import Events from "./events"
 
 import { logger } from "./logging"
 import { makeExecutableSchema } from "@graphql-tools/schema"
+import { CypherInstance, ConnectionConfig } from "../cypher/connection"
 
 type ServerConfig = {
   port?: number
+  db: ConnectionConfig
 }
 
 class Server {
   _port: number
   _app: FastifyInstance
   _auth: { model: AuthModel; strategies?: AuthStrategy[] } = null
+  _db: ConnectionConfig = null
   _guards: Guards = {}
   _plugins: Plugin[] = []
   _schema: Schema
 
   constructor(config: ServerConfig) {
-    const { port = 3282 } = config
+    const { db, port = 3282 } = config
 
     this._port = port
     this._app = Fastify({ logger: false })
+    this._db = db
   }
 
   on(event: EVENTS, handler) {
@@ -65,7 +68,8 @@ class Server {
   }
 
   runtime() {
-    const { typeDefs, resolvers, directives } = runtime({
+    const { cypher, typeDefs, resolvers, directives } = runtime({
+      db: this._db,
       auth: this._auth,
       guards: this._guards,
       schema: this._schema,
@@ -98,6 +102,7 @@ class Server {
       return {
         typeDefs,
         server,
+        cypher,
       }
     } catch (err) {
       console.log(typeDefs)
@@ -106,38 +111,20 @@ class Server {
   }
 
   async start() {
-    if (
-      process.env.NEO4J_URI &&
-      process.env.NEO4J_USERNAME &&
-      process.env.NEO4J_PASSWORD
-    ) {
-      init({
-        url: process.env.NEO4J_URI,
-        username: process.env.NEO4J_USERNAME,
-        password: process.env.NEO4J_PASSWORD,
-        logger: Events.cypher,
-      })
-      const runtime = this.runtime()
+    const runtime = this.runtime()
 
-      if (runtime) {
-        const { typeDefs, server } = runtime
+    if (runtime) {
+      const { typeDefs, server } = runtime
 
-        this._app.register(
-          server.createHandler({
-            disableHealthCheck: true,
-          })
-        )
-
-        return this._app
-          .listen(this._port)
-          .then(() => ({ events: Events, typeDefs, port: this._port }))
-      }
-    } else {
-      Events.error(
-        new Error(
-          "Missing Neo4j Connection details, please set NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD"
-        )
+      this._app.register(
+        server.createHandler({
+          disableHealthCheck: true,
+        })
       )
+
+      return this._app
+        .listen(this._port)
+        .then(() => ({ events: Events, typeDefs, port: this._port }))
     }
   }
 

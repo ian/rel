@@ -1,5 +1,5 @@
-import { model, string, type, uuid } from "@reldb/meta"
-import { ENDPOINTS } from "@reldb/types"
+import Rel from "../../src"
+import { ENDPOINTS } from "../../src/types"
 import Reducer, { intersection } from "../../src/runtime/reducer"
 
 describe("Reducer", () => {
@@ -48,8 +48,8 @@ describe("Reducer", () => {
 
         reducer.reduce({
           schema: {
-            Book: model("Book").fields({
-              name: string().required(),
+            Book: Rel.model("Book").fields({
+              name: Rel.string().required(),
             }),
           },
         })
@@ -63,16 +63,16 @@ describe("Reducer", () => {
 
         reducer.reduce({
           schema: {
-            Book: model("Book").fields({
-              name: string().required(),
+            Book: Rel.model("Book").fields({
+              name: Rel.string().required(),
             }),
           },
         })
 
         reducer.reduce({
           schema: {
-            Book: model("Book").fields({
-              publisher: string(),
+            Book: Rel.model("Book").fields({
+              publisher: Rel.string(),
             }),
           },
         })
@@ -128,8 +128,8 @@ describe("Reducer", () => {
             endpoints: {
               CustomFind: {
                 target: ENDPOINTS.ACCESSOR,
-                params: { id: uuid() },
-                returns: type("Object"),
+                params: { id: Rel.uuid() },
+                returns: Rel.type("Object"),
                 resolver: () => {},
               },
             },
@@ -146,8 +146,8 @@ describe("Reducer", () => {
             endpoints: {
               CustomUpdate: {
                 target: ENDPOINTS.MUTATOR,
-                params: { id: uuid() },
-                returns: type("Book"),
+                params: { id: Rel.uuid() },
+                returns: Rel.type("Book"),
                 resolver: () => {},
               },
             },
@@ -180,7 +180,7 @@ describe("Reducer", () => {
           endpoints: {
             FindBook: {
               target: ENDPOINTS.ACCESSOR,
-              returns: type("Book"),
+              returns: Rel.type("Book"),
               resolver: () => null,
             },
           },
@@ -197,7 +197,7 @@ describe("Reducer", () => {
           endpoints: {
             CreateBook: {
               target: ENDPOINTS.MUTATOR,
-              returns: type("Book"),
+              returns: Rel.type("Book"),
               resolver: () => null,
             },
           },

@@ -1,4 +1,4 @@
-import { Endpoint } from "@reldb/types"
+import { Endpoint } from "../types"
 import { paramsToGQL } from "./params"
 
 export function endpointToGQL(name: string, endpoint: Endpoint) {

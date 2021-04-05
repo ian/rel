@@ -1,5 +1,4 @@
-import { AuthStrategy, ENDPOINTS } from "@reldb/types"
-import { string, type } from "@reldb/meta"
+import Rel, { AuthStrategy, ENDPOINTS } from "@reldb/run"
 import { cypherFind } from "@reldb/cypher"
 export default class EmailPassword implements AuthStrategy {
   reduce(reducer) {
@@ -7,15 +6,15 @@ export default class EmailPassword implements AuthStrategy {
       schema: {
         User: {
           fields: {
-            email: string().required(),
+            email: Rel.string().required(),
           },
         },
       },
       endpoints: {
         LoginViaEmailPassword: {
           target: ENDPOINTS.MUTATOR,
-          params: { token: string().required() },
-          returns: type("Auth"),
+          params: { token: Rel.string().required() },
+          returns: Rel.type("Auth"),
           resolver: async ({ params }) => {
             // const { email, password } = params
             // const user = await cypherFind("User", {email})
@@ -42,8 +41,8 @@ export default class EmailPassword implements AuthStrategy {
 
         RegisterViaEmailPassword: {
           target: ENDPOINTS.MUTATOR,
-          params: { input: type("UserInput").required() },
-          returns: type("Auth"),
+          params: { input: Rel.type("UserInput").required() },
+          returns: Rel.type("Auth"),
           resolver: async ({ params }) => {
             // const { input } = params
 

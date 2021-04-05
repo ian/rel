@@ -1,18 +1,17 @@
-import { model, string } from "@reldb/meta"
-import { makeServer } from "@reldb/testing"
+import Rel, { testServer } from "@reldb/run"
 import { Models } from "../../src/index"
 
 describe("Models.Social", () => {
   describe("#typedefs", () => {
-    const { typeDefs } = makeServer({
+    const { typeDefs } = testServer({
       auth: {
         model: new Models.Social(),
         strategies: [],
       },
       schema: {
-        User: model()
+        User: Rel.model()
           .fields({
-            name: string().required(),
+            name: Rel.string().required(),
           })
           .accessors(false)
           .mutators(false),

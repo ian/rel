@@ -1534,6 +1534,26 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@reldb/cypher@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@reldb/cypher/-/cypher-0.1.0.tgz#3dcbe612920518915c308c4811f04e119120552a"
+  integrity sha512-HC5lNTOgdPS5bao39GGqjVHdmZpobHCWEcC7kfPZzPjwEE/8QIHxWEeJIOQIsjqMtO7ElyEk7QImfMm3KzwuTg==
+
+"@reldb/meta@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@reldb/meta/-/meta-0.2.0.tgz#152a407bfbaed80755c677e4e78704b8d9e9aff6"
+  integrity sha512-JPCl4+wdVCKUldOVnKk1duGyf/e7Joc4F6nm3vSTk+9ByHZsGt5ZRYlSkALNlYh42P6DA5TclPniGKMVmeInTA==
+  dependencies:
+    "@reldb/cypher" "^0.1.0"
+
+"@reldb/testing@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@reldb/testing/-/testing-0.2.0.tgz#89696f49e6489362c4ade54898d54126551c36ca"
+  integrity sha512-9AMqebV2e7RInLui67jXLstYQvLhKnXfM8e1o2tlRUSasaUgi9xWyUNHNXENAxityx1BpXDl/N915/3boUs/ow==
+  dependencies:
+    "@reldb/cypher" "^0.1.0"
+    "@reldb/meta" "^0.2.0"
+
 "@sindresorhus/fnv1a@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/fnv1a/-/fnv1a-1.2.0.tgz#d554da64c406f3b62ad06dfce9efd537a4a55de4"

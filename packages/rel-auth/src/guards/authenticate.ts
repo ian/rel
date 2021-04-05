@@ -1,9 +1,9 @@
 import { AuthError, userLoader } from "../util"
 
 export const authenticate = {
-  resolver: async function ({ context }) {
-    const authUser = await userLoader(context)
+  resolver: async function (runtime) {
+    const authUser = await userLoader(runtime)
     if (!authUser) throw new AuthError("Authorization required")
-    Object.assign(context, { authUser })
+    Object.assign(runtime.context, { authUser })
   },
 }

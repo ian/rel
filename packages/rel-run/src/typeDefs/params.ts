@@ -1,4 +1,4 @@
-import { Params } from "@reldb/types"
+import { Params } from "../types"
 import { fieldToGQL } from "./field"
 
 export function paramsToGQL(params: Params) {

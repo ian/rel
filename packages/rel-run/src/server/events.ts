@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { EVENTS } from "@reldb/types"
+import { EVENTS } from "../types"
 
 const emitter = new EventEmitter()
 
@@ -8,6 +8,7 @@ export function log(message) {
 }
 
 export function error(err: Error) {
+  console.log({ err })
   emitter.emit(EVENTS.ERROR, err)
 }
 

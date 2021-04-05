@@ -1,6 +1,5 @@
-import { model, string, type, uuid } from "@reldb/meta"
-import { ENDPOINTS } from "@reldb/types"
-import Reducer, { intersection } from "../../src/runtime/reducer"
+import Rel from "../../src"
+import Reducer from "../../src/runtime/reducer"
 
 describe("Reducer Schema", () => {
   it("should have a type and input for Book", () => {
@@ -8,8 +7,8 @@ describe("Reducer Schema", () => {
 
     reducer.reduce({
       schema: {
-        Book: model("Book").fields({
-          name: string().required(),
+        Book: Rel.model("Book").fields({
+          name: Rel.string().required(),
         }),
       },
     })
@@ -23,16 +22,16 @@ describe("Reducer Schema", () => {
 
     reducer.reduce({
       schema: {
-        Book: model("Book").fields({
-          name: string().required(),
+        Book: Rel.model("Book").fields({
+          name: Rel.string().required(),
         }),
       },
     })
 
     reducer.reduce({
       schema: {
-        Book: model("Book").fields({
-          publisher: string(),
+        Book: Rel.model("Book").fields({
+          publisher: Rel.string(),
         }),
       },
     })

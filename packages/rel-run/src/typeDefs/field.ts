@@ -1,4 +1,4 @@
-import { Field } from "@reldb/types"
+import { Field } from "../types"
 
 export function fieldToGQL(fieldName: string, field: Field) {
   const fieldDef = [fieldName]

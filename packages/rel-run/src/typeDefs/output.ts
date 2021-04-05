@@ -1,4 +1,4 @@
-import { Output } from "@reldb/types"
+import { Output } from "../types"
 import { fieldToGQL } from "./field"
 
 export function outputToGQL(name: string, type: Output) {

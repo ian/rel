@@ -1,5 +1,4 @@
-import { makeServer } from "@reldb/testing"
-import { string, model } from "@reldb/meta"
+import Rel, { testServer } from "@reldb/run"
 
 import GoogleMaps, { geolocatedAddress } from "../src"
 
@@ -91,11 +90,11 @@ describe("#geolocatedAddress", () => {
 })
 
 const server = (geo, addPlugin: boolean = true) => {
-  return makeServer(
+  return testServer(
     {
       schema: {
-        Restaurant: model("Restaurant").fields({
-          address: string().required(),
+        Restaurant: Rel.model("Restaurant").fields({
+          address: Rel.string().required(),
           geo,
         }),
       },

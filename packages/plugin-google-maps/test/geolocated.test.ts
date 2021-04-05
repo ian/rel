@@ -1,5 +1,4 @@
-import { makeServer } from "@reldb/testing"
-import { Geo, string, model } from "@reldb/meta"
+import Rel, { testServer } from "@reldb/run"
 
 import GoogleMaps, { geolocated } from "../src"
 
@@ -66,13 +65,10 @@ describe("#geolocated", () => {
     `
       )
 
-      expect(data.restaurant).toEqual({
-        address: "Bennelong Point, Sydney NSW 2000, Australia",
-        geo: new Geo({
-          lat: -33.8565361,
-          lng: 151.2149964,
-        }),
-      })
+      const { address, geo } = data.restaurant
+      expect(address).toEqual("Bennelong Point, Sydney NSW 2000, Australia")
+      expect(geo.lat).toEqual(-33.8565361)
+      expect(geo.lng).toEqual(151.2149964)
     })
 
     it("should fail gracefully if google errors", async () => {
@@ -96,11 +92,11 @@ describe("#geolocated", () => {
 })
 
 const server = (geo, addPlugin: boolean = true) => {
-  return makeServer(
+  return testServer(
     {
       schema: {
-        Restaurant: model("Restaurant").fields({
-          address: string().required(),
+        Restaurant: Rel.model("Restaurant").fields({
+          address: Rel.string().required(),
           geo,
         }),
       },

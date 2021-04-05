@@ -1,6 +1,4 @@
-import { model, string, type, uuid } from "@reldb/meta"
-import { ENDPOINTS } from "@reldb/types"
-import Reducer, { intersection } from "../../src/runtime/reducer"
+import Reducer from "../../src/runtime/reducer"
 
 describe("Reducer Guards", () => {
   it("should add the guards to the reducer", () => {

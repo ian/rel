@@ -1,5 +1,6 @@
-import { ENDPOINTS } from "@reldb/types"
-import { string, uuid } from "@reldb/meta"
+import { ENDPOINTS } from "../../src/types"
+
+import Rel from "../../src"
 import { generateTypeDefs } from "../../src/runtime/typeDefs"
 
 describe("typeDefs", () => {
@@ -10,9 +11,9 @@ describe("typeDefs", () => {
           TestQuery: {
             target: ENDPOINTS.ACCESSOR,
             params: {
-              id: uuid(),
+              id: Rel.uuid(),
             },
-            returns: string(),
+            returns: Rel.string(),
             resolver: () => {},
           },
         },
@@ -37,9 +38,9 @@ describe("typeDefs", () => {
           TestMutation: {
             target: ENDPOINTS.MUTATOR,
             params: {
-              id: uuid(),
+              id: Rel.uuid(),
             },
-            returns: string(),
+            returns: Rel.string(),
             resolver: () => {},
           },
         },
@@ -62,7 +63,7 @@ describe("typeDefs", () => {
       return generateTypeDefs({
         inputs: {
           BookInput: {
-            name: string(),
+            name: Rel.string(),
           },
         },
       })
@@ -81,7 +82,7 @@ describe("typeDefs", () => {
         generateTypeDefs({
           outputs: {
             Book: {
-              name: string(),
+              name: Rel.string(),
             },
           },
         })
@@ -95,7 +96,7 @@ describe("typeDefs", () => {
         generateTypeDefs({
           outputs: {
             Book: {
-              name: string().required(),
+              name: Rel.string().required(),
             },
           },
         })

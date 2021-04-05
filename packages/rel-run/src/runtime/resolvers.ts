@@ -1,14 +1,17 @@
-import { ENDPOINTS, Reduced, Resolver } from "@reldb/types"
-import { cypher, cypher1 } from "@reldb/cypher"
+import { ENDPOINTS, Reduced } from "../types"
 import _ from "lodash"
+import { CypherInstance } from "../cypher/connection"
 
 const DEFAULT_RUNTIME = {
-  cypher,
-  cypher1,
+  // Cypher,
 }
 
 export type RuntimeContext = {
   [contextParam: string]: any
+}
+
+export type ResolverOpts = {
+  cypher: CypherInstance
 }
 
 export type ResolverObject = any
@@ -35,7 +38,11 @@ type Resolvers = {
   }
 }
 
-export function generateResolvers(reduced: Reduced): Resolvers {
+export function generateResolvers(
+  reduced: Reduced,
+  opts: ResolverOpts
+): Resolvers {
+  const { cypher } = opts
   const { outputs, endpoints } = reduced
   let resolvers = {}
 
@@ -53,6 +60,7 @@ export function generateResolvers(reduced: Reduced): Resolvers {
             return field._resolver({
               ...DEFAULT_RUNTIME,
               ...runtime,
+              cypher,
               fieldName,
             })
           }
@@ -75,14 +83,14 @@ export function generateResolvers(reduced: Reduced): Resolvers {
         case ENDPOINTS.ACCESSOR:
           queries[name] = async (obj, params, context) => {
             const runtime = { obj, params, context }
-            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime })
+            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
           }
           break
 
         case ENDPOINTS.MUTATOR:
           mutations[name] = async (obj, params, context) => {
             const runtime = { obj, params, context }
-            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime })
+            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
           }
           break
         default:
@@ -106,10 +114,15 @@ export function generateResolvers(reduced: Reduced): Resolvers {
   return resolvers
 }
 
-export function generateDirectiveResolvers(reduced: Reduced) {
+export function generateDirectiveResolvers(
+  reduced: Reduced,
+  opts: ResolverOpts
+) {
+  const { cypher } = opts
   return Object.entries(reduced.guards).reduce((acc, dir) => {
     const [name, { resolver }] = dir
-    acc[name] = (runtime) => resolver({ ...DEFAULT_RUNTIME, ...runtime })
+    acc[name] = (runtime) =>
+      resolver({ ...DEFAULT_RUNTIME, cypher, ...runtime })
     return acc
   }, {})
 }

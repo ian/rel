@@ -1,12 +1,5 @@
 import _ from "lodash"
-import {
-  Plugin,
-  Reduced,
-  Endpoints,
-  Guards,
-  Outputs,
-  Inputs,
-} from "@reldb/types"
+import { Reduced, Endpoints, Guards, Outputs, Inputs } from "../types"
 
 export function intersection(o1, o2) {
   return Object.keys(o1).filter({}.hasOwnProperty.bind(o2))

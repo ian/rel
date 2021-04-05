@@ -1,9 +1,9 @@
 import { Client } from "@googlemaps/google-maps-services-js"
-import { Geo } from "@reldb/meta"
+import { Geo } from "@reldb/run"
 
 type GeocodeResponse = {
   address: string
-  geo: Geo
+  geo: object
 }
 
 const client = new Client({

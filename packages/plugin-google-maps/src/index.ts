@@ -1,12 +1,10 @@
-import { Client as GoogleMaps } from "@googlemaps/google-maps-services-js"
-import { Plugin } from "@reldb/types"
-import { GeoField, StringField } from "@reldb/meta"
+import { Fields, Plugin } from "@reldb/run"
 
 import { geocodeAddress } from "./google"
 import { GeolocationOpts } from "./types"
 
 let key = null
-export class GelocatedField extends GeoField {
+export class GelocatedField extends Fields.Geo {
   opts = null
 
   constructor(opts: GeolocationOpts) {
@@ -28,7 +26,7 @@ export class GelocatedField extends GeoField {
   }
 }
 
-export class GelocatedAddressField extends StringField {
+export class GelocatedAddressField extends Fields.String {
   constructor(opts: GeolocationOpts) {
     super()
 

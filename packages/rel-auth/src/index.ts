@@ -1,4 +1,4 @@
-import { AuthStrategy } from "@reldb/types"
+import { AuthStrategy } from "@reldb/run"
 
 import Social from "./models/social"
 import EmailPassword from "./methods/email_password"

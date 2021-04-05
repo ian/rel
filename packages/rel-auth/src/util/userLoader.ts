@@ -1,8 +1,8 @@
 import moment from "moment"
 import AuthError from "./AuthError"
-import { cypherFind } from "@reldb/cypher"
 
-export default async function userLoader(context) {
+export default async function userLoader(runtime) {
+  const { cypher, context } = runtime
   const { auth } = context
   if (!auth) throw new AuthError("Must be authenticated")
 
@@ -14,5 +14,5 @@ export default async function userLoader(context) {
     }
   }
 
-  return cypherFind("User", { id: userId })
+  return cypher.find("User", { id: userId })
 }

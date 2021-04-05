@@ -1,4 +1,4 @@
-import { Endpoints } from "@reldb/types"
+import { Endpoints } from "../types"
 import { endpointToGQL } from "./endpoint"
 
 export function mutationToGQL(endpoints: Endpoints) {

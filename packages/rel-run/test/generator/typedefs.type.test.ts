@@ -1,4 +1,4 @@
-import { string } from "@reldb/meta"
+import Rel from "../../src"
 import { outputToGQL } from "../../src/typeDefs"
 
 const subject = (name, type) => {
@@ -10,7 +10,7 @@ describe("#outputToGQL", () => {
     it("should generate the type name", () => {
       expect(
         subject("Book", {
-          name: string(),
+          name: Rel.string(),
         })
       ).toEqual(`type Book {
   name: String

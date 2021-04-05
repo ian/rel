@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { formatSdl } from "format-graphql"
-import { ENDPOINTS, Reduced } from "@reldb/types"
+import { ENDPOINTS, Reduced } from "../types"
 
 import {
   directivesToGQL,
