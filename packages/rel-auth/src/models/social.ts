@@ -14,6 +14,9 @@ export default class SocialAuth implements AuthModel {
           },
           { accessors: false, mutators: false, input: false }
         ),
+        // Profile: {
+        //   ...
+        // },
         User: Rel.model({
           following: Rel.relation("FOLLOWS", "User"),
           followers: Rel.relation("FOLLOWS", "User"),
