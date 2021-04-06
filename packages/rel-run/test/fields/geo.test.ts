@@ -15,9 +15,12 @@ describe("default properties", () => {
 
   it("should output the right GQL type", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: Rel.geo(),
-      }),
+      Book: Rel.model(
+        {
+          field: Rel.geo(),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {

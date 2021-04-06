@@ -13,46 +13,28 @@ describe("#model", () => {
   }
 
   describe("typeDef", () => {
-    it("should have the right signature", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(),
-      })
-      expect(typeDefs).toMatch(`FindBook(id: UUID!): Book`)
-    })
-  })
-
-  describe("#accessors()", () => {
-    it("should generate the list endpoint when accessors() is called with no params", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(),
-      })
-
-      expect(typeDefs).toMatch(`FindBook`)
-    })
-
     it("should generate the list endpoint when accessors(true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(true),
+        Book: Rel.model({ title: Rel.string() }),
       })
 
-      expect(typeDefs).toMatch(`FindBook`)
+      expect(typeDefs).toMatch(`FindBook(id: UUID!): Book`)
     })
 
     it("should generate the list endpoint when accessors(list: true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ find: true }),
+        Book: Rel.model({ title: Rel.string() }, { accessors: { find: true } }),
       })
 
-      expect(typeDefs).toMatch(`FindBook`)
+      expect(typeDefs).toMatch(`FindBook(id: UUID!): Book`)
     })
 
     it("should NOT generate the list endpoint when accessors(list:false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ find: false }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { accessors: { find: false } }
+        ),
       })
 
       expect(typeDefs).not.toMatch(`FindBook`)
@@ -60,9 +42,10 @@ describe("#model", () => {
 
     it("should NOT generate the list endpoint when accessors(false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ find: false }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { accessors: { find: false } }
+        ),
       })
 
       expect(typeDefs).not.toMatch(`FindBook`)
@@ -71,7 +54,7 @@ describe("#model", () => {
 
   describe("runtime", () => {
     const query = server({
-      Book: Rel.model().fields({ title: Rel.string() }).accessors(),
+      Book: Rel.model({ title: Rel.string() }, { accessors: true }),
     })
 
     const { cypher } = query

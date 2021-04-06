@@ -1,6 +1,6 @@
 import _ from "lodash"
 import camelcase from "camelcase"
-import { Direction, Relation, ENDPOINTS } from "../types"
+import { Direction, Relation as RelationType, ENDPOINTS } from "../types"
 import { array, uuid, type } from "../fields"
 import { addRelationResolver } from "./add"
 import { removeRelationResolver } from "./remove"
@@ -30,7 +30,7 @@ export function resolveRel(rel) {
   }
 }
 
-export default class RelationField implements Relation {
+export default class Relation implements RelationType {
   _label: string
   _guard: string = null
   _from: {

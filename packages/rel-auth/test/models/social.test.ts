@@ -9,12 +9,12 @@ describe("Models.Social", () => {
         strategies: [],
       },
       schema: {
-        User: Rel.model()
-          .fields({
+        User: Rel.model(
+          {
             name: Rel.string().required(),
-          })
-          .accessors(false)
-          .mutators(false),
+          },
+          { accessors: false, mutators: false }
+        ),
       },
     })
 

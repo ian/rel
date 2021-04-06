@@ -13,46 +13,31 @@ describe("#model", () => {
   }
 
   describe("typeDef", () => {
-    it("should have the right signature", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).mutators(),
-      })
-      expect(typeDefs).toMatch(`UpdateBook(id: UUID!, input: BookInput!): Book`)
-    })
-  })
-
-  describe("#mutators()", () => {
-    it("should generate the list endpoint when mutators() is called with no params", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).mutators(),
-      })
-
-      expect(typeDefs).toMatch(`UpdateBook`)
-    })
-
     it("should generate the list endpoint when mutators(true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).mutators(true),
+        Book: Rel.model({ title: Rel.string() }, { mutators: true }),
       })
 
-      expect(typeDefs).toMatch(`UpdateBook`)
+      expect(typeDefs).toMatch(`DeleteBook(id: UUID!): Book`)
     })
 
     it("should generate the list endpoint when mutators(list: true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .mutators({ update: true }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { mutators: { update: true } }
+        ),
       })
 
-      expect(typeDefs).toMatch(`UpdateBook`)
+      expect(typeDefs).toMatch(`DeleteBook(id: UUID!): Book`)
     })
 
     it("should NOT generate the list endpoint when mutators(list:false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .mutators({ update: false }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { mutators: { update: false } }
+        ),
       })
 
       expect(typeDefs).not.toMatch(`UpdateBook`)
@@ -60,9 +45,7 @@ describe("#model", () => {
 
     it("should NOT generate the list endpoint when mutators(false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .mutators({ update: false }),
+        Book: Rel.model({ title: Rel.string() }, { mutators: false }),
       })
 
       expect(typeDefs).not.toMatch(`UpdateBook`)
@@ -71,7 +54,7 @@ describe("#model", () => {
 
   describe("runtime", () => {
     const query = server({
-      Book: Rel.model().fields({ title: Rel.string() }).mutators(),
+      Book: Rel.model({ title: Rel.string() }, { mutators: true }),
     })
 
     const { cypher } = query

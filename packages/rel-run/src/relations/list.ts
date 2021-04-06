@@ -1,4 +1,4 @@
-import { resolveNode } from "../objects/node"
+import { resolveNode } from "../models/node"
 
 import { Resolver } from "../types"
 import { ResolvedRelation, resolveRel } from "./relation"

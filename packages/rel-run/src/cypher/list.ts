@@ -1,5 +1,5 @@
 export async function cypherList(label, opts?) {
-  const { geo, order, filter, skip, limit, where } = opts || {}
+  const { geo, order = "id", filter, skip, limit, where } = opts || {}
 
   const cypherWhere = []
   const cypherQuery = []

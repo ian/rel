@@ -15,7 +15,7 @@ describe("#model", () => {
   describe("GQL", () => {
     it("should set id, createdAt, and updatedAt by default on types", () => {
       const { typeDefs } = server({
-        Book: Rel.model().fields({ name: Rel.string() }),
+        Book: Rel.model({ name: Rel.string() }),
       })
 
       expect(typeDefs).toMatch(`input BookInput {
@@ -32,7 +32,7 @@ describe("#model", () => {
 
     it("should allow id field to be overridden", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ id: false }).fields({ name: Rel.string() }),
+        Book: Rel.model({ name: Rel.string() }, { id: false }),
       })
 
       expect(typeDefs).toMatch(`input BookInput {
@@ -48,9 +48,12 @@ describe("#model", () => {
 
     it("should allow timestamps field to be overridden", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ timestamps: false }).fields({
-          name: Rel.string(),
-        }),
+        Book: Rel.model(
+          {
+            name: Rel.string(),
+          },
+          { timestamps: false }
+        ),
       })
       expect(typeDefs).toMatch(`input BookInput {
   name: String

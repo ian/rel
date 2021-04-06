@@ -13,48 +13,32 @@ describe("#model", () => {
   }
 
   describe("typeDef", () => {
-    it("should have the right signature", () => {
+    it("should generate the list endpoint when accessors(true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(),
+        Book: Rel.model({ title: Rel.string() }, { accessors: true }),
       })
+
       expect(typeDefs).toMatch(
         `ListBooks(limit: Int, order: String, skip: Int): [Book]!`
       )
     })
-  })
-
-  describe("#accessors()", () => {
-    it("should generate the list endpoint when accessors() is called with no params", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(),
-      })
-
-      expect(typeDefs).toMatch(`ListBooks`)
-    })
-
-    it("should generate the list endpoint when accessors(true) is specified", () => {
-      const { typeDefs } = server({
-        Book: Rel.model().fields({ title: Rel.string() }).accessors(true),
-      })
-
-      expect(typeDefs).toMatch(`ListBooks`)
-    })
 
     it("should generate the list endpoint when accessors(list: true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ list: true }),
+        Book: Rel.model({ title: Rel.string() }, { accessors: { list: true } }),
       })
 
-      expect(typeDefs).toMatch(`ListBooks`)
+      expect(typeDefs).toMatch(
+        `ListBooks(limit: Int, order: String, skip: Int): [Book]!`
+      )
     })
 
     it("should NOT generate the list endpoint when accessors(list:false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ list: false }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { accessors: { list: false } }
+        ),
       })
 
       expect(typeDefs).not.toMatch(`ListBooks`)
@@ -62,9 +46,10 @@ describe("#model", () => {
 
     it("should NOT generate the list endpoint when accessors(false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model()
-          .fields({ title: Rel.string() })
-          .accessors({ list: false }),
+        Book: Rel.model(
+          { title: Rel.string() },
+          { accessors: { list: false } }
+        ),
       })
 
       expect(typeDefs).not.toMatch(`ListBooks`)
@@ -73,7 +58,7 @@ describe("#model", () => {
 
   describe("runtime", () => {
     const query = server({
-      Book: Rel.model().fields({ title: Rel.string() }).accessors(),
+      Book: Rel.model({ title: Rel.string() }, { accessors: true }),
     })
     const { cypher } = query
 

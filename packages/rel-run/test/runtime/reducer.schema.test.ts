@@ -7,9 +7,7 @@ describe("Reducer Schema", () => {
 
     reducer.reduce({
       schema: {
-        Book: Rel.model("Book").fields({
-          name: Rel.string().required(),
-        }),
+        Book: Rel.model({ name: Rel.string().required() }),
       },
     })
 
@@ -22,7 +20,7 @@ describe("Reducer Schema", () => {
 
     reducer.reduce({
       schema: {
-        Book: Rel.model("Book").fields({
+        Book: Rel.model({
           name: Rel.string().required(),
         }),
       },
@@ -30,7 +28,7 @@ describe("Reducer Schema", () => {
 
     reducer.reduce({
       schema: {
-        Book: Rel.model("Book").fields({
+        Book: Rel.model({
           publisher: Rel.string(),
         }),
       },

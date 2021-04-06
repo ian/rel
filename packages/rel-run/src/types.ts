@@ -1,47 +1,33 @@
 // Following a global types definition file like how the TypeScript team uses: https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts
 
+import { Field } from "./fields"
+import { Model } from "./models"
+import { Relation } from "./relations"
 import { CypherInstance } from "./cypher/connection"
+
+export { Field } from "./fields"
+export { Model } from "./models"
+export { Relation } from "./relations"
 
 export type AuthModel = {} & Reducible
 export type AuthStrategy = {} & Reducible
-export interface Model {
-  fields(fields: Fields): Model
-  relations(relations: Relations): Model
-  accessors(accessors?: Accessors | boolean): Model
-  mutators(mutators?: Mutators | boolean): Model
-  guard(scope: string): Model
 
-  reduce(reducer: Reducer, opts: { modelName: string }): void
+export type ModelOpts = {
+  id?: boolean
+  timestamps?: boolean
+  input?: boolean
+  output?: boolean
+  guard?: string
+  accessors?: Accessors | boolean
+  mutators?: Mutators | boolean
 }
 
-export type Field = {
-  label: string
-  guard: (string) => Field
-  default: (valueOrFn: DefaultValue | CallableDefaultValue) => Field
-  resolver?: Resolver
-
-  // @todo - rely on FieldImpl for these
-  _label: string
-  _required?: boolean
-  _guard?: string
-  _default?: (runtime) => Promise<any>
-  _resolver?: (runtime) => Promise<any>
+export type ModelProps = {
+  [propName: string]: Field | Relation
 }
 
 export type Fields = {
   [name: string]: Field
-}
-
-export type Relation = {
-  from(from: string): Relation
-  to(to: string): Relation
-  inbound(): Relation
-  direction(direction: Direction): Relation
-  singular(boolean?): Relation
-  order(string): Relation
-  guard(scope: string): Relation
-
-  reduce(reducer: Reducer, opts: { modelName: string; fieldName: string }): void
 }
 
 export type Relations = {

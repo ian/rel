@@ -1,6 +1,6 @@
-import { Field, Resolver } from "../types"
+import { Resolver } from "../types"
 
-export default class FieldImpl implements Field {
+export default class Field {
   _label: string
   _required: boolean = false
   _params: object

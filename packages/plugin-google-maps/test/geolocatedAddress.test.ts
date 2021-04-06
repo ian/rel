@@ -93,7 +93,7 @@ const server = (geo, addPlugin: boolean = true) => {
   return testServer(
     {
       schema: {
-        Restaurant: Rel.model("Restaurant").fields({
+        Restaurant: Rel.model({
           address: Rel.string().required(),
           geo,
         }),

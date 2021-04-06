@@ -7,12 +7,12 @@ export { Geo } from "./util/geo"
 export * as Fields from "./fields"
 
 import * as Fields from "./fields"
-import * as Objects from "./objects"
+import * as Models from "./models"
 import * as Relations from "./relations"
 
 export default {
   ...Fields,
-  ...Objects,
+  ...Models,
   ...Relations,
 }
 

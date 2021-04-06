@@ -1,5 +1,7 @@
 import { Direction } from "../types"
-import Rel from "./relation"
+import Relation from "./relation"
 
-export const relation = (label, to?) => new Rel(label, to)
+export const relation = (label, to?) => new Relation(label, to)
 relation.Direction = Direction
+
+export { default as Relation } from "./relation"

@@ -296,16 +296,17 @@ const server = () => {
   return testServer(
     {
       schema: {
-        Author: Rel.model({ timestamps: false })
-          .fields({ name: Rel.string() })
-          .relations({
-            books: Rel.relation("AUTHORED").to("Book"),
-          }),
-        Book: Rel.model({ timestamps: false })
-          .fields({ title: Rel.string() })
-          .relations({
+        Author: Rel.model(
+          { name: Rel.string(), books: Rel.relation("AUTHORED").to("Book") },
+          { timestamps: false }
+        ),
+        Book: Rel.model(
+          {
+            title: Rel.string(),
             author: Rel.relation("AUTHORED", "Author").inbound().singular(),
-          }),
+          },
+          { timestamps: false }
+        ),
       },
     },
     {

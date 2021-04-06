@@ -22,10 +22,13 @@ describe("runtime", () => {
 
   it("should output the right GQL type", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        title: Rel.string().required(),
-        slug: Rel.slug({ from: "title" }),
-      }),
+      Book: Rel.model(
+        {
+          title: Rel.string().required(),
+          slug: Rel.slug({ from: "title" }),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -40,12 +43,13 @@ describe("default properties", () => {
   const server = testServer(
     {
       schema: {
-        Book: Rel.model()
-          .fields({
+        Book: Rel.model(
+          {
             title: Rel.string().required(),
             slug: Rel.slug({ from: "title" }),
-          })
-          .mutators(),
+          },
+          { mutators: true }
+        ),
       },
     },
     {

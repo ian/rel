@@ -1,12 +1,14 @@
 import _ from "lodash"
 import { uuid, dateTime } from "../fields"
-import { Accessors, Fields, Model, Mutators, Relations } from "../types"
+import { Accessors, Fields, ModelProps, ModelOpts, Mutators } from "../types"
 
 import { findEndpoints } from "./find"
 import { listEndpoints } from "./list"
 import { createEndpoints } from "./create"
 import { updateEndpoints } from "./update"
 import { deleteEndpoints } from "./delete"
+
+import { splitProps } from "./util"
 
 type Opts = {
   id?: boolean
@@ -33,17 +35,16 @@ const DEFAULT_MUTATORS = {
   delete: true,
 }
 
-export default class ModelImpl implements Model {
+export default class Model {
   _opts: Opts = {}
   _guard: string = null
 
   _autogen: Fields = {}
-  _fields: Fields = {}
-  _relations: Relations = {}
+  _props: ModelProps
   _accessors: Accessors = DEFAULT_ACCESSORS
   _mutators: Mutators = DEFAULT_MUTATORS
 
-  constructor(opts: Opts = {}) {
+  constructor(props: ModelProps, opts: ModelOpts = {}) {
     const _opts = {
       ...DEFAULT_OPTS,
       ...opts,
@@ -55,25 +56,23 @@ export default class ModelImpl implements Model {
       this._autogen.updatedAt = dateTime().required()
     }
 
+    this.props(props)
+    this.guard(_opts.guard)
+    this.accessors(_opts.accessors)
+    this.mutators(_opts.mutators)
+
     this._opts = _opts
   }
 
-  guard(scope: string): ModelImpl {
+  private guard(scope: string) {
     this._guard = scope
-    return this
   }
 
-  fields(fields: Fields): ModelImpl {
-    this._fields = fields
-    return this
+  private props(props: ModelProps) {
+    this._props = props
   }
 
-  relations(relations: Relations): ModelImpl {
-    this._relations = relations
-    return this
-  }
-
-  accessors(accessors?: Accessors | boolean): ModelImpl {
+  private accessors(accessors?: Accessors | boolean) {
     if (accessors === false) {
       this._accessors = null
     } else if (!accessors || accessors === true) {
@@ -81,11 +80,9 @@ export default class ModelImpl implements Model {
     } else {
       Object.assign(this._accessors, accessors)
     }
-
-    return this
   }
 
-  mutators(mutators?: Mutators | boolean): ModelImpl {
+  private mutators(mutators?: Mutators | boolean) {
     if (mutators === false) {
       this._mutators = null
     } else if (!mutators || mutators === true) {
@@ -93,24 +90,24 @@ export default class ModelImpl implements Model {
     } else {
       Object.assign(this._mutators, mutators)
     }
-
-    return this
   }
 
   reduce(reducer, { modelName }): void {
-    if (_.isEmpty(this._fields) && _.isEmpty(this._relations)) {
+    if (_.isEmpty(this._props)) {
       throw new Error(
         `Model ${modelName} must have at least one field or relation`
       )
     }
 
+    const [_fields, _relations] = splitProps(this._props)
+
     const inputFields = {
-      ...this._fields,
+      ..._fields,
     }
     const outputFields = {
       ...this._autogen,
-      ...this._fields,
-      ...this._relations,
+      ..._fields,
+      ..._relations,
     }
 
     if (this._opts.input) {
@@ -133,8 +130,8 @@ export default class ModelImpl implements Model {
       })
     }
 
-    if (this._relations) {
-      Object.entries(this._relations).forEach((entry) => {
+    if (_relations) {
+      Object.entries(_relations).forEach((entry) => {
         const [fieldName, rel] = entry
         rel.reduce(reducer, { modelName, fieldName })
       })
@@ -142,43 +139,31 @@ export default class ModelImpl implements Model {
 
     if (this._accessors?.find) {
       reducer({
-        endpoints: findEndpoints(modelName, this._accessors.find, this._fields),
+        endpoints: findEndpoints(modelName, this._accessors.find, _fields),
       })
     }
 
     if (this._accessors?.list) {
       reducer({
-        endpoints: listEndpoints(modelName, this._accessors.list, this._fields),
+        endpoints: listEndpoints(modelName, this._accessors.list, _fields),
       })
     }
 
     if (this._mutators?.create) {
       reducer({
-        endpoints: createEndpoints(
-          modelName,
-          this._mutators.create,
-          this._fields
-        ),
+        endpoints: createEndpoints(modelName, this._mutators.create, _fields),
       })
     }
 
     if (this._mutators?.update) {
       reducer({
-        endpoints: updateEndpoints(
-          modelName,
-          this._mutators.update,
-          this._fields
-        ),
+        endpoints: updateEndpoints(modelName, this._mutators.update, _fields),
       })
     }
 
     if (this._mutators?.delete) {
       reducer({
-        endpoints: deleteEndpoints(
-          modelName,
-          this._mutators.delete,
-          this._fields
-        ),
+        endpoints: deleteEndpoints(modelName, this._mutators.delete, _fields),
       })
     }
   }

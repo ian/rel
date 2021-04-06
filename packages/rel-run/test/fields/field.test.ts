@@ -36,9 +36,12 @@ describe("functions", () => {
 describe("defaults", () => {
   it("should have default values", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField(),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField(),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -50,9 +53,12 @@ describe("defaults", () => {
 describe("required", () => {
   it("should set required", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().required(),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().required(),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -62,9 +68,12 @@ describe("required", () => {
 
   it("should allow it to be specified false", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().required(false),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().required(false),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -74,9 +83,12 @@ describe("required", () => {
 
   it("should allow it to be specified true", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().required(true),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().required(true),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -88,9 +100,12 @@ describe("required", () => {
 describe("guard", () => {
   it("should set the guard", () => {
     const { typeDefs } = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().guard("admin"),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().guard("admin"),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     expect(typeDefs).toMatch(`type Book {
@@ -102,9 +117,12 @@ describe("guard", () => {
 describe("default", () => {
   it("should set the default when const", async (done) => {
     const query = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().default("const"),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().default("const"),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     const { data, errors } = await query(`
@@ -123,9 +141,12 @@ mutation {
 
   it("should set the default when function", async (done) => {
     const query = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().default(() => "function"),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().default(() => "function"),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     const { data, errors } = await query(`
@@ -146,9 +167,12 @@ mutation {
 describe("resolver", () => {
   it("should use the resolver value", async (done) => {
     const query = server({
-      Book: Rel.model({ id: false, timestamps: false }).fields({
-        field: new MyField().resolver(() => "resolved"),
-      }),
+      Book: Rel.model(
+        {
+          field: new MyField().resolver(() => "resolved"),
+        },
+        { id: false, timestamps: false }
+      ),
     })
 
     const { data, errors } = await query(`

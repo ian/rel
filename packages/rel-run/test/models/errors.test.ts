@@ -15,7 +15,7 @@ describe("#model", () => {
   it("error when trying to run a model without fields", () => {
     expect(() =>
       server({
-        Book: Rel.model(),
+        Book: Rel.model({}),
       })
     ).toThrowError("Model Book must have at least one field or relation")
   })
