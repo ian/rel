@@ -1,5 +1,4 @@
 import Rel, { AuthStrategy, ENDPOINTS } from "@reldb/run"
-import { cypherFind } from "@reldb/cypher"
 export default class EmailPassword implements AuthStrategy {
   reduce(reducer) {
     reducer({
