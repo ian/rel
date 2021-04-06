@@ -1,7 +1,7 @@
 {
   "name": "rel-plugin-google-maps",
   "description": "Google Maps support for Rel",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publishConfig": {
     "access": "public"
   },
@@ -34,7 +34,7 @@
   "homepage": "https://github.com/runrel/rel/packages/rel-google-maps#readme",
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.1.16",
-    "@reldb/run": "^0.8.0"
+    "@reldb/run": "^0.8.1"
   },
   "devDependencies": {
     "@pollyjs/core": "^5.1.0",
