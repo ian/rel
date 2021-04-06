@@ -12,7 +12,6 @@ export default class SocialAuth implements AuthModel {
             token: Rel.string().required(),
             user: Rel.type("User").required(),
           })
-          .guard("admin")
           .accessors(false)
           .mutators(false),
         User: Rel.model().relations({
