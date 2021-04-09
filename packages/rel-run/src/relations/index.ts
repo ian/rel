@@ -1,7 +1,8 @@
 import { Direction } from "../types"
-import Relation from "./relation"
+import Relation, { RelationOpts } from "./relation"
 
-export const relation = (label, to?) => new Relation(label, to)
+export const relation = (label: string, to: string, opts?: RelationOpts) =>
+  new Relation(label, to, opts)
 relation.Direction = Direction
 
 export { default as Relation } from "./relation"

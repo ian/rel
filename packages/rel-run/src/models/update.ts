@@ -1,9 +1,18 @@
-import { uuid, type } from "../fields"
-import { UpdateMutator, Fields, Reduced, ENDPOINTS } from "../types"
+import { uuid, ref } from "../fields"
+import {
+  ModelEndpointsUpdateOpts,
+  Fields,
+  ReducedGQLEndpoint,
+  GraphQLOperationType,
+} from "../types"
 
 const DEFAULT_MUTATOR = {}
 
-function makeResolver(label: string, mutator: UpdateMutator, fields: Fields) {
+function makeResolver(
+  label: string,
+  endpoint: ModelEndpointsUpdateOpts,
+  fields: Fields
+) {
   return async ({ cypher, params }) => {
     const { id, input } = params
 
@@ -19,8 +28,8 @@ function makeResolver(label: string, mutator: UpdateMutator, fields: Fields) {
     // Models should contain the fields/resolvers -> cypher mapping
 
     const updated = await cypher.update(label, id, values)
-    if (mutator.after) {
-      await mutator.after(updated)
+    if (endpoint.after) {
+      await endpoint.after(updated)
     }
     return updated
   }
@@ -39,30 +48,28 @@ async function resolveFieldsForUpdate(input) {
 
 export function updateEndpoints(
   label: string,
-  mutator: boolean | UpdateMutator,
+  endpoint: boolean | ModelEndpointsUpdateOpts,
   fields: Fields
-): Reduced {
-  if (!mutator) return null
+): ReducedGQLEndpoint {
+  if (!endpoint) return null
 
-  let _mutator = {
+  let _endpoint = {
     ...DEFAULT_MUTATOR,
-    ...(typeof mutator === "boolean" ? {} : mutator),
+    ...(typeof endpoint === "boolean" ? {} : endpoint),
   }
 
-  const { guard } = _mutator
+  const { guard } = _endpoint
 
   return {
-    [`Update${label}`]: {
-      target: ENDPOINTS.MUTATOR,
-
-      guard,
-      params: {
-        id: uuid().required(),
-        input: type(`${label}Input`).required(),
-      },
-      returns: type(label),
-
-      resolver: makeResolver(label, _mutator, fields),
+    label: `Update${label}`,
+    type: GraphQLOperationType.MUTATION,
+    guard,
+    params: {
+      id: uuid().required(),
+      input: ref(`${label}Input`).required(),
     },
+    returns: ref(label),
+
+    resolver: makeResolver(label, _endpoint, fields),
   }
 }

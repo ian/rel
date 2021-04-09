@@ -4,32 +4,30 @@ import { authenticate, admin } from "../guards"
 import Me from "../endpoints/me"
 
 export default class SocialAuth implements AuthModel {
-  reduce(reducer) {
-    reducer({
-      schema: {
-        Auth: Rel.model(
-          {
-            token: Rel.string().required(),
-            user: Rel.type("User").required(),
-          },
-          { accessors: false, mutators: false, input: false }
-        ),
-        // Profile: {
-        //   ...
-        // },
-        User: Rel.model({
-          following: Rel.relation("FOLLOWS", "User"),
-          followers: Rel.relation("FOLLOWS", "User"),
+  hydrate(hydrator) {
+    hydrator.schema({
+      Auth: Rel.output({
+        token: Rel.string().required(),
+        user: Rel.ref("User").required(),
+      }),
+      Profile: Rel.output({
+        following: Rel.relation("FOLLOWS", "User", {
+          endpoints: false,
+        }).endpoints(false),
+        followers: Rel.relation("FOLLOWS", "User").endpoints(false),
+      }),
+      User: Rel.output({
+        following: Rel.relation("FOLLOWS", "User").endpoints({
+          add: "FollowUser",
+          remove: "UnfollowUser",
         }),
-      },
-      guards: {
-        authenticate,
-        admin,
-      },
-      endpoints: {
-        ...Me,
-        // Leaderboard?
-      },
+        followers: Rel.relation("FOLLOWS", "User").endpoints(false),
+      }),
     })
+    hydrator.guards({
+      authenticate,
+      admin,
+    })
+    hydrator.endpoints(Me)
   }
 }

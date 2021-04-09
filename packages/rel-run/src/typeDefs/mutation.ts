@@ -1,12 +1,11 @@
-import { Endpoints } from "../types"
+import { ReducedGQLEndpoint } from "../types"
 import { endpointToGQL } from "./endpoint"
 
-export function mutationToGQL(endpoints: Endpoints) {
+export function mutationToGQL(endpoints: ReducedGQLEndpoint[]) {
   const gqlFields = []
 
-  Object.entries(endpoints).forEach((entry) => {
-    const [name, endpoint] = entry
-    gqlFields.push(endpointToGQL(name, endpoint))
+  endpoints.forEach((endpoint) => {
+    gqlFields.push(endpointToGQL(endpoint))
   })
 
   return `type Mutation {

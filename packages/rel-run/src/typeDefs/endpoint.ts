@@ -1,19 +1,19 @@
-import { Endpoint } from "../types"
+import { ReducedGQLEndpoint } from "../types"
 import { paramsToGQL } from "./params"
 
-export function endpointToGQL(name: string, endpoint: Endpoint) {
-  const fieldDef = [name]
-  const { guard, params, returns } = endpoint
+export function endpointToGQL(endpoint: ReducedGQLEndpoint) {
+  const { label, guard, params, returns } = endpoint
+  const gql = [label]
 
   if (params) {
-    fieldDef.push(`( ${paramsToGQL(params)} )`)
+    gql.push(`( ${paramsToGQL(params)} )`)
   }
-  fieldDef.push(": ")
+  gql.push(": ")
 
-  fieldDef.push(returns._label)
-  if (returns._required) fieldDef.push("!")
+  gql.push(returns._label)
+  if (returns._required) gql.push("!")
 
-  if (guard) fieldDef.push(` @${guard}`)
+  if (guard) gql.push(` @${guard}`)
 
-  return fieldDef.join("")
+  return gql.join("")
 }

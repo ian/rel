@@ -1,6 +1,7 @@
 import _ from "lodash"
 import { formatSdl } from "format-graphql"
-import { ENDPOINTS, Reduced } from "../types"
+import { Reduced } from "../types"
+import { splitGraphQLEndpoints } from "../util/endpoints"
 
 import {
   directivesToGQL,
@@ -10,8 +11,8 @@ import {
   mutationToGQL,
 } from "../typeDefs"
 
-export function generateTypeDefs(reducible: Reduced) {
-  const { inputs, outputs, guards, endpoints } = reducible
+export function generateTypeDefs(reduced: Reduced) {
+  const { inputs, outputs, guards, graphQLEndpoints } = reduced
 
   const gql = []
 
@@ -51,30 +52,11 @@ scalar UUID`)
     })
   }
 
-  let queries = {}
-  let mutations = {}
-
-  if (endpoints) {
-    Object.entries(endpoints).forEach((entry) => {
-      const [name, endpoint] = entry
-      const { target } = endpoint
-
-      switch (target) {
-        case ENDPOINTS.ACCESSOR:
-          queries[name] = endpoint
-          break
-
-        case ENDPOINTS.MUTATOR:
-          mutations[name] = endpoint
-          break
-        default:
-          throw new Error(`Unknown endpoint type '${target}' for ${name}`)
-      }
-    })
+  if (graphQLEndpoints) {
+    const { queries, mutations } = splitGraphQLEndpoints(graphQLEndpoints)
+    if (!_.isEmpty(queries)) gql.push(queryToGQL(queries))
+    if (!_.isEmpty(mutations)) gql.push(mutationToGQL(mutations))
   }
-
-  if (!_.isEmpty(queries)) gql.push(queryToGQL(queries))
-  if (!_.isEmpty(mutations)) gql.push(mutationToGQL(mutations))
 
   return gql
     .map((typeStr) => {

@@ -3,19 +3,24 @@ import { Models } from "../../src/index"
 
 describe("Models.Social", () => {
   describe("#typedefs", () => {
-    const { typeDefs } = testServer({
-      auth: {
-        model: new Models.Social(),
-        strategies: [],
-      },
-      schema: {
+    const { typeDefs } = testServer({ log: true })
+      .schema({
         User: Rel.model(
           {
             name: Rel.string().required(),
           },
-          { accessors: false, mutators: false }
+          { endpoints: true }
         ),
-      },
+      })
+      .auth(new Models.Social(), [])
+      .runtime()
+
+    it("should have Auth", () => {
+      expect(typeDefs).toMatch(`
+type Auth {
+  token: String!
+  user: User!
+}`)
     })
 
     it("should have a User", () => {
@@ -24,9 +29,9 @@ type User {
   id: UUID!
   createdAt: DateTime!
   updatedAt: DateTime!
+  name: String!
   following: [User]!
   followers: [User]!
-  name: String!
 }`)
     })
   })

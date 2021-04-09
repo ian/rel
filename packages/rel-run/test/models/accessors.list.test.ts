@@ -2,20 +2,13 @@ import Rel, { testServer } from "../../src"
 
 describe("#model", () => {
   const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
+    return testServer({ log: false }).schema(schema).runtime()
   }
 
   describe("typeDef", () => {
-    it("should generate the list endpoint when accessors(true) is specified", () => {
+    it("should generate the list endpoint when endpoints(true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ title: Rel.string() }, { accessors: true }),
+        Book: Rel.model({ title: Rel.string() }, { endpoints: true }),
       })
 
       expect(typeDefs).toMatch(
@@ -23,9 +16,9 @@ describe("#model", () => {
       )
     })
 
-    it("should generate the list endpoint when accessors(list: true) is specified", () => {
+    it("should generate the list endpoint when endpoints(list: true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ title: Rel.string() }, { accessors: { list: true } }),
+        Book: Rel.model({ title: Rel.string() }, { endpoints: { list: true } }),
       })
 
       expect(typeDefs).toMatch(
@@ -33,22 +26,22 @@ describe("#model", () => {
       )
     })
 
-    it("should NOT generate the list endpoint when accessors(list:false) is specified", () => {
+    it("should NOT generate the list endpoint when endpoints(list:false) is specified", () => {
       const { typeDefs } = server({
         Book: Rel.model(
           { title: Rel.string() },
-          { accessors: { list: false } }
+          { endpoints: { list: false } }
         ),
       })
 
       expect(typeDefs).not.toMatch(`ListBooks`)
     })
 
-    it("should NOT generate the list endpoint when accessors(false) is specified", () => {
+    it("should NOT generate the list endpoint when endpoints(false) is specified", () => {
       const { typeDefs } = server({
         Book: Rel.model(
           { title: Rel.string() },
-          { accessors: { list: false } }
+          { endpoints: { list: false } }
         ),
       })
 
@@ -57,10 +50,9 @@ describe("#model", () => {
   })
 
   describe("runtime", () => {
-    const query = server({
-      Book: Rel.model({ title: Rel.string() }, { accessors: true }),
+    const { cypher, graphql } = server({
+      Book: Rel.model({ title: Rel.string() }, { endpoints: true }),
     })
-    const { cypher } = query
 
     beforeEach(async (done) => {
       await cypher.exec(
@@ -71,13 +63,13 @@ describe("#model", () => {
     })
 
     it("should list the Books", async (done) => {
-      const { data } = await query(`
-      query {
-        books: ListBooks {
-          title
+      const { data } = await graphql(`
+        query {
+          books: ListBooks {
+            title
+          }
         }
-      }
-    `)
+      `)
 
       expect(data?.books).toEqual([{ title: "The Great Gatsby" }])
       done()

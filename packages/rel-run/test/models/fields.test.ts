@@ -1,20 +1,13 @@
 import Rel, { testServer } from "../../src"
 
 describe("#model", () => {
-  const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
+  const server = async (schema) => {
+    return testServer({ log: false }).schema(schema).start()
   }
 
   describe("GQL", () => {
-    it("should set id, createdAt, and updatedAt by default on types", () => {
-      const { typeDefs } = server({
+    it("should set id, createdAt, and updatedAt by default on types", async () => {
+      const { typeDefs } = await server({
         Book: Rel.model({ name: Rel.string() }),
       })
 
@@ -30,8 +23,8 @@ describe("#model", () => {
 `)
     })
 
-    it("should allow id field to be overridden", () => {
-      const { typeDefs } = server({
+    it("should allow id field to be overridden", async () => {
+      const { typeDefs } = await server({
         Book: Rel.model({ name: Rel.string() }, { id: false }),
       })
 
@@ -46,8 +39,8 @@ describe("#model", () => {
 `)
     })
 
-    it("should allow timestamps field to be overridden", () => {
-      const { typeDefs } = server({
+    it("should allow timestamps field to be overridden", async () => {
+      const { typeDefs } = await server({
         Book: Rel.model(
           {
             name: Rel.string(),

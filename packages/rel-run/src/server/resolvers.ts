@@ -1,6 +1,7 @@
-import { ENDPOINTS, Reduced } from "../types"
+import { Reduced } from "../types"
 import _ from "lodash"
 import { CypherInstance } from "../cypher/connection"
+import { splitGraphQLEndpoints } from "../util/endpoints"
 
 const DEFAULT_RUNTIME = {
   // Cypher,
@@ -43,7 +44,7 @@ export function generateResolvers(
   opts: ResolverOpts
 ): Resolvers {
   const { cypher } = opts
-  const { outputs, endpoints } = reduced
+  const { outputs, graphQLEndpoints } = reduced
   let resolvers = {}
 
   if (outputs) {
@@ -71,42 +72,30 @@ export function generateResolvers(
     })
   }
 
-  if (endpoints) {
-    let queries = {},
-      mutations = {}
-
-    Object.entries(endpoints).forEach((entry) => {
-      const [name, endpoint] = entry
-      const { target } = endpoint
-
-      switch (target) {
-        case ENDPOINTS.ACCESSOR:
-          queries[name] = async (obj, params, context) => {
-            const runtime = { obj, params, context }
-            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
-          }
-          break
-
-        case ENDPOINTS.MUTATOR:
-          mutations[name] = async (obj, params, context) => {
-            const runtime = { obj, params, context }
-            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
-          }
-          break
-        default:
-          throw new Error(`Unknown endpoint type '${target}' for ${name}`)
-      }
-    })
+  if (graphQLEndpoints) {
+    const { queries, mutations } = splitGraphQLEndpoints(graphQLEndpoints)
 
     if (!_.isEmpty(queries)) {
       Object.assign(resolvers, {
-        Query: queries,
+        Query: queries.reduce((acc, endpoint) => {
+          acc[endpoint.label] = async (obj, params, context) => {
+            const runtime = { obj, params, context }
+            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
+          }
+          return acc
+        }, {}),
       })
     }
 
     if (!_.isEmpty(mutations)) {
       Object.assign(resolvers, {
-        Mutation: mutations,
+        Mutation: mutations.reduce((acc, endpoint) => {
+          acc[endpoint.label] = async (obj, params, context) => {
+            const runtime = { obj, params, context }
+            return endpoint.resolver({ ...DEFAULT_RUNTIME, ...runtime, cypher })
+          }
+          return acc
+        }, {}),
       })
     }
   }

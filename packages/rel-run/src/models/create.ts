@@ -1,9 +1,18 @@
-import { type } from "../fields"
-import { ENDPOINTS, CreateMutator, Fields } from "../types"
+import { ref } from "../fields"
+import {
+  ModelEndpointsCreateOpts,
+  Fields,
+  GraphQLOperationType,
+  ReducedGQLEndpoint,
+} from "../types"
 
 const DEFAULT_MUTATOR = {}
 
-function makeResolver(label: string, mutator: CreateMutator, fields: Fields) {
+function makeResolver(
+  label: string,
+  endpoint: ModelEndpointsCreateOpts,
+  fields: Fields
+) {
   return async (runtime) => {
     const { params, cypher } = runtime
     const { input } = params
@@ -20,8 +29,8 @@ function makeResolver(label: string, mutator: CreateMutator, fields: Fields) {
     // Models should contain the fields/resolvers -> cypher mapping
 
     const created = await cypher.create(label, values)
-    if (mutator.after) {
-      await mutator.after(created)
+    if (endpoint.after) {
+      await endpoint.after(created)
     }
 
     return created
@@ -59,25 +68,24 @@ export async function resolveFieldsForCreate(
 
 export function createEndpoints(
   label: string,
-  mutator: boolean | CreateMutator,
+  endpoint: boolean | ModelEndpointsCreateOpts,
   fields: Fields
-) {
-  if (!mutator) return null
+): ReducedGQLEndpoint {
+  if (!endpoint) return null
 
-  let _mutator = {
+  let _endpoint = {
     ...DEFAULT_MUTATOR,
-    ...(typeof mutator === "boolean" ? {} : mutator),
+    ...(typeof endpoint === "boolean" ? {} : endpoint),
   }
 
-  const { guard } = _mutator
+  const { guard } = _endpoint
 
   return {
-    [`Create${label}`]: {
-      target: ENDPOINTS.MUTATOR,
-      params: { input: type(`${label}Input`).required() },
-      guard,
-      returns: type(label),
-      resolver: makeResolver(label, _mutator, fields),
-    },
+    label: `Create${label}`,
+    type: GraphQLOperationType.MUTATION,
+    params: { input: ref(`${label}Input`).required() },
+    guard,
+    returns: ref(label),
+    resolver: makeResolver(label, _endpoint, fields),
   }
 }

@@ -1,12 +1,17 @@
 import _ from "lodash"
-import { Reduced, FindAccessor, Fields, ENDPOINTS } from "../types"
-import { uuid, type } from "../fields"
+import {
+  ModelEndpointsFindOpts,
+  Fields,
+  GraphQLOperationType,
+  ReducedGQLEndpoint,
+} from "../types"
+import { uuid, ref } from "../fields"
 
 const DEFAULT_ACCESSOR = {
   findBy: { id: uuid().required() },
 }
 
-function makeResolver(label: string, accessor: FindAccessor) {
+function makeResolver(label: string, endpoint: ModelEndpointsFindOpts) {
   return async (runtime) => {
     const { cypher, params } = runtime
 
@@ -20,25 +25,24 @@ function makeResolver(label: string, accessor: FindAccessor) {
 
 export function findEndpoints(
   label,
-  accessor: boolean | FindAccessor,
+  endpoint: boolean | ModelEndpointsFindOpts,
   fields: Fields
-): Reduced {
-  if (!accessor) return null
+): ReducedGQLEndpoint {
+  if (!endpoint) return null
 
   let _accessor = {
     ...DEFAULT_ACCESSOR,
-    ...(typeof accessor === "boolean" ? {} : accessor),
+    ...(typeof endpoint === "boolean" ? {} : endpoint),
   }
 
   const { findBy, guard } = _accessor
 
   return {
-    [`Find${label}`]: {
-      target: ENDPOINTS.ACCESSOR,
-      params: findBy,
-      guard,
-      returns: type(label),
-      resolver: makeResolver(label, _accessor),
-    },
+    label: `Find${label}`,
+    type: GraphQLOperationType.QUERY,
+    params: findBy,
+    guard,
+    returns: ref(label),
+    resolver: makeResolver(label, _accessor),
   }
 }

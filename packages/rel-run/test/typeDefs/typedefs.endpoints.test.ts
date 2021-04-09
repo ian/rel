@@ -1,22 +1,21 @@
-import { ENDPOINTS } from "../../src/types"
-
-import Rel from "../../src"
-import { generateTypeDefs } from "../../src/runtime/typeDefs"
+import Rel, { GraphQLOperationType } from "../../src"
+import { generateTypeDefs } from "../../src/server/typeDefs"
 
 describe("typeDefs", () => {
   describe("Query", () => {
     const subject = () => {
       return generateTypeDefs({
-        endpoints: {
-          TestQuery: {
-            target: ENDPOINTS.ACCESSOR,
+        graphQLEndpoints: [
+          {
+            label: "TestQuery",
+            type: GraphQLOperationType.QUERY,
             params: {
               id: Rel.uuid(),
             },
             returns: Rel.string(),
             resolver: () => {},
           },
-        },
+        ],
       })
     }
 
@@ -24,9 +23,6 @@ describe("typeDefs", () => {
       expect(subject()).toMatch(`type Query {
   TestQuery(id: UUID): String
 }`)
-    })
-
-    it("should not have a Mutation generated", () => {
       expect(subject()).not.toMatch(`type Mutation`)
     })
   })
@@ -34,16 +30,17 @@ describe("typeDefs", () => {
   describe("Mutation", () => {
     const subject = () => {
       return generateTypeDefs({
-        endpoints: {
-          TestMutation: {
-            target: ENDPOINTS.MUTATOR,
+        graphQLEndpoints: [
+          {
+            label: "TestMutation",
+            type: GraphQLOperationType.MUTATION,
             params: {
               id: Rel.uuid(),
             },
             returns: Rel.string(),
             resolver: () => {},
           },
-        },
+        ],
       })
     }
 

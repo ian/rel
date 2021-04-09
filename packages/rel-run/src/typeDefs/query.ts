@@ -1,12 +1,11 @@
-import { Endpoints } from "../types"
+import { ReducedGQLEndpoint } from "../types"
 import { endpointToGQL } from "./endpoint"
 
-export function queryToGQL(endpoints: Endpoints) {
+export function queryToGQL(endpoints: ReducedGQLEndpoint[]) {
   const gqlFields = []
 
-  Object.entries(endpoints).forEach((entry) => {
-    const [name, endpoint] = entry
-    gqlFields.push(endpointToGQL(name, endpoint))
+  endpoints.forEach((endpoint) => {
+    gqlFields.push(endpointToGQL(endpoint))
   })
 
   return `type Query {

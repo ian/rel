@@ -1,8 +1,6 @@
 import Field from "./field"
 
-export default class Type extends Field {
-  // _validator = object()
-
+export default class Ref extends Field {
   constructor(model) {
     super(model)
   }

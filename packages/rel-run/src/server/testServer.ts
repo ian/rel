@@ -1,54 +1,60 @@
 import { EVENTS } from "../types"
-import Server from "."
+import { Server } from "./server"
 import Cypher from "../cypher"
-import { RuntimeOpts } from "../runtime"
 
 type JestServerOpts = {
   log?: boolean
 }
 
-export { RuntimeOpts } from "../runtime"
+export { RuntimeOpts } from "./runtime"
 
-const testServer = (config: RuntimeOpts, opts?: JestServerOpts) => {
-  const instance = Server({
-    db: {
-      type: Cypher.NEO4J,
-      url: process.env.NEO4J_URI,
-      username: process.env.NEO4J_USERNAME,
-      password: process.env.NEO4J_PASSWORD,
-      // logger: opts.log ? Events.cypher : null,
-    },
-    port: 1234,
-  })
+class TestServer extends Server {
+  _opts: JestServerOpts
 
-  const { auth, guards, plugins, schema } = config
-  if (auth) {
-    const { model, strategies } = auth
-    instance.auth(model, strategies)
+  constructor(opts?: JestServerOpts) {
+    super({
+      db: {
+        type: Cypher.NEO4J,
+        url: process.env.NEO4J_URI,
+        username: process.env.NEO4J_USERNAME,
+        password: process.env.NEO4J_PASSWORD,
+      },
+      port: 1234,
+    })
+
+    this._opts = opts
   }
 
-  if (guards) {
-    instance.guards(guards)
-  }
+  async start() {
+    try {
+      const { events, cypher, typeDefs, graphql } = this.runtime()
 
-  if (plugins) {
-    plugins.forEach((p) => instance.plugin(p))
+      return {
+        cypher,
+        events,
+        typeDefs,
+        port: 1234,
+        graphql,
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
+}
 
-  if (schema) {
-    instance.schema(schema)
-  }
+export default (opts?: JestServerOpts) => {
+  const server = new TestServer(opts)
 
   if (opts?.log) {
-    instance.on(EVENTS.ERROR, (err) => {
+    server.on(EVENTS.ERROR, (err) => {
       console.log("\x1b[31m", err, "\x1b[0m")
     })
 
-    instance.on(EVENTS.GRAPHQL_ERROR, ({ query, errors }) => {
+    server.on(EVENTS.GRAPHQL_ERROR, ({ query, errors }) => {
       console.error(errors[0], "\n", query)
     })
 
-    instance.on(EVENTS.GRAPHQL, (gql, time) => {
+    server.on(EVENTS.GRAPHQL, (gql, time) => {
       console.log(
         gql.query,
         "\n",
@@ -61,7 +67,7 @@ const testServer = (config: RuntimeOpts, opts?: JestServerOpts) => {
       )
     })
 
-    instance.on(EVENTS.CYPHER, (cypher, time) => {
+    server.on(EVENTS.CYPHER, (cypher, time) => {
       console.log(
         cypher,
         "\n",
@@ -72,18 +78,5 @@ const testServer = (config: RuntimeOpts, opts?: JestServerOpts) => {
     })
   }
 
-  const { cypher, typeDefs, server } = instance.runtime()
-
-  const handler = async (query, variables?) => {
-    const context = {}
-    const res = await server.executeOperation({ query, variables })
-    return res
-  }
-
-  handler.typeDefs = typeDefs
-  handler.cypher = cypher
-
-  return handler
+  return server
 }
-
-export default testServer

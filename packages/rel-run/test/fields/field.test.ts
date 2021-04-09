@@ -8,19 +8,16 @@ class MyField extends Fields.Field {
 }
 
 const server = (schema) => {
-  return testServer(
-    {
-      schema,
-      guards: {
-        admin: {
-          resolver: async () => {},
+  return testServer({ log: false })
+    .schema(schema)
+    .guards({
+      admin: {
+        resolver: () => {
+          throw new Error("GUARDED")
         },
       },
-    },
-    {
-      // log: true,
-    }
-  )
+    })
+    .runtime()
 }
 
 describe("functions", () => {
@@ -34,8 +31,8 @@ describe("functions", () => {
 })
 
 describe("defaults", () => {
-  it("should have default values", () => {
-    const { typeDefs } = server({
+  it("should have default values", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: new MyField(),
@@ -51,8 +48,8 @@ describe("defaults", () => {
 })
 
 describe("required", () => {
-  it("should set required", () => {
-    const { typeDefs } = server({
+  it("should set required", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: new MyField().required(),
@@ -66,8 +63,8 @@ describe("required", () => {
 }`)
   })
 
-  it("should allow it to be specified false", () => {
-    const { typeDefs } = server({
+  it("should allow it to be specified false", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: new MyField().required(false),
@@ -81,8 +78,8 @@ describe("required", () => {
 }`)
   })
 
-  it("should allow it to be specified true", () => {
-    const { typeDefs } = server({
+  it("should allow it to be specified true", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: new MyField().required(true),
@@ -98,8 +95,8 @@ describe("required", () => {
 })
 
 describe("guard", () => {
-  it("should set the guard", () => {
-    const { typeDefs } = server({
+  it("should set the guard", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: new MyField().guard("admin"),
@@ -116,7 +113,7 @@ describe("guard", () => {
 
 describe("default", () => {
   it("should set the default when const", async (done) => {
-    const query = server({
+    const { graphql } = server({
       Book: Rel.model(
         {
           field: new MyField().default("const"),
@@ -125,12 +122,12 @@ describe("default", () => {
       ),
     })
 
-    const { data, errors } = await query(`
-mutation {
-  book: CreateBook(input: { }) {
-    field
-  }
-}
+    const { data, errors } = await graphql(`
+      mutation {
+        book: CreateBook(input: {}) {
+          field
+        }
+      }
     `)
 
     expect(errors).not.toBeDefined()
@@ -140,7 +137,7 @@ mutation {
   })
 
   it("should set the default when function", async (done) => {
-    const query = server({
+    const { graphql } = server({
       Book: Rel.model(
         {
           field: new MyField().default(() => "function"),
@@ -149,12 +146,12 @@ mutation {
       ),
     })
 
-    const { data, errors } = await query(`
-mutation {
-  book: CreateBook(input: { }) {
-    field
-  }
-}
+    const { data, errors } = await graphql(`
+      mutation {
+        book: CreateBook(input: {}) {
+          field
+        }
+      }
     `)
 
     expect(errors).not.toBeDefined()
@@ -166,7 +163,7 @@ mutation {
 
 describe("resolver", () => {
   it("should use the resolver value", async (done) => {
-    const query = server({
+    const { graphql } = await server({
       Book: Rel.model(
         {
           field: new MyField().resolver(() => "resolved"),
@@ -175,12 +172,12 @@ describe("resolver", () => {
       ),
     })
 
-    const { data, errors } = await query(`
-mutation {
-  book: CreateBook(input: { }) {
-    field
-  }
-}
+    const { data, errors } = await graphql(`
+      mutation {
+        book: CreateBook(input: {}) {
+          field
+        }
+      }
     `)
 
     expect(errors).not.toBeDefined()

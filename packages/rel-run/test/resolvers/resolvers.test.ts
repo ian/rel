@@ -1,6 +1,6 @@
 import Rel, { Connection } from "../../src"
-import { ENDPOINTS } from "../../src/types"
-import { generateResolvers } from "../../src/runtime/resolvers"
+import { GraphQLOperationType } from "../../src/types"
+import { generateResolvers } from "../../src/server/resolvers"
 
 const cypher = Connection.init({
   type: Connection.NEO4J,
@@ -34,13 +34,14 @@ describe("#generateResolvers", () => {
     it("should create the resolver for the endpoint", async () => {
       const resolvers = generateResolvers(
         {
-          endpoints: {
-            TestQuery: {
-              target: ENDPOINTS.ACCESSOR,
+          graphQLEndpoints: [
+            {
+              label: "TestQuery",
+              type: GraphQLOperationType.QUERY,
               returns: Rel.string(),
               resolver: () => "HI",
             },
-          },
+          ],
         },
         { cypher }
       )

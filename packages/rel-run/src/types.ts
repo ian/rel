@@ -3,14 +3,26 @@
 import { Field } from "./fields"
 import { Model } from "./models"
 import { Relation } from "./relations"
+import { Hydrator } from "./server"
 import { CypherInstance } from "./cypher/connection"
+import { GraphQLEndpoint, HTTPEndpoint } from "./endpoints"
 
 export { Field } from "./fields"
 export { Model } from "./models"
 export { Relation } from "./relations"
+export { GraphQLEndpoint, HTTPEndpoint } from "./endpoints"
 
-export type AuthModel = {} & Reducible
-export type AuthStrategy = {} & Reducible
+export type Endpoint = GraphQLEndpoint | HTTPEndpoint
+
+export type Plugin = (hydrator: Hydrator) => void
+
+export interface Hydratable {
+  hydrate(hydrator: Hydrator, runtime: { cypher: CypherInstance }): void
+}
+
+export type Auth = { model: AuthModel; strategies: AuthStrategy[] }
+export type AuthModel = {} & Hydratable
+export type AuthStrategy = {} & Hydratable
 
 export type ModelOpts = {
   id?: boolean
@@ -18,8 +30,7 @@ export type ModelOpts = {
   input?: boolean
   output?: boolean
   guard?: string
-  accessors?: Accessors | boolean
-  mutators?: Mutators | boolean
+  endpoints?: ModelEndpoints
 }
 
 export type ModelProps = {
@@ -53,57 +64,34 @@ export type Params = {
   [name: string]: Field
 }
 
-export type Input = {
-  [propName: string]: Field
+export type ModelEndpoints = {
+  find?: ModelEndpointsFindOpts | boolean
+  list?: ModelEndpointsListOpts | boolean
+  create?: ModelEndpointsCreateOpts | boolean
+  update?: ModelEndpointsUpdateOpts | boolean
+  delete?: ModelEndpointsDeleteOpts | boolean
 }
 
-export type Inputs = {
-  [inputName: string]: Input
-}
-
-export type Output = {
-  [propName: string]: Field
-}
-
-export type Outputs = {
-  [inputName: string]: Output
-}
-
-// Accessors
-
-export type Accessors = {
-  find?: FindAccessor | boolean
-  list?: ListAccessor | boolean
-}
-
-export type FindAccessor = Accessor & {
-  findBy?: Params
-}
-
-export type ListAccessor = Accessor & {
-  listBy?: Params
-}
-
-export type Accessor = {
+export type ModelEndpointOpts = {
   guard?: string
   after?: (obj: object) => Promise<void>
 }
 
-// Mutators
-
-export type Mutators = {
-  create?: CreateMutator | boolean
-  update?: UpdateMutator | boolean
-  delete?: DeleteMutator | boolean
+export type ModelEndpointsFindOpts = ModelEndpointOpts & {
+  findBy?: Params
 }
 
-export type CreateMutator = Mutator & {
+export type ModelEndpointsListOpts = ModelEndpointOpts & {
+  listBy?: Params
+}
+
+export type ModelEndpointsCreateOpts = ModelEndpointOpts & {
   /* @todo opts */
 }
-export type UpdateMutator = Mutator & {
+export type ModelEndpointsUpdateOpts = ModelEndpointOpts & {
   /* @todo opts */
 }
-export type DeleteMutator = Mutator & {
+export type ModelEndpointsDeleteOpts = ModelEndpointOpts & {
   /* @todo opts */
 }
 
@@ -129,50 +117,79 @@ export type Guards = {
   }
 }
 
-// Endpoints
+// @todo - migrate this to callable reducible
+export type Guard = string
 
-export enum ENDPOINTS {
-  ACCESSOR = "ACCESSOR",
-  MUTATOR = "MUTATOR",
+export enum HTTPMethods {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
 }
 
-export type Endpoint = {
-  target: ENDPOINTS
+export enum GraphQLOperationType {
+  QUERY = "QUERY",
+  MUTATION = "MUTATION",
+  // @todo
+  // SUBSCRIPTION = "SUBSCRIPTION",
+}
+
+export type ReducedInput = {
+  [propName: string]: Field
+}
+
+export type ReducedOutput = {
+  [propName: string]: Field
+}
+
+export type ReducedGuard = {
+  typeDef?: string
+  resolver: (ResolverArgs?) => Promise<any>
+}
+
+export type ReducedGQLEndpoint = {
+  type: GraphQLOperationType
+  label: string
   params?: Params
   guard?: string
   returns: Field
   resolver: Resolver
 }
 
-export type Endpoints = {
-  [queryName: string]: Endpoint
+export type ReducedHTTPEndpoint = {
+  returns: Field
+  method: HTTPMethods
+  url: string
+  resolver: Resolver
 }
 
-// Plugins
-
-export type Plugin = {
-  schema?: Schema
-  plugins?: Plugin[]
-} & Reduced
-
-export type CallablePlugin = (/* @todo - this should take some JIT params */) => Plugin
-
-// Reduction
+export type ReducerConsumable = {
+  inputs?: { [name: string]: ReducedInput }
+  outputs?: { [name: string]: ReducedInput }
+  graphQLEndpoints?: ReducedGQLEndpoint[]
+  httpEndpoints?: ReducedHTTPEndpoint[]
+  guards?: ReducedGuard[]
+}
 
 export type Reducible = {
-  reduce(reducer: Reducer, runtime: { cypher: CypherInstance }): void
+  inputs?: { [name: string]: ReducedInput }
+  outputs?: { [name: string]: ReducedOutput }
+  // endpoints?: (ReducedGQLEndpoint | ReducedHTTPEndpoint)[]
+  graphQLEndpoints?: ReducedGQLEndpoint | ReducedGQLEndpoint[]
+  httpEndpoints?: ReducedHTTPEndpoint | ReducedHTTPEndpoint[]
+  guards?: { [name: string]: ReducedGuard }
 }
+
+// I realize these are almost identical but one is inbound the other is reduced outbound
 
 export type Reduced = {
-  // server?: Server
-  schema?: Schema
-  inputs?: Inputs
-  outputs?: Outputs
-  endpoints?: Endpoints
-  guards?: Guards
+  inputs?: { [name: string]: ReducedInput }
+  outputs?: { [name: string]: ReducedOutput }
+  graphQLEndpoints?: ReducedGQLEndpoint[]
+  httpEndpoints?: ReducedHTTPEndpoint[]
+  // endpoints?: ReducedEndpoint[]
+  guards?: { [name: string]: ReducedGuard }
 }
-
-export type Reducer = (Reduced) => void
 
 // Cypher
 

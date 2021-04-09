@@ -1,22 +1,19 @@
 import Rel, { testServer } from "../../src"
 
 describe("#model", () => {
-  const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
+  const server = async (schema) => {
+    return testServer({ log: false }).schema(schema).start()
   }
 
-  it("error when trying to run a model without fields", () => {
-    expect(() =>
-      server({
+  it("error when trying to run a model without fields", async () => {
+    try {
+      await server({
         Book: Rel.model({}),
       })
-    ).toThrowError("Model Book must have at least one field or relation")
+    } catch (err) {
+      expect(err.message).toEqual(
+        "Model Book must have at least one field or relation"
+      )
+    }
   })
 })

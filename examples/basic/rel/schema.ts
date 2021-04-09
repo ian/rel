@@ -1,40 +1,20 @@
-import { string, int, relation } from "@reldb/meta"
+import Rel from "@reldb/run"
 
 export default {
-  Author: {
-    fields: {
-      name: string().required(),
-      born: int(),
+  Author: Rel.model(
+    {
+      name: Rel.string().required(),
+      born: Rel.int(),
+      books: Rel.relation("WROTE", "Book"),
     },
-    relations: {
-      books: relation("WROTE").to("Author"),
+    { endpoints: true }
+  ),
+  Book: Rel.model(
+    {
+      title: Rel.string().required(),
+      released: Rel.int(),
+      author: Rel.relation("WROTE", "Author").inbound(),
     },
-    accessors: {
-      find: true,
-      list: true,
-    },
-    mutators: {
-      create: true,
-      update: true,
-      delete: true,
-    },
-  },
-  Book: {
-    fields: {
-      title: string().required(),
-      released: int(),
-    },
-    relations: {
-      author: relation("WROTE", "Author").inbound(),
-    },
-    accessors: {
-      find: true,
-      list: true,
-    },
-    mutators: {
-      create: true,
-      update: true,
-      delete: true,
-    },
-  },
+    { endpoints: true }
+  ),
 }

@@ -1,7 +1,7 @@
-import { Output } from "../types"
+import { ReducedOutput } from "../types"
 import { fieldToGQL } from "./field"
 
-export function outputToGQL(name: string, type: Output) {
+export function outputToGQL(name: string, type: ReducedOutput) {
   const gqlFields = []
 
   Object.entries(type).forEach((field) => {

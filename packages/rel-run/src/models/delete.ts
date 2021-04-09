@@ -1,15 +1,20 @@
-import { type, uuid } from "../fields"
-import { DeleteMutator, ENDPOINTS, Fields, Reduced } from "../types"
+import { ref, uuid } from "../fields"
+import {
+  ModelEndpointsDeleteOpts,
+  Fields,
+  GraphQLOperationType,
+  ReducedGQLEndpoint,
+} from "../types"
 
 const DEFAULT_MUTATOR = {}
 
-function makeResolver(label: string, mutator: DeleteMutator) {
+function makeResolver(label: string, endpoint: ModelEndpointsDeleteOpts) {
   return async ({ cypher, params }) => {
     const { id } = params
 
     const updated = await cypher.delete(label, id)
-    if (mutator.after) {
-      await mutator.after(updated)
+    if (endpoint.after) {
+      await endpoint.after(updated)
     }
     return updated
   }
@@ -17,25 +22,24 @@ function makeResolver(label: string, mutator: DeleteMutator) {
 
 export function deleteEndpoints(
   label: string,
-  mutator: boolean | DeleteMutator,
+  endpoint: boolean | ModelEndpointsDeleteOpts,
   fields: Fields
-): Reduced {
-  if (!mutator) return null
+): ReducedGQLEndpoint {
+  if (!endpoint) return null
 
-  let _mutator = {
+  let _endpoint = {
     ...DEFAULT_MUTATOR,
-    ...(typeof mutator === "boolean" ? {} : mutator),
+    ...(typeof endpoint === "boolean" ? {} : endpoint),
   }
 
-  const { guard } = _mutator
+  const { guard } = _endpoint
 
   return {
-    [`Delete${label}`]: {
-      target: ENDPOINTS.MUTATOR,
-      params: { id: uuid().required() },
-      guard,
-      returns: type(label),
-      resolver: makeResolver(label, _mutator),
-    },
+    label: `Delete${label}`,
+    type: GraphQLOperationType.MUTATION,
+    params: { id: uuid().required() },
+    guard,
+    returns: ref(label),
+    resolver: makeResolver(label, _endpoint),
   }
 }

@@ -65,6 +65,8 @@ export default (init: Config): Plugin => {
   const { apiKey } = init
   key = apiKey
 
-  // Currently we don't need to modify the schema, maybe in the future we will.
-  return {}
+  return (hydrator) => {
+    // Currently we don't need to modify the schema, maybe in the future we will.
+    // @todo - add google maps to "plugins" runtime global
+  }
 }

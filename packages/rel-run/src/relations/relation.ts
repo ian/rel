@@ -1,10 +1,11 @@
 import _ from "lodash"
 import camelcase from "camelcase"
-import { Direction, Relation as RelationType, ENDPOINTS } from "../types"
-import { array, uuid, type } from "../fields"
+import { Direction, GraphQLOperationType } from "../types"
+import { array, uuid, ref } from "../fields"
 import { addRelationResolver } from "./add"
 import { removeRelationResolver } from "./remove"
 import { listRelationResolver } from "./list"
+import { Reducer } from "../server"
 
 export type ResolvedRelation = {
   from: {
@@ -30,8 +31,16 @@ export function resolveRel(rel) {
   }
 }
 
-export default class Relation implements RelationType {
+export type RelationOpts = {
+  endpoints?: boolean | { add: string; remove: string }
+}
+
+const DEFAULT_OPTS = {
+  endpoints: true,
+}
+export default class Relation {
   _label: string
+  _endpoints: { add?: boolean | string; remove?: boolean | string }
   _guard: string = null
   _from: {
     label: string
@@ -43,9 +52,16 @@ export default class Relation implements RelationType {
   _singular: boolean = false
   _order: string = null
 
-  constructor(label: string, to?: string) {
+  constructor(label: string, to: string, opts?: RelationOpts) {
     this._label = label
     this.to(to)
+
+    const _opts = {
+      ...DEFAULT_OPTS,
+      ...opts,
+    }
+
+    this.endpoints(_opts.endpoints)
   }
 
   guard(scope: string) {
@@ -53,17 +69,30 @@ export default class Relation implements RelationType {
     return this
   }
 
-  from(from: string) {
-    this._from = {
-      label: from,
-    }
-    return this
-  }
+  // @todo - should we support custom from overrides?
+  // from(from: string) {
+  //   this._from = {
+  //     label: from,
+  //   }
+  //   return this
+  // }
 
   to(to: string) {
     this._to = {
       label: to,
     }
+    return this
+  }
+
+  endpoints(endpoints: boolean | { add: string; remove: string }) {
+    if (!endpoints) return this
+
+    if (endpoints === true) {
+      this._endpoints = { add: true, remove: true }
+    } else {
+      this._endpoints = endpoints
+    }
+
     return this
   }
 
@@ -87,7 +116,7 @@ export default class Relation implements RelationType {
     return this
   }
 
-  reduce(reducer, { fieldName, modelName }) {
+  reduce(reducer: Reducer, { fieldName, modelName }) {
     const relation = {
       from: this._from || { label: modelName },
       to: this._to,
@@ -103,42 +132,60 @@ export default class Relation implements RelationType {
     const fromLabel = relation.from.label
     const toLabel = relation.to.label
 
-    const createRelEndpoint = this._singular
-      ? `${relation.from.label}Set${this._to.label}`
-      : `${relation.from.label}Add${this._to.label}`
-    const removeRelEndpoint = `${relation.from.label}Remove${this._to.label}`
-
-    const fieldResolver = listRelationResolver(relation)
-
-    reducer({
+    reducer.reduce({
       outputs: {
         [modelName]: {
           [fieldName]: (this._singular
-            ? type(relation.to.label)
-            : array(type(relation.to.label)).required()
-          ).resolver(fieldResolver),
-        },
-      },
-      endpoints: {
-        [createRelEndpoint]: {
-          target: ENDPOINTS.MUTATOR,
-          params: {
-            [`${camelcase(fromLabel)}Id`]: uuid().required(),
-            [`${camelcase(toLabel)}Id`]: uuid().required(),
-          },
-          returns: type(toLabel),
-          resolver: addRelationResolver(relation),
-        },
-        [removeRelEndpoint]: {
-          target: ENDPOINTS.MUTATOR,
-          params: {
-            [`${camelcase(fromLabel)}Id`]: uuid().required(),
-            [`${camelcase(toLabel)}Id`]: uuid().required(),
-          },
-          returns: type(toLabel),
-          resolver: removeRelationResolver(relation),
+            ? ref(relation.to.label).guard(this._guard)
+            : array(ref(relation.to.label)).required().guard(this._guard)
+          ).resolver(listRelationResolver(relation)),
         },
       },
     })
+
+    if (this._endpoints) {
+      if (this._endpoints.add) {
+        const label =
+          this._endpoints.add === true
+            ? // if it's boolean, dynamically generate the name
+              this._singular
+              ? `${relation.from.label}Set${this._to.label}`
+              : `${relation.from.label}Add${this._to.label}`
+            : // if it's string, use the label name
+              this._endpoints.add
+
+        reducer.reduce({
+          graphQLEndpoints: {
+            label,
+            type: GraphQLOperationType.MUTATION,
+            params: {
+              [`${camelcase(fromLabel)}Id`]: uuid().required(),
+              [`${camelcase(toLabel)}Id`]: uuid().required(),
+            },
+            returns: ref(toLabel),
+            resolver: addRelationResolver(relation),
+          },
+        })
+      }
+      if (this._endpoints.remove) {
+        const label =
+          this._endpoints.remove === true
+            ? `${relation.from.label}Remove${this._to.label}`
+            : this._endpoints.remove
+
+        reducer.reduce({
+          graphQLEndpoints: {
+            label,
+            type: GraphQLOperationType.MUTATION,
+            params: {
+              [`${camelcase(fromLabel)}Id`]: uuid().required(),
+              [`${camelcase(toLabel)}Id`]: uuid().required(),
+            },
+            returns: ref(toLabel),
+            resolver: removeRelationResolver(relation),
+          },
+        })
+      }
+    }
   }
 }

@@ -2,50 +2,43 @@ import Rel, { testServer } from "../../src"
 
 describe("#model", () => {
   const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
+    return testServer({ log: false }).schema(schema).runtime()
   }
 
   describe("typeDef", () => {
-    it("should generate the list endpoint when mutators(true) is specified", () => {
+    it("should generate the list endpoint when endpoints(true) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ title: Rel.string() }, { mutators: true }),
+        Book: Rel.model({ title: Rel.string() }, { endpoints: true }),
       })
 
-      expect(typeDefs).toMatch(`DeleteBook(id: UUID!): Book`)
+      expect(typeDefs).toMatch(`UpdateBook(id: UUID!, input: BookInput!): Book`)
     })
 
-    it("should generate the list endpoint when mutators(list: true) is specified", () => {
+    it("should generate the list endpoint when endpoints(list: true) is specified", () => {
       const { typeDefs } = server({
         Book: Rel.model(
           { title: Rel.string() },
-          { mutators: { update: true } }
+          { endpoints: { update: true } }
         ),
       })
 
-      expect(typeDefs).toMatch(`DeleteBook(id: UUID!): Book`)
+      expect(typeDefs).toMatch(`UpdateBook(id: UUID!, input: BookInput!): Book`)
     })
 
-    it("should NOT generate the list endpoint when mutators(list:false) is specified", () => {
+    it("should NOT generate the list endpoint when endpoints(list:false) is specified", () => {
       const { typeDefs } = server({
         Book: Rel.model(
           { title: Rel.string() },
-          { mutators: { update: false } }
+          { endpoints: { update: false } }
         ),
       })
 
       expect(typeDefs).not.toMatch(`UpdateBook`)
     })
 
-    it("should NOT generate the list endpoint when mutators(false) is specified", () => {
+    it("should NOT generate the list endpoint when endpoints(false) is specified", () => {
       const { typeDefs } = server({
-        Book: Rel.model({ title: Rel.string() }, { mutators: false }),
+        Book: Rel.model({ title: Rel.string() }, { endpoints: false }),
       })
 
       expect(typeDefs).not.toMatch(`UpdateBook`)
@@ -53,11 +46,9 @@ describe("#model", () => {
   })
 
   describe("runtime", () => {
-    const query = server({
-      Book: Rel.model({ title: Rel.string() }, { mutators: true }),
+    const { cypher, graphql } = server({
+      Book: Rel.model({ title: Rel.string() }, { endpoints: true }),
     })
-
-    const { cypher } = query
 
     beforeEach(async (done) => {
       await cypher.exec(
@@ -68,13 +59,16 @@ describe("#model", () => {
     })
 
     it("should find the Book", async (done) => {
-      const { data } = await query(`
-      mutation {
-        book: UpdateBook(id: "1", input: { title: "The Great Gatsby Second Edition" }) {
-          title
+      const { data } = await graphql(`
+        mutation {
+          book: UpdateBook(
+            id: "1"
+            input: { title: "The Great Gatsby Second Edition" }
+          ) {
+            title
+          }
         }
-      }
-    `)
+      `)
 
       expect(data?.book.title).toEqual("The Great Gatsby Second Edition")
 
@@ -82,13 +76,13 @@ describe("#model", () => {
     })
 
     it("should error when no input is specified", async (done) => {
-      const { data, errors } = await query(`
-      mutation {
-        book: UpdateBook {
-          title
+      const { data, errors } = await graphql(`
+        mutation {
+          book: UpdateBook {
+            title
+          }
         }
-      }
-    `)
+      `)
 
       expect(data?.book).not.toBeDefined()
       expect(errors.length).toBeGreaterThanOrEqual(1)

@@ -2,19 +2,12 @@ import Rel from "../../src"
 import { testServer } from "@reldb/run"
 
 describe("default properties", () => {
-  const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
+  const server = async (schema) => {
+    return testServer({ log: false }).schema(schema).start()
   }
 
-  it("should output the right GQL type", () => {
-    const { typeDefs } = server({
+  it("should output the right GQL type", async () => {
+    const { typeDefs } = await server({
       Book: Rel.model(
         {
           field: Rel.geo(),

@@ -9,27 +9,18 @@ describe("error handling", () => {
 })
 
 describe("runtime", () => {
-  const server = (schema) => {
-    return testServer(
-      {
-        schema,
-      },
-      {
-        // log: true,
-      }
-    )
-  }
-
-  it("should output the right GQL type", () => {
-    const { typeDefs } = server({
-      Book: Rel.model(
-        {
-          title: Rel.string().required(),
-          slug: Rel.slug({ from: "title" }),
-        },
-        { id: false, timestamps: false }
-      ),
-    })
+  it("should output the right GQL type", async () => {
+    const { typeDefs } = await testServer()
+      .schema({
+        Book: Rel.model(
+          {
+            title: Rel.string().required(),
+            slug: Rel.slug({ from: "title" }),
+          },
+          { id: false, timestamps: false }
+        ),
+      })
+      .start()
 
     expect(typeDefs).toMatch(`type Book {
   title: String!
@@ -40,25 +31,20 @@ describe("runtime", () => {
 })
 
 describe("default properties", () => {
-  const server = testServer(
-    {
-      schema: {
-        Book: Rel.model(
-          {
-            title: Rel.string().required(),
-            slug: Rel.slug({ from: "title" }),
-          },
-          { mutators: true }
-        ),
-      },
-    },
-    {
-      // log: true,
-    }
-  )
+  const { graphql } = testServer({ log: false })
+    .schema({
+      Book: Rel.model(
+        {
+          title: Rel.string().required(),
+          slug: Rel.slug({ from: "title" }),
+        },
+        { endpoints: true }
+      ),
+    })
+    .runtime()
 
   it("should set the slug using from param", async () => {
-    const res = await server(`
+    const res = await graphql(`
       mutation {
         book: CreateBook(input: { title: "The Great Gatsby" }) {
           title
@@ -72,7 +58,7 @@ describe("default properties", () => {
   })
 
   it("handle collisions", async () => {
-    const firstBook = await server(`
+    const firstBook = await graphql(`
       mutation {
         book: CreateBook(input: { title: "The Great Gatsby" }) {
           title
@@ -83,7 +69,7 @@ describe("default properties", () => {
     expect(firstBook?.data.book.title).toBe("The Great Gatsby")
     expect(firstBook?.data.book.slug).toBe("the-great-gatsby")
 
-    const secondBook = await server(`
+    const secondBook = await graphql(`
       mutation {
         book: CreateBook(input: { title: "The Great Gatsby" }) {
           title

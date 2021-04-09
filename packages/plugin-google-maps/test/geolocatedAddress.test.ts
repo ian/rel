@@ -4,18 +4,19 @@ import GoogleMaps, { geolocatedAddress } from "../src"
 
 describe("#geolocatedAddress", () => {
   it("should error if google was not initialized", async (done) => {
-    const { errors } = await server(
-      geolocatedAddress({ from: "address" }),
-      false
-    )(
+    const { graphql } = server(geolocatedAddress({ from: "address" }), false)
+
+    const { errors } = await graphql(
       `
-    mutation {
-      restaurant: CreateRestaurant(input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }) {
-        address
-        geo
-      }
-    }
-  `
+        mutation {
+          restaurant: CreateRestaurant(
+            input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }
+          ) {
+            address
+            geo
+          }
+        }
+      `
     )
 
     expect(errors[0].message).toEqual(
@@ -52,15 +53,18 @@ describe("#geolocatedAddress", () => {
 
   describe("with server running", () => {
     it("should geolocate the address", async () => {
-      const { data } = await server(geolocatedAddress({ from: "address" }))(
+      const { graphql } = server(geolocatedAddress({ from: "address" }))
+      const { data } = await graphql(
         `
-      mutation {
-        restaurant: CreateRestaurant(input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }) {
-          address
-          geo
-        }
-      }
-    `
+          mutation {
+            restaurant: CreateRestaurant(
+              input: { address: "Bennelong Point, Sydney NSW 2000, Australia" }
+            ) {
+              address
+              geo
+            }
+          }
+        `
       )
 
       expect(data.restaurant).toEqual({
@@ -70,15 +74,18 @@ describe("#geolocatedAddress", () => {
     })
 
     it("should fail gracefully if google errors", async () => {
-      const { data } = await server(geolocatedAddress({ from: "address" }))(
+      const { graphql } = server(geolocatedAddress({ from: "address" }))
+      const { data } = await graphql(
         `
-      mutation {
-        restaurant: CreateRestaurant(input: { address: "dfskljdsfkljsdflkjfdskljfdskljsfd" }) {
-          address
-          geo
-        }
-      }
-    `
+          mutation {
+            restaurant: CreateRestaurant(
+              input: { address: "dfskljdsfkljsdflkjfdskljfdskljsfd" }
+            ) {
+              address
+              geo
+            }
+          }
+        `
       )
 
       expect(data.restaurant).toEqual({
@@ -90,24 +97,20 @@ describe("#geolocatedAddress", () => {
 })
 
 const server = (geo, addPlugin: boolean = true) => {
-  return testServer(
-    {
-      schema: {
-        Restaurant: Rel.model({
-          address: Rel.string().required(),
-          geo,
-        }),
-      },
-      plugins: [
-        addPlugin
-          ? GoogleMaps({
-              apiKey: process.env.GOOGLE_MAPS_API_KEY,
-            })
-          : null,
-      ],
-    },
-    {
-      // log: true,
-    }
-  )
+  const server = testServer({ log: false }).schema({
+    Restaurant: Rel.model({
+      address: Rel.string().required(),
+      geo,
+    }),
+  })
+
+  if (addPlugin) {
+    server.plugins(
+      GoogleMaps({
+        apiKey: process.env.GOOGLE_MAPS_API_KEY,
+      })
+    )
+  }
+
+  return server.runtime()
 }

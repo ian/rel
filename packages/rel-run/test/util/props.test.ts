@@ -1,5 +1,5 @@
 import Rel from "../../src"
-import { splitProps } from "../../src/models/util"
+import { splitProps } from "../../src/util/props"
 
 describe("#splitProps", () => {
   it("should split the props", () => {
