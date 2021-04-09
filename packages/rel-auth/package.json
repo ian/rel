@@ -1,7 +1,7 @@
 {
   "name": "@reldb/auth",
   "description": "Authentication for Rel",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publishConfig": {
     "access": "public"
   },
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/runrel/rel#readme",
   "dependencies": {
-    "@reldb/run": "^0.9.0",
+    "@reldb/run": "^0.9.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
