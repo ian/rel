@@ -1,6 +1,7 @@
 import Boolean from "./boolean"
 import UUID from "./uuid"
 import Int from "./int"
+import Float from "./float"
 import DateTime from "./dateTime"
 import Field from "./field"
 import Geo from "./geo"
@@ -15,6 +16,7 @@ type GeneratedField = (any?) => Field
 export const boolean: GeneratedField = () => new Boolean()
 export const uuid: GeneratedField = () => new UUID()
 export const int: GeneratedField = () => new Int()
+export const float: GeneratedField = () => new Float()
 export const dateTime: GeneratedField = () => new DateTime()
 export const geo: GeneratedField = () => new Geo()
 export const phoneNumber: GeneratedField = () => new PhoneNumber()
@@ -27,6 +29,7 @@ export const array: GeneratedField = (contains) => new Array(contains)
 export { default as Boolean } from "./boolean"
 export { default as UUID } from "./uuid"
 export { default as Int } from "./int"
+export { default as Float } from "./float"
 export { default as DateTime } from "./dateTime"
 export { default as Field } from "./field"
 export { default as Geo } from "./geo"
