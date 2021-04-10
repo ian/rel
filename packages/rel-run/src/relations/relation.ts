@@ -1,6 +1,6 @@
 import _ from "lodash"
 import camelcase from "camelcase"
-import { Direction, GraphQLOperationType } from "../types"
+import { Direction, GraphQLOperationType, Resolver } from "../types"
 import { array, uuid, ref } from "../fields"
 import { addRelationResolver } from "./add"
 import { removeRelationResolver } from "./remove"
@@ -51,6 +51,7 @@ export default class Relation {
   _direction: Direction = Direction.OUT
   _singular: boolean = false
   _order: string = null
+  _resolver: Resolver
 
   constructor(label: string, to: string, opts?: RelationOpts) {
     this._label = label
@@ -116,6 +117,11 @@ export default class Relation {
     return this
   }
 
+  resolver(resolver: Resolver) {
+    this._resolver = resolver
+    return this
+  }
+
   reduce(reducer: Reducer, { fieldName, modelName }) {
     const relation = {
       from: this._from || { label: modelName },
@@ -131,6 +137,7 @@ export default class Relation {
 
     const fromLabel = relation.from.label
     const toLabel = relation.to.label
+    const resolver = this._resolver || listRelationResolver(relation)
 
     reducer.reduce({
       outputs: {
@@ -138,7 +145,7 @@ export default class Relation {
           [fieldName]: (this._singular
             ? ref(relation.to.label).guard(this._guard)
             : array(ref(relation.to.label)).required().guard(this._guard)
-          ).resolver(listRelationResolver(relation)),
+          ).resolver(resolver),
         },
       },
     })
