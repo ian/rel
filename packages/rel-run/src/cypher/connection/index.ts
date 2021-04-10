@@ -13,6 +13,7 @@ export type ConnectionConfig = {
   url: string
   username: string
   password: string
+  logger?: (cypher: string, time: [number, number]) => void
 }
 
 export function init(c: ConnectionConfig): CypherInstance {

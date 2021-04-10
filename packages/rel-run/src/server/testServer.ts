@@ -1,5 +1,5 @@
 import { EVENTS } from "../types"
-import { Server } from "./server"
+import Server from "./server"
 import Cypher from "../cypher"
 
 type JestServerOpts = {
@@ -7,11 +7,8 @@ type JestServerOpts = {
 }
 
 export { RuntimeOpts } from "./runtime"
-
 class TestServer extends Server {
-  _opts: JestServerOpts
-
-  constructor(opts?: JestServerOpts) {
+  constructor() {
     super({
       db: {
         type: Cypher.NEO4J,
@@ -21,8 +18,6 @@ class TestServer extends Server {
       },
       port: 1234,
     })
-
-    this._opts = opts
   }
 
   async start() {
@@ -43,7 +38,7 @@ class TestServer extends Server {
 }
 
 export default (opts?: JestServerOpts) => {
-  const server = new TestServer(opts)
+  const server = new TestServer()
 
   if (opts?.log) {
     server.on(EVENTS.ERROR, (err) => {

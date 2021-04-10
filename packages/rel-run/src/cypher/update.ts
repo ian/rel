@@ -20,7 +20,7 @@ export async function cypherUpdate(
   params,
   opts: UpdateOpts = {}
 ): Promise<Cypher1Response> {
-  const node = await this.find(label, id)
+  const node = await this.find(label, { id })
 
   if (!node) {
     throw new Error(`Unknown ${label} id = ${id}`)

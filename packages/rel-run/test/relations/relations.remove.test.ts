@@ -43,7 +43,7 @@ describe("relations guards", () => {
       const { data } = await graphql(
         `
           query Find($authorId: UUID!) {
-            author: FindAuthor(id: $authorId) {
+            author: FindAuthor(where: { id: $authorId }) {
               id
               books {
                 id
@@ -83,7 +83,7 @@ describe("relations guards", () => {
       const { data } = await graphql(
         `
           query Find($authorId: UUID!) {
-            author: FindAuthor(id: $authorId) {
+            author: FindAuthor(where: { id: $authorId }) {
               id
               books {
                 id
@@ -125,7 +125,7 @@ describe("relations guards", () => {
       const { data, errors } = await graphql(
         `
           query Find($bookId: UUID!) {
-            book: FindBook(id: $bookId) {
+            book: FindBook(where: { id: $bookId }) {
               id
               author {
                 id
@@ -166,7 +166,7 @@ describe("relations guards", () => {
       const { data, errors } = await graphql(
         `
           query Find($bookId: UUID!) {
-            book: FindBook(id: $bookId) {
+            book: FindBook(where: { id: $bookId }) {
               id
               author {
                 id

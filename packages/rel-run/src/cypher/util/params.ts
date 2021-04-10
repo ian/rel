@@ -23,6 +23,7 @@ type Params = {
 type ToCypherOpts = {
   prefix?: string
   separator?: string
+  join?: string
 }
 
 type ParamifyOpts = Opts & ToCypherOpts
@@ -57,7 +58,7 @@ export function paramsBuilder(params, opts: Opts = {}): Params {
 }
 
 export function paramsToCypher(params, opts: ToCypherOpts = {}) {
-  const { separator = ":", prefix = null } = opts
+  const { separator = ":", join = " , ", prefix = null } = opts
 
   function mapper(key) {
     const field = prefix ? `${prefix}${key}` : key
@@ -68,6 +69,12 @@ export function paramsToCypher(params, opts: ToCypherOpts = {}) {
   return Object.keys(params).map(mapper, params).join(" , ")
 }
 
+// Converts { id: "1", name: "Ian" } => `id: 1, name: "Ian"`
 export function paramify(params, opts: ParamifyOpts = {}) {
   return paramsToCypher(paramsBuilder(params, opts), opts)
+}
+
+// Converts { id: "1", name: "Ian" } => `id = 1 AND name = "Ian"`
+export function andify(params, opts: ParamifyOpts = {}) {
+  return paramsToCypher(params, { separator: "=", join: " AND ", ...opts })
 }

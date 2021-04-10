@@ -16,7 +16,7 @@ describe("#cypherDelete", () => {
     it("should delete the node", async () => {
       let node = await makeMovie()
       await Cypher.delete("Movie", node.id)
-      expect(await Cypher.find("Movie", node.id)).toBe(null)
+      expect(await Cypher.find("Movie", { id: node.id })).toBe(null)
     })
 
     it("should return the deleted node", async () => {

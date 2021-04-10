@@ -51,7 +51,7 @@ describe("#model create", () => {
     })
 
     it("should find the Book", async (done) => {
-      const { data, errors } = await graphql(`
+      const { data } = await graphql(`
         mutation {
           book: CreateBook(input: { title: "The Great Gatsby" }) {
             title

@@ -10,17 +10,19 @@ import { beautifyCypher } from "../util/beautify"
 
 export default class Neo4jConnection extends ConnectionInstance {
   config: null
-  logger = Events.cypher
+  logger
 
-  constructor(config) {
+  constructor(props) {
     super()
 
-    if (!config)
+    if (!props)
       throw new Error(
         "Invalid DB Credentials, please make sure to set DB config"
       )
 
+    const { logger = Events.cypher, ...config } = props
     this.config = config
+    if (logger) this.logger = logger
   }
 
   async raw(cypher): Promise<Result> {
@@ -34,15 +36,17 @@ export default class Neo4jConnection extends ConnectionInstance {
     const session = driver.session()
     const startTime = process.hrtime()
 
-    const res = await session.run(cypher)
-    const time = process.hrtime(startTime)
-
-    this.logger(beautifyCypher(cypher), time)
-
-    await session.close()
-    await driver.close()
-
-    return res
+    try {
+      const res = await session.run(cypher)
+      const time = process.hrtime(startTime)
+      this.logger(beautifyCypher(cypher), time)
+      return res
+    } catch (err) {
+      console.error(beautifyCypher(cypher), "\n", err)
+    } finally {
+      await session.close()
+      await driver.close()
+    }
   }
 
   async exec(query): Promise<CypherResponse> {

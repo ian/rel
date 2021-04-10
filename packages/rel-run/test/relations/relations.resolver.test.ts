@@ -43,7 +43,7 @@ describe("relations resolvers", () => {
     const { data } = await graphql(
       `
         query Find($authorId: UUID!) {
-          author: FindAuthor(id: $authorId) {
+          author: FindAuthor(where: { id: $authorId }) {
             books {
               id
             }
@@ -63,7 +63,7 @@ describe("relations resolvers", () => {
     const { data } = await graphql(
       `
         query Find($authorId: UUID!) {
-          author: FindAuthor(id: $authorId) {
+          author: FindAuthor(where: { id: $authorId }) {
             books {
               id
             }

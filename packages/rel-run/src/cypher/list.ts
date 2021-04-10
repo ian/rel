@@ -1,7 +1,8 @@
-export async function cypherList(label, opts?) {
-  const { geo, order = "id", filter, skip, limit, where } = opts || {}
+import { andify } from "./util/params"
 
-  const cypherWhere = []
+export async function cypherList(label, opts?) {
+  const { order = "id", skip, limit, where } = opts || {}
+
   const cypherQuery = []
 
   cypherQuery.push(`MATCH (node:${label})`)
@@ -18,17 +19,8 @@ export async function cypherList(label, opts?) {
   //   cypherWhere.push("node.geo < northEast")
   // }
 
-  // filter
-  // if (filter) {
-  //   Object.keys(filter).map((key) => {
-  //     const val = filter[key]
-  //     cypherWhere.push(`node.${key} = ${coerce(val)}`)
-  //   })
-  // }
-
-  // @todo - where
   if (where) {
-    cypherQuery.push(`WHERE ${where.join(" AND ")}`)
+    cypherQuery.push(`WHERE ${andify(where, { prefix: "node." })}`)
   }
 
   // @todo support multiple returns
@@ -41,12 +33,7 @@ export async function cypherList(label, opts?) {
   if (skip) cypherQuery.push(`SKIP ${skip}`)
   if (limit) cypherQuery.push(`LIMIT ${limit}`)
 
-  // return cypherQuery.join("\n")
   return this.exec(cypherQuery.join("\n")).then((res) => {
     return res.map((res) => res?.node || null).filter((f) => f)
   })
-
-  // return cypher1(`MATCH (n:${label} {id: "${id}"}) RETURN n;`).then(
-  //   (res) => res?.n || null
-  // )
 }

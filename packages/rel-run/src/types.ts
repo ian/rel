@@ -20,6 +20,10 @@ export interface Hydratable {
   hydrate(hydrator: Hydrator, runtime: { cypher: CypherInstance }): void
 }
 
+export type Reducer = {
+  reduce(reduced: Reducible): void
+}
+
 export type Auth = { model: AuthModel; strategies: AuthStrategy[] }
 export type AuthModel = {} & Hydratable
 export type AuthStrategy = {} & Hydratable

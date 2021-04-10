@@ -12,7 +12,7 @@ describe("#model", () => {
       })
 
       expect(typeDefs).toMatch(
-        `ListBooks(limit: Int, order: String, skip: Int): [Book]!`
+        `ListBooks(limit: Int, order: String, skip: Int, where: _BookWhere): [Book]!`
       )
     })
 
@@ -22,7 +22,7 @@ describe("#model", () => {
       })
 
       expect(typeDefs).toMatch(
-        `ListBooks(limit: Int, order: String, skip: Int): [Book]!`
+        `ListBooks(limit: Int, order: String, skip: Int, where: _BookWhere): [Book]!`
       )
     })
 
@@ -54,25 +54,52 @@ describe("#model", () => {
       Book: Rel.model({ title: Rel.string() }, { endpoints: true }),
     })
 
-    beforeEach(async (done) => {
-      await cypher.exec(
-        `CREATE (b:Book { id: "1", title: "The Great Gatsby" })`
-      )
-      await cypher.exec(`CREATE (b:Movie { id: "2", title: "The Matrix" })`)
-      done()
+    describe("with no gql params passed", () => {
+      beforeEach(async (done) => {
+        await cypher.exec(
+          `CREATE (b:Book { id: "1", title: "The Great Gatsby" })`
+        )
+        await cypher.exec(`CREATE (b:Movie { id: "2", title: "The Matrix" })`)
+
+        done()
+      })
+
+      it("should list the Books", async (done) => {
+        const { data } = await graphql(`
+          query {
+            books: ListBooks {
+              title
+            }
+          }
+        `)
+
+        expect(data?.books).toEqual([{ title: "The Great Gatsby" }])
+        done()
+      })
     })
 
-    it("should list the Books", async (done) => {
-      const { data } = await graphql(`
-        query {
-          books: ListBooks {
-            title
-          }
-        }
-      `)
+    describe("#where", () => {
+      beforeEach(async (done) => {
+        await cypher.exec(`
+          CREATE (:Book { id: "1", title: "The Great Gatsby" })
+          CREATE (:Book { id: "2", title: "The Matrix" })
+          `)
 
-      expect(data?.books).toEqual([{ title: "The Great Gatsby" }])
-      done()
+        done()
+      })
+
+      it("should list using the where", async (done) => {
+        const { data } = await graphql(`
+          query {
+            books: ListBooks(where: { title: "The Great Gatsby" }) {
+              title
+            }
+          }
+        `)
+
+        expect(data?.books).toEqual([{ title: "The Great Gatsby" }])
+        done()
+      })
     })
   })
 })

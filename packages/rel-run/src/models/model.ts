@@ -2,12 +2,7 @@ import _ from "lodash"
 import { uuid, dateTime } from "../fields"
 import { Fields, ModelProps, ModelOpts, ModelEndpoints } from "../types"
 
-import { findEndpoints } from "./find"
-import { listEndpoints } from "./list"
-import { createEndpoints } from "./create"
-import { updateEndpoints } from "./update"
-import { deleteEndpoints } from "./delete"
-
+import endpointReducer from "./reducer"
 import { splitProps } from "../util/props"
 import { Reducer } from "../server"
 
@@ -71,7 +66,7 @@ export default class Model {
 
   endpoints(endpoints: ModelEndpoints) {
     if (endpoints === false) {
-      this._endpoints = null
+      return
     } else if (!endpoints || endpoints === true) {
       this._endpoints = DEFAULT_CRUD
     } else {
@@ -123,54 +118,6 @@ export default class Model {
       })
     }
 
-    if (this._endpoints?.find) {
-      reducer.reduce({
-        graphQLEndpoints: findEndpoints(
-          modelName,
-          this._endpoints.find,
-          _fields
-        ),
-      })
-    }
-
-    if (this._endpoints?.list) {
-      reducer.reduce({
-        graphQLEndpoints: listEndpoints(
-          modelName,
-          this._endpoints.list,
-          _fields
-        ),
-      })
-    }
-
-    if (this._endpoints?.create) {
-      reducer.reduce({
-        graphQLEndpoints: createEndpoints(
-          modelName,
-          this._endpoints.create,
-          _fields
-        ),
-      })
-    }
-
-    if (this._endpoints?.update) {
-      reducer.reduce({
-        graphQLEndpoints: updateEndpoints(
-          modelName,
-          this._endpoints.update,
-          _fields
-        ),
-      })
-    }
-
-    if (this._endpoints?.delete) {
-      reducer.reduce({
-        graphQLEndpoints: deleteEndpoints(
-          modelName,
-          this._endpoints.delete,
-          _fields
-        ),
-      })
-    }
+    endpointReducer(modelName, this._endpoints, outputFields)(reducer)
   }
 }

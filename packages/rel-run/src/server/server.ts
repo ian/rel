@@ -25,7 +25,7 @@ export type ServerConfig = {
   db: ConnectionConfig
 }
 
-export class Server {
+export default class Server {
   _port: number
   _app: FastifyInstance
   _db: ConnectionConfig = null
