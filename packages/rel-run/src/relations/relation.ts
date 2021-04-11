@@ -162,16 +162,18 @@ export default class Relation {
               this._endpoints.add
 
         reducer.reduce({
-          graphQLEndpoints: {
-            label,
-            type: GraphQLOperationType.MUTATION,
-            params: {
-              [`${camelcase(fromLabel)}Id`]: uuid().required(),
-              [`${camelcase(toLabel)}Id`]: uuid().required(),
+          graphQLEndpoints: [
+            {
+              label,
+              type: GraphQLOperationType.MUTATION,
+              params: {
+                [`${camelcase(fromLabel)}Id`]: uuid().required(),
+                [`${camelcase(toLabel)}Id`]: uuid().required(),
+              },
+              returns: ref(toLabel),
+              resolver: addRelationResolver(relation),
             },
-            returns: ref(toLabel),
-            resolver: addRelationResolver(relation),
-          },
+          ],
         })
       }
       if (this._endpoints.remove) {
@@ -181,16 +183,18 @@ export default class Relation {
             : this._endpoints.remove
 
         reducer.reduce({
-          graphQLEndpoints: {
-            label,
-            type: GraphQLOperationType.MUTATION,
-            params: {
-              [`${camelcase(fromLabel)}Id`]: uuid().required(),
-              [`${camelcase(toLabel)}Id`]: uuid().required(),
+          graphQLEndpoints: [
+            {
+              label,
+              type: GraphQLOperationType.MUTATION,
+              params: {
+                [`${camelcase(fromLabel)}Id`]: uuid().required(),
+                [`${camelcase(toLabel)}Id`]: uuid().required(),
+              },
+              returns: ref(toLabel),
+              resolver: removeRelationResolver(relation),
             },
-            returns: ref(toLabel),
-            resolver: removeRelationResolver(relation),
-          },
+          ],
         })
       }
     }

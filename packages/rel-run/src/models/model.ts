@@ -56,6 +56,10 @@ export default class Model {
     this.endpoints(_opts.endpoints)
   }
 
+  static splitProps(props: ModelProps) {
+    return splitProps(props)
+  }
+
   guard(scope: string) {
     this._guard = scope
   }

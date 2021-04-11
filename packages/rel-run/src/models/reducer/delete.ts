@@ -3,14 +3,14 @@ import {
   ModelEndpointsDeleteOpts,
   Fields,
   GraphQLOperationType,
-  Reducible,
+  Reduced,
 } from "../../types"
 
 export default function reducedDelete(
   label: string,
   endpointOrBoolean: boolean | ModelEndpointsDeleteOpts,
   fields: Fields
-): Reducible {
+): Reduced {
   if (!endpointOrBoolean) return null
 
   let endpoint = typeof endpointOrBoolean === "boolean" ? {} : endpointOrBoolean
@@ -18,21 +18,23 @@ export default function reducedDelete(
   const { guard } = endpoint
 
   return {
-    graphQLEndpoints: {
-      label: `Delete${label}`,
-      type: GraphQLOperationType.MUTATION,
-      params: { id: uuid().required() },
-      guard,
-      returns: ref(label),
-      resolver: async ({ cypher, params }) => {
-        const { id } = params
+    graphQLEndpoints: [
+      {
+        label: `Delete${label}`,
+        type: GraphQLOperationType.MUTATION,
+        params: { id: uuid().required() },
+        guard,
+        returns: ref(label),
+        resolver: async ({ cypher, params }) => {
+          const { id } = params
 
-        const updated = await cypher.delete(label, id)
-        if (endpoint.after) {
-          await endpoint.after(updated)
-        }
-        return updated
+          const updated = await cypher.delete(label, id)
+          if (endpoint.after) {
+            await endpoint.after(updated)
+          }
+          return updated
+        },
       },
-    },
+    ],
   }
 }

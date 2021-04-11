@@ -21,8 +21,21 @@ export interface Hydratable {
 }
 
 export type Reducer = {
-  reduce(reduced: Reducible): void
+  reduce(reduced: Reduced): void
 }
+
+export interface Reducible {
+  reduce(reducer: Reducer, { modelName }): void
+}
+
+// export type Reducible = {
+//   inputs?: { [name: string]: ReducedInput }
+//   outputs?: { [name: string]: ReducedOutput }
+//   // endpoints?: (ReducedGQLEndpoint | ReducedHTTPEndpoint)[]
+//   graphQLEndpoints?: ReducedGQLEndpoint[]
+//   httpEndpoints?: ReducedHTTPEndpoint[]
+//   guards?: { [name: string]: ReducedGuard }
+// }
 
 export type Auth = { model: AuthModel; strategies: AuthStrategy[] }
 export type AuthModel = {} & Hydratable
@@ -173,15 +186,6 @@ export type ReducerConsumable = {
   graphQLEndpoints?: ReducedGQLEndpoint[]
   httpEndpoints?: ReducedHTTPEndpoint[]
   guards?: ReducedGuard[]
-}
-
-export type Reducible = {
-  inputs?: { [name: string]: ReducedInput }
-  outputs?: { [name: string]: ReducedOutput }
-  // endpoints?: (ReducedGQLEndpoint | ReducedHTTPEndpoint)[]
-  graphQLEndpoints?: ReducedGQLEndpoint | ReducedGQLEndpoint[]
-  httpEndpoints?: ReducedHTTPEndpoint | ReducedHTTPEndpoint[]
-  guards?: { [name: string]: ReducedGuard }
 }
 
 // I realize these are almost identical but one is inbound the other is reduced outbound

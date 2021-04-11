@@ -1,6 +1,5 @@
 import _ from "lodash"
 import {
-  Reducible,
   Reduced,
   Guards,
   ReducedInput,
@@ -20,7 +19,7 @@ export default class Reducer {
   _graphQLEndpoints?: ReducedGQLEndpoint[] = []
   _httpEndpoints?: ReducedHTTPEndpoint[] = []
 
-  reduce(reduced: Reducible) {
+  reduce(reduced: Reduced) {
     if (!reduced) return
 
     if (reduced.guards) {
