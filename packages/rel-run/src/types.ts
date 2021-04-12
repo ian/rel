@@ -3,13 +3,14 @@
 import { Field } from "./fields"
 import { Model } from "./models"
 import { Relation } from "./relations"
-import { Hydrator } from "./server"
+import { Reducer, Hydrator } from "./server"
 import { CypherInstance } from "./cypher/connection"
 import { GraphQLEndpoint, HTTPEndpoint } from "./endpoints"
 
 export { Field } from "./fields"
 export { Model } from "./models"
 export { Relation } from "./relations"
+export { Reducer } from "./server"
 export { GraphQLEndpoint, HTTPEndpoint } from "./endpoints"
 
 export type Endpoint = GraphQLEndpoint | HTTPEndpoint
@@ -20,9 +21,9 @@ export interface Hydratable {
   hydrate(hydrator: Hydrator, runtime: { cypher: CypherInstance }): void
 }
 
-export type Reducer = {
-  reduce(reduced: Reduced): void
-}
+// export type Reducer = {
+//   reduce(reduced: Reduced): void
+// }
 
 export interface Reducible {
   reduce(reducer: Reducer, { modelName }): void
