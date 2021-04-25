@@ -137,7 +137,7 @@ export default class Server {
       const { events, typeDefs, graphql } = runtime
 
       return this._app
-        .listen(this._port)
+        .listen(this._port, "0.0.0.0")
         .then(() => ({ events, typeDefs, port: this._port, graphql }))
     }
   }
