@@ -100,6 +100,7 @@ export interface Relation extends HydrateableProperty {
   ) => Relation
   singular: (singular?: boolean) => Relation
   inbound: (inbound?: boolean) => Relation
+  order: (order: string) => Relation
   direction: (direction: RelationDirection) => Relation
   handler: (handler: Handler) => Relation
 
