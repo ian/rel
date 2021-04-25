@@ -11,7 +11,8 @@
     "build:watch": "lerna run build:watch",
     "test": "lerna run test -- --color",
     "test:ci": "lerna run test:ci -- --color",
-    "test:coverage": "lerna run test:coverage"
+    "test:coverage": "lerna run test:coverage",
+    "release": "lerna run clean && lerna run build && lerna publish"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
