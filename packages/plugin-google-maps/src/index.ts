@@ -1,4 +1,4 @@
-import { Fields, Plugin } from "@reldb/run"
+import { Fields } from "@reldb/run"
 
 import { geocodeAddress } from "./google"
 import { GeolocationOpts } from "./types"
@@ -17,7 +17,7 @@ export class GelocatedField extends Fields.Geo {
 
     // @todo - check for existence of from on object
 
-    this.resolver(async (runtime) => {
+    this.handler(async (runtime) => {
       const { obj } = runtime
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null
@@ -37,7 +37,7 @@ export class GelocatedAddressField extends Fields.String {
 
     // @todo - check for existence of from on object
 
-    this.resolver(async (runtime) => {
+    this.handler(async (runtime) => {
       const { obj } = runtime
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null
@@ -58,7 +58,7 @@ type Config = {
   apiKey: string
 }
 
-export default (init: Config): Plugin => {
+export default (init: Config) => {
   if (!init?.apiKey)
     throw new Error("GoogleMaps requires { apiKey: '...' } to be specified")
 

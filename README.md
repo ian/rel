@@ -1,4 +1,4 @@
-# rel - The backend for frontend developers
+# rel - The backend-in-a-box for Javascripters
 
 There has been quite the renaissance in the Javascript world over the past 10 years. New frontend tooling is pushing the boundaries of both native and web applications.
 

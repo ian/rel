@@ -97,12 +97,12 @@ describe("#geolocatedAddress", () => {
 })
 
 const server = (geo, addPlugin: boolean = true) => {
-  const server = testServer({ log: false }).schema({
-    Restaurant: Rel.model({
+  const server = testServer({ log: false }).schema(
+    Rel.model("Restaurant", {
       address: Rel.string().required(),
       geo,
-    }),
-  })
+    }).endpoints(true)
+  )
 
   if (addPlugin) {
     server.plugins(
