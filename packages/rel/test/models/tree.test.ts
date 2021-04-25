@@ -48,115 +48,174 @@ describe("#tree", () => {
         }).endpoints(true)
       )
       .runtime()
-    const { graphql } = server
+    const { cypher, graphql } = server
     let parent, child
 
-    beforeEach(async (done) => {
-      const { data } = await graphql(`
-        mutation Create {
-          parent: CreateCategory(input: { name: "Parent" }) {
-            id
-            name
-          }
-          child: CreateCategory(input: { name: "Child" }) {
-            id
-            name
-          }
-        }
+    it("TopLevelCategories", async (done) => {
+      await cypher.exec(`
+        CREATE (parent1:Category { id: "p1" }), 
+               (parent2:Category { id: "p2" }), 
+               (child1:Category { id: "c1" }), 
+               (child2:Category { id: "c2" }), 
+               (child3:Category { id: "c3" }), 
+               (child4:Category { id: "c4" })
+        MERGE (parent1)-[:CHILD]->(child1)
+        MERGE (parent1)-[:CHILD]->(child2)
+        MERGE (parent2)-[:CHILD]->(child3)
+        MERGE (parent2)-[:CHILD]->(child4)
+        RETURN parent1, parent2, child1, child2, child3, child4;
       `)
 
-      parent = data.parent
-      child = data.child
+      const topLevel = await graphql(
+        `
+          query {
+            categories: TopLevelCategories {
+              id
+            }
+          }
+        `
+      )
+
+      expect(topLevel.errors).toBeUndefined()
+      expect(topLevel.data.categories).toEqual([{ id: "p1" }, { id: "p2" }])
 
       done()
     })
 
-    it("should add categories", async (done) => {
-      const {
-        data: { added },
-      } = await graphql(
-        `
-          mutation Add($parentId: UUID!, $childId: UUID!) {
-            added: CategoryAddChild(parentId: $parentId, childId: $childId) {
+    describe("adding", () => {
+      beforeEach(async (done) => {
+        const { data } = await graphql(`
+          mutation Create {
+            parent: CreateCategory(input: { name: "Parent" }) {
+              id
+              name
+            }
+            child: CreateCategory(input: { name: "Child" }) {
               id
               name
             }
           }
-        `,
-        {
-          parentId: parent.id,
-          childId: child.id,
-        }
-      )
+        `)
 
-      expect(added.id).toEqual(child.id)
+        parent = data.parent
+        child = data.child
 
-      const {
-        data: { category },
-      } = await graphql(
-        `
-          query List($id: UUID!) {
-            category: FindCategory(where: { id: $id }) {
-              id
-              children {
+        done()
+      })
+
+      it("CategoryAddChild", async (done) => {
+        const added = await graphql(
+          `
+            mutation Add($parentId: UUID!, $childId: UUID!) {
+              category: CategoryAddChild(
+                parentId: $parentId
+                childId: $childId
+              ) {
                 id
+                name
               }
             }
+          `,
+          {
+            parentId: parent.id,
+            childId: child.id,
           }
-        `,
-        {
-          id: parent.id,
-        }
-      )
+        )
 
-      expect(category.id).toEqual(parent.id)
-      expect(category.children).toEqual([{ id: child.id }])
+        expect(added.errors).toBeUndefined()
+        expect(added.data.category.id).toEqual(child.id)
 
-      done()
-    })
-
-    it("should set parents", async (done) => {
-      const set = await graphql(
-        `
-          mutation Set($parentId: UUID!, $childId: UUID!) {
-            parent: CategorySetParent(parentId: $parentId, childId: $childId) {
-              id
-              name
-            }
-          }
-        `,
-        {
-          parentId: parent.id,
-          childId: child.id,
-        }
-      )
-
-      expect(set.data.parent.id).toEqual(parent.id)
-
-      const list = await graphql(
-        `
-          query List($id: UUID!) {
-            category: FindCategory(where: { id: $id }) {
-              id
-              parent {
+        const {
+          data: { category },
+        } = await graphql(
+          `
+            query List($id: UUID!) {
+              category: FindCategory(where: { id: $id }) {
                 id
+                children {
+                  id
+                }
               }
             }
+          `,
+          {
+            id: parent.id,
           }
-        `,
-        {
-          id: child.id,
-        }
-      )
+        )
 
-      expect(list.data.category.id).toEqual(child.id)
-      expect(list.data.category.parent).toEqual({ id: parent.id })
+        expect(category.id).toEqual(parent.id)
+        expect(category.children).toEqual([{ id: child.id }])
 
-      done()
+        done()
+      })
+
+      it("CategorySetParent", async (done) => {
+        const set = await graphql(
+          `
+            mutation Set($parentId: UUID!, $childId: UUID!) {
+              parent: CategorySetParent(
+                parentId: $parentId
+                childId: $childId
+              ) {
+                id
+                name
+              }
+            }
+          `,
+          {
+            parentId: parent.id,
+            childId: child.id,
+          }
+        )
+
+        expect(set.errors).toBeUndefined()
+        expect(set.data.parent.id).toEqual(parent.id)
+
+        const list = await graphql(
+          `
+            query List($id: UUID!) {
+              category: FindCategory(where: { id: $id }) {
+                id
+                parent {
+                  id
+                }
+              }
+            }
+          `,
+          {
+            id: child.id,
+          }
+        )
+
+        expect(list.data.category.id).toEqual(child.id)
+        expect(list.data.category.parent).toEqual({ id: parent.id })
+
+        done()
+      })
     })
 
     describe("removing", () => {
-      it("should remove the parent", async (done) => {
+      beforeEach(async (done) => {
+        const { data } = await graphql(`
+          mutation Create {
+            parent: CreateCategory(input: { name: "Parent" }) {
+              id
+              name
+            }
+            child: CreateCategory(input: { name: "Child" }) {
+              id
+              name
+            }
+          }
+        `)
+
+        parent = data.parent
+        child = data.child
+
+        done()
+      })
+
+      it("CategoryUnsetParent", async (done) => {
         const set = await graphql(
           `
             mutation Set($parentId: UUID!, $childId: UUID!) {
@@ -237,7 +296,8 @@ describe("#tree", () => {
 
         done()
       })
-      it("should remove the child", async (done) => {
+
+      it("CategoryRemoveChild", async (done) => {
         const added = await graphql(
           `
             mutation Add($parentId: UUID!, $childId: UUID!) {

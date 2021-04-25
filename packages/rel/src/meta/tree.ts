@@ -58,7 +58,7 @@ class Tree extends ModelImpl {
             .exec(
               `MATCH (parent:${this.name}) WHERE NOT (parent)<-[:CHILD]-(:${this.name}) RETURN parent;`
             )
-            .then((res) => res.map((node) => node.c))
+            .then((res) => res.map((node) => node.parent))
         }
       )
     )
