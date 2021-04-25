@@ -2,13 +2,13 @@ import { doesNotMatch } from "node:assert"
 import Rel, { testServer } from "../../src"
 
 describe("relations endpoints", () => {
-  it("should default to having endpoints and type properties", async (done) => {
-    const { typeDefs } = await server(
+  it("should default to having endpoints and type properties", () => {
+    const { typeDefs } = server(
       Rel.model(
         "Author",
         {
           name: Rel.string(),
-          books: Rel.relation("AUTHORED").to("Book"),
+          books: Rel.relation("AUTHORED").to("Book").endpoints(true),
         },
         { timestamps: false }
       ),
@@ -16,7 +16,11 @@ describe("relations endpoints", () => {
         "Book",
         {
           title: Rel.string(),
-          author: Rel.relation("AUTHORED").to("Author").inbound().singular(),
+          author: Rel.relation("AUTHORED")
+            .to("Author")
+            .inbound()
+            .singular()
+            .endpoints(true),
         },
         { timestamps: false }
       )
@@ -40,15 +44,11 @@ describe("relations endpoints", () => {
     expect(typeDefs).toMatch(
       `BookSetAuthor(authorId: UUID!, bookId: UUID!): Author`
     )
-    expect(typeDefs).toMatch(
-      `BookRemoveAuthor(authorId: UUID!, bookId: UUID!): Author`
-    )
-
-    done()
+    expect(typeDefs).toMatch(`BookUnsetAuthor(bookId: UUID!): Author`)
   })
 
-  it("should allow the endpoints to be turned off", async (done) => {
-    const { typeDefs } = await server(
+  it("should allow the endpoints to be turned off", () => {
+    const { typeDefs } = server(
       Rel.model("Author", {
         name: Rel.string(),
         books: Rel.relation("AUTHORED").to("Book").endpoints(false),
@@ -67,23 +67,27 @@ describe("relations endpoints", () => {
     expect(typeDefs).not.toMatch(`AuthorRemoveBook`)
     expect(typeDefs).not.toMatch(`BookSetAuthor`)
     expect(typeDefs).not.toMatch(`BookRemoveAuthor`)
-
-    done()
   })
 
-  it("should allow the endpoint names to be overridden", async (done) => {
-    const { typeDefs } = await server(
+  it("should allow the endpoint names to be overridden", () => {
+    const { typeDefs } = server(
       Rel.model("Author", {
         name: Rel.string(),
         books: Rel.relation("AUTHORED")
           .to("Book")
-          .endpoints({ add: "AddBook", remove: "RemoveBook" }),
+          .endpoints({
+            add: { name: "AddBook" },
+            remove: { name: "RemoveBook" },
+          }),
       }),
       Rel.model("Book", {
         title: Rel.string(),
         author: Rel.relation("AUTHORED")
           .to("Author")
-          .endpoints({ add: "SetAuthor", remove: "RemoveAuthor" })
+          .endpoints({
+            add: { name: "SetAuthor" },
+            remove: { name: "RemoveAuthor" },
+          })
           .inbound()
           .singular(),
       })
@@ -97,13 +101,83 @@ describe("relations endpoints", () => {
     expect(typeDefs).toMatch(`SetAuthor`)
     expect(typeDefs).not.toMatch(`BookRemoveAuthor`)
     expect(typeDefs).toMatch(`RemoveAuthor`)
+  })
 
-    done()
+  it("should allow from param to be changed", () => {
+    const { typeDefs } = server(
+      Rel.model("Author", {
+        name: Rel.string(),
+        books: Rel.relation("AUTHORED")
+          .to("Book")
+          .endpoints({
+            add: { fromParam: "bookAddFrom" },
+            remove: { fromParam: "bookRemoveFrom" },
+          }),
+      }),
+      Rel.model("Book", {
+        title: Rel.string(),
+        author: Rel.relation("AUTHORED")
+          .to("Author")
+          .endpoints({
+            add: { fromParam: "authorUnsetFrom" },
+            remove: { fromParam: "authorUnsetFrom" },
+          })
+          .inbound()
+          .singular(),
+      })
+    )
+
+    expect(typeDefs).toMatch(
+      `AuthorAddBook(bookAddFrom: UUID!, bookId: UUID!): Book`
+    )
+    expect(typeDefs).toMatch(
+      `AuthorRemoveBook(bookId: UUID!, bookRemoveFrom: UUID!): Book`
+    )
+    expect(typeDefs).toMatch(
+      `BookSetAuthor(authorId: UUID!, authorUnsetFrom: UUID!): Author`
+    )
+    expect(typeDefs).toMatch(`BookUnsetAuthor(authorUnsetFrom: UUID!): Author`)
+  })
+
+  it("should allow to param to be changed", () => {
+    const { typeDefs } = server(
+      Rel.model("Author", {
+        name: Rel.string(),
+        books: Rel.relation("AUTHORED")
+          .to("Book")
+          .endpoints({
+            add: { toParam: "bookAddTo" },
+            remove: { toParam: "bookRemoveTo" },
+          }),
+      }),
+      Rel.model("Book", {
+        title: Rel.string(),
+        author: Rel.relation("AUTHORED")
+          .to("Author")
+          .endpoints({
+            add: { toParam: "authorUnsetTo" },
+            remove: { toParam: "authorUnsetTo" },
+          })
+          .inbound()
+          .singular(),
+      })
+    )
+
+    expect(typeDefs).toMatch(
+      `AuthorAddBook(authorId: UUID!, bookAddTo: UUID!): Book`
+    )
+    expect(typeDefs).toMatch(
+      `AuthorRemoveBook(authorId: UUID!, bookRemoveTo: UUID!): Book`
+    )
+    expect(typeDefs).toMatch(
+      `BookSetAuthor(authorUnsetTo: UUID!, bookId: UUID!): Author`
+    )
+    expect(typeDefs).toMatch(`BookUnsetAuthor(bookId: UUID!): Author`)
   })
 })
 
 const server = (...schema) => {
   return testServer({ log: false })
     .models(...schema)
-    .start()
+    .runtime()
 }

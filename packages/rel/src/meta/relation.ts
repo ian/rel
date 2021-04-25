@@ -1,5 +1,11 @@
 import _ from "lodash"
-import { Guard, Handler, Relation, RelationDirection } from "../types"
+import {
+  Guard,
+  Handler,
+  Relation,
+  RelationDirection,
+  RelationEndpointOpts,
+} from "../types"
 
 import {
   hydrateAddRelation,
@@ -8,11 +14,15 @@ import {
 } from "../hydration"
 
 const DEFAULT_OPTS = {
-  endpoints: true,
+  // We default these off so they're opt-in
+  endpoints: false,
 }
 export default class RelationImpl implements Relation {
   _label: string
-  _endpoints: { add?: boolean | string; remove?: boolean | string }
+  _endpoints: {
+    add: boolean | RelationEndpointOpts
+    remove: boolean | RelationEndpointOpts
+  }
   _guard: Guard = null
   _from: {
     label: string
@@ -56,7 +66,14 @@ export default class RelationImpl implements Relation {
     return this
   }
 
-  endpoints(endpoints: boolean | { add: string; remove: string }) {
+  endpoints(
+    endpoints:
+      | boolean
+      | {
+          add: boolean | RelationEndpointOpts
+          remove: boolean | RelationEndpointOpts
+        }
+  ) {
     if (endpoints) {
       if (endpoints === true) {
         this._endpoints = { add: true, remove: true }
@@ -147,27 +164,46 @@ export default class RelationImpl implements Relation {
 
     hydrateListRelation(relation, this._handler)(hydrator, opts)
 
+    let defaultFromParam = `${relation.from.label.toLowerCase()}Id`,
+      defaultToParam = `${relation.to.label.toLowerCase()}Id`
+    if (defaultToParam === defaultFromParam) {
+      // for relationships of the same name lets just increment the to
+      defaultToParam = `${relation.to.label.toLowerCase()}Id_2`
+    }
+
     if (this._endpoints) {
       if (this._endpoints.add) {
-        const addRelationName =
-          this._endpoints.add === true
-            ? // if it's boolean, dynamically generate the name
-              this._singular
-              ? `${relation.from.label}Set${this._to.label}`
-              : `${relation.from.label}Add${this._to.label}`
-            : // if it's string, use the label name
-              this._endpoints.add
+        let relationOpts = {
+          name: this._singular
+            ? `${relation.from.label}Set${this._to.label}`
+            : `${relation.from.label}Add${this._to.label}`,
+          fromParam: defaultFromParam,
+          toParam: defaultToParam,
+          guard: this._guard,
+        }
 
-        hydrateAddRelation(addRelationName, relation)(hydrator)
+        if (typeof this._endpoints.add === "object") {
+          Object.assign(relationOpts, this._endpoints.add)
+        }
+
+        hydrateAddRelation(relation, relationOpts)(hydrator)
       }
 
       if (this._endpoints.remove) {
-        const removeRelationName =
-          this._endpoints.remove === true
-            ? `${relation.from.label}Remove${this._to.label}`
-            : this._endpoints.remove
+        let relationOpts = {
+          name: this._singular
+            ? `${relation.from.label}Unset${this._to.label}`
+            : `${relation.from.label}Remove${this._to.label}`,
+          fromParam: defaultFromParam,
+          toParam: defaultToParam,
+          guard: this._guard,
+        }
 
-        hydrateRemoveRelation(removeRelationName, relation)(hydrator)
+        if (typeof this._endpoints.remove === "object") {
+          Object.assign(relationOpts, this._endpoints.remove)
+        }
+
+        hydrateRemoveRelation(relation, relationOpts)(hydrator)
       }
     }
   }

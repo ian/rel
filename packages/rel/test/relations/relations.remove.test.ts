@@ -143,19 +143,21 @@ describe("relations guards", () => {
     })
 
     it("should allow unsetting a Book's Author", async (done) => {
-      await graphql(
+      const unset = await graphql(
         `
-          mutation Set($authorId: UUID!, $bookId: UUID!) {
-            BookRemoveAuthor(bookId: $bookId, authorId: $authorId) {
+          mutation Unset($bookId: UUID!) {
+            BookUnsetAuthor(bookId: $bookId) {
               name
             }
           }
         `,
         {
-          authorId: author.id,
           bookId: book.id,
         }
       )
+
+      expect(unset.errors).not.toBeDefined()
+      expect(unset.data.BookUnsetAuthor).toEqual({ name: author.name })
 
       const { data, errors } = await graphql(
         `
@@ -189,14 +191,21 @@ const server = () => {
     .models(
       Rel.model(
         "Author",
-        { name: Rel.string(), books: Rel.relation("AUTHORED").to("Book") },
+        {
+          name: Rel.string(),
+          books: Rel.relation("AUTHORED").to("Book").endpoints(true),
+        },
         { timestamps: false }
       ).endpoints(true),
       Rel.model(
         "Book",
         {
           title: Rel.string(),
-          author: Rel.relation("AUTHORED").to("Author").inbound().singular(),
+          author: Rel.relation("AUTHORED")
+            .to("Author")
+            .inbound()
+            .singular()
+            .endpoints(true),
         },
         { timestamps: false }
       ).endpoints(true)
@@ -204,4 +213,4 @@ const server = () => {
     .runtime()
 }
 
-const { graphql } = server()
+const { typeDefs, graphql } = server()

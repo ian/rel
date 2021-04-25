@@ -55,7 +55,7 @@ describe("default properties", () => {
     expect(res.data?.book.slug).toBe("the-great-gatsby")
   })
 
-  it.only("handle collisions", async () => {
+  it("handle collisions", async () => {
     const firstBook = await graphql(`
       mutation {
         book: CreateBook(input: { title: "The Great Gatsby" }) {

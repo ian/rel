@@ -90,6 +90,7 @@ export default class Neo4jConnection extends ConnectionInstance {
           res[key] = sanitize(mapped)
         }
       })
+
       return res
     }
 

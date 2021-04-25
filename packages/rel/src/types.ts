@@ -22,10 +22,9 @@ export enum RelationDirection {
 // The main consumable Rel object
 ////////////////////////////////////////////////////
 export interface Rel {
+  // Meta Types - Goes through hydration
   model(name: string, props: ModelProperties, opts?: ModelOptions): Model
-
-  input(name: string, props: InputProperties): Input
-  output(name: string, props: OutputProperties): Output
+  tree(name: string, props: ModelProperties, opts?: ModelOptions): Model
 
   string(): Field
   boolean(): Field
@@ -42,6 +41,10 @@ export interface Rel {
   ref(model: string): Field
 
   relation(label: string): Relation
+
+  // Core Types
+  input(name: string, props: InputProperties): Input
+  output(name: string, props: OutputProperties): Output
 
   // GraphQL
   query(...opts: GraphQLEndpointOptions): GraphQLEndpoint
@@ -87,13 +90,27 @@ export interface Relation extends HydrateableProperty {
   from: (from: string) => Relation
   to: (to: string) => Relation
   guard: (guard: Guard) => Relation
-  endpoints: (endpoints: boolean | { add: string; remove: string }) => Relation
+  endpoints: (
+    endpoints:
+      | boolean
+      | {
+          add: boolean | RelationEndpointOpts
+          remove: boolean | RelationEndpointOpts
+        }
+  ) => Relation
   singular: (singular?: boolean) => Relation
   inbound: (inbound?: boolean) => Relation
   direction: (direction: RelationDirection) => Relation
   handler: (handler: Handler) => Relation
 
   // reduce: () => ReducibleProperty
+}
+
+export type RelationEndpointOpts = {
+  name?: string
+  fromParam?: string
+  toParam?: string
+  guard?: Guard
 }
 
 // I want Model to be additive + idempotent, use cases:

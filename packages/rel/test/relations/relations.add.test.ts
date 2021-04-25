@@ -65,7 +65,7 @@ describe("relations guards", () => {
 
   describe("set", () => {
     it("should allow setting a Book's Author", async (done) => {
-      await graphql(
+      const set = await graphql(
         `
           mutation Set($authorId: UUID!, $bookId: UUID!) {
             BookSetAuthor(bookId: $bookId, authorId: $authorId) {
@@ -78,6 +78,9 @@ describe("relations guards", () => {
           bookId: book.id,
         }
       )
+
+      expect(set.errors).toBeUndefined()
+      expect(set.data.BookSetAuthor).toEqual({ name: author.name })
 
       const { data, errors } = await graphql(
         `
@@ -113,7 +116,7 @@ const server = () => {
         "Author",
         {
           name: Rel.string(),
-          books: Rel.relation("AUTHORED").to("Book"),
+          books: Rel.relation("AUTHORED").to("Book").endpoints(true),
         },
         { timestamps: false }
       ).endpoints(true),
@@ -121,7 +124,11 @@ const server = () => {
         "Book",
         {
           title: Rel.string(),
-          author: Rel.relation("AUTHORED").to("Author").inbound().singular(),
+          author: Rel.relation("AUTHORED")
+            .to("Author")
+            .inbound()
+            .singular()
+            .endpoints(true),
         },
         { timestamps: false }
       ).endpoints(true)

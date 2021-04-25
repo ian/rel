@@ -86,7 +86,10 @@ const server = (resolver?) => {
         "Author",
         {
           name: Rel.string(),
-          books: Rel.relation("AUTHORED").to("Book").handler(resolver),
+          books: Rel.relation("AUTHORED")
+            .to("Book")
+            .handler(resolver)
+            .endpoints(true),
         },
         { timestamps: false }
       ).endpoints(true),
@@ -94,7 +97,11 @@ const server = (resolver?) => {
         "Book",
         {
           title: Rel.string(),
-          author: Rel.relation("AUTHORED").to("Author").inbound().singular(),
+          author: Rel.relation("AUTHORED")
+            .to("Author")
+            .inbound()
+            .singular()
+            .endpoints(true),
         },
         { timestamps: false }
       ).endpoints(true)

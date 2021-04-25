@@ -66,13 +66,12 @@ scalar UUID`)
           sortFields: false,
         })
       } catch (err) {
-        console.error(
-          "Error during GQL compilation",
-          "\n",
-          JSON.stringify(typeStr, null, 2),
-          "\n",
-          err.message
-        )
+        console.error(`
+Error during GQL compilation
+${JSON.stringify(typeStr, null, 2)}
+
+${err.message}
+`)
       }
     })
     .join("\n")

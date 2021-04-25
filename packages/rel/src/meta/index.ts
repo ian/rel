@@ -30,6 +30,7 @@ import {
 import Relation from "./relation"
 
 import ModelImpl from "./model"
+import tree from "./tree"
 import InputImpl from "./input"
 import OutputImpl from "./output"
 import GraphQLEndpoint from "./graphql"
@@ -53,6 +54,8 @@ export default {
 
   model: (name: string, props: ModelProperties, opts?: ModelOptions): Model =>
     new ModelImpl(name, props, opts),
+
+  tree,
 
   input: (name: string, props: InputProperties): Input =>
     new InputImpl(name, props),

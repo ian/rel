@@ -2,7 +2,13 @@ import camelcase from "camelcase"
 import _ from "lodash"
 import { resolveNode } from "../util/node"
 import Rel from "../meta"
-import { Guard, Handler, Hydrator, RelationDirection } from "../types"
+import {
+  Guard,
+  Handler,
+  Hydrator,
+  RelationDirection,
+  RelationEndpointOpts,
+} from "../types"
 
 type HydrateableRelation = {
   from: {
@@ -71,19 +77,20 @@ export function hydrateListRelation(
   }
 }
 
-export function hydrateAddRelation(name, relation: HydrateableRelation) {
-  const { from, to, singular = false, rel } = relation
-
-  const fromId = `${camelcase(from.label)}Id`
-  const toId = `${camelcase(to.label)}Id`
+export function hydrateAddRelation(
+  relation: HydrateableRelation,
+  opts: RelationEndpointOpts
+) {
+  const { name, fromParam, toParam, guard } = opts
+  const { from, to, singular, rel } = relation
 
   const handler = async (runtime) => {
     const { cypher } = runtime
     const fromResolved = resolveNode("from", from, runtime, {
-      params: ({ params }) => ({ id: params[fromId] }),
+      params: ({ params }) => ({ id: params[fromParam] }),
     })
     const toResolved = resolveNode("to", to, runtime, {
-      params: ({ params }) => ({ id: params[toId] }),
+      params: ({ params }) => ({ id: params[toParam] }),
     })
     const relResolved = resolveRel(rel)
 
@@ -99,48 +106,60 @@ export function hydrateAddRelation(name, relation: HydrateableRelation) {
       Rel.mutation(
         name,
         {
-          [`${camelcase(from.label)}Id`]: Rel.uuid().required(),
-          [`${camelcase(to.label)}Id`]: Rel.uuid().required(),
+          [fromParam]: Rel.uuid().required(),
+          [toParam]: Rel.uuid().required(),
         },
         Rel.ref(to.label),
         handler
-      )
+      ).guard(guard)
     )
   }
 }
 
-export function hydrateRemoveRelation(name, relation: HydrateableRelation) {
-  const { from, to, rel /*singular = false*/ } = relation
-
-  const fromId = `${camelcase(from.label)}Id`
-  const toId = `${camelcase(to.label)}Id`
+export function hydrateRemoveRelation(
+  relation: HydrateableRelation,
+  opts: RelationEndpointOpts
+) {
+  const { from, to, singular, rel } = relation
+  const { name, fromParam, toParam, guard } = opts
 
   const handler = async (runtime) => {
     const { cypher } = runtime
     const fromResolved = resolveNode("from", from, runtime, {
-      params: ({ params }) => ({ id: params[fromId] }),
+      params: ({ params }) => ({ id: params[fromParam] }),
     })
     const toResolved = resolveNode("to", to, runtime, {
-      params: ({ params }) => ({ id: params[toId] }),
+      params: singular
+        ? {}
+        : ({ params }) => {
+            id: params[toParam]
+          },
     })
     const relResolved = resolveRel(rel)
 
-    return cypher
+    const res = await cypher
       .deleteRelation(fromResolved, toResolved, relResolved)
       .then((res) => res?.to)
+
+    return res
   }
 
   return (hydrator: Hydrator) => {
     hydrator.endpoints(
       Rel.mutation(
         name,
-        {
-          [`${camelcase(from.label)}Id`]: Rel.uuid().required(),
-          [`${camelcase(to.label)}Id`]: Rel.uuid().required(),
-        },
+        singular
+          ? {
+              [fromParam]: Rel.uuid().required(),
+              // [toParam]: Rel.uuid().required(),
+            }
+          : {
+              [fromParam]: Rel.uuid().required(),
+              [toParam]: Rel.uuid().required(),
+            },
         Rel.ref(to.label),
         handler
-      )
+      ).guard(guard)
     )
   }
 }
