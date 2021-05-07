@@ -11,7 +11,7 @@ import crypto from "crypto"
 import alpha from "./alpha"
 //
 ;(async () => {
-  const pkg = require("./package.json")
+  const pkg = require(__dirname + "/package.json")
 
   const passcode = crypto
     .createHash("sha256")
