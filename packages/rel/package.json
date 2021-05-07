@@ -1,7 +1,7 @@
 {
   "name": "@reldb/run",
   "description": "The backend platform for frontend developers",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "publishConfig": {
     "access": "public"
   },
