@@ -1,6 +1,6 @@
 {
   "name": "create-rel-app",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "Create rel powered API with one command",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",
