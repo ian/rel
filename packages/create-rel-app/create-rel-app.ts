@@ -74,8 +74,14 @@ import alpha from "./alpha"
 }`
       )
 
+      await fsUtils.writeFileSync(
+        `${projectDir}/.gitignore`,
+        `.node_modules
+dist
+.env*`
+      )
+
       const filesToCopy = [
-        ".gitignore",
         ".env",
         "tsconfig.json",
         "server.ts",
