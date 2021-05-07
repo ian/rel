@@ -18,8 +18,11 @@
   },
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "tsc; chmod +x ./dist/create-rel-app.js",
-    "build:watch": "tsc --watch"
+    "build": "tsc && yarn dist",
+    "build:watch": "tsc --watch",
+    "dist": "yarn dist:chmod && yarn dist:copy",
+    "dist:copy": "cp -r template dist",
+    "dist:chmod": "chmod +x ./dist/create-rel-app.js"
   },
   "gitHead": "5e37d0fda7603768722e40c2e0f4c409533ff26a",
   "dependencies": {
