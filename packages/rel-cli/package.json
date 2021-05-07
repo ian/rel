@@ -1,6 +1,6 @@
 {
   "name": "@reldb/cli",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Visit https://rel.run/docs to view the full documentation.",
   "repository": "https://github.com/runrel/rel",
   "author": "Ian Hunter <ian@rel.run>",
