@@ -9,7 +9,6 @@ import spawn from "cross-spawn"
 import inquirer from "inquirer"
 import crypto from "crypto"
 import alpha from "./alpha"
-//
 ;(async () => {
   const pkg = require(__dirname + "/package.json")
 
