@@ -31,5 +31,5 @@ const handleDirChange = debounce(() => {
 }, 300)
 
 export default () => {
-  chokidar.watch("./rel", { persistent: true }).on("all", handleDirChange)
+  chokidar.watch("**/*.ts", { persistent: true }).on("all", handleDirChange)
 }
