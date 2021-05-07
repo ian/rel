@@ -10,7 +10,7 @@ import inquirer from "inquirer"
 import crypto from "crypto"
 import alpha from "./alpha"
 ;(async () => {
-  const pkg = require(__dirname + "/../package.json")
+  // const pkg = require(__dirname + "/../package.json")
 
   const passcode = crypto
     .createHash("sha256")
@@ -26,7 +26,8 @@ import alpha from "./alpha"
   }
 
   console.log()
-  console.log(`Rel installer v${pkg.version}`)
+  // console.log(`Rel installer v${pkg.version}`)
+  console.log("Rel installer")
   console.log()
 
   inquirer
