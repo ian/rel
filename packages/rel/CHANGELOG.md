@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/runrel/rel/compare/@reldb/run@0.10.6...@reldb/run@0.11.0) (2021-05-07)
+
+**Note:** Version bump only for package @reldb/run
+
+
+
+
+
 ## [0.10.6](https://github.com/runrel/rel/compare/@reldb/run@0.10.5...@reldb/run@0.10.6) (2021-04-25)
 
 **Note:** Version bump only for package @reldb/run

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/runrel/rel/compare/rel-plugin-social@0.3.6...rel-plugin-social@0.4.0) (2021-05-07)
+
+**Note:** Version bump only for package rel-plugin-social
+
+
+
+
+
 ## [0.3.6](https://github.com/runrel/rel/compare/rel-plugin-social@0.3.5...rel-plugin-social@0.3.6) (2021-04-25)
 
 **Note:** Version bump only for package rel-plugin-social

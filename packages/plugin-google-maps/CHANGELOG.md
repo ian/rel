@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/runrel/rel/compare/rel-plugin-google-maps@0.5.6...rel-plugin-google-maps@0.6.0) (2021-05-07)
+
+**Note:** Version bump only for package rel-plugin-google-maps
+
+
+
+
+
 ## [0.5.6](https://github.com/runrel/rel/compare/rel-plugin-google-maps@0.5.5...rel-plugin-google-maps@0.5.6) (2021-04-25)
 
 **Note:** Version bump only for package rel-plugin-google-maps
