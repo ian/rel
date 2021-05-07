@@ -49,7 +49,6 @@ export default class HydratorInstance implements Hydrator {
 
       model.hydrate(this)
     })
-    return this
   }
 
   plugins(...plugins: Plugin[]) {
@@ -58,7 +57,6 @@ export default class HydratorInstance implements Hydrator {
       .forEach((plugin) => {
         plugin(this)
       })
-    return this
   }
 
   inputs(...inputs: Input[]) {

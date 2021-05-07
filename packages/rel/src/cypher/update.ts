@@ -38,12 +38,14 @@ export async function cypherUpdate(
   const paramsCypher = paramify(toParams, {
     ...DEFAULT_UPDATE_OPTS,
     ...opts,
+    prefix: "node.",
+    separator: "=",
   })
 
   const res = await this.exec1(
     `
       MATCH (node:${label} { ${paramify({ id })} })
-      SET node += { ${paramsCypher} }
+      SET ${paramsCypher}
       RETURN node;
     `
   )

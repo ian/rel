@@ -45,18 +45,28 @@ class Tree extends ModelImpl {
     hydrator.endpoints(
       Rel.query(
         "TopLevelCategories",
+        { order: Rel.string(), limit: Rel.int() },
         Rel.array(Rel.ref(this.name)).required(),
         async (runtime) => {
+          const { params } = runtime
+          const { order = "id", limit } = params
           const { cypher } = runtime
+
           // would be nice to do this:
           // cypher.list(this.name, {
           //   match: `(parent:${this.name})`
           //   where: [`NOT (parent)<-[:CHILD]-(:${this.name})`]
           //   return: "parent"
           // })
+
           return cypher
             .exec(
-              `MATCH (parent:${this.name}) WHERE NOT (parent)<-[:CHILD]-(:${this.name}) RETURN parent;`
+              `
+              MATCH (parent:${this.name}) 
+              WHERE NOT (parent)<-[:CHILD]-(:${this.name}) 
+              RETURN parent
+              ${limit ? "LIMIT " + limit : ""}
+              ORDER BY parent.${order}`
             )
             .then((res) => res.map((node) => node.parent))
         }

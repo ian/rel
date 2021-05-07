@@ -27,7 +27,7 @@ export function splitProps(props: ModelProperties): SplitProps {
   return [fields, relations]
 }
 
-export function convertFieldsToWhere(fields: { [fieldName: string]: Field }) {
+export function duplicateProps(fields: { [fieldName: string]: Field }) {
   return Object.entries(fields).reduce((acc, entry) => {
     const [name, field] = entry
     const clone = Object.assign({}, field)

@@ -1,13 +1,8 @@
-import { Connection } from "../../src"
-
-const Cypher = Connection.init({
-  url: process.env.NEO4J_URI,
-  username: process.env.NEO4J_USERNAME,
-  password: process.env.NEO4J_PASSWORD,
-})
+import { testServer } from "../../src"
+const { cypher } = testServer({ log: false }).runtime()
 
 const makeMovie = async (opts = {}) => {
-  return Cypher.create("Movie", { title: "The Matrix" }, opts)
+  return cypher.create("Movie", { title: "The Matrix" }, opts)
 }
 
 describe("#cypherUpdate", () => {
@@ -15,7 +10,7 @@ describe("#cypherUpdate", () => {
     it("should create a node with the properties specified", async () => {
       let node = await makeMovie()
 
-      node = await Cypher.update("Movie", node.id, { year: 1999 })
+      node = await cypher.update("Movie", node.id, { year: 1999 })
       expect(node.title).toBe("The Matrix")
       expect(node.year).toBe(1999)
     })
@@ -29,7 +24,7 @@ describe("#cypherUpdate", () => {
         expect(node.id).toBeDefined()
         let origId = node.id
 
-        node = await Cypher.update("Movie", node.id, { title: "The Matrix" })
+        node = await cypher.update("Movie", node.id, { title: "The Matrix" })
 
         expect(node.id).toBeDefined()
         expect(node.id).toBe(origId)
@@ -40,7 +35,7 @@ describe("#cypherUpdate", () => {
       it("should change the updatedAt but not createdAt by default", async () => {
         const { id, createdAt, updatedAt } = await makeMovie()
 
-        const node = await Cypher.update("Movie", id, {
+        const node = await cypher.update("Movie", id, {
           director: "The Wachowskis",
         })
 
@@ -57,7 +52,7 @@ describe("#cypherUpdate", () => {
         expect(createdAt).not.toBeDefined()
         expect(updatedAt).not.toBeDefined()
 
-        const node = await Cypher.update(
+        const node = await cypher.update(
           "Movie",
           id,
           { new: "property" },

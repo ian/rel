@@ -55,7 +55,7 @@ describe("#geolocated", () => {
   describe("with server running", () => {
     it("should geolocate the address", async (done) => {
       const { graphql } = server(geolocated({ from: "address" }))
-      const { data } = await graphql(
+      const { data, errors } = await graphql(
         `
           mutation {
             restaurant: CreateRestaurant(
@@ -68,10 +68,13 @@ describe("#geolocated", () => {
         `
       )
 
+      expect(errors).toBeUndefined()
+
       const { address, geo } = data.restaurant
+
       expect(address).toEqual("Bennelong Point, Sydney NSW 2000, Australia")
-      expect(geo.lat).toEqual(-33.8565361)
-      expect(geo.lng).toEqual(151.2149964)
+      expect(geo.lat).toEqual(-33.8565368652344)
+      expect(geo.lng).toEqual(151.214996337891)
 
       done()
     })

@@ -1,11 +1,5 @@
-import { Connection } from "../../src"
-
-export const Cypher = Connection.init({
-  url: process.env.NEO4J_URI,
-  username: process.env.NEO4J_USERNAME,
-  password: process.env.NEO4J_PASSWORD,
-  // logger: console.log,
-})
+import { testServer } from "../../src"
+export const { cypher } = testServer({ log: false }).runtime()
 
 type Actor = {
   id: string
@@ -28,7 +22,7 @@ type ActorsAndMovies = {
 }
 
 export const createActorsAndMovies = async (): Promise<ActorsAndMovies> => {
-  return Cypher.exec1(`
+  return cypher.exec1(`
       CREATE (keanu:Actor { id: "1", name: "Keanu Reeves" }), 
              (alex: Actor { id: "2", name: "Alex Winter" }),
              (carrie:Actor { id: "3", name: "Carrie-Anne Moss" }), 
@@ -42,7 +36,7 @@ export const createActorsAndMovies = async (): Promise<ActorsAndMovies> => {
 }
 
 export const createScene = async (): Promise<ActorsAndMovies> => {
-  return Cypher.exec1(`
+  return cypher.exec1(`
       CREATE (keanu:Actor { id: "1", name: "Keanu Reeves" }), 
              (alex: Actor { id: "2", name: "Alex Winter" }),
              (carrie:Actor { id: "3", name: "Carrie-Anne Moss" }), 

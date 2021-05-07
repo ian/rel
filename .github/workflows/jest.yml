@@ -9,17 +9,10 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # Label used to access the service container
-      neo4j:
-        # Docker Hub image
-        image: neo4j:latest
-        env:
-          # install GDS at startup
-          NEO4J_AUTH: neo4j/rel
-          NEO4J_dbms_connector_bolt_advertised__address: localhost:7687
+      redis:
+        image: redislabs/redismod
         ports:
-          # Maps bolt port
-          - 7687:7687
+          - 6379:6379
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]

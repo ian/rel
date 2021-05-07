@@ -1,12 +1,7 @@
-import Rel, { Connection } from "../../src"
 import { GraphQLOperation } from "../../src/types"
 import { generateResolvers } from "../../src/server/resolvers"
-
-const cypher = Connection.init({
-  url: process.env.NEO4J_URI,
-  username: process.env.NEO4J_USERNAME,
-  password: process.env.NEO4J_PASSWORD,
-})
+import { testServer } from "../../src"
+const { cypher } = testServer({ log: false }).runtime()
 
 describe("#generateResolvers", () => {
   describe("types", () => {

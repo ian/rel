@@ -1,27 +1,21 @@
-import { Connection } from "../../src"
-
-const Cypher = Connection.init({
-  url: process.env.NEO4J_URI,
-  username: process.env.NEO4J_USERNAME,
-  password: process.env.NEO4J_PASSWORD,
-  // logger: console.log,
-})
+import { testServer } from "../../src"
+const { cypher } = testServer({ log: false }).runtime()
 
 const makeMovie = async (opts = {}) => {
-  return Cypher.create("Movie", { title: "The Matrix" }, opts)
+  return cypher.create("Movie", { title: "The Matrix" }, opts)
 }
 
 describe("#cypherFind", () => {
   describe("basic find", () => {
     it("should delete the node", async () => {
       const { id } = await makeMovie()
-      const node = await Cypher.find("Movie", { id })
+      const node = await cypher.find("Movie", { id })
 
       expect(node.id).toBe(id)
     })
 
     it("should return null when not found", async () => {
-      const node = await Cypher.find("Movie", { id: "FAKE123" })
+      const node = await cypher.find("Movie", { id: "FAKE123" })
       expect(node).toBe(null)
     })
   })
@@ -29,14 +23,14 @@ describe("#cypherFind", () => {
   describe("multiple parameters", () => {
     it("should delete the node", async () => {
       const { id } = await makeMovie()
-      const node = await Cypher.find("Movie", { id, title: "The Matrix" })
+      const node = await cypher.find("Movie", { id, title: "The Matrix" })
 
       expect(node.id).toBe(id)
     })
 
     it("should return null when not found", async () => {
       const { id } = await makeMovie()
-      const node = await Cypher.find("Movie", { id, title: "The Big Lebowski" })
+      const node = await cypher.find("Movie", { id, title: "The Big Lebowski" })
       expect(node).toBe(null)
     })
   })

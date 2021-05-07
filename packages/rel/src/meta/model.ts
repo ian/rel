@@ -19,7 +19,7 @@ import {
   hydrateDelete,
 } from "../hydration"
 
-import { splitProps, convertFieldsToWhere } from "../util/props"
+import { splitProps, duplicateProps } from "../util/props"
 import { Hydrator } from "../server"
 
 const DEFAULT_OPTS = {
@@ -120,7 +120,7 @@ export default class ModelImpl implements Model {
       ...this._autogen,
       ...inputFields,
     }
-    const where = convertFieldsToWhere(whereFields)
+    const where = duplicateProps(whereFields)
     hydrator.inputs(Rel.input(`${this._name}Where`, where))
 
     if (this._input) {

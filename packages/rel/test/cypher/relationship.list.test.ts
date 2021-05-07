@@ -1,5 +1,5 @@
 import { RelationDirection } from "../../src/types"
-import { createScene, Cypher } from "./relationship.helpers"
+import { createScene, cypher } from "./relationship.helpers"
 
 describe("#cypherListRelationship", () => {
   describe("rel = outbound", () => {
@@ -77,7 +77,7 @@ describe("#cypherListRelationship", () => {
 })
 
 const actorsFor = async (movie, opts = {}) => {
-  return Cypher.listRelation(
+  return cypher.listRelation(
     {
       name: "movie",
       label: "Movie",
@@ -98,7 +98,7 @@ const actorsFor = async (movie, opts = {}) => {
 }
 
 const moviesFor = async (actor, opts = {}) => {
-  return Cypher.listRelation(
+  return cypher.listRelation(
     {
       name: "actor",
       label: "Actor",

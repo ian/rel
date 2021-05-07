@@ -37,7 +37,7 @@ export default class Server {
     if (!db) {
       Events.error(
         new Error(
-          "Missing Neo4j Connection details, please set NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD"
+          "Missing DB Connection details, please set DB_HOST, DB_USERNAME, DB_PASSWORD"
         )
       )
     }

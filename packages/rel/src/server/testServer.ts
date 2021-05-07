@@ -9,9 +9,10 @@ class TestServer extends Server {
   constructor() {
     super({
       db: {
-        url: process.env.NEO4J_URI,
-        username: process.env.NEO4J_USERNAME,
-        password: process.env.NEO4J_PASSWORD,
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
       },
       port: 1234,
     })

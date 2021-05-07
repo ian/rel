@@ -45,6 +45,7 @@
     "moment": "^2.29.1",
     "neo4j-driver": "4.0.2",
     "pluralize": "^8.0.0",
+    "redisgraph.js": "2.3.0",
     "slugify": "^1.4.6",
     "titleize": "^2.1.0",
     "yup": "^0.32.8"

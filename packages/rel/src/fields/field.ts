@@ -7,7 +7,7 @@ import {
   Runtime,
 } from "../types"
 
-export default class FieldImpl implements Field {
+export default abstract class FieldImpl implements Field {
   _label: string
   _required: boolean = false
   _autogen: boolean = false
@@ -43,7 +43,7 @@ export default class FieldImpl implements Field {
     return this
   }
 
-  // abstract hydrate(hydrator: Hydrator)
+  // abstract hydrate(hydrator, { obj })
 
   hydrate(hydrator, { obj }) {
     // @todo

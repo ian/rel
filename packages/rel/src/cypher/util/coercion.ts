@@ -6,7 +6,7 @@ export function coerce(val) {
     case val instanceof moment:
       return `"${val.toISOString()}"`
     case val instanceof Geo:
-      return `point({ latitude: ${val.lat}, longitude: ${val.lng}, crs: 'WGS-84' })`
+      return `point({ latitude: ${val.lat}, longitude: ${val.lng} })`
     case typeof val === "string":
       return `"${val.replace(/"/g, '\\"')}"`
     case val === null:

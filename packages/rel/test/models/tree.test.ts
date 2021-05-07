@@ -36,7 +36,9 @@ describe("#tree", () => {
       expect(typeDefs).toMatch(
         `CategoryRemoveChild(childId: UUID!, parentId: UUID!): Category`
       )
-      expect(typeDefs).toMatch(`TopLevelCategories: [Category]!`)
+      expect(typeDefs).toMatch(
+        `TopLevelCategories(limit: Int, order: String): [Category]!`
+      )
     })
   })
 
@@ -69,7 +71,7 @@ describe("#tree", () => {
       const topLevel = await graphql(
         `
           query {
-            categories: TopLevelCategories {
+            categories: TopLevelCategories(order: "id") {
               id
             }
           }

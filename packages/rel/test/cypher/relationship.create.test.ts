@@ -1,12 +1,12 @@
 import { RelationDirection } from "../../src/types"
-import { createActorsAndMovies, Cypher } from "./relationship.helpers"
+import { createActorsAndMovies, cypher } from "./relationship.helpers"
 
 describe("#cypherCreateAssociation", () => {
   describe("rel = outbound", () => {
     it("should create the relationship", async () => {
       const { keanu, matrix } = await createActorsAndMovies()
       expect(await moviesFor(keanu)).toEqual([])
-      await Cypher.createRelation(
+      await cypher.createRelation(
         {
           name: "actor",
           label: "Actor",
@@ -32,7 +32,7 @@ describe("#cypherCreateAssociation", () => {
     it("should create the relationship", async () => {
       const { keanu, matrix } = await createActorsAndMovies()
       expect(await actorsFor(matrix)).toEqual([])
-      await Cypher.createRelation(
+      await cypher.createRelation(
         {
           name: "movie",
           label: "Movie",
@@ -64,7 +64,7 @@ describe("#cypherCreateAssociation", () => {
         const { keanu, matrix, billAndTeds } = await createActorsAndMovies()
         expect(await moviesFor(keanu)).toEqual([])
 
-        await Cypher.createRelation(
+        await cypher.createRelation(
           {
             name: "actor",
             label: "Actor",
@@ -88,7 +88,7 @@ describe("#cypherCreateAssociation", () => {
         let movies = await moviesFor(keanu)
         expect(movies.map((m) => m.title)).toEqual(["The Matrix"])
 
-        await Cypher.createRelation(
+        await cypher.createRelation(
           {
             name: "actor",
             label: "Actor",
@@ -119,7 +119,7 @@ describe("#cypherCreateAssociation", () => {
         const { keanu, matrix, billAndTeds } = await createActorsAndMovies()
         expect(await moviesFor(keanu)).toEqual([])
 
-        await Cypher.createRelation(
+        await cypher.createRelation(
           {
             name: "actor",
             label: "Actor",
@@ -141,7 +141,7 @@ describe("#cypherCreateAssociation", () => {
           }
         )
 
-        await Cypher.createRelation(
+        await cypher.createRelation(
           {
             name: "actor",
             label: "Actor",
@@ -174,7 +174,7 @@ describe("#cypherCreateAssociation", () => {
 })
 
 const actorsFor = async (movie, opts = {}) => {
-  return Cypher.listRelation(
+  return cypher.listRelation(
     {
       name: "movie",
       label: "Movie",
@@ -195,7 +195,7 @@ const actorsFor = async (movie, opts = {}) => {
 }
 
 const moviesFor = async (actor, opts = {}) => {
-  return Cypher.listRelation(
+  return cypher.listRelation(
     {
       name: "actor",
       label: "Actor",

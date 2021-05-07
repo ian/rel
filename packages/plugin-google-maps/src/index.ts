@@ -17,7 +17,7 @@ export class GelocatedField extends Fields.Geo {
 
     // @todo - check for existence of from on object
 
-    this.handler(async (runtime) => {
+    this.default(async (runtime) => {
       const { obj } = runtime
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null
@@ -37,7 +37,7 @@ export class GelocatedAddressField extends Fields.String {
 
     // @todo - check for existence of from on object
 
-    this.handler(async (runtime) => {
+    this.default(async (runtime) => {
       const { obj } = runtime
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null

@@ -37,7 +37,7 @@ export default class Slug extends String {
 
 async function findNextAvailableSlug(cypher, label, slugBase, tries = 0) {
   const taken = await cypher
-    .exec1(`MATCH (n:${label}) WHERE n.slug =~ '${slugBase}-?.*' RETURN n`)
+    .exec1(`MATCH (n:${label}) WHERE n.slug STARTS WITH '${slugBase}' RETURN n`)
     .then((res) => res?.n.slug)
 
   if (taken) {
