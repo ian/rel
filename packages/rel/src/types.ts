@@ -164,6 +164,7 @@ export type ModelEndpointOpts = {
 // }
 
 export type Handler = (runtime: Runtime) => any
+export type Middleware = (runtime: Runtime) => Promise<Runtime>
 export type PropertyHandler = (runtime: Runtime, opts: FieldRuntimeOpts) => any
 export type Plugin = (hydrator: Hydrator) => void
 
@@ -206,8 +207,10 @@ export interface Hydrator {
   plugins: (...plugins: Plugin[]) => void
   inputs: (...inputs: Input[]) => void
   outputs: (...outputs: Output[]) => void
-  guards: (...guards: Guard[]) => void
   endpoints: (...endpoints: Endpoint[]) => void
+
+  // IH: Unsure if we want to support this
+  // directives: (...directives: Directive[]) => void
 }
 
 export type Hydrated = {
@@ -349,15 +352,17 @@ export type ReducibleDirectives = {
   [guardName: string]: ReducibleDirective
 }
 
+export type ReducibleGuard = {
+  name: string
+  resolver: Middleware
+}
+
 export type ReducedGraphQLEndpoint = ReducibleProperty & {
   operation: GraphQLOperation
   name: string
   handler: (runtime: Runtime) => any
+  guard?: ReducibleGuard
 }
-
-// export type ReducedGraphQLEndpoints = {
-//   [name: string]: ReducedGraphQLEndpoint
-// }
 
 export type ReducedHTTPEndpoint = {
   method: HTTPMethod

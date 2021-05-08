@@ -44,6 +44,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "neo4j-driver": "4.0.2",
+    "passport": "^0.4.1",
     "pluralize": "^8.0.0",
     "redisgraph.js": "2.3.0",
     "slugify": "^1.4.6",

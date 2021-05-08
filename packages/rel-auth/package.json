@@ -1,5 +1,5 @@
 {
-  "name": "rel-plugin-social",
+  "name": "@reldb/auth",
   "description": "Authentication for Rel",
   "version": "0.4.1",
   "publishConfig": {
@@ -37,7 +37,9 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "passport-instagram": "^1.0.0",
+    "passport-twitter": "^1.0.4"
   },
   "devDependencies": {
     "@reldb/testing": "^0.2.0",

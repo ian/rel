@@ -1,15 +1,7 @@
-import { Reduced } from "../types"
 import _ from "lodash"
-import { CypherInstance } from "../cypher/connection"
+import { Reduced } from "../types"
+import { ResolverOpts } from "./index"
 import { splitGraphQLEndpoints } from "../util/endpoints"
-
-const DEFAULT_RUNTIME = {
-  // Cypher,
-}
-
-export type ResolverOpts = {
-  cypher: CypherInstance
-}
 
 type Resolvers = {
   Query?: {
@@ -41,18 +33,11 @@ export function generateResolvers(
 
         if (field.handler) {
           typeResolver[fieldName] = async (obj, params, context) => {
-            const runtime = { obj, params, context }
-            return field.handler(
-              {
-                ...DEFAULT_RUNTIME,
-                ...runtime,
-                cypher,
-              },
-              {
-                modelName: typeName,
-                fieldName,
-              }
-            )
+            const runtime = { obj, params, context, cypher }
+            return field.handler(runtime, {
+              modelName: typeName,
+              fieldName,
+            })
           }
         }
       })
@@ -67,9 +52,12 @@ export function generateResolvers(
     if (!_.isEmpty(queries)) {
       Object.assign(resolvers, {
         Query: queries.reduce((acc, endpoint) => {
+          const { guard } = endpoint
           acc[endpoint.name] = async (obj, params, context) => {
-            const runtime = { obj, params, context }
-            return endpoint.handler({ ...DEFAULT_RUNTIME, ...runtime, cypher })
+            const runtime = { obj, params, context, cypher }
+            if (guard)
+              Object.assign(runtime, ...(await guard.resolver(runtime)))
+            return endpoint.handler(runtime)
           }
           return acc
         }, {}),
@@ -79,9 +67,12 @@ export function generateResolvers(
     if (!_.isEmpty(mutations)) {
       Object.assign(resolvers, {
         Mutation: mutations.reduce((acc, endpoint) => {
+          const { guard } = endpoint
           acc[endpoint.name] = async (obj, params, context) => {
-            const runtime = { obj, params, context }
-            return endpoint.handler({ ...DEFAULT_RUNTIME, ...runtime, cypher })
+            const runtime = { obj, params, context, cypher }
+            if (guard)
+              Object.assign(runtime, ...(await guard.resolver(runtime)))
+            return endpoint.handler(runtime)
           }
           return acc
         }, {}),
@@ -90,17 +81,4 @@ export function generateResolvers(
   }
 
   return resolvers
-}
-
-export function generateDirectiveResolvers(
-  reduced: Reduced,
-  opts: ResolverOpts
-) {
-  const { cypher } = opts
-  return Object.entries(reduced.directives).reduce((acc, dir) => {
-    const [name, { resolver }] = dir
-    acc[name] = (runtime) =>
-      resolver({ ...DEFAULT_RUNTIME, cypher, ...runtime })
-    return acc
-  }, {})
 }

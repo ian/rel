@@ -59,6 +59,7 @@ export default class GraphQLEndpointImpl implements GraphQLEndpoint {
       returns,
       required,
       handler: this._handler,
+      guard: this._guard?.reduce(),
     }
 
     if (this._params) {

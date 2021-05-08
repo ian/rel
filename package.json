@@ -12,7 +12,8 @@
     "test": "lerna run test -- --color",
     "test:ci": "lerna run test:ci -- --color",
     "test:coverage": "lerna run test:coverage",
-    "release": "lerna run clean && lerna run build && lerna publish"
+    "release": "lerna run clean && lerna run build && lerna publish",
+    "redis": "docker run -p 6379:6379 redislabs/redismod"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

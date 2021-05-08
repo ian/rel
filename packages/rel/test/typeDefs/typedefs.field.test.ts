@@ -5,11 +5,7 @@ describe("#propertyToGQL", () => {
     expect(
       propertyToGQL("field", {
         returns: "String",
-        guard: {
-          name: "admin",
-          resolver: () => "HI",
-        },
       })
-    ).toBe("field: String @admin")
+    ).toBe("field: String")
   })
 })

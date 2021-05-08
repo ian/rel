@@ -12,7 +12,7 @@ export function propertyToGQL(fieldName: string, property: ReducibleProperty) {
   gql.push(returns)
   if (required) gql.push("!")
 
-  if (guard) gql.push(` @${guard.name}`)
+  // if (guard) gql.push(` @${guard.name}`)
 
   return gql.join("")
 }

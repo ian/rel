@@ -6,14 +6,14 @@ const EXPIRY_SECONDS = 60 * 60 * 24 * 30
 
 export async function decode(token) {
   try {
-    return jsonwebtoken.verify(token, process.env.JWT_SECRET)
+    return jsonwebtoken.verify(token, process.env.SECRET)
   } catch (err) {
     return null
   }
 }
 
 export async function sign(attrs, opts = {}) {
-  return jsonwebtoken.sign(attrs, process.env.JWT_SECRET, opts)
+  return jsonwebtoken.sign(attrs, process.env.SECRET, opts)
 }
 
 export async function token(user, opts = {}) {

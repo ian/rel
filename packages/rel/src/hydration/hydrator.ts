@@ -13,7 +13,7 @@ import {
 } from "../types"
 
 import Rel from "../index"
-import Reducer from "./reducer"
+import Reducer from "../server/reducer"
 
 export default class HydratorInstance implements Hydrator {
   _inputs: {
@@ -36,6 +36,15 @@ export default class HydratorInstance implements Hydrator {
         new Date().toISOString()
       )
     )
+  }
+
+  auth(...strategies: Plugin[]) {
+    Array(strategies)
+      .flat()
+      .forEach((plugin) => {
+        plugin(this)
+      })
+    return this
   }
 
   schema(...models: Model[]) {
@@ -77,9 +86,10 @@ export default class HydratorInstance implements Hydrator {
     endpoints.forEach((e) => this._endpoints.push(e))
   }
 
-  guards(...guards: Guard[]) {
-    guards.forEach((g) => this._guards.push(g))
-  }
+  // IH: Unsure if we want to support this
+  // directives(...directives: Guard[]) {
+  //   directives.forEach((g) => this._directives.push(g))
+  // }
 
   reduce() {
     const reducer = new Reducer()
@@ -124,7 +134,6 @@ export default class HydratorInstance implements Hydrator {
       })
     })
 
-    // @todo - iterate over the hydration schema and reduce
     return reducer.reduced()
   }
 }

@@ -10,11 +10,11 @@ import {
   ServerEvents,
   HydrateableObject,
 } from "../types"
-import Hydrator from "./hydrator"
+import Hydrator from "../hydration/hydrator"
 import Events from "./events"
 
 import { logger } from "./logging"
-import { generateResolvers, generateDirectiveResolvers } from "./resolvers"
+import { generateResolvers, generateDirectiveResolvers } from "../resolvers"
 import { generateTypeDefs } from "./typeDefs"
 import Cypher, { ConnectionConfig } from "../cypher"
 import { CypherInstance } from "../cypher/connection"
@@ -62,15 +62,21 @@ export default class Server {
     return this
   }
 
+  auth(...auth: Plugin[]) {
+    this._hydrator.auth(...auth)
+    return this
+  }
+
   plugins(...plugins: Plugin[]) {
     this._hydrator.plugins(...plugins)
     return this
   }
 
-  guards(...guards: Guard[]) {
-    this._hydrator.guards(...guards)
-    return this
-  }
+  // IH: Unsure if we want to support this
+  // directives(...guards: Guard[]) {
+  //   this._hydrator.directives(...guards)
+  //   return this
+  // }
 
   endpoints(...endpoints: Endpoint[]) {
     this._hydrator.endpoints(...endpoints)
@@ -109,8 +115,8 @@ export default class Server {
         },
       })
 
-      const graphql = async (query, variables?) =>
-        apollo.executeOperation({ query, variables })
+      const graphql = async (query, variables?, http?) =>
+        apollo.executeOperation({ query, variables, http })
 
       this._app.register(
         apollo.createHandler({

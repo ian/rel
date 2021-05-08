@@ -23,38 +23,55 @@ describe("relations guards", () => {
   })
 
   it("should add guards", async () => {
-    const { typeDefs } = await server(
+    const { cypher, graphql } = await server(
       Rel.model("Author", {
         name: Rel.string(),
         books: Rel.relation("AUTHORED").to("Book"),
       }),
       Rel.model("Book", {
-        name: Rel.string().guard(Rel.guard("admin")),
+        name: Rel.string().guard(guard),
         author: Rel.relation("AUTHORED")
           .to("Author")
-          .guard(Rel.guard("admin"))
+          .guard(guard)
           .inbound()
           .singular(),
-      })
+      }).endpoints({ list: true })
     )
 
-    expect(typeDefs).toMatch(`type Book {
-  id: UUID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String @admin
-  author: Author @admin
-}`)
+    //     expect(typeDefs).toMatch(`type Book {
+    //   id: UUID!
+    //   createdAt: DateTime!
+    //   updatedAt: DateTime!
+    //   name: String @admin
+    //   author: Author @admin
+    // }`)
+    //   })
+
+    const book = await cypher.create("Book", { name: "The Great Gastby" })
+
+    const { data, errors } = await graphql(`
+      query {
+        ListBooks {
+          id
+          author {
+            id
+          }
+        }
+      }
+    `)
+
+    // expect(data.ListBooks).toEqual([{ id: book.id, author: null }])
+    // expect(errors).toEqual("foo")
   })
+})
+
+const guard = Rel.guard("myGuard").handler(() => {
+  console.log("myGuard")
+  throw new Error("GUARDED")
 })
 
 const server = (...schema) => {
   return testServer({ log: false })
     .models(...schema)
-    .guards(
-      Rel.guard("admin").handler(() => {
-        throw new Error("GUARDED")
-      })
-    )
-    .start()
+    .runtime()
 }

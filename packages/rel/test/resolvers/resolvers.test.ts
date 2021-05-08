@@ -1,5 +1,5 @@
 import { GraphQLOperation } from "../../src/types"
-import { generateResolvers } from "../../src/server/resolvers"
+import { generateResolvers } from "../../src/resolvers"
 import { testServer } from "../../src"
 const { cypher } = testServer({ log: false }).runtime()
 

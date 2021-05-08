@@ -17,7 +17,6 @@ export default Rel.query(
       const token = await crypto.token(user)
 
       return {
-        // admin: user.admin,
         user,
         token,
       }

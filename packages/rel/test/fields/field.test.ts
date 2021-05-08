@@ -8,14 +8,7 @@ class MyField extends Fields.Field {
 }
 
 const server = (schema) => {
-  return testServer({ log: false })
-    .schema(schema)
-    .guards(
-      Rel.guard("admin").handler(() => {
-        throw new Error("GUARDED")
-      })
-    )
-    .runtime()
+  return testServer({ log: false }).schema(schema).runtime()
 }
 
 describe("functions", () => {
@@ -92,24 +85,6 @@ describe("required", () => {
 
     expect(typeDefs).toMatch(`type Book {
   field: String!
-}`)
-  })
-})
-
-describe("guard", () => {
-  it("should set the guard", async () => {
-    const { typeDefs } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().guard(Rel.guard("admin")),
-        },
-        { id: false, timestamps: false }
-      )
-    )
-
-    expect(typeDefs).toMatch(`type Book {
-  field: String @admin
 }`)
   })
 })
