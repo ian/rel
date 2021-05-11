@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/runrel/rel/compare/@reldb/auth@0.2.1...@reldb/auth@0.5.0) (2021-05-11)
+
+**Note:** Version bump only for package @reldb/auth
+
+
+
+
+
 ## [0.4.1](https://github.com/runrel/rel/compare/rel-plugin-social@0.3.6...rel-plugin-social@0.4.1) (2021-05-07)
 
 **Note:** Version bump only for package rel-plugin-social
