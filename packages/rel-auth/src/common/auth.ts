@@ -2,7 +2,9 @@ import Rel, { Types } from "@reldb/run"
 
 import MeEndpoint from "../endpoints/me"
 
-export default (hydrator: Types.Hydrator) => {
+export default (hydration: Types.HydrationOpts) => {
+  const { hydrator } = hydration
+
   hydrator.outputs(
     Rel.output("Profile", {
       id: Rel.uuid().required(),

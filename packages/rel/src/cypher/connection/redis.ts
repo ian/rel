@@ -3,10 +3,10 @@ import { Cypher1Response, CypherResponse } from "../../types"
 
 import { Geo } from "../../util/geo"
 import Events from "../../server/events"
-import ConnectionInstance from "./instance"
+import Cypher from "../instance"
 import { beautifyCypher } from "../util/beautify"
 
-export default class RedisGraphConnection extends ConnectionInstance {
+export default class RedisGraphConnection extends Cypher {
   config: {
     host: string
     username: string

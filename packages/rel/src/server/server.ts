@@ -1,21 +1,11 @@
 import Fastify, { FastifyInstance } from "fastify"
 import { ApolloServer } from "apollo-server-fastify"
-import { makeExecutableSchema } from "@graphql-tools/schema"
 
-import {
-  Guard,
-  Plugin,
-  Model,
-  Endpoint,
-  ServerEvents,
-  HydrateableObject,
-} from "../types"
-import Hydrator from "../hydration/hydrator"
+import { Plugin, Model, Endpoint, ServerEvents } from "../types"
+import Hydrator from "./hydrator"
 import Events from "./events"
 
 import { logger } from "./logging"
-import { generateResolvers, generateDirectiveResolvers } from "../resolvers"
-import { generateTypeDefs } from "./typeDefs"
 import Cypher, { ConnectionConfig } from "../cypher"
 import { CypherInstance } from "../cypher/connection"
 
@@ -84,25 +74,15 @@ export default class Server {
   }
 
   runtime() {
-    const reduced = this._hydrator.reduce()
-
-    const typeDefs = generateTypeDefs(reduced)
-    const resolvers = generateResolvers(reduced, { cypher: this._cypher })
-    const directives = generateDirectiveResolvers(reduced, {
-      cypher: this._cypher,
-    })
+    const { schema, typeDefs } = this._hydrator.runtime()
 
     try {
-      const schema = makeExecutableSchema({
-        typeDefs,
-        resolvers,
-        directiveResolvers: directives,
-      })
-
       const apollo = new ApolloServer({
         schema,
-        resolvers,
         plugins: [logger],
+        context: ({ req }) => ({
+          cypher: this._cypher,
+        }),
         formatError: (err) => {
           // Don't give the specific errors to the client.
           if (err.message.startsWith("Database Error: ")) {

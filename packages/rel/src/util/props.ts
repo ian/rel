@@ -1,5 +1,5 @@
 import { Field } from "../types"
-import { Relation } from "../meta"
+import { Relation } from "../relations"
 import { ModelProperties } from "../types"
 import { getTopmostParentClass } from "./object"
 
@@ -33,6 +33,37 @@ export function duplicateProps(fields: { [fieldName: string]: Field }) {
     const clone = Object.assign({}, field)
     Object.setPrototypeOf(clone, Object.getPrototypeOf(field))
     acc[name] = clone.required(false)
+    return acc
+  }, {})
+}
+
+export function composeInputProps(fields: { [fieldName: string]: Field }) {
+  return Object.entries(fields).reduce((acc, entry) => {
+    const [name, field] = entry
+    acc[name] = {
+      type: field.isRequired ? `${field.type}!` : field.type,
+    }
+    return acc
+  }, {})
+}
+
+export function composeWhereProps(fields: { [fieldName: string]: Field }) {
+  return Object.entries(fields).reduce((acc, entry) => {
+    const [name, field] = entry
+    acc[name] = {
+      type: field.type,
+    }
+    return acc
+  }, {})
+}
+
+export function composeOutputProps(fields: { [fieldName: string]: Field }) {
+  return Object.entries(fields).reduce((acc, entry) => {
+    const [name, field] = entry
+    acc[name] = {
+      type: field.isRequired ? `${field.type}!` : field.type,
+      resolve: field.resolver,
+    }
     return acc
   }, {})
 }

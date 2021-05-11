@@ -1,9 +1,19 @@
-import Meta from "./meta"
-import { Rel } from "./types"
+// import Meta from "./meta"
+import Objects from "./objects"
+import Fields from "./fields"
+import Relations from "./relations"
+import Endpoints from "./endpoints"
+import Guards from "./guards"
 
-export default Meta as Rel
+export default {
+  ...Objects,
+  ...Fields,
+  ...Relations,
+  ...Endpoints,
+  ...Guards,
+}
 
-export { Server, Hydrator, Reducer } from "./server"
+export { Server, Hydrator } from "./server"
 export { default as testServer } from "./server/testServer"
 
 export { default as Connection } from "./cypher"

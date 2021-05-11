@@ -6,4 +6,8 @@ export default class Int extends Field {
   constructor() {
     super("Int")
   }
+
+  get scalar() {
+    return "Int"
+  }
 }

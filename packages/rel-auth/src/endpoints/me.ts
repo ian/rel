@@ -7,8 +7,8 @@ export default Rel.query(
     token: Rel.string().required(),
   },
   Rel.ref("Auth"),
-  async (runtime) => {
-    const { params, cypher } = runtime
+  async (obj, params, context) => {
+    const { cypher } = context
     const decoded = await crypto.decode(params.token)
 
     if (decoded) {

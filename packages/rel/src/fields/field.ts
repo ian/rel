@@ -1,19 +1,20 @@
 import {
-  Field,
   FieldRuntimeOpts,
   Guard,
-  PropertyHandler,
-  ReducibleProperty,
+  Resolver,
+  HydrationOpts,
   Runtime,
+  HydrateableProperty,
+  HydrationPropertyOpts,
 } from "../types"
 
-export default abstract class FieldImpl implements Field {
+export default abstract class Field implements HydrateableProperty {
   _label: string
   _required: boolean = false
   _autogen: boolean = false
   _guard: Guard = null
-  _handler: PropertyHandler = null
-  _default: PropertyHandler | any
+  _resolver: Resolver = null
+  _default: Resolver | any
 
   constructor(label: string) {
     this._label = label
@@ -33,8 +34,8 @@ export default abstract class FieldImpl implements Field {
     return this
   }
 
-  handler(handler: PropertyHandler): Field {
-    this._handler = handler
+  resolve(resolver: Resolver): Field {
+    this._resolver = resolver
     return this
   }
 
@@ -45,23 +46,27 @@ export default abstract class FieldImpl implements Field {
 
   // abstract hydrate(hydrator, { obj })
 
-  hydrate(hydrator, { obj }) {
+  hydrate(hydration: HydrationOpts, opts: HydrationPropertyOpts) {
+    const { composer } = hydration
     // @todo
   }
 
-  reduce(): ReducibleProperty {
-    return {
-      returns: this._label,
-      required: this._required,
-      handler: this._handler,
-      guard: this._guard && this._guard.reduce(),
-    }
+  get type() {
+    return this._label
+  }
+
+  get isRequired() {
+    return this._required
+  }
+
+  get resolver() {
+    return this._resolver
   }
 
   defaulted(runtime: Runtime, opts: FieldRuntimeOpts): any {
     if (this._default) {
       if (typeof this._default === "function") {
-        return this._default(runtime, opts)
+        return this._default(...runtime, opts)
       } else {
         return this._default
       }

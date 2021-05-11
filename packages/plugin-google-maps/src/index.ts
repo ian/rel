@@ -1,4 +1,4 @@
-import { Fields } from "@reldb/run"
+import { Fields, Types } from "@reldb/run"
 
 import { geocodeAddress } from "./google"
 import { GeolocationOpts } from "./types"
@@ -17,8 +17,7 @@ export class GelocatedField extends Fields.Geo {
 
     // @todo - check for existence of from on object
 
-    this.default(async (runtime) => {
-      const { obj } = runtime
+    this.default(async (obj) => {
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null
       return geocoded.geo
@@ -37,8 +36,7 @@ export class GelocatedAddressField extends Fields.String {
 
     // @todo - check for existence of from on object
 
-    this.default(async (runtime) => {
-      const { obj } = runtime
+    this.default(async (obj) => {
       const geocoded = await geocodeAddress(key, obj[from])
       if (!geocoded) return null
       return geocoded.address
@@ -65,7 +63,7 @@ export default (init: Config) => {
   const { apiKey } = init
   key = apiKey
 
-  return (hydrator) => {
+  return (hydration: Types.HydrationOpts) => {
     // Currently we don't need to modify the schema, maybe in the future we will.
     // @todo - add google maps to "plugins" runtime global
   }

@@ -40,6 +40,7 @@
     "apollo-server-plugin-base": "^0.10.4",
     "fastify": "^3.11.0",
     "format-graphql": "^1.4.0",
+    "graphql-compose": "^8.0.1",
     "lerna": "^4.0.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",

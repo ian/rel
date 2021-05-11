@@ -22,18 +22,17 @@ describe("functions", () => {
 })
 
 describe("defaults", () => {
-  it("should have default values", async () => {
+  it("should by default be the type", async () => {
     const { typeDefs } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField(),
-        },
-        { id: false, timestamps: false }
-      )
+      Rel.model("Book", {
+        field: new MyField(),
+      })
     )
 
     expect(typeDefs).toMatch(`type Book {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   field: String
 }`)
   })
@@ -42,48 +41,45 @@ describe("defaults", () => {
 describe("required", () => {
   it("should set required", async () => {
     const { typeDefs } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().required(),
-        },
-        { id: false, timestamps: false }
-      )
+      Rel.model("Book", {
+        field: new MyField().required(),
+      })
     )
 
     expect(typeDefs).toMatch(`type Book {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   field: String!
 }`)
   })
 
   it("should allow it to be specified false", async () => {
     const { typeDefs } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().required(false),
-        },
-        { id: false, timestamps: false }
-      )
+      Rel.model("Book", {
+        field: new MyField().required(false),
+      })
     )
 
     expect(typeDefs).toMatch(`type Book {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   field: String
 }`)
   })
 
   it("should allow it to be specified true", async () => {
     const { typeDefs } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().required(true),
-        },
-        { id: false, timestamps: false }
-      )
+      Rel.model("Book", {
+        field: new MyField().required(true),
+      })
     )
 
     expect(typeDefs).toMatch(`type Book {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   field: String!
 }`)
   })
@@ -92,13 +88,9 @@ describe("required", () => {
 describe("default", () => {
   it("should set the default when const", async (done) => {
     const { graphql } = server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().default("const"),
-        },
-        { id: false, timestamps: false }
-      ).endpoints(true)
+      Rel.model("Book", {
+        field: new MyField().default("const"),
+      }).endpoints(true)
     )
 
     const { data, errors } = await graphql(`
@@ -117,13 +109,9 @@ describe("default", () => {
 
   it("should set the default when function", async (done) => {
     const { graphql } = server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().default(() => "function"),
-        },
-        { id: false, timestamps: false }
-      ).endpoints(true)
+      Rel.model("Book", {
+        field: new MyField().default(() => "function"),
+      }).endpoints(true)
     )
 
     const { data, errors } = await graphql(`
@@ -144,13 +132,9 @@ describe("default", () => {
 describe("resolver", () => {
   it("should use the resolver value", async (done) => {
     const { graphql } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().handler(() => "resolved"),
-        },
-        { id: false, timestamps: false }
-      ).endpoints(true)
+      Rel.model("Book", {
+        field: new MyField().resolve(() => "resolved"),
+      }).endpoints(true)
     )
 
     const { data, errors } = await graphql(`

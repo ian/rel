@@ -64,6 +64,8 @@ describe("default properties", () => {
         }
       }
     `)
+
+    expect(firstBook?.errors).toBeUndefined()
     expect(firstBook?.data.book.title).toBe("The Great Gatsby")
     expect(firstBook?.data.book.slug).toBe("the-great-gatsby")
 
@@ -75,6 +77,7 @@ describe("default properties", () => {
         }
       }
     `)
+    expect(secondBook?.errors).toBeUndefined()
     expect(secondBook?.data.book.title).toBe("The Great Gatsby")
     expect(secondBook?.data.book.slug).toBe("the-great-gatsby-1")
   })

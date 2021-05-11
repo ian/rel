@@ -1,6 +1,5 @@
-import { Field } from "../types"
-import BaseField from "./field"
-export default class Array extends BaseField {
+import Field from "./field"
+export default class Array extends Field {
   _contains = null
 
   constructor(contains: Field) {

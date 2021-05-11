@@ -6,4 +6,8 @@ export default class DateTime extends Field {
   constructor() {
     super("DateTime")
   }
+
+  get scalar() {
+    return "DateTime"
+  }
 }

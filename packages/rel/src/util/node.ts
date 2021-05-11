@@ -2,7 +2,7 @@ import _ from "lodash"
 
 function callIfFunction(objOrFunc, runtime) {
   if (typeof objOrFunc === "function") {
-    return objOrFunc(runtime)
+    return objOrFunc(...runtime)
   } else {
     return objOrFunc
   }

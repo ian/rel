@@ -9,4 +9,8 @@ export default class PhoneNumber extends Field {
   constructor() {
     super("PhoneNumber")
   }
+
+  get scalar() {
+    return "PhoneNumber"
+  }
 }

@@ -6,4 +6,8 @@ export default class Boolean extends Field {
   constructor() {
     super("Boolean")
   }
+
+  get scalar() {
+    return "Boolean"
+  }
 }

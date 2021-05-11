@@ -12,9 +12,9 @@ export default class Slug extends String {
       throw new Error('slug() requires { from: "..." } param')
     }
 
-    this.default(async (runtime, runtimeOpts) => {
-      const { obj, cypher } = runtime
-      const { modelName, fieldName } = runtimeOpts
+    this.default(async (obj, params, context, info, opts) => {
+      const { cypher } = context
+      const { modelName, fieldName } = opts
 
       if (obj[fieldName]) {
         const slug = obj[fieldName].slug.trim()

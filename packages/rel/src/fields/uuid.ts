@@ -6,4 +6,8 @@ export default class UUID extends Field {
   constructor() {
     super("UUID")
   }
+
+  get scalar() {
+    return "UUID"
+  }
 }

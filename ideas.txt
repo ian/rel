@@ -9,7 +9,7 @@
   jobs: {
     hourlyDoCalculations: {
       cron: "...",
-      handler: (job) => {
+      resolver:  (job) => {
         ...
       }
     }

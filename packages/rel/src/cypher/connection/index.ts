@@ -1,8 +1,8 @@
 // import Neo4jConnection from "./neo4j"
 import RedisConnection from "./redis"
-import CypherInstance from "./instance"
+import CypherInstance from "../instance"
 
-export { default as CypherInstance } from "./instance"
+export { default as CypherInstance } from "../instance"
 
 export enum ConnectionType {
   // NEO4J = "NEO4J",

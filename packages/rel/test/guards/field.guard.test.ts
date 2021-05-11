@@ -5,7 +5,7 @@ const server = (schema) => {
   return testServer({ log: false }).schema(schema).runtime()
 }
 
-const adminGuard = Rel.guard("admin").handler(() => {
+const adminGuard = Rel.guard("admin").resolve(() => {
   throw new Error("GUARDED")
 })
 
@@ -18,16 +18,15 @@ class MyField extends Fields.Field {
 describe("guard", () => {
   it("should set the guard", async () => {
     const { typeDefs, graphql } = await server(
-      Rel.model(
-        "Book",
-        {
-          field: new MyField().guard(adminGuard),
-        },
-        { id: false, timestamps: false }
-      ).endpoints(true)
+      Rel.model("Book", {
+        field: new MyField().guard(adminGuard),
+      }).endpoints(true)
     )
 
     expect(typeDefs).toMatch(`type Book {
+  id: UUID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   field: String
 }`)
 

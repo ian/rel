@@ -14,11 +14,11 @@ describe("relations guards", () => {
     )
 
     expect(typeDefs).toMatch(`type Book {
+  author: Author
   id: UUID!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String
-  author: Author
 }`)
   })
 
@@ -65,7 +65,7 @@ describe("relations guards", () => {
   })
 })
 
-const guard = Rel.guard("myGuard").handler(() => {
+const guard = Rel.guard("myGuard").resolve(() => {
   console.log("myGuard")
   throw new Error("GUARDED")
 })

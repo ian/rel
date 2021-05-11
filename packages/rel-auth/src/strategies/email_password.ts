@@ -1,8 +1,9 @@
-import Rel from "@reldb/run"
+import Rel, { Types } from "@reldb/run"
 import Auth from "../common/auth"
 import crypto from "../util/crypto"
 
-export default (hydrator) => {
+export default (hydration: Types.HydrationOpts) => {
+  const { hydrator } = hydration
   hydrator.auth(Auth)
 
   // Add email to user model
@@ -17,7 +18,8 @@ export default (hydrator) => {
       "LoginWithEmailPassword",
       { email: Rel.string().required(), password: Rel.string().required() },
       Rel.ref("Auth"),
-      async ({ cypher, params }) => {
+      async (obj, params, context) => {
+        const { cypher } = context
         const { email, password } = params
         const user = await cypher.find("User", { email })
         if (!user) throw new Error("Login failed, check email and password")
@@ -41,7 +43,8 @@ export default (hydrator) => {
       "RegisterWithEmailPassword",
       { email: Rel.string().required(), password: Rel.string().required() },
       Rel.ref("Auth"),
-      async ({ cypher, params }) => {
+      async (obj, params, context) => {
+        const { cypher } = context
         const { email, password } = params
 
         const existing = await cypher.find("User", { email })
