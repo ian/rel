@@ -54,8 +54,8 @@ export default class GraphQLEndpointImpl implements GraphQLEndpoint {
     const { composer } = opts
     const args = this._params ? composeInputProps(this._params) : null
     const type = this._returns.isRequired
-      ? `${this._returns.type}!`
-      : this._returns.type
+      ? `${this._returns.outputType}!`
+      : this._returns.outputType
 
     switch (this._operation) {
       case GraphQLOperation.QUERY:

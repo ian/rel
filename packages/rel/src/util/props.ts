@@ -41,7 +41,7 @@ export function composeInputProps(fields: { [fieldName: string]: Field }) {
   return Object.entries(fields).reduce((acc, entry) => {
     const [name, field] = entry
     acc[name] = {
-      type: field.isRequired ? `${field.type}!` : field.type,
+      type: field.isRequired ? `${field.inputType}!` : field.inputType,
     }
     return acc
   }, {})
@@ -51,7 +51,7 @@ export function composeWhereProps(fields: { [fieldName: string]: Field }) {
   return Object.entries(fields).reduce((acc, entry) => {
     const [name, field] = entry
     acc[name] = {
-      type: field.type,
+      type: field.inputType,
     }
     return acc
   }, {})
@@ -61,7 +61,7 @@ export function composeOutputProps(fields: { [fieldName: string]: Field }) {
   return Object.entries(fields).reduce((acc, entry) => {
     const [name, field] = entry
     acc[name] = {
-      type: field.isRequired ? `${field.type}!` : field.type,
+      type: field.isRequired ? `${field.outputType}!` : field.outputType,
       resolve: field.resolver,
     }
     return acc

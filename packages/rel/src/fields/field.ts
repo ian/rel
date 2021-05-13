@@ -51,7 +51,11 @@ export default abstract class Field implements HydrateableProperty {
     // @todo
   }
 
-  get type() {
+  get inputType() {
+    return this._label
+  }
+
+  get outputType() {
     return this._label
   }
 

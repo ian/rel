@@ -1,0 +1,52 @@
+{
+  "name": "rel-plugin-cloudinary",
+  "description": "Cloudinary support for Rel",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "yarn clean && tsc",
+    "build:watch": "yarn clean && tsc --watch",
+    "test": "jest --detectOpenHandles --runInBand",
+    "test:watch": "jest --watch --detectOpenHandles --runInBand",
+    "test:ci": "jest --detectOpenHandles --runInBand",
+    "test:coverage": "jest --coverage --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/runrel/rel.git"
+  },
+  "keywords": [
+    "rel"
+  ],
+  "author": "Ian Hunter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/runrel/rel/issues"
+  },
+  "homepage": "https://github.com/runrel/rel/packages/rel-google-maps#readme",
+  "dependencies": {
+    "@reldb/run": "^0.12.0",
+    "cloudinary": "^1.25.1"
+  },
+  "devDependencies": {
+    "@pollyjs/core": "^5.1.0",
+    "@reldb/testing": "^0.2.0",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.28",
+    "env-cmd": "^10.1.0",
+    "jest": "^26.6.3",
+    "setup-polly-jest": "^0.9.1",
+    "ts-jest": "^26.5.3",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3",
+    "typescript-transform-paths": "^2.2.3"
+  }
+}

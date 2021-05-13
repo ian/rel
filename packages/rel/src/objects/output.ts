@@ -7,13 +7,7 @@ import {
   OutputProperties,
   Hydrator,
 } from "../types"
-import {
-  splitProps,
-  duplicateProps,
-  composeInputProps,
-  composeOutputProps,
-  composeWhereProps,
-} from "../util/props"
+import { splitProps, composeOutputProps } from "../util/props"
 
 export default class OutputImpl implements Output {
   _name: string
