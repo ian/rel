@@ -9,26 +9,32 @@ import spawn from "cross-spawn"
 import inquirer from "inquirer"
 import crypto from "crypto"
 import alpha from "./alpha"
+
+function hash(str) {
+  return crypto.createHash("sha256").update(str).digest("hex")
+}
+
 ;(async () => {
   // const pkg = require(__dirname + "/../package.json")
-
-  const passcode = crypto
-    .createHash("sha256")
-    .update(process.argv[process.argv.length - 1])
-    .digest("hex")
+  const passcode = hash(process.argv[process.argv.length - 1])
 
   if (
     passcode !==
-    "1f5bb3d1b432df557d89b1c29403b55702e6300eb984f5ab80928490b860bc56"
+    "46148637a86de480c59e060b02114c029c04dfd17e89cd615adc83ee2faa83a2"
   ) {
     alpha()
     process.exit()
   }
 
-  console.log()
-  // console.log(`Rel installer v${pkg.version}`)
-  console.log("Rel installer")
-  console.log()
+  console.log(`
+
+  ___     _ 
+ | _ \\___| |
+ |   / -_) |
+ |_|_\\___|_| Installer
+
+ Rel is the ultimate backend framework for Javascripters.
+`)
 
   inquirer
     .prompt([
@@ -46,6 +52,7 @@ import alpha from "./alpha"
 
       const projectDir = `${dir}/${projectName}`
 
+      console.log("")
       const initializing = ora(`Initializing Project ${projectName}`).start()
 
       await fsUtils.writeFileSync(
@@ -94,25 +101,25 @@ dist
           .catch(console.log)
       }
 
-      initializing.succeed("Initialized")
+      initializing.succeed(`Initialized Directory ./${projectName}`)
 
-      console.log()
-      console.log("Installing Dependencies")
-      console.log()
+      const dependencies = ora(`Installing Dependencies`).start()
 
       process.chdir(`./${projectName}`)
 
       await spawnAsync(`yarn`, ["install"], {
-        stdio: "inherit",
+        // stdio: "inherit",
       }).catch((err) => {
         console.error(err)
       })
 
       await spawnAsync(`yarn`, ["add", "@reldb/cli", "@reldb/run"], {
-        stdio: "inherit",
+        // stdio: "inherit",
       }).catch((err) => {
         console.error(err)
       })
+
+      dependencies.succeed("Dependencies Installed")
 
       console.log()
       console.log(`Rel installed into ./${projectName}`)
@@ -123,7 +130,7 @@ dist
       console.log("    Builds the app for production")
       console.log()
       console.log("  " + chalk.blueBright("yarn start"))
-      console.log("    Builds the app for production")
+      console.log("    Runs the production app")
       console.log()
       console.log("  " + chalk.blueBright("yarn dev"))
       console.log("    Start the development server")
