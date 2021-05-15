@@ -1,7 +1,7 @@
 {
   "name": "rel-plugin-cloudinary",
   "description": "Cloudinary support for Rel",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "publishConfig": {
     "access": "public"
   },
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/runrel/rel/packages/rel-google-maps#readme",
   "dependencies": {
-    "@reldb/run": "^0.12.0",
+    "@reldb/run": "^0.12.1",
     "cloudinary": "^1.25.1"
   },
   "devDependencies": {
