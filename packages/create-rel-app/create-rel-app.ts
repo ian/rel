@@ -83,7 +83,7 @@ function hash(str) {
 
       await fsUtils.writeFileSync(
         `${projectDir}/.gitignore`,
-        `.node_modules
+        `node_modules
 dist
 .env*`
       )
