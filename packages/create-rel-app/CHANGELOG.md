@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/relrun/rel/compare/create-rel-app@0.9.1...create-rel-app@0.9.2) (2021-05-16)
+
+**Note:** Version bump only for package create-rel-app
+
+
+
+
+
 ## [0.9.1](https://github.com/relrun/rel/compare/create-rel-app@0.9.0...create-rel-app@0.9.1) (2021-05-15)
 
 **Note:** Version bump only for package create-rel-app
