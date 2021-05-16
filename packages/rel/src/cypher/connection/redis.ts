@@ -1,7 +1,6 @@
 import { Graph } from "redisgraph.js"
 import { Cypher1Response, CypherResponse } from "../../types"
 
-import { Geo } from "../../util/geo"
 import Events from "../../server/events"
 import Cypher from "../instance"
 import { beautifyCypher } from "../util/beautify"
@@ -33,7 +32,10 @@ export default class RedisGraphConnection extends Cypher {
   async raw(cypher): Promise<any> {
     if (!this.config) throw new Error("Missing Redis connection config")
 
-    let graph = new Graph("graph", this.config.host, this.config.port, {})
+    let graph = new Graph("graph", this.config.host, this.config.port, {
+      username: this.config.username,
+      password: this.config.password,
+    })
 
     const startTime = process.hrtime()
 
