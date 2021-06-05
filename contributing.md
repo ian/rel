@@ -18,9 +18,10 @@ You will need a redis DB running
 Next, edit your `.env` and set your redis database parameters:
 
 ```
-DB_URL=bolt://localhost:7687
-DB_USERNAME=neo4j
-DB_PASSWORD= ... [DB password] ...
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_USERNAME=
+REDIS_PASSWORD=
 ```
 
 That's it for configuration.

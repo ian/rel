@@ -110,14 +110,10 @@ In general, using rel you will likely never have to write Cypher since the persi
 
 ## Architecture
 
-![Rel Architecture](docs/Architecture.png)
+![Rel Architecture](docs/architecture.jpg)
 
 # Contributing
 
-We are always looking for backend and graph aficionados to help take rel to the next phase.
+We are actively looking for backend and graph developers to help make rel a success.
 
 Please see our contributing.md.
-
-# Contributors
-
-- Ian Hunter [@ian](https://github.com/ian) - Rel
