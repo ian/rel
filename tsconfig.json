@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "removeComments": true,
+    "declaration": true,
+    "sourceMap": true,
+    "lib": ["es6", "DOM"]
+  },
+  "include": ["src"],
+  "exclude": ["**/node_modules", "./dist", "./test"]
+}
