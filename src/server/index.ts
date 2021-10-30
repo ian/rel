@@ -1,23 +1,21 @@
-require("dotenv").config()
-
 import Fastify, { FastifyInstance } from "fastify"
 import cors from "fastify-cors"
 import mercurius from "mercurius"
 import { renderPlaygroundPage } from "graphql-playground-html"
 
 // import { plugin as bullboard } from "./jobs"
+// import { emitter } from "../pubsub"
 
-import { emitter } from "../pubsub"
-
-type Config = {
+export type Config = {
   schema: string
   resolvers: {
     [key: string]: any
   }
 }
 
-type ServerInstance = FastifyInstance & {
+export type ServerInstance = FastifyInstance & {
   start: () => Promise<void>
+  graphql: (query: string, variables?: any) => Promise<any>
 }
 
 export default function ServerInstance(config: Config) {
@@ -29,15 +27,15 @@ export default function ServerInstance(config: Config) {
   this.app.register(mercurius, {
     schema,
     resolvers,
-    subscription: {
-      emitter,
-      // verifyClient: (info, next) => {
-      //   if (info.req.headers['x-fastify-header'] !== 'fastify is awesome !') {
-      //     return next(false) // the connection is not allowed
-      //   }
-      //   next(true) // the connection is allowed
-      // },
-    },
+    // subscription: {
+    //   emitter,
+    //   // verifyClient: (info, next) => {
+    //   //   if (info.req.headers['x-fastify-header'] !== 'fastify is awesome !') {
+    //   //     return next(false) // the connection is not allowed
+    //   //   }
+    //   //   next(true) // the connection is allowed
+    //   // },
+    // },
   })
 
   // // Setup BullMQ
@@ -67,4 +65,9 @@ export default function ServerInstance(config: Config) {
     this.app
       .listen(process.env.PORT || 4000, "0.0.0.0")
       .then((url) => console.log(`🚀  Server ready at ${url}`))
+
+  this.graphql = async (query: string, variables?: any) => {
+    await this.app.ready()
+    return this.app.graphql(query, variables).catch(console.error)
+  }
 }

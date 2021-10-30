@@ -12,7 +12,8 @@
     "test": "jest --detectOpenHandles --runInBand",
     "test:watch": "jest --watch --detectOpenHandles --runInBand",
     "test:ci": "jest --detectOpenHandles --runInBand",
-    "test:coverage": "jest --coverage --detectOpenHandles"
+    "test:coverage": "jest --coverage --detectOpenHandles",
+    "redis": "docker run -p 6379:6379 redislabs/redismod"
   },
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",
