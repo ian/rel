@@ -1,0 +1,11 @@
+{
+  "name": "reljs",
+  "version": "0.0.0",
+  "description": "Rel is the features-driven backend framework. It’s 100% JavaScript, fully customizable and developer-first.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian Hunter <ian@rel.run>",
+  "license": "MIT"
+}
