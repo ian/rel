@@ -13,6 +13,7 @@
     "test:watch": "jest --watch --detectOpenHandles --runInBand",
     "test:ci": "jest --detectOpenHandles --runInBand",
     "test:coverage": "jest --coverage --detectOpenHandles",
+    "example": "(cd example && yarn dev)",
     "redis": "docker run -p 6379:6379 redislabs/redismod"
   },
   "author": "Ian Hunter <ian@rel.run>",
