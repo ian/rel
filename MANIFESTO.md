@@ -1,4 +1,4 @@
-# Product Manifesto
+# Manifesto
 
 Rel has been a development dream of mine for about 5 years now. It actually started as a proof of concept around combining a GraphQL server and a Graph database (Neo4j at the time)
 
