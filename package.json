@@ -32,6 +32,8 @@
     "fastify-cors": "^6.0.2",
     "graphql-playground-html": "^1.6.29",
     "mercurius": "^8.8.0",
-    "mqemitter-redis": "^4.1.0"
+    "moment": "^2.29.1",
+    "mqemitter-redis": "^4.1.0",
+    "redisgraph.js": "^2.3.0"
   }
 }
