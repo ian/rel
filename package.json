@@ -13,9 +13,8 @@
     "test:watch": "jest --watch --detectOpenHandles --runInBand",
     "test:ci": "jest --detectOpenHandles --runInBand",
     "test:coverage": "jest --coverage --detectOpenHandles",
-    "example": "npm-run-all --parallel example:server redis",
-    "example:server": "ts-node ./example/server --cwd ./example",
-    "redis": "docker run -p 6379:6379 redislabs/redismod >/dev/null 2>&1"
+    "example": "ts-node ./example/server --cwd ./example",
+    "redis": "docker run -p 6379:6379 redislabs/redismod"
   },
   "author": "Ian Hunter <ian@rel.run>",
   "license": "MIT",

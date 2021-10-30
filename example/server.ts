@@ -1,6 +1,6 @@
 require("dotenv").config()
 
-import { cypher, Server } from "../src/server/"
+import { cypher, Server } from "../src/"
 
 const schema = `
 type Thing {
