@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/thelinuxlich/example-graphback-redisgraph#readme",
   "dependencies": {
+    "@graphback/codegen-schema": "^1.1.2",
     "apollo-server-express": "^3.5.0",
     "express": "^4.17.1",
     "graphback": "^1.1.2",
