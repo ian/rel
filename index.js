@@ -5,6 +5,7 @@ import { buildGraphbackAPI } from 'graphback'
 import { createRedisGraphProvider } from 'runtime-redisgraph'
 import expressPlayground from 'graphql-playground-middleware-express'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
+import loadListeners from './loadListeners.js'
 
 const app = express()
 app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
@@ -17,7 +18,6 @@ type Note {
   archived: Boolean!
 } 
 `
-
 // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
 
 const dataProviderCreator = createRedisGraphProvider()
@@ -42,6 +42,8 @@ await server.start()
 const httpServer = http.createServer(app)
 server.applyMiddleware({ app })
 
-await httpServer.listen({ port: 4000 }, () => {
+httpServer.listen({ port: 4000 }, () => {
   console.log('Apollo Server on http://localhost:4000/graphql')
 })
+
+loadListeners()

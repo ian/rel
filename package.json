@@ -19,10 +19,12 @@
   "homepage": "https://github.com/thelinuxlich/example-graphback-redisgraph#readme",
   "dependencies": {
     "@graphback/codegen-schema": "^1.1.2",
+    "@nodelib/fs.walk": "^1.2.8",
     "apollo-server-express": "^3.5.0",
     "express": "^4.17.1",
     "graphback": "^1.1.2",
     "graphql-playground-middleware-express": "^1.7.23",
+    "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
     "runtime-redisgraph": "github:thelinuxlich/runtime-redisgraph"
   }
 }
