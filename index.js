@@ -6,6 +6,7 @@ import { createRedisGraphProvider } from 'runtime-redisgraph'
 import expressPlayground from 'graphql-playground-middleware-express'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import loadListeners from './loadListeners.js'
+import generateGQLClient from './generateGQLClient.js'
 
 const app = express()
 app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
@@ -47,3 +48,4 @@ httpServer.listen({ port: 4000 }, () => {
 })
 
 loadListeners()
+generateGQLClient()

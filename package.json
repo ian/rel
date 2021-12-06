@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/thelinuxlich/example-graphback-redisgraph#readme",
   "dependencies": {
+    "@genql/cli": "^2.8.0",
+    "@genql/runtime": "^2.8.0",
     "@graphback/codegen-schema": "^1.1.2",
     "@nodelib/fs.walk": "^1.2.8",
     "apollo-server-express": "^3.5.0",

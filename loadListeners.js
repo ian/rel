@@ -1,7 +1,7 @@
 import RedisStreamHelper from "redis-stream-helper"
 import fs from "fs"
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path'
+import { fileURLToPath } from 'url'
 import * as fsWalk from '@nodelib/fs.walk'
 const {
   listenForMessages,
