@@ -1,0 +1,6 @@
+"""@model"""
+type Note {
+  id: ID!
+  text: String!
+  archived: Boolean!
+}

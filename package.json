@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node backend/src/index.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "express": "^4.17.1",
     "graphback": "^1.1.2",
     "graphql-playground-middleware-express": "^1.7.23",
+    "pkg-dir": "^6.0.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
     "runtime-redisgraph": "github:thelinuxlich/runtime-redisgraph"
   }
