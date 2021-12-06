@@ -8,6 +8,7 @@ import generateGQLServer from './generateGQLServer.js'
 
 const app = express()
 app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
+
 // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
 
 const { contextCreator, resolvers, typeDefs} = generateGQLServer() 
