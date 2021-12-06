@@ -5,9 +5,13 @@ import expressPlayground from 'graphql-playground-middleware-express'
 import loadListeners from './loadListeners.js'
 import generateGQLClient from './generateGQLClient.js'
 import generateGQLServer from './generateGQLServer.js'
+import { packageDirectorySync } from 'pkg-dir'
+
+const dir = packageDirectorySync()
 
 const app = express()
 app.get('/playground', expressPlayground.default({ endpoint: '/graphql' }))
+app.use('/svelte', express.static(dir + '/frontend/svelte-typescript-app/public'))
 
 // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
 
