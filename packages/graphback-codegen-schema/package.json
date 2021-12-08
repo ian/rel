@@ -21,7 +21,8 @@
     "build": "tsc",
     "watch": "tsc -w ",
     "lint": "eslint -t stylish --project \"tsconfig.json\"",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "tsc"
   },
   "engines": {
     "node": ">=10.15.3"
