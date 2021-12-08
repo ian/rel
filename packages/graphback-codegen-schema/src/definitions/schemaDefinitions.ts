@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { GraphQLInputObjectType, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull, GraphQLField, getNamedType, isScalarType, GraphQLInputFieldMap, GraphQLScalarType, GraphQLNamedType, GraphQLInputField, isEnumType, isObjectType, isInputObjectType, GraphQLInputType, getNullableType, isListType } from "graphql";
+import { GraphQLInputObjectType, GraphQLNamedInputType, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull, GraphQLField, getNamedType, isScalarType, GraphQLInputFieldMap, GraphQLScalarType, GraphQLNamedType, GraphQLInputField, isEnumType, isObjectType, isInputObjectType, GraphQLInputType, getNullableType, isListType } from "graphql";
 import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, metadataMap, ModelDefinition, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from '@graphback/core';
 import { SchemaComposer } from 'graphql-compose';
 import { copyWrappingType } from './copyWrappingType';
@@ -292,7 +292,7 @@ export const buildMutationInputType = (schemaComposer: SchemaComposer<any>, mode
 
 function mapObjectInputFields(schemaComposer: SchemaComposer<any>, fields: GraphQLField<any, any>[], objectName: string): GraphQLInputField[] {
   return fields.map((field: GraphQLField<any, any>) => {
-    let namedType = getNamedType(field.type)
+    let namedType = getNamedType(field.type) as GraphQLNamedInputType
     let typeName = namedType.name
 
     let inputType
