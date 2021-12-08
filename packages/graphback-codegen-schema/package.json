@@ -10,12 +10,12 @@
   "author": "wtrocki@redhat.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aerogear/graphback.git"
+    "url": "git+https://github.com/thelinuxlich/graphback.git"
   },
   "bugs": {
-    "url": "https://github.com/aerogear/graphback/issues"
+    "url": "https://github.com/thelinuxlich/graphback/issues"
   },
-  "homepage": "https://github.com/aerogear/graphback/tree/master/packages/graphback-codegen-schema#readme",
+  "homepage": "https://github.com/thelinuxlich/graphback/tree/master/packages/graphback-codegen-schema#readme",
   "scripts": {
     "clean": "rimraf coverage dist types",
     "build": "tsc",
@@ -49,8 +49,5 @@
     "graphql-compose": "7.23.0",
     "graphql-metadata": "0.7.6",
     "pluralize": "8.0.0"
-  },
-  "peerDependencies": {
-    "graphql": "^15.8.0"
   }
 }

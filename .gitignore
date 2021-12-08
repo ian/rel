@@ -3,9 +3,6 @@ logs
 *.log
 npm-debug.log*
 
-## Distribution folder
-dist/
-
 ## Types
 types/
 
