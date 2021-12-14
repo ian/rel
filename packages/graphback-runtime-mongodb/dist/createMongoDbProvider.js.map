@@ -1,0 +1,1 @@
+{"version":3,"file":"createMongoDbProvider.js","sourceRoot":"","sources":["../src/createMongoDbProvider.ts"],"names":[],"mappings":";;;AAEA,+DAA4D;AAE5D;;;;GAIG;AACH,SAAgB,qBAAqB,CAAC,EAAM;IAC1C,OAAO,CAAC,KAAsB,EAAyB,EAAE;QACvD,OAAO,IAAI,yCAAmB,CAAC,KAAK,EAAE,EAAE,CAAC,CAAC;IAC5C,CAAC,CAAA;AACH,CAAC;AAJD,sDAIC"}

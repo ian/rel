@@ -1,0 +1,1 @@
+{"version":3,"file":"hasListType.js","sourceRoot":"","sources":["../../src/utils/hasListType.ts"],"names":[],"mappings":";;;AAAA,qCAAwE;AAExE,SAAgB,WAAW,CAAC,UAA6B;IACvD,IAAI,oBAAU,CAAC,UAAU,CAAC,EAAE;QAC1B,OAAO,IAAI,CAAC;KACb;SAAM,IAAI,wBAAc,CAAC,UAAU,CAAC,EAAE;QACrC,OAAO,WAAW,CAAC,UAAU,CAAC,MAAM,CAAC,CAAA;KACtC;IAED,OAAO,KAAK,CAAC;AACf,CAAC;AARD,kCAQC"}

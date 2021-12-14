@@ -1,0 +1,1 @@
+{"version":3,"file":"createKnexDbProvider.js","sourceRoot":"","sources":["../src/createKnexDbProvider.ts"],"names":[],"mappings":";;;AAEA,6DAA0D;AAE1D;;;;GAIG;AACH,SAAgB,oBAAoB,CAAC,EAAQ;IAC3C,OAAO,CAAC,KAAsB,EAAyB,EAAE;QACvD,OAAO,IAAI,uCAAkB,CAAC,KAAK,EAAE,EAAE,CAAC,CAAC;IAC3C,CAAC,CAAA;AACH,CAAC;AAJD,oDAIC"}
