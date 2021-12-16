@@ -34,7 +34,7 @@
 
     await client.subscription({
       deletedNote: {
-        id: true
+        __scalar: true
       }
     }).subscribe({
         next: ({deletedNote}) => {
@@ -58,7 +58,7 @@
 
   async function deleteNote(id: string) {
     await client.mutation({
-      deleteNote: [{ input: { id } }, { __typename: true }]
+      deleteNote: [{ input: { id } }, {__scalar: true}]
     })
     await reloadNotes()
   }

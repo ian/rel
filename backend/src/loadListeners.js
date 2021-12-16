@@ -17,7 +17,7 @@ const files = fsWalk.walkSync(dir + '/listeners', {entryFilter: entry => entry.n
 
 for(let i = 0; i < files.length; i++) {
     const file = files[i]
-    const streamKey = `rel:${file.path.replace("listeners/", "").replace("/"+file.name, "")}:${path.basename(file.name, '.js')}`
+    const streamKey = `rel:${file.path.replace(dir + "/listeners/", "").replace("/"+file.name, "")}:${path.basename(file.name, '.js')}`
     listeners[streamKey] = await import(file.path)
     await createStreamGroup(streamKey)
     addListener(streamKey)

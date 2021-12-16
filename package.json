@@ -24,6 +24,7 @@
     "@graphback/codegen-schema": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback-codegen-schema?master",
     "@graphql-tools/schema": "^8.3.1",
     "@nodelib/fs.walk": "^1.2.8",
+    "altair-fastify-plugin": "^4.2.1",
     "fastify": "^3.25.0",
     "fastify-static": "^4.5.0",
     "graphback": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback",

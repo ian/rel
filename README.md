@@ -9,6 +9,6 @@
 - go to frontend/svelte-typescript/app
 - npm install
 - npm run build
-- restart the GraphQL Server. You should see the frontend running at http://localhost:4000/svelte
+- restart the GraphQL Server. You should see the frontend running at http://127.0.0.1:4000/svelte/
 
-Go to http://localhost:4000/playground or consume the endpoint in http://localhost:4000/graphql
+Go to http://127.0.0.1:4000/altair or consume the endpoint in http://127.0.0.1:4000/graphql
