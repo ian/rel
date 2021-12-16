@@ -270,7 +270,7 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
         schemaComposer.Query.addFields(queryFields);
     }
     addVersionedMetadataFields(schemaComposer, models) {
-        const timeStampInputName = schemaDefinitions_1.getInputName(core_1.GraphbackTimestamp);
+        const timeStampInputName = schemaDefinitions_1.getInputName(core_1.Timestamp);
         let timestampInputType;
         let timestampType;
         for (const model of models) {
@@ -281,23 +281,23 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
             if (graphql_metadata_1.parseMetadata(markers.versioned, desc)) {
                 const updateField = model.fields[core_1.metadataMap.fieldNames.updatedAt];
                 const createAtField = model.fields[core_1.metadataMap.fieldNames.createdAt];
-                const errorMessage = (field) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${core_1.GraphbackTimestamp.name}" or remove the field.`;
-                if (createAtField && createAtField.type !== core_1.GraphbackTimestamp.name) {
+                const errorMessage = (field) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${core_1.Timestamp.name}" or remove the field.`;
+                if (createAtField && createAtField.type !== core_1.Timestamp.name) {
                     throw new Error(errorMessage(core_1.metadataMap.fieldNames.createdAt));
                 }
-                if (updateField && updateField.type !== core_1.GraphbackTimestamp.name) {
+                if (updateField && updateField.type !== core_1.Timestamp.name) {
                     throw new Error(errorMessage(core_1.metadataMap.fieldNames.updatedAt));
                 }
                 if (!timestampInputType) {
-                    if (schemaComposer.has(core_1.GraphbackTimestamp.name)) {
+                    if (schemaComposer.has(core_1.Timestamp.name)) {
                         timestampInputType = schemaComposer.getITC(timeStampInputName).getType();
                     }
                     else {
-                        schemaComposer.createScalarTC(core_1.GraphbackTimestamp);
-                        timestampInputType = schemaDefinitions_1.createInputTypeForScalar(core_1.GraphbackTimestamp);
+                        schemaComposer.createScalarTC(core_1.Timestamp);
+                        timestampInputType = schemaDefinitions_1.createInputTypeForScalar(core_1.Timestamp);
                         schemaComposer.add(timestampInputType);
                     }
-                    timestampType = schemaComposer.getSTC(core_1.GraphbackTimestamp.name).getType();
+                    timestampType = schemaComposer.getSTC(core_1.Timestamp.name).getType();
                 }
                 const metadataFields = schemaDefinitions_1.createVersionedFields(timestampType);
                 // metadata fields needed for @versioned

@@ -23,8 +23,8 @@ class DataSyncPlugin extends core_1.GraphbackPlugin {
         var _a;
         const schema = metadata.getSchema();
         const schemaComposer = new graphql_compose_1.SchemaComposer(schema);
-        if (!schemaComposer.has(core_1.GraphbackTimestamp.name)) {
-            schemaComposer.createScalarTC(core_1.GraphbackTimestamp);
+        if (!schemaComposer.has(core_1.Timestamp.name)) {
+            schemaComposer.createScalarTC(core_1.Timestamp);
         }
         const models = metadata.getModelDefinitions();
         if (models.length === 0) {
@@ -101,7 +101,7 @@ class DataSyncPlugin extends core_1.GraphbackPlugin {
     addDataSyncFieldsToModel(schemaComposer, model) {
         const name = model.graphqlType.name;
         const modelTC = schemaComposer.getOTC(name);
-        const TimestampSTC = schemaComposer.getSTC(core_1.GraphbackTimestamp.name);
+        const TimestampSTC = schemaComposer.getSTC(core_1.Timestamp.name);
         modelTC.addFields({
             [util_1.DataSyncFieldNames.lastUpdatedAt]: {
                 type: TimestampSTC.getType(),
@@ -134,7 +134,7 @@ class DataSyncPlugin extends core_1.GraphbackPlugin {
         const modelName = model.graphqlType.name;
         const modelTC = schemaComposer.getOTC(modelName);
         const updateInputType = schemaComposer.getITC(core_1.getInputTypeName(model.graphqlType.name, core_1.GraphbackOperationType.UPDATE));
-        const TimestampSTC = schemaComposer.getSTC(core_1.GraphbackTimestamp.name);
+        const TimestampSTC = schemaComposer.getSTC(core_1.Timestamp.name);
         // Add Delta Type to schema
         const DeltaOTC = schemaComposer.createObjectTC({
             name: deltaMappingHelper_1.getDeltaType(modelName),

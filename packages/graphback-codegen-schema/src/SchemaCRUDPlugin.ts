@@ -6,7 +6,7 @@ import { parseMetadata } from "graphql-metadata";
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose';
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils';
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql';
-import { getFieldName, metadataMap, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes,  GraphbackTimestamp, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core';
+import { Timestamp, getFieldName, metadataMap, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes,  FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core';
 import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters';
 import { buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName } from './definitions/schemaDefinitions';
 
@@ -344,7 +344,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
   }
 
   protected addVersionedMetadataFields(schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
-    const timeStampInputName = getInputName(GraphbackTimestamp);
+    const timeStampInputName = getInputName(Timestamp);
     let timestampInputType: GraphQLInputObjectType; let timestampType: GraphQLScalarType;
     for (const model of models) {
       const name = model.graphqlType.name;
@@ -354,26 +354,26 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       if (parseMetadata(markers.versioned, desc)) {
         const updateField = model.fields[metadataMap.fieldNames.updatedAt];
         const createAtField = model.fields[metadataMap.fieldNames.createdAt];
-        const errorMessage = (field: string) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${GraphbackTimestamp.name}" or remove the field.`
+        const errorMessage = (field: string) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${Timestamp.name}" or remove the field.`
 
-        if (createAtField && createAtField.type !== GraphbackTimestamp.name) {
+        if (createAtField && createAtField.type !== Timestamp.name) {
           throw new Error(errorMessage(metadataMap.fieldNames.createdAt));
         }
 
-        if (updateField && updateField.type !== GraphbackTimestamp.name) {
+        if (updateField && updateField.type !== Timestamp.name) {
           throw new Error(errorMessage(metadataMap.fieldNames.updatedAt));
         }
 
         if (!timestampInputType) {
-          if (schemaComposer.has(GraphbackTimestamp.name)) {
+          if (schemaComposer.has(Timestamp.name)) {
             timestampInputType = schemaComposer.getITC(timeStampInputName).getType();
           } else {
-            schemaComposer.createScalarTC(GraphbackTimestamp);
-            timestampInputType = createInputTypeForScalar(GraphbackTimestamp);
+            schemaComposer.createScalarTC(Timestamp);
+            timestampInputType = createInputTypeForScalar(Timestamp);
             schemaComposer.add(timestampInputType);
           }
 
-          timestampType = schemaComposer.getSTC(GraphbackTimestamp.name).getType();
+          timestampType = schemaComposer.getSTC(Timestamp.name).getType();
         }
 
         const metadataFields = createVersionedFields(timestampType);
