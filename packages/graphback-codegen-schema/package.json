@@ -10,12 +10,12 @@
   "author": "wtrocki@redhat.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thelinuxlich/graphback.git"
+    "url": "git+https://github.com/rel-js/graphback.git"
   },
   "bugs": {
-    "url": "https://github.com/thelinuxlich/graphback/issues"
+    "url": "https://github.com/rel-js/graphback/issues"
   },
-  "homepage": "https://github.com/thelinuxlich/graphback/tree/master/packages/graphback-codegen-schema#readme",
+  "homepage": "https://github.com/rel-js/graphback/tree/master/packages/graphback-codegen-schema#readme",
   "scripts": {
     "clean": "rimraf coverage dist types",
     "build": "tsc",
@@ -43,7 +43,7 @@
     "typescript": "4.1.3"
   },
   "dependencies": {
-    "@graphback/core": "https://gitpkg.now.sh/thelinuxlich/graphback/packages/graphback-core?master",
+    "@graphback/core": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback-core?master",
     "@graphql-tools/utils": "7.1.4",
     "graphql-compose": "7.23.0",
     "graphql-metadata": "0.7.6",
