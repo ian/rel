@@ -1,13 +1,16 @@
 <script lang="ts">
   import { Note, createClient } from '../../../gql-client'
   import { onMount } from 'svelte'
-
+  
   let archived = false
-  let text = 'Foo'
+  let text = 'Foo' 
 
-  const client = createClient({ url: 'http://localhost:4000/graphql' })
+  const client = createClient({ 
+    url: 'http://127.0.0.1:4000/graphql', 
+    subscription: {url: 'ws://127.0.0.1:4000/graphql'}
+  })
   let notes: Note[] = []
-
+  
   async function reloadNotes() {
     notes = await client.chain.query
       .findNotes()
@@ -15,6 +18,34 @@
   }
 
   onMount(async () => {
+    await client.subscription({
+      newNote: {
+        id: true
+      }
+    }).subscribe({
+        next: ({newNote}) => {
+          console.log('next', newNote)
+        },
+        error: console.error,
+        complete() {
+          console.log("newNote fired.")
+        }
+    })
+
+    await client.subscription({
+      deletedNote: {
+        id: true
+      }
+    }).subscribe({
+        next: ({deletedNote}) => {
+          console.log('next', deletedNote)
+        },
+        error: console.error,
+        complete() {
+          console.log("deletedNote fired.")
+        }
+    })
+    
     await reloadNotes()
   })
   async function handleSubmit() {
