@@ -62,9 +62,9 @@ class CRUDService {
     delete(data, context, info) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             let selectedFields;
-            if (info && !this.crudOptions.subDelete) {
-                selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
-            }
+            //if (info && !this.crudOptions.subDelete) { SHOULD ALWAYS LOOK FOR PROJECTION
+            //selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+            //}
             const result = yield this.db.delete(data, selectedFields);
             if (this.pubSub && this.crudOptions.subDelete) {
                 const topic = this.subscriptionTopicMapping(__1.GraphbackOperationType.DELETE, this.model.graphqlType.name);

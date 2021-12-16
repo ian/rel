@@ -88,9 +88,9 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
 
   public async delete(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     let selectedFields: string[];
-    if (info && !this.crudOptions.subDelete) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
-    }
+    //if (info && !this.crudOptions.subDelete) { SHOULD ALWAYS LOOK FOR PROJECTION
+    //selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    //}
 
     const result = await this.db.delete(data, selectedFields);
 
