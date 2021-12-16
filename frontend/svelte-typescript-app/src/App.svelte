@@ -26,10 +26,7 @@
         next: ({newNote}) => {
           console.log('next', newNote)
         },
-        error: console.error,
-        complete() {
-          console.log("newNote fired.")
-        }
+        error: console.error
     })
 
     await client.subscription({
@@ -40,10 +37,7 @@
         next: ({deletedNote}) => {
           console.log('next', deletedNote)
         },
-        error: console.error,
-        complete() {
-          console.log("deletedNote fired.")
-        }
+        error: console.error
     })
     
     await reloadNotes()
