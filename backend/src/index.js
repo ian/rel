@@ -61,14 +61,16 @@ app.route({
   method: ['GET', 'POST', 'OPTIONS'],
   handler: async (req, reply) => {
     let response
-    if (process.env.REL_TRACE && req.body) {
+    if (process.env.REL_TRACE && req.headers.accept !== 'text/event-stream') {
+      const hasQuery = Object.keys(req.query).length > 0
       response = await goTrace(
         schema,
-        req.body.query,
+        hasQuery ? req.query.query : req.body.query,
         null,
         contextCreator(),
-        req.body.variables
+        hasQuery ? JSON.parse(req.query.variables) : req.body.variables
       )
+      reply.status(200)
       reply.send(response)
     } else {
       response = await graphQLServer.handleIncomingMessage(req)
