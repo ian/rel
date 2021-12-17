@@ -10,6 +10,10 @@ const {
   client,
 } = RedisStreamHelper(process.env.REDIS_PORT, process.env.REDIS_HOST)
 import { packageDirectorySync } from 'pkg-dir'
+import Logger from '@ptkdev/logger'
+const logger = new Logger({
+  debug: !!process.env.REL_DEBUG
+})
 
 const dir = packageDirectorySync()
 const listeners = {}
@@ -21,7 +25,7 @@ for(let i = 0; i < files.length; i++) {
     listeners[streamKey] = await import(file.path)
     await createStreamGroup(streamKey)
     addListener(streamKey)
-    console.log("Found a listener for the stream key: " + streamKey)
+    logger.info("Found a listener for the stream key: " + streamKey, "INIT")
 }
 
 const run = () => {

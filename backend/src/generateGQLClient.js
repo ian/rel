@@ -5,10 +5,10 @@ import { packageDirectorySync } from 'pkg-dir'
 const dir = packageDirectorySync()
 
 export default () => {
-  generate({ 
+  generate({
     schema: fs
       .readFileSync(dir + '/schema/schema.graphql')
       .toString(),
-    output: dir + '/gql-client',
-  }).catch(console.error) 
+    output: dir + '/gql-client'
+  }).catch(console.error)
 }

@@ -1,4 +1,4 @@
-import { buildGraphbackAPI,createCRUDService } from 'graphback'
+import { buildGraphbackAPI, createCRUDService } from 'graphback'
 import { createRedisGraphProvider } from 'runtime-redisgraph'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import fs from 'fs'
@@ -17,9 +17,9 @@ export default () => {
     }),
     plugins: [
       new SchemaCRUDPlugin({
-        outputPath: dir + '/schema/schema.graphql',
-      }),
-    ],
+        outputPath: dir + '/schema/schema.graphql'
+      })
+    ]
   })
   return { typeDefs, schema, resolvers, services, contextCreator }
 }

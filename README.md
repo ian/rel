@@ -12,3 +12,11 @@
 - restart the GraphQL Server. You should see the frontend running at http://127.0.0.1:4000/svelte/
 
 Go to http://127.0.0.1:4000/altair or consume the endpoint in http://127.0.0.1:4000/graphql
+
+# Useful environment variables
+
+- REL_HOST: The host for the GraphQL endpoint
+- REL_PORT: The port for the GraphQL endpoint
+- REL_DEBUG: Enable debug messages(example: Cypher queries)
+- REDIS_HOST: The Redis host (with RedisGraph module enabled)
+- REDIS_PORT: The Redis port
