@@ -26,6 +26,7 @@
   "dependencies": {
     "graphql-ws": "^5.5.5",
     "sirv-cli": "^1.0.0",
-    "svelte": "^3.0.0"
+    "svelte": "^3.0.0",
+    "zen-observable-ts": "^1.1.0"
   }
 }

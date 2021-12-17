@@ -6,16 +6,20 @@ import { packageDirectorySync } from 'pkg-dir'
 import fastifyStatic from 'fastify-static'
 import Fastify from 'fastify'
 import path from 'path'
-import mercurius from 'mercurius'
+import goTrace from '@go-trace/tracer'
 import Logger from '@ptkdev/logger'
+import fastifyCors from 'fastify-cors'
+import * as yoga from 'graphql-yoga'
 const logger = new Logger({
   debug: !!process.env.REL_DEBUG
 })
 
 const port = Number(process.env.REL_PORT) || 4000
-const host = process.env.REL_HOST || '127.0.0.1'
+const host = process.env.REL_HOST || 'localhost'
 const app = Fastify()
 const dir = packageDirectorySync()
+
+app.register(fastifyCors)
 
 app.register(fastifyStatic, {
   root: path.join(dir, '/frontend/svelte-typescript-app/public'),
@@ -42,18 +46,46 @@ const { schema, contextCreator } = generateGQLServer()
 
 logger.info(`Schema generated at ${dir + '/schema'}`, 'INIT')
 
-app.register(mercurius, {
+const graphQLServer = new yoga.GraphQLServer({
   schema,
   context: contextCreator,
-  subscription: {
-    context: contextCreator
-  },
-  graphiql: true
+  enableLogging: false
+})
+
+if (process.env.REL_TRACE) {
+  logger.info('Tracer enabled at http://localhost:2929', 'INIT')
+}
+
+app.route({
+  url: '/graphql',
+  method: ['GET', 'POST', 'OPTIONS'],
+  handler: async (req, reply) => {
+    let response
+    if (process.env.REL_TRACE && req.body) {
+      response = await goTrace(
+        schema,
+        req.body.query,
+        null,
+        contextCreator(),
+        req.body.variables
+      )
+      reply.send(response)
+    } else {
+      response = await graphQLServer.handleIncomingMessage(req)
+      response.headers.forEach((value, key) => {
+        reply.header(key, value)
+      })
+      reply.status(response.status)
+      reply.send(response.body)
+    }
+  }
 })
 
 app.listen({ port, host })
 
-logger.info(`Rel Server started in ${host}:${port}`, 'INIT')
+logger.info(`Rel Server started in http://${host}:${port}`, 'INIT')
+logger.info(`Svelte example enabled at http://${host}:${port}/svelte`, 'INIT')
+logger.info(`Altair GraphQL Client enabled at http://${host}:${port}/altair`, 'INIT')
 
 loadListeners()
 generateGQLClient()

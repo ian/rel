@@ -1,14 +1,21 @@
 <script lang="ts">
   import { Note, createClient } from '../../../gql-client'
+  import sseClient from './sseClient'
   import { onMount } from 'svelte'
   
   let archived = false
   let text = 'Foo' 
 
+  const gqlEndpoint = 'http://localhost:4000/graphql'
+
   const client = createClient({ 
-    url: 'http://127.0.0.1:4000/graphql', 
-    subscription: {url: 'ws://127.0.0.1:4000/graphql'}
+    url: gqlEndpoint, 
+    subscription: {
+      url: gqlEndpoint
+    },
   })
+  // @ts-ignore
+  client.wsClient = sseClient(gqlEndpoint)
   let notes: Note[] = []
   
   async function reloadNotes() {
