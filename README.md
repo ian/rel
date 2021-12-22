@@ -4,6 +4,7 @@
 
 - docker run -p 6379:6379 -it --rm redislabs/redisgraph
 - npm install rel-run
+- make sure you have a valid `schema.graphql` file in your project root
 
 Then on your backend code:
 
