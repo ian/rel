@@ -8,7 +8,7 @@
 Then on your backend code:
 
 ```javascript
-import relRun from 'rel-server'
+import relRun from 'rel-run'
 
 const app = relRun() // app is a Fastify server instance!
 ```
