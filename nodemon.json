@@ -1,0 +1,12 @@
+{
+  "watch": [
+    "backend/**/*",
+    "frontend/**/*",
+    "listeners/**/*",
+    "schema.graphql"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "js,json"
+}

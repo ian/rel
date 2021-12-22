@@ -1,35 +1,25 @@
-# Rel - The backend framework for modern developers.
+# Rel Run
 
-Rel is the features-driven backend framework. With minimal configuration it's possible to built complex backends in 100% TypeScript.
+## Instructions
 
-## Initial Reading
+- docker run -p 6379:6379 -it --rm redislabs/redisgraph
+- npm install rel-run
 
-@ian wrote up a bunch of thoughts about what Rel should be in the [MANIFESTO](./MANIFESTO.md)
+Then on your backend code:
 
-## Getting Started
+```javascript
+import relRun from 'rel-server'
 
-To run the absolute bare minimum example:
-
-1. `yarn install && (cd example && yarn install)`
-2. `yarn redis`
-3. `yarn example`
-
-Use your favorite GraphQL client to send the following queries:
-
-```graphql
-{
-  listThings {
-    name
-  }
-}
+const app = relRun() // app is a Fastify server instance!
 ```
 
-or
+Go to http://127.0.0.1:4000/altair or consume the endpoint in http://localhost:4000/graphql
 
-```graphql
-mutation {
-  createThing(name: "Test") {
-    name
-  }
-}
-```
+## Useful environment variables
+
+- REL_HOST: The host for the GraphQL endpoint
+- REL_PORT: The port for the GraphQL endpoint
+- REL_DEBUG: Enable debug messages(example: Cypher queries)
+- REL_TRACE: Enable tracing at http://localhost:2929
+- REDIS_HOST: The Redis host (with RedisGraph module enabled)
+- REDIS_PORT: The Redis port

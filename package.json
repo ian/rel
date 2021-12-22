@@ -1,41 +1,41 @@
 {
-  "name": "reljs",
-  "version": "0.0.0",
-  "description": "Rel is the features-driven backend framework. It’s 100% JavaScript, fully customizable and developer-first.",
-  "main": "index.js",
-  "engines": {
-    "node": "^14.17.0 || >=16.0.0"
+  "name": "rel-run",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rel-js/rel-run.git"
   },
-  "scripts": {
-    "lint": "eslint --fix --ignore-path .gitignore .",
-    "build": "tsc",
-    "test": "jest --detectOpenHandles --runInBand",
-    "test:watch": "jest --watch --detectOpenHandles --runInBand",
-    "test:ci": "jest --detectOpenHandles --runInBand",
-    "test:coverage": "jest --coverage --detectOpenHandles",
-    "example": "ts-node ./example/server --cwd ./example",
-    "redis": "docker run -p 6379:6379 redislabs/redismod"
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rel-js/rel-run/issues"
   },
-  "author": "Ian Hunter <ian@rel.run>",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/jest": "^27.0.2",
-    "@types/node": "^16.11.6",
-    "eslint": "^8.1.0",
-    "jest": "^27.3.1",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.4.1",
-    "ts-jest": "^27.0.7",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.4.4"
-  },
+  "homepage": "https://github.com/rel-js/rel-run#readme",
   "dependencies": {
-    "fastify": "^3.22.1",
+    "@genql/cli": "^2.8.0",
+    "@genql/runtime": "^2.8.0",
+    "@go-trace/tracer": "https://gitpkg.now.sh/rel-js/trace/tracer-npm-package?main",
+    "@graphback/codegen-schema": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback-codegen-schema?master",
+    "@graphql-tools/schema": "^8.3.1",
+    "@nodelib/fs.walk": "^1.2.8",
+    "@ptkdev/logger": "^1.8.0",
+    "altair-fastify-plugin": "^4.2.1",
+    "fastify": "^3.25.0",
     "fastify-cors": "^6.0.2",
-    "graphql-playground-html": "^1.6.29",
-    "mercurius": "^8.8.0",
-    "moment": "^2.29.1",
-    "mqemitter-redis": "^4.1.0",
-    "redisgraph.js": "^2.3.0"
+    "graphback": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback",
+    "graphql": "^15.8.0",
+    "graphql-redis-subscriptions": "^2.4.2",
+    "graphql-yoga": "^2.0.0-alpha.2",
+    "nodemon": "^2.0.15",
+    "pkg-dir": "^6.0.1",
+    "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
+    "runtime-redisgraph": "github:rel-js/runtime-redisgraph"
+  },
+  "devDependencies": {
+    "eslint": "^7.12.1",
+    "eslint-config-standard": "^16.0.3"
   }
 }
