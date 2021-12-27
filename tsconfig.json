@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // "baseUrl": "./src",
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": false,
@@ -15,6 +14,4 @@
       "@/*": ["./packages/*/"]
     }
   }
-  // "include": ["./packages/*/**.ts"],
-  // "exclude": ["node_modules", "**/*.spec.ts"]
 }
