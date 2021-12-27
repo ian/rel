@@ -10,6 +10,51 @@ importers:
       '@types/node': 17.0.5
       typescript: 4.5.4
 
+  packages/rel-server:
+    specifiers:
+      '@genql/cli': ^2.8.0
+      '@genql/runtime': ^2.8.0
+      '@go-trace/tracer': https://gitpkg.now.sh/rel-js/trace/tracer-npm-package?main
+      '@graphback/codegen-schema': https://gitpkg.now.sh/rel-js/graphback/packages/graphback-codegen-schema?master
+      '@graphql-tools/schema': ^8.3.1
+      '@nodelib/fs.walk': ^1.2.8
+      '@ptkdev/logger': ^1.8.0
+      altair-fastify-plugin: ^4.2.1
+      eslint: ^7.12.1
+      eslint-config-standard: ^16.0.3
+      fastify: ^3.25.0
+      fastify-cors: ^6.0.2
+      graphback: https://gitpkg.now.sh/rel-js/graphback/packages/graphback
+      graphql: ^15.8.0
+      graphql-redis-subscriptions: ^2.4.2
+      graphql-yoga: 2.0.0-alpha.5
+      nodemon: ^2.0.15
+      pkg-dir: ^6.0.1
+      redis-stream-helper: github:thelinuxlich/redis-stream-helper
+      runtime-redisgraph: github:rel-js/runtime-redisgraph
+    dependencies:
+      '@genql/cli': 2.8.0
+      '@genql/runtime': 2.8.0_graphql@15.8.0
+      '@go-trace/tracer': '@gitpkg.now.sh/rel-js/trace/tracer-npm-package?main'
+      '@graphback/codegen-schema': '@gitpkg.now.sh/rel-js/graphback/packages/graphback-codegen-schema?master_graphql@15.8.0'
+      '@graphql-tools/schema': 8.3.1_graphql@15.8.0
+      '@nodelib/fs.walk': 1.2.8
+      '@ptkdev/logger': 1.8.0
+      altair-fastify-plugin: 4.3.1_fastify@3.25.2
+      fastify: 3.25.2
+      fastify-cors: 6.0.2
+      graphback: '@gitpkg.now.sh/rel-js/graphback/packages/graphback_graphql@15.8.0'
+      graphql: 15.8.0
+      graphql-redis-subscriptions: 2.4.2
+      graphql-yoga: 2.0.0-alpha.5_graphql@15.8.0
+      nodemon: 2.0.15
+      pkg-dir: 6.0.1
+      redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
+      runtime-redisgraph: github.com/rel-js/runtime-redisgraph/ce0fa051075c800859f32871205b9e0fab72560b_graphql@15.8.0
+    devDependencies:
+      eslint: 7.32.0
+      eslint-config-standard: 16.0.3_eslint@7.32.0
+
   packages/rel.server:
     specifiers:
       '@genql/cli': ^2.8.0
@@ -98,6 +143,24 @@ packages:
       graphql: ^15.3.0 || ^16.0.0
     dependencies:
       cross-undici-fetch: 0.1.4
+      graphql: 15.8.0
+    dev: false
+
+  /@ardatan/graphql-helix/0.0.8_graphql@15.8.0:
+    resolution: {integrity: sha512-wamStNpIW12Xgg4ulSNf5TwAl+B4nWrdIBx+rt+BSfQzIVoqRpvJK6kfZSUva3OGSWx88u5ajyfu1nNuNEjanw==}
+    peerDependencies:
+      graphql: ^15.3.0 || ^16.0.0
+    dependencies:
+      cross-undici-fetch: 0.1.12
+      graphql: 15.8.0
+    dev: false
+
+  /@ardatan/graphql-helix/0.1.12_graphql@15.8.0:
+    resolution: {integrity: sha512-0fWr5A0/i69p6oORcwvInfPoKLO/JbcxtsukABGBp0UbnOjrDipHGNgEe8gReX2ROEyW45fj+LukgxzMldsUDg==}
+    peerDependencies:
+      graphql: ^15.3.0 || ^16.0.0
+    dependencies:
+      cross-undici-fetch: 0.1.12
       graphql: 15.8.0
     dev: false
 
@@ -502,6 +565,20 @@ packages:
       ts-log: 2.2.4
     dev: false
 
+  /@graphql-yoga/core/0.2.0-alpha.4_graphql@15.8.0:
+    resolution: {integrity: sha512-6MLI5g3Z6Glls7nWbx7VbNb0OgZs8pB26QQIamLp00Ix7cYnewcYoW3KhGlb48KrghitAs4RTcyYRj/XW7uiGQ==}
+    peerDependencies:
+      graphql: ^15.2.0 || ^16.0.0
+    dependencies:
+      '@envelop/core': 1.6.5_graphql@15.8.0
+      '@envelop/disable-introspection': 1.2.1_1f1a10d31b9f1cafbefa765e81944f1a
+      '@envelop/parser-cache': 2.2.1_1f1a10d31b9f1cafbefa765e81944f1a
+      '@envelop/validation-cache': 2.3.0_1f1a10d31b9f1cafbefa765e81944f1a
+      '@graphql-tools/schema': 8.3.1_graphql@15.8.0
+      '@graphql-yoga/handler': 0.2.0-alpha.1_graphql@15.8.0
+      graphql: 15.8.0
+    dev: false
+
   /@graphql-yoga/handler/0.1.0_graphql@15.8.0:
     resolution: {integrity: sha512-FEd9NHjoRwG32QU+6jf3jrRNqMvMtosdf9huawQfxwkVFyZd4jW0Ds2hw58XRg0UkzbU2j+bdi8ZftsCFE10Tw==}
     peerDependencies:
@@ -509,6 +586,22 @@ packages:
     dependencies:
       '@ardatan/graphql-helix': 0.0.6_graphql@15.8.0
       graphql: 15.8.0
+    dev: false
+
+  /@graphql-yoga/handler/0.2.0-alpha.1_graphql@15.8.0:
+    resolution: {integrity: sha512-RbSRVI1ubnsaUtPE7PM8qVm6Hkapy9ri4udm6m/clWHvcHupT/mPsJ35g7z+B+NB/FDOnZ9pjKvsZjjRBa/pUA==}
+    peerDependencies:
+      graphql: ^15.2.0 || ^16.0.0
+    dependencies:
+      '@ardatan/graphql-helix': 0.0.8_graphql@15.8.0
+      cross-undici-fetch: 0.1.4
+      graphql: 15.8.0
+    dev: false
+
+  /@graphql-yoga/subscription/0.1.0-alpha.0:
+    resolution: {integrity: sha512-u36NcVTrk8XJC9FkzqUdZVN2G0fqsV2WxtTv7JDteVxJfHxCBQuVdKVUuUO9EplYIo6ph1Sba/o5r9gmIstyUA==}
+    dependencies:
+      '@repeaterjs/repeater': 3.0.4
     dev: false
 
   /@humanwhocodes/config-array/0.5.0:
@@ -556,6 +649,10 @@ packages:
       lowdb: 1.0.0
       rotating-file-stream: 2.1.6
       strip-ansi: 6.0.1
+    dev: false
+
+  /@repeaterjs/repeater/3.0.4:
+    resolution: {integrity: sha512-AW8PKd6iX3vAZ0vA43nOUOnbq/X5ihgU+mSXXqunMkeQADGiqw/PY0JNeYtD5sr0PAy51YPgAPbDoeapv9r8WA==}
     dev: false
 
   /@samverschueren/stream-to-observable/0.3.1_rxjs@6.6.7:
@@ -1108,7 +1205,7 @@ packages:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.0.3
+      tslib: 2.3.1
     dev: false
 
   /camelcase/5.0.0:
@@ -1312,6 +1409,16 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /cross-undici-fetch/0.1.12:
+    resolution: {integrity: sha512-JNUr0ANEwc3MEUT5xBl2fVnCJqcPa7hpQfEYNsrCG/7/M4pUH5W0nQOe6FKAQGB6SqFPyAeoEn8G375QXWxwWQ==}
+    dependencies:
+      abort-controller: 3.0.0
+      form-data-encoder: 1.7.1
+      formdata-node: 4.3.1
+      node-fetch: 2.6.6
+      undici: 4.12.1
+    dev: false
 
   /cross-undici-fetch/0.1.4:
     resolution: {integrity: sha512-jIcyxjQ6mEvUS3y2yhIVktOR7wlGZuyjFAK8woo7pMb+BR1f2ylfTxsN01UPwhqT8gtYPmZ2rPdyoInr1Cdrrw==}
@@ -2297,6 +2404,23 @@ packages:
       pino-pretty: 7.3.0
     dev: false
 
+  /graphql-yoga/2.0.0-alpha.5_graphql@15.8.0:
+    resolution: {integrity: sha512-1Q5GsOqRQRRUGKc3Pei4388ViiN2ojtj8OLIwjSSI0aWVuNX42VXZK9PM4yd7sBVM34/T0VFZcPRq8paKue8BA==}
+    peerDependencies:
+      graphql: ^15.2.0 || ^16.0.0
+    dependencies:
+      '@ardatan/graphql-helix': 0.1.12_graphql@15.8.0
+      '@envelop/core': 1.6.5_graphql@15.8.0
+      '@graphql-typed-document-node/core': 3.1.1_graphql@15.8.0
+      '@graphql-yoga/core': 0.2.0-alpha.4_graphql@15.8.0
+      '@graphql-yoga/handler': 0.2.0-alpha.1_graphql@15.8.0
+      '@graphql-yoga/subscription': 0.1.0-alpha.0
+      graphql: 15.8.0
+      light-my-request: 4.7.0
+      pino: 7.6.1
+      pino-pretty: 7.3.0
+    dev: false
+
   /graphql/15.8.0:
     resolution: {integrity: sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==}
     engines: {node: '>= 10.x'}
@@ -2916,7 +3040,7 @@ packages:
   /lower-case/2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.0.3
+      tslib: 2.3.1
     dev: false
 
   /lowercase-keys/1.0.1:
@@ -3051,7 +3175,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.0.3
+      tslib: 2.3.1
     dev: false
 
   /node-domexception/1.0.0:
@@ -3274,7 +3398,7 @@ packages:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.0.3
+      tslib: 2.3.1
     dev: false
 
   /path-exists/4.0.0:
