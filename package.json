@@ -9,7 +9,7 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "build": "npm run build --workspaces"
+    "build": "pnpm run build --filter ./"
   },
   "repository": {
     "type": "git",
