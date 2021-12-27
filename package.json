@@ -1,41 +1,30 @@
 {
-  "name": "rel-run",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rel-js/rel-run.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/rel-js/rel-run/issues"
-  },
-  "homepage": "https://github.com/rel-js/rel-run#readme",
+  "name": "rel",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The modern backend framework for frontend developers.",
+  "main": "index.js",
+  "workspaces": [
+    "./packages/*"
+  ],
   "dependencies": {
-    "@genql/cli": "^2.8.0",
-    "@genql/runtime": "^2.8.0",
-    "@go-trace/tracer": "https://gitpkg.now.sh/rel-js/trace/tracer-npm-package?main",
-    "@graphback/codegen-schema": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback-codegen-schema?master",
-    "@graphql-tools/schema": "^8.3.1",
-    "@nodelib/fs.walk": "^1.2.8",
-    "@ptkdev/logger": "^1.8.0",
-    "altair-fastify-plugin": "^4.2.1",
-    "fastify": "^3.25.0",
-    "fastify-cors": "^6.0.2",
-    "graphback": "https://gitpkg.now.sh/rel-js/graphback/packages/graphback",
-    "graphql": "^15.8.0",
-    "graphql-redis-subscriptions": "^2.4.2",
-    "graphql-yoga": "^2.0.0-alpha.2",
-    "nodemon": "^2.0.15",
-    "pkg-dir": "^6.0.1",
-    "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
-    "runtime-redisgraph": "github:rel-js/runtime-redisgraph"
+    "ultra-runner": "^3.10.5"
   },
   "devDependencies": {
-    "eslint": "^7.12.1",
-    "eslint-config-standard": "^16.0.3"
-  }
+    "@types/node": "^17.0.5",
+    "typescript": "^4.5.4"
+  },
+  "scripts": {
+    "build": "npm run build -ws"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rel-js/monorepo.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rel-js/monorepo/issues"
+  },
+  "homepage": "https://github.com/rel-js/monorepo#readme"
 }
