@@ -4,9 +4,6 @@
   "version": "0.0.0",
   "description": "The modern backend framework for frontend developers.",
   "main": "index.js",
-  "workspaces": [
-    "./packages/*"
-  ],
   "dependencies": {
     "ultra-runner": "^3.10.5"
   },
