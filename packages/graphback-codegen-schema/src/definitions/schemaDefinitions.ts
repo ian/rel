@@ -150,13 +150,7 @@ export function buildFindOneFieldMap(modelType: ModelDefinition, schemaComposer:
   }
 }
 
-const filterInputBuilt = {}
-
 export const buildFilterInputType = (schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType) => {
-  if(filterInputBuilt[modelType.name]) {
-    return
-  }
-  filterInputBuilt[modelType.name] = true
   const operationType = GraphbackOperationType.FIND
 
   const inputTypeName = getInputTypeName(modelType.name, operationType);

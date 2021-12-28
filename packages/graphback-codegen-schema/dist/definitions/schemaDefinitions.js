@@ -132,12 +132,7 @@ function buildFindOneFieldMap(modelType, schemaComposer) {
     };
 }
 exports.buildFindOneFieldMap = buildFindOneFieldMap;
-const filterInputBuilt = {};
 const buildFilterInputType = (schemaComposer, modelType) => {
-    if (filterInputBuilt[modelType.name]) {
-        return;
-    }
-    filterInputBuilt[modelType.name] = true;
     const operationType = core_1.GraphbackOperationType.FIND;
     const inputTypeName = core_1.getInputTypeName(modelType.name, operationType);
     const inputFields = getModelInputFields(schemaComposer, modelType, operationType);
