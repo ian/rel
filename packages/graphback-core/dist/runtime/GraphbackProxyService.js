@@ -26,6 +26,12 @@ class GraphbackProxyService {
     findBy(args, context, info, path) {
         return this.proxiedService.findBy(args, context, info, path);
     }
+    updateBy(args, context, info) {
+        return this.proxiedService.updateBy(args, context, info);
+    }
+    deleteBy(args, context, info) {
+        return this.proxiedService.deleteBy(args, context, info);
+    }
     subscribeToCreate(filter, context) {
         return this.proxiedService.subscribeToCreate(filter, context);
     }

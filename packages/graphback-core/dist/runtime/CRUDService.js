@@ -42,10 +42,7 @@ class CRUDService {
     }
     update(data, context, info) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let selectedFields;
-            if (info && !this.crudOptions.subUpdate) {
-                selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
-            }
+            const selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
             const result = yield this.db.update(data, selectedFields);
             if (this.pubSub && this.crudOptions.subUpdate) {
                 const topic = this.subscriptionTopicMapping(__1.GraphbackOperationType.UPDATE, this.model.graphqlType.name);
@@ -56,6 +53,13 @@ class CRUDService {
                     console.error(`Publishing of updates of "${this.model.graphqlType.name}" with id ${result[this.model.primaryKey.name]} failed: ${error.message}`);
                 });
             }
+            return result;
+        });
+    }
+    updateBy(args, context, info) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
+            const result = yield this.db.updateBy(args, selectedFields);
             return result;
         });
     }
@@ -73,6 +77,13 @@ class CRUDService {
                     console.error(`Publishing of deletion of "${this.model.graphqlType.name}" with id ${result[this.model.primaryKey.name]} failed: ${error.message}`);
                 });
             }
+            return result;
+        });
+    }
+    deleteBy(args, context, info) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
+            const result = yield this.db.deleteBy(args, selectedFields);
             return result;
         });
     }

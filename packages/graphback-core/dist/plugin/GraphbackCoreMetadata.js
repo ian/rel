@@ -11,9 +11,11 @@ const isTransientField_1 = require("../utils/isTransientField");
 const defaultCRUDGeneratorConfig = {
     "create": true,
     "update": true,
+    "updateBy": true,
     "findOne": true,
     "find": true,
     "delete": true,
+    "deleteBy": true,
     "subCreate": true,
     "subUpdate": true,
     "subDelete": true,

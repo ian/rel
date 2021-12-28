@@ -65,11 +65,8 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
   }
 
   public async update(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    let selectedFields: string[];
-    if (info && !this.crudOptions.subUpdate) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
-    }
-
+    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    
     const result = await this.db.update(data, selectedFields);
 
     if (this.pubSub && this.crudOptions.subUpdate) {
@@ -82,6 +79,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
         console.error(`Publishing of updates of "${this.model.graphqlType.name}" with id ${result[this.model.primaryKey.name]} failed: ${error.message}`);
       });
     }
+
+    return result;
+  }
+
+  public async updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const result = await this.db.updateBy(args, selectedFields);
 
     return result;
   }
@@ -102,6 +106,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
         console.error(`Publishing of deletion of "${this.model.graphqlType.name}" with id ${result[this.model.primaryKey.name]} failed: ${error.message}`);
       });
     }
+
+    return result;
+  }
+
+  public async deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const result = await this.db.deleteBy(args, selectedFields);
 
     return result;
   }

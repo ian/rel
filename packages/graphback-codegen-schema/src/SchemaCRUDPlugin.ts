@@ -281,16 +281,55 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         }
       };
     }
+    if (model.crudOptions.updateBy) {
+      const operationType = GraphbackOperationType.UPDATE_BY
+      const operation = getFieldName(name, operationType)
+
+      const inputTypeName = getInputTypeName(name, operationType)
+      const updateMutationInputType = schemaComposer.getITC(inputTypeName).getType()
+      buildFilterInputType(schemaComposer, modelType);
+      const filterInputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND)).getType()
+      mutationFields[operation] = {
+        type: modelType,
+        args: {
+          filter: {
+            type: filterInputType
+          },
+          input: {
+            type: GraphQLNonNull(updateMutationInputType)
+          },
+        }
+      };
+    }
     if (model.crudOptions.delete) {
       const operationType = GraphbackOperationType.DELETE
       const operation = getFieldName(name, operationType)
 
       const inputTypeName = getInputTypeName(name, operationType)
       const deleteMutationInputType = schemaComposer.getITC(inputTypeName).getType()
-
       mutationFields[operation] = {
         type: modelType,
         args: {
+          input: {
+            type: GraphQLNonNull(deleteMutationInputType)
+          }
+        }
+      };
+    }
+    if (model.crudOptions.deleteBy) {
+      const operationType = GraphbackOperationType.DELETE_BY
+      const operation = getFieldName(name, operationType)
+
+      const inputTypeName = getInputTypeName(name, operationType)
+      const deleteMutationInputType = schemaComposer.getITC(inputTypeName).getType()
+      buildFilterInputType(schemaComposer, modelType);
+      const filterInputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND)).getType()
+      mutationFields[operation] = {
+        type: modelType,
+        args: {
+          filter: {
+            type: filterInputType
+          },
           input: {
             type: GraphQLNonNull(deleteMutationInputType)
           }
@@ -448,8 +487,14 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       if (model.crudOptions.update) {
         this.addUpdateMutationResolver(model, resolvers.Mutation)
       }
+      if (model.crudOptions.updateBy) {
+        this.addUpdateByMutationResolver(model, resolvers.Mutation)
+      }
       if (model.crudOptions.delete) {
         this.addDeleteMutationResolver(model, resolvers.Mutation)
+      }
+      if (model.crudOptions.deleteBy) {
+        this.addDeleteByMutationResolver(model, resolvers.Mutation)
       }
     }
   }
@@ -541,6 +586,25 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
   }
 
   /**
+   * Creates an UpdateBy mutation resolver
+   *
+   * @param {ModelDefinition} model - Model definition object
+   * @param {IFieldResolver} mutationObj - Mutation resolver object
+   */
+  protected addUpdateByMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name;
+    const updateField = getFieldName(modelName, GraphbackOperationType.UPDATE_BY);
+
+    mutationObj[updateField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
+      if (!context.graphback || !context.graphback[modelName]) {
+        throw new Error(`Missing service for ${modelName}`);
+      }
+
+      return context.graphback[modelName].updateBy(args, context, info)
+    }
+  }
+
+  /**
    * Creates a Delete Mutation resolver field
    *
    * @param {ModelDefinition} model - Model definition object
@@ -556,6 +620,25 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       }
 
       return context.graphback[modelName].delete(args.input, context, info)
+    }
+  }
+
+  /**
+   * Creates a DeleteBy Mutation resolver field
+   *
+   * @param {ModelDefinition} model - Model definition object
+   * @param {IFieldResolver} mutationObj - Mutation resolver object
+   */
+  protected addDeleteByMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name;
+    const deleteField = getFieldName(modelName, GraphbackOperationType.DELETE_BY);
+
+    mutationObj[deleteField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
+      if (!context.graphback || !context.graphback[modelName]) {
+        throw new Error(`Missing service for ${modelName}`);
+      }
+
+      return context.graphback[modelName].deleteBy(args, context, info)
     }
   }
 

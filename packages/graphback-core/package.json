@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jest": "26.0.19",
     "@types/node": "12.19.9",
-    "@types/pino": "6.3.4",
+    "@types/pino": "7.0.5",
     "graphql": "15.8.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
@@ -55,7 +55,7 @@
     "graphql-metadata": "0.7.6",
     "graphql-scalars": "1.14.1",
     "graphql-subscriptions": "2.0.0",
-    "pino": "6.8.0",
+    "pino": "7.6.2",
     "pluralize": "8.0.0"
   },
   "peerDependencies": {

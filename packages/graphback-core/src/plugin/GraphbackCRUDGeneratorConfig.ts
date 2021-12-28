@@ -6,8 +6,12 @@ export interface GraphbackCRUDGeneratorConfig {
   create?: boolean;
   //Generate update method
   update?: boolean;
+  //Generate updateBy method
+  updateBy?: boolean;
   // Generate delete method
   delete?: boolean;
+  // Generate deleteBy method
+  deleteBy?: boolean;
   //Generate findOne method
   findOne?: boolean;
   //Generate find method

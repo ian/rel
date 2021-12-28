@@ -1,6 +1,6 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { FindByArgs } from './interfaces';
 import { QueryFilter } from './QueryFilter';
+import { FindByArgs } from '.';
 
 export interface ResultList<T = any> {
   items: T[],
@@ -68,6 +68,20 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param {string} [path] - Path to a tree branch which should be mapped during fields extraction
    */
   findBy(args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>>;
+  /**
+   * Implementation for object updates by filter
+   *
+   * @param data input data including id
+   * @param context context object passed from graphql or rest layer
+   */
+  updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  /**
+   * Implementation for object deletes by filter
+   *
+   * @param data data used for consistency reasons
+   * @param context context object passed from graphql or rest layer
+   */
+  deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
 
   /**
    * Subscription for all creation events

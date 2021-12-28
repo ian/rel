@@ -217,6 +217,25 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
                 }
             };
         }
+        if (model.crudOptions.updateBy) {
+            const operationType = core_1.GraphbackOperationType.UPDATE_BY;
+            const operation = core_1.getFieldName(name, operationType);
+            const inputTypeName = core_1.getInputTypeName(name, operationType);
+            const updateMutationInputType = schemaComposer.getITC(inputTypeName).getType();
+            schemaDefinitions_1.buildFilterInputType(schemaComposer, modelType);
+            const filterInputType = schemaComposer.getITC(core_1.getInputTypeName(name, core_1.GraphbackOperationType.FIND)).getType();
+            mutationFields[operation] = {
+                type: modelType,
+                args: {
+                    filter: {
+                        type: filterInputType
+                    },
+                    input: {
+                        type: graphql_1.GraphQLNonNull(updateMutationInputType)
+                    },
+                }
+            };
+        }
         if (model.crudOptions.delete) {
             const operationType = core_1.GraphbackOperationType.DELETE;
             const operation = core_1.getFieldName(name, operationType);
@@ -225,6 +244,25 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
             mutationFields[operation] = {
                 type: modelType,
                 args: {
+                    input: {
+                        type: graphql_1.GraphQLNonNull(deleteMutationInputType)
+                    }
+                }
+            };
+        }
+        if (model.crudOptions.deleteBy) {
+            const operationType = core_1.GraphbackOperationType.DELETE_BY;
+            const operation = core_1.getFieldName(name, operationType);
+            const inputTypeName = core_1.getInputTypeName(name, operationType);
+            const deleteMutationInputType = schemaComposer.getITC(inputTypeName).getType();
+            schemaDefinitions_1.buildFilterInputType(schemaComposer, modelType);
+            const filterInputType = schemaComposer.getITC(core_1.getInputTypeName(name, core_1.GraphbackOperationType.FIND)).getType();
+            mutationFields[operation] = {
+                type: modelType,
+                args: {
+                    filter: {
+                        type: filterInputType
+                    },
                     input: {
                         type: graphql_1.GraphQLNonNull(deleteMutationInputType)
                     }
@@ -365,8 +403,14 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
             if (model.crudOptions.update) {
                 this.addUpdateMutationResolver(model, resolvers.Mutation);
             }
+            if (model.crudOptions.updateBy) {
+                this.addUpdateByMutationResolver(model, resolvers.Mutation);
+            }
             if (model.crudOptions.delete) {
                 this.addDeleteMutationResolver(model, resolvers.Mutation);
+            }
+            if (model.crudOptions.deleteBy) {
+                this.addDeleteByMutationResolver(model, resolvers.Mutation);
             }
         }
     }
@@ -446,6 +490,22 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
         };
     }
     /**
+     * Creates an UpdateBy mutation resolver
+     *
+     * @param {ModelDefinition} model - Model definition object
+     * @param {IFieldResolver} mutationObj - Mutation resolver object
+     */
+    addUpdateByMutationResolver(model, mutationObj) {
+        const modelName = model.graphqlType.name;
+        const updateField = core_1.getFieldName(modelName, core_1.GraphbackOperationType.UPDATE_BY);
+        mutationObj[updateField] = (_, args, context, info) => {
+            if (!context.graphback || !context.graphback[modelName]) {
+                throw new Error(`Missing service for ${modelName}`);
+            }
+            return context.graphback[modelName].updateBy(args, context, info);
+        };
+    }
+    /**
      * Creates a Delete Mutation resolver field
      *
      * @param {ModelDefinition} model - Model definition object
@@ -459,6 +519,22 @@ class SchemaCRUDPlugin extends core_1.GraphbackPlugin {
                 throw new Error(`Missing service for ${modelName}`);
             }
             return context.graphback[modelName].delete(args.input, context, info);
+        };
+    }
+    /**
+     * Creates a DeleteBy Mutation resolver field
+     *
+     * @param {ModelDefinition} model - Model definition object
+     * @param {IFieldResolver} mutationObj - Mutation resolver object
+     */
+    addDeleteByMutationResolver(model, mutationObj) {
+        const modelName = model.graphqlType.name;
+        const deleteField = core_1.getFieldName(modelName, core_1.GraphbackOperationType.DELETE_BY);
+        mutationObj[deleteField] = (_, args, context, info) => {
+            if (!context.graphback || !context.graphback[modelName]) {
+                throw new Error(`Missing service for ${modelName}`);
+            }
+            return context.graphback[modelName].deleteBy(args, context, info);
         };
     }
     /**

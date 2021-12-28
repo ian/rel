@@ -1,4 +1,3 @@
-import { ClientGeneratorPluginConfig } from '@graphback/codegen-client';
 import { SchemaCRUDPluginConfig } from '@graphback/codegen-schema';
 import { GraphbackCRUDGeneratorConfig } from '@graphback/core';
 
@@ -10,6 +9,5 @@ export interface GraphbackConfig {
   //Plugins configuration
   plugins?: {
     SchemaCRUD?: SchemaCRUDPluginConfig
-    ClientCRUD?: ClientGeneratorPluginConfig
   } | any
 }

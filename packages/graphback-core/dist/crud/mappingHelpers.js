@@ -41,6 +41,10 @@ const getFieldName = (typeName, action) => {
             return `get${finalName}`;
         case GraphbackOperationType_1.GraphbackOperationType.FIND:
             return `find${pluralize(finalName)}`;
+        case GraphbackOperationType_1.GraphbackOperationType.DELETE_BY:
+            return `delete${pluralize(finalName)}`;
+        case GraphbackOperationType_1.GraphbackOperationType.UPDATE_BY:
+            return `update${pluralize(finalName)}`;
         default:
             return `${action}${finalName}`;
     }
@@ -60,6 +64,8 @@ const getInputTypeName = (typeName, action) => {
             return `Create${finalName}Input`;
         case GraphbackOperationType_1.GraphbackOperationType.UPDATE:
         case GraphbackOperationType_1.GraphbackOperationType.DELETE:
+        case GraphbackOperationType_1.GraphbackOperationType.UPDATE_BY:
+        case GraphbackOperationType_1.GraphbackOperationType.DELETE_BY:
             return `Mutate${finalName}Input`;
         case GraphbackOperationType_1.GraphbackOperationType.SUBSCRIPTION_CREATE:
         case GraphbackOperationType_1.GraphbackOperationType.SUBSCRIPTION_UPDATE:

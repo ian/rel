@@ -1,9 +1,8 @@
 {
   "packages": [
-    "templates/**/*",
-    "integration",
-    "packages/*",
-    "performance"
+    "packages/graphback",
+    "packages/graphback-codegen-schema",
+    "packages/graphback-core"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,

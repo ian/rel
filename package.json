@@ -70,13 +70,9 @@
     "keycloak-authz-workspace": "yarn workspace @graphback/keycloak-authz"
   },
   "workspaces": [
-    "packages/*",
-    "templates/ts-apollo-mongodb-backend",
-    "templates/ts-apollo-mongodb-datasync-backend",
-    "templates/ts-apollo-postgres-backend",
-    "templates/ts-react-apollo-client",
-    "templates/ts-fastify-mongodb-backend",
-    "integration"
+    "packages/graphback",
+    "packages/graphback-codegen-schema",
+    "packages/graphback-core"
   ],
   "husky": {
     "hooks": {

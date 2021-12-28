@@ -33,7 +33,7 @@
     "lodash": "4.17.20",
     "lodash-es": "4.17.15",
     "node-emoji": "1.10.0",
-    "pino": "6.8.0",
+    "pino": "7.6.2",
     "ts-jest": "26.4.4"
   },
   "devDependencies": {

@@ -12,9 +12,11 @@ import { GraphbackGlobalConfig } from './GraphbackGlobalConfig';
 const defaultCRUDGeneratorConfig = {
   "create": true,
   "update": true,
+  "updateBy": true,
   "findOne": true,
   "find": true,
   "delete": true,
+  "deleteBy": true,
   "subCreate": true,
   "subUpdate": true,
   "subDelete": true,
