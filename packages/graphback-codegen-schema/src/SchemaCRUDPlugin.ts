@@ -288,8 +288,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const inputTypeName = getInputTypeName(name, operationType)
       const updateMutationInputType = schemaComposer.getITC(inputTypeName).getType()
       const filterInputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND)).getType()
+      const resultListType = createModelListResultType(modelType)
       mutationFields[operation] = {
-        type: modelType,
+        type: GraphQLNonNull(resultListType),
         args: {
           filter: {
             type: filterInputType
@@ -322,8 +323,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const inputTypeName = getInputTypeName(name, operationType)
       const deleteMutationInputType = schemaComposer.getITC(inputTypeName).getType()
       const filterInputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND)).getType()
+      const resultListType = createModelListResultType(modelType)
       mutationFields[operation] = {
-        type: modelType,
+        type: GraphQLNonNull(resultListType),
         args: {
           filter: {
             type: filterInputType
