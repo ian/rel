@@ -346,6 +346,18 @@ export function addUpdateObjectInputType(schemaComposer: SchemaComposer<any>, ob
   schemaComposer.add(inputType)
 }
 
+export const createMutationListResultType = (modelType: GraphQLObjectType) => {
+  return new GraphQLObjectType({
+    name: `${modelType.name}MutationResultList`,
+    fields: {
+      items: {
+        type: GraphQLNonNull(GraphQLList(modelType))
+      }
+    }
+  })
+}
+
+
 export const createModelListResultType = (modelType: GraphQLObjectType) => {
   return new GraphQLObjectType({
     name: `${modelType.name}ResultList`,

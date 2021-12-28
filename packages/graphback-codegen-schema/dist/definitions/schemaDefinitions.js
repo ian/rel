@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createVersionedFields = exports.createVersionedInputFields = exports.createModelListResultType = exports.addUpdateObjectInputType = exports.addCreateObjectInputType = exports.buildMutationInputType = exports.buildSubscriptionFilterType = exports.buildCreateMutationInputType = exports.buildFilterInputType = exports.buildFindOneFieldMap = exports.OrderByInputType = exports.SortDirectionEnum = exports.PageRequest = exports.BooleanScalarInputType = exports.IDScalarInputType = exports.StringScalarInputType = exports.createInputTypeForScalar = exports.getInputName = void 0;
+exports.createVersionedFields = exports.createVersionedInputFields = exports.createModelListResultType = exports.createMutationListResultType = exports.addUpdateObjectInputType = exports.addCreateObjectInputType = exports.buildMutationInputType = exports.buildSubscriptionFilterType = exports.buildCreateMutationInputType = exports.buildFilterInputType = exports.buildFindOneFieldMap = exports.OrderByInputType = exports.SortDirectionEnum = exports.PageRequest = exports.BooleanScalarInputType = exports.IDScalarInputType = exports.StringScalarInputType = exports.createInputTypeForScalar = exports.getInputName = void 0;
 /* eslint-disable max-lines */
 const graphql_1 = require("graphql");
 const core_1 = require("@graphback/core");
@@ -290,6 +290,17 @@ function addUpdateObjectInputType(schemaComposer, objectType) {
     schemaComposer.add(inputType);
 }
 exports.addUpdateObjectInputType = addUpdateObjectInputType;
+const createMutationListResultType = (modelType) => {
+    return new graphql_1.GraphQLObjectType({
+        name: `${modelType.name}MutationResultList`,
+        fields: {
+            items: {
+                type: graphql_1.GraphQLNonNull(graphql_1.GraphQLList(modelType))
+            }
+        }
+    });
+};
+exports.createMutationListResultType = createMutationListResultType;
 const createModelListResultType = (modelType) => {
     return new graphql_1.GraphQLObjectType({
         name: `${modelType.name}ResultList`,
