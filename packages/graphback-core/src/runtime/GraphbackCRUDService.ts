@@ -74,14 +74,14 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data including id
    * @param context context object passed from graphql or rest layer
    */
-  updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>>;
   /**
    * Implementation for object deletes by filter
    *
    * @param data data used for consistency reasons
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>>;
 
   /**
    * Subscription for all creation events

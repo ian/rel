@@ -60,7 +60,9 @@ class CRUDService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
             const result = yield this.db.updateBy(args, selectedFields);
-            return result;
+            return {
+                items: result
+            };
         });
     }
     delete(data, context, info) {
@@ -84,7 +86,9 @@ class CRUDService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const selectedFields = getSelectedFieldsFromResolverInfo_1.getSelectedFieldsFromResolverInfo(info, this.model);
             const result = yield this.db.deleteBy(args, selectedFields);
-            return result;
+            return {
+                items: result
+            };
         });
     }
     findOne(args, context, info) {

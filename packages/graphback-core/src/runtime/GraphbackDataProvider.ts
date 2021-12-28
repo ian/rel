@@ -41,7 +41,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  updateBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type>;
+  updateBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type[]>;
 
   /**
    * Implementation for object deletes
@@ -59,7 +59,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data data used for checking consistency
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type>;
+  deleteBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type[]>;
 
   /**
    * Implementation for finding a single unique object

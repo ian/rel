@@ -83,11 +83,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
     return result;
   }
 
-  public async updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
     const result = await this.db.updateBy(args, selectedFields);
 
-    return result;
+    return {
+      items: result
+    };
   }
 
   public async delete(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
@@ -110,11 +112,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type>  {
     return result;
   }
 
-  public async deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
     const result = await this.db.deleteBy(args, selectedFields);
 
-    return result;
+    return {
+      items: result
+    }
   }
 
   public findOne(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
