@@ -36,10 +36,7 @@
     "typescript": "4.1.3"
   },
   "scripts": {
-    "bench": "cd performance && yarn start",
-    "bench:docker": "docker run -it --rm -v \"$PWD\":/usr/src/bench -w /usr/src/bench -m=\"256m\" --cpus=\"2\" --user \"$(id -u):$(id -g)\" node:14.10 npm run bench",
     "test": "jest -w 1",
-    "test:integration": "cd integration && yarn && yarn integration",
     "coverage": "jest --coverage",
     "bootstrap": "lerna bootstrap --no-ci",
     "lint": "eslint 'packages/*/src/**/*.ts'",
@@ -47,27 +44,13 @@
     "unlock": "lerna exec -- del package-lock.json && del yarn.lock",
     "build": "lerna run --no-private build",
     "watch": "lerna run watch",
-    "release:prep": "./scripts/prepareRelease.sh",
-    "release:validate": "./scripts/validateRelease.sh",
-    "generate:doc": "./scripts/generateApiDoc.sh",
-    "publish:canary": "lerna publish --canary",
-    "release:publish": "./scripts/publishRelease.sh",
     "link": "lerna exec npm link .",
     "clean": "npm-run-all clean:*",
     "clean:packages": "lerna run clean",
     "clean:dependencies": "lerna clean --yes",
     "core-workspace": "yarn workspace @graphback/core",
     "graphback-workspace": "yarn workspace graphback",
-    "cli-workspace": "yarn workspace graphback-cli",
-    "codegen-client-workspace": "yarn workspace @graphback/codegen-client",
-    "create-graphback-workspace": "yarn workspace create-graphback",
-    "codegen-schema-workspace": "yarn workspace @graphback/codegen-schema",
-    "datasync-workspace": "yarn workspace @graphback/datasync",
-    "runtime-knex-workspace": "yarn workspace @graphback/runtime-knex",
-    "runtime-mongo-workspace": "yarn workspace @graphback/runtime-mongo",
-    "graphql-migrations-workspace": "yarn workspace graphql-migrations",
-    "graphql-serve-workspace": "yarn workspace graphql-serve",
-    "keycloak-authz-workspace": "yarn workspace @graphback/keycloak-authz"
+    "codegen-schema-workspace": "yarn workspace @graphback/codegen-schema"
   },
   "workspaces": [
     "packages/graphback",
@@ -93,8 +76,5 @@
   "bugs": {
     "url": "https://github.com/aerogear/graphback/issues"
   },
-  "homepage": "https://github.com/aerogear/graphback#readme",
-  "resolutions": {
-    "@types/react": "16.14.2"
-  }
+  "homepage": "https://github.com/aerogear/graphback#readme"
 }
