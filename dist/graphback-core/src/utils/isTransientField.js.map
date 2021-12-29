@@ -1,1 +1,0 @@
-{"version":3,"file":"isTransientField.js","sourceRoot":"","sources":["../../../../packages/graphback-core/src/utils/isTransientField.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,aAAa,EAAE,MAAM,kBAAkB,CAAA;AAEhD;;;;GAIG;AACH,MAAM,UAAU,gBAAgB,CAAE,KAA6B;IAC7D,OAAO,aAAa,CAAC,WAAW,EAAE,KAAK,CAAC,CAAA;AAC1C,CAAC"}

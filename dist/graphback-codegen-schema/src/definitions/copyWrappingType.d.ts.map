@@ -1,1 +1,0 @@
-{"version":3,"file":"copyWrappingType.d.ts","sourceRoot":"","sources":["../../../../packages/graphback-codegen-schema/src/definitions/copyWrappingType.ts"],"names":[],"mappings":"AAAA,OAAO,EAAsF,gBAAgB,EAAE,iBAAiB,EAAE,MAAM,SAAS,CAAA;AAGjJ,aAAK,kBAAkB,GAAG,gBAAgB,GAAG,iBAAiB,CAAA;AAE9D;;;;;GAKG;AACH,wBAAgB,gBAAgB,CAAE,YAAY,EAAE,kBAAkB,EAAE,UAAU,EAAE,kBAAkB,GAAG,kBAAkB,CAwBtH"}
