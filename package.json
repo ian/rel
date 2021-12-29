@@ -31,7 +31,8 @@
     "typescript": "*"
   },
   "scripts": {
-    "build": "pnpm run -r build"
+    "build": "pnpm run -r build",
+    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "husky": {
     "hooks": {

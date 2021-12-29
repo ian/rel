@@ -28,3 +28,4 @@ Go to http://127.0.0.1:4000/altair or consume the endpoint in http://localhost:4
 
 - pnpm i
 - pnpm run build
+- pnpm run bootstrap:redis

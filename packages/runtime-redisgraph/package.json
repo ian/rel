@@ -6,8 +6,7 @@
   "type": "module",
   "author": "thelinuxlich@gmail.com",
   "scripts": {
-    "test": "uvu tests -i setup",
-    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
+    "test": "uvu tests -i setup"
   },
   "engine": {
     "node": ">=16"
