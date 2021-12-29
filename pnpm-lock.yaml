@@ -165,6 +165,7 @@ importers:
       pkg-dir: ^6.0.1
       redis-stream-helper: github:thelinuxlich/redis-stream-helper
       runtime-redisgraph: '*'
+      tsup: ^5.11.9
     dependencies:
       '@genql/cli': 2.8.0
       '@genql/runtime': 2.8.0_graphql@15.8.0
@@ -187,6 +188,7 @@ importers:
     devDependencies:
       eslint: 7.32.0
       eslint-config-standard: 16.0.3_d42fecbad7bfe7f5a4cd1039746899f1
+      tsup: 5.11.9_typescript@4.5.4
 
   packages/runtime-redisgraph:
     specifiers:
@@ -206,6 +208,7 @@ importers:
       mockdate: ^3.0.5
       redis-stream-helper: github:thelinuxlich/redis-stream-helper
       redisgraph.js: ^2.3.0
+      tsup: ^5.11.9
       uuid: ^8.3.2
       uvu: ^0.5.2
     dependencies:
@@ -227,6 +230,7 @@ importers:
       graphql: 15.8.0
       graphql-migrations: 1.1.2_fb0231590f009ce5b7e645c9e15b44fb
       mockdate: 3.0.5
+      tsup: 5.11.9_typescript@4.5.4
       uvu: 0.5.2
 
 packages:

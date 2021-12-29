@@ -1,0 +1,1 @@
+{"version":3,"file":"ModelDefinition.js","sourceRoot":"","sources":["../../../../packages/graphback-core/src/plugin/ModelDefinition.ts"],"names":[],"mappings":"AA4BA,MAAM,UAAU,cAAc,CAAE,IAAY,EAAE,MAAyB;IACrE,IAAI,CAAC,MAAM,EAAE;QACX,OAAO,SAAS,CAAA;KACjB;IAED,OAAO,MAAM,CAAC,IAAI,CAAC,CAAC,CAAkB,EAAE,EAAE,CAAC,CAAC,CAAC,WAAW,CAAC,IAAI,KAAK,IAAI,CAAC,CAAA;AACzE,CAAC"}

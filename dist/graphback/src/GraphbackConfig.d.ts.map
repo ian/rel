@@ -1,0 +1,1 @@
+{"version":3,"file":"GraphbackConfig.d.ts","sourceRoot":"","sources":["../../../packages/graphback/src/GraphbackConfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,2BAA2B,CAAA;AAClE,OAAO,EAAE,4BAA4B,EAAE,MAAM,iBAAiB,CAAA;AAE9D;;GAEG;AACH,MAAM,WAAW,eAAe;IAC9B,IAAI,CAAC,EAAE,4BAA4B,CAAA;IAEnC,OAAO,CAAC,EAAE;QACR,UAAU,CAAC,EAAE,sBAAsB,CAAA;KACpC,GAAG,GAAG,CAAA;CACR"}

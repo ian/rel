@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/rel-js/monorepo#readme",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --target esnext --format esm",
     "clean": "rm -rf ./dist"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "eslint": "^7.12.1",
-    "eslint-config-standard": "^16.0.3"
+    "eslint-config-standard": "^16.0.3",
+    "tsup": "^5.11.9"
   }
 }
