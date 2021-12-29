@@ -1,0 +1,50 @@
+{
+  "name": "@graphback/codegen-schema",
+  "version": "1.1.2",
+  "description": "GraphQL-Code-Generator compatibile schema generator",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "typescript": {
+    "definition": "types/index.d.ts"
+  },
+  "author": "wtrocki@redhat.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rel-js/graphback.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rel-js/graphback/issues"
+  },
+  "homepage": "https://github.com/rel-js/graphback/tree/master/packages/graphback-codegen-schema#readme",
+  "scripts": {
+    "clean": "rimraf coverage dist types",
+    "build": "tsup src/index.ts",
+    "watch": "tsc -w ",
+    "lint": "eslint -t stylish --project \"tsconfig.json\"",
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=10.15.3"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/jest": "26.0.19",
+    "@types/node": "12.19.9",
+    "dataloader": "2.0.0",
+    "graphql": "15.8.0",
+    "jest": "26.6.3",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.4.4",
+    "tsup": "^5.11.9"
+  },
+  "dependencies": {
+    "@graphback/core": "*",
+    "@graphql-tools/utils": "7.1.4",
+    "graphql-compose": "7.23.0",
+    "graphql-metadata": "0.7.6",
+    "pluralize": "8.0.0"
+  }
+}

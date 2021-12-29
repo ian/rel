@@ -9,7 +9,7 @@
 Then on your backend code:
 
 ```javascript
-import relRun from 'rel-run'
+import relRun from 'rel-server'
 
 const app = relRun() // app is a Fastify server instance!
 ```
@@ -24,3 +24,7 @@ Go to http://127.0.0.1:4000/altair or consume the endpoint in http://localhost:4
 - REL_TRACE: Enable tracing at http://localhost:2929
 - REDIS_HOST: The Redis host (with RedisGraph module enabled)
 - REDIS_PORT: The Redis port
+## Development
+
+- pnpm i
+- pnpm run build

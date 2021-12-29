@@ -1,8 +1,6 @@
 {
-  "extends": ["standard"],
-  "rules": {
-    "semi": ["error", "never"],
-    "quotes": ["error", "single"],
-    "max-len": "off"
+  "extends": "standard-with-typescript",
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 }

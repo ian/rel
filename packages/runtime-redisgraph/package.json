@@ -1,0 +1,37 @@
+{
+  "name": "runtime-redisgraph",
+  "version": "1.0.0",
+  "description": "A Rel-gen adapter for RedisGraph",
+  "main": "src/index.js",
+  "type": "module",
+  "author": "thelinuxlich@gmail.com",
+  "scripts": {
+    "test": "uvu tests -i setup",
+    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
+  },
+  "engine": {
+    "node": ">=16"
+  },
+  "devDependencies": {
+    "@graphback/codegen-schema": "*",
+    "eslint": "7",
+    "eslint-config-standard": "^16",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-node": "^11",
+    "eslint-plugin-promise": "^5",
+    "graphql": "15.8.0",
+    "graphql-migrations": "1.1.2",
+    "mockdate": "^3.0.5",
+    "uvu": "^0.5.2"
+  },
+  "dependencies": {
+    "@graphback/core": "*",
+    "@ptkdev/logger": "^1.8.0",
+    "dataloader": "2.0.0",
+    "ioredis": "^4.28.1",
+    "lodash": "^4.17.21",
+    "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
+    "redisgraph.js": "^2.3.0",
+    "uuid": "^8.3.2"
+  }
+}
