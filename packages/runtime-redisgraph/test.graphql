@@ -1,0 +1,112 @@
+"""Exposes a URL that specifies the behaviour of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behaviour of this scalar."""
+  url: String!
+) on SCALAR
+
+input CreateTodoInput {
+  a: Int
+  b: Int
+  c: Int
+}
+
+input IDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  in: [ID!]
+}
+
+input IntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  in: [Int!]
+  between: [Int!]
+}
+
+input MutateTodoInput {
+  id: ID!
+  a: Int
+  b: Int
+  c: Int
+}
+
+type Mutation {
+  createTodo(input: CreateTodoInput!): Todo
+  updateTodo(input: MutateTodoInput!): Todo
+  updateTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
+  deleteTodo(input: MutateTodoInput!): Todo
+  deleteTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
+}
+
+input OrderByInput {
+  field: String!
+  order: SortDirectionEnum = ASC
+}
+
+input PageRequest {
+  limit: Int
+  offset: Int
+}
+
+type Query {
+  getTodo(id: ID!): Todo
+  findTodos(filter: TodoFilter, page: PageRequest, orderBy: OrderByInput): TodoResultList!
+}
+
+enum SortDirectionEnum {
+  DESC
+  ASC
+}
+
+type Subscription {
+  newTodo(filter: TodoSubscriptionFilter): Todo!
+  updatedTodo(filter: TodoSubscriptionFilter): Todo!
+  deletedTodo(filter: TodoSubscriptionFilter): Todo!
+}
+
+"""@model"""
+type Todo {
+  id: ID!
+  a: Int
+  b: Int
+  c: Int
+}
+
+input TodoFilter {
+  id: IDInput
+  a: IntInput
+  b: IntInput
+  c: IntInput
+  and: [TodoFilter!]
+  or: [TodoFilter!]
+  not: TodoFilter
+}
+
+type TodoMutationResultList {
+  items: [Todo]!
+}
+
+type TodoResultList {
+  items: [Todo]!
+  offset: Int
+  limit: Int
+  count: Int
+}
+
+input TodoSubscriptionFilter {
+  and: [TodoSubscriptionFilter!]
+  or: [TodoSubscriptionFilter!]
+  not: TodoSubscriptionFilter
+  id: IDInput
+  a: IntInput
+  b: IntInput
+  c: IntInput
+}
