@@ -1,7 +1,7 @@
-import { buildSchema, GraphQLSchema } from 'graphql';
-import { GraphbackCoreMetadata } from './GraphbackCoreMetadata';
-import { GraphbackGlobalConfig } from './GraphbackGlobalConfig';
-import { GraphbackPlugin } from './GraphbackPlugin';
+import { buildSchema, GraphQLSchema } from 'graphql'
+import { GraphbackCoreMetadata } from './GraphbackCoreMetadata'
+import { GraphbackGlobalConfig } from './GraphbackGlobalConfig'
+import { GraphbackPlugin } from './GraphbackPlugin'
 
 /**
  * options for the GraphbackPluginEngine
@@ -24,26 +24,25 @@ export interface GraphBackPluginEngineOptions {
  * ```
  */
 export class GraphbackPluginEngine {
+  private readonly plugins: GraphbackPlugin[]
+  private readonly metadata: GraphbackCoreMetadata
 
-  private plugins: GraphbackPlugin[]
-  private metadata: GraphbackCoreMetadata;
-
-  public constructor({ schema, config, plugins }: GraphBackPluginEngineOptions) {
-    this.plugins = plugins || [];
+  public constructor ({ schema, config, plugins }: GraphBackPluginEngineOptions) {
+    this.plugins = (plugins != null) || []
     if (!schema) {
-      throw new Error("Plugin engine requires schema");
+      throw new Error('Plugin engine requires schema')
     }
-    let graphQLSchema: GraphQLSchema;
-    if (typeof schema === "string") {
-      graphQLSchema = buildSchema(schema);
+    let graphQLSchema: GraphQLSchema
+    if (typeof schema === 'string') {
+      graphQLSchema = buildSchema(schema)
     } else {
-      graphQLSchema = schema;
+      graphQLSchema = schema
     }
-    this.metadata = new GraphbackCoreMetadata(config, graphQLSchema);
+    this.metadata = new GraphbackCoreMetadata(config, graphQLSchema)
   }
 
-  public registerPlugin(...plugins: GraphbackPlugin[]): void {
-    this.plugins.push(...plugins);
+  public registerPlugin (...plugins: GraphbackPlugin[]): void {
+    this.plugins.push(...plugins)
   }
 
   /**
@@ -51,35 +50,35 @@ export class GraphbackPluginEngine {
    * Creation of resolvers, which has to come after all the changes in schema have been applied
    * Saving of the transformed schema and related files
    */
-  public createResources(): GraphbackCoreMetadata {
+  public createResources (): GraphbackCoreMetadata {
     if (this.plugins.length === 0) {
-      console.warn("GraphbackEngine: No Graphback plugins registered");
+      console.warn('GraphbackEngine: No Graphback plugins registered')
     }
 
-    this.createSchema();
+    this.createSchema()
 
-    this.createResolvers();
+    this.createResolvers()
 
-    //Save schema and all files
+    // Save schema and all files
     for (const plugin of this.plugins) {
-      plugin.createResources(this.metadata);
+      plugin.createResources(this.metadata)
     }
 
-    return this.metadata;
+    return this.metadata
   }
 
-  private createSchema() {
-    //We need to apply all required changes to the schema we need
-    //This is to ensure that every plugin can add changes to the schema
+  private createSchema () {
+    // We need to apply all required changes to the schema we need
+    // This is to ensure that every plugin can add changes to the schema
     for (const plugin of this.plugins) {
-      const newSchema = plugin.transformSchema(this.metadata);
-      this.metadata.setSchema(newSchema);
+      const newSchema = plugin.transformSchema(this.metadata)
+      this.metadata.setSchema(newSchema)
     }
   }
 
-  private createResolvers() {
+  private createResolvers () {
     for (const plugin of this.plugins) {
-      const resolvers = plugin.createResolvers(this.metadata);
+      const resolvers = plugin.createResolvers(this.metadata)
       this.metadata.addResolvers(resolvers)
     }
   }

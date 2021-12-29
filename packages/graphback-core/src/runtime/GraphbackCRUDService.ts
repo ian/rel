@@ -1,12 +1,12 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { QueryFilter } from './QueryFilter';
-import { FindByArgs } from '.';
+import { GraphQLResolveInfo } from 'graphql'
+import { QueryFilter } from './QueryFilter'
+import { FindByArgs } from '.'
 
 export interface ResultList<T = any> {
-  items: T[],
-  count?: number;
-  limit?: number;
-  offset?: number;
+  items: T[]
+  count?: number
+  limit?: number
+  offset?: number
 }
 
 /**
@@ -22,7 +22,7 @@ export interface ResultList<T = any> {
  *
  * @see GraphbackDataProvider
  */
-//tslint:disable-next-line: no-any
+// tslint:disable-next-line: no-any
 export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
   /**
    * Implementation for object creation
@@ -30,7 +30,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  create(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  create: (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
 
   /**
    * Implementation for object updates
@@ -38,7 +38,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data including id
    * @param context context object passed from graphql or rest layer
    */
-  update(data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  update: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
 
   /**
    * Implementation for object deletes
@@ -46,7 +46,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data data used for consistency reasons
    * @param context context object passed from graphql or rest layer
    */
-  delete(data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  delete: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
 
   /**
    * Fetch a single record by its unique attribute(s)
@@ -54,11 +54,11 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param filter - the unique attributes to fetch the record with
    * @param context context object from GraphQL/REST layer
    */
-  findOne(filter: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type>;
+  findOne: (filter: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
 
   /**
    * Implementation for reading objects with filtering capabilities
-   * 
+   *
    * @param {FindByArgs} [args] - Query arguments
    * @param {QueryFilter} [args.filter] - GraphQLCRUD filter to query specific data
    * @param {GraphbackPage} [args.page] - Gagination options
@@ -67,21 +67,21 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param {GraphQLResolveInfo} [info] - GraphQL query resolver info
    * @param {string} [path] - Path to a tree branch which should be mapped during fields extraction
    */
-  findBy(args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>>;
+  findBy: (args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string) => Promise<ResultList<Type>>
   /**
    * Implementation for object updates by filter
    *
    * @param data input data including id
    * @param context context object passed from graphql or rest layer
    */
-  updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>>;
+  updateBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<ResultList<Type>>
   /**
    * Implementation for object deletes by filter
    *
    * @param data data used for consistency reasons
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>>;
+  deleteBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<ResultList<Type>>
 
   /**
    * Subscription for all creation events
@@ -89,7 +89,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param filter filter used in subscription
    * @param context additional context
    */
-  subscribeToCreate(filter?: QueryFilter, context?: GraphbackContext): AsyncIterator<Type> | undefined
+  subscribeToCreate: (filter?: QueryFilter, context?: GraphbackContext) => AsyncIterator<Type> | undefined
 
   /**
    * Subscription for all update events
@@ -97,7 +97,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param filter filter used in subscription
    * @param context additional context
    */
-  subscribeToUpdate(filter?: QueryFilter, context?: GraphbackContext): AsyncIterator<Type> | undefined
+  subscribeToUpdate: (filter?: QueryFilter, context?: GraphbackContext) => AsyncIterator<Type> | undefined
 
   /**
    * Subscription for all deletion events
@@ -105,17 +105,17 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param filter filter used in subscription
    * @param context additional context
    */
-  subscribeToDelete(filter?: QueryFilter, context?: GraphbackContext): AsyncIterator<Type> | undefined
+  subscribeToDelete: (filter?: QueryFilter, context?: GraphbackContext) => AsyncIterator<Type> | undefined
 
   /**
    * Specialized function that can utilize batching the data basing on
    * DataLoader library
-   * 
+   *
    * @param {string} relationField - name of the field that will be used to match ids
    * @param {string|number} id - id of the object we want to load
    * @param {QueryFilter} [filter] - GraphQLCRUD filter object
    * @param {GraphbackContext} context - resolver context object that will be used to apply new loader
    * @param {GraphQLResolveInfo} info - GraphQL resolver info
    */
-  batchLoadData(relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo);
+  batchLoadData: (relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo) => any
 }

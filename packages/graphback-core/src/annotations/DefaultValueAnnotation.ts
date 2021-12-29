@@ -6,5 +6,5 @@ export interface DefaultValueAnnotation {
   /**
    * The value held by this metadata.
    */
-  value: any;
+  value: any
 }

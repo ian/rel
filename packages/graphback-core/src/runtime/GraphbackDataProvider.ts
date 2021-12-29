@@ -1,5 +1,5 @@
-import {   FindByArgs } from "./interfaces"
-import { QueryFilter } from './QueryFilter';
+import { FindByArgs } from './interfaces'
+import { QueryFilter } from './QueryFilter'
 
 /**
  * Graphback layered architecture component that can be called
@@ -13,7 +13,7 @@ import { QueryFilter } from './QueryFilter';
  *
  * @see GraphbackCRUDService
  */
-//tslint:disable-next-line: no-any
+// tslint:disable-next-line: no-any
 export interface GraphbackDataProvider<Type = any> {
 
   /**
@@ -23,7 +23,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  create(data: Type, selectedFields?: string[]): Promise<Type>;
+  create: (data: Type, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object updates
@@ -32,7 +32,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  update(data: Partial<Type>, selectedFields?: string[]): Promise<Type>;
+  update: (data: Partial<Type>, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object updates by filter
@@ -41,7 +41,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  updateBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type[]>;
+  updateBy: (args: Partial<Type>, selectedFields?: string[]) => Promise<Type[]>
 
   /**
    * Implementation for object deletes
@@ -50,7 +50,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data data used for checking consistency
    * @param context context object passed from graphql or rest layer
    */
-  delete(data: Partial<Type>, selectedFields?: string[]): Promise<Type>;
+  delete: (data: Partial<Type>, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object deletes by filter
@@ -59,7 +59,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data data used for checking consistency
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy(args: Partial<Type>, selectedFields?: string[]): Promise<Type[]>;
+  deleteBy: (args: Partial<Type>, selectedFields?: string[]) => Promise<Type[]>
 
   /**
    * Implementation for finding a single unique object
@@ -67,7 +67,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param args filter by unique attriburtes
    * @param context context object passed from graphql or rest layer
    */
-  findOne(args: Partial<Type>, selectedFields?: string[]): Promise<Type>;
+  findOne: (args: Partial<Type>, selectedFields?: string[]) => Promise<Type>
   /**
    * Implementation for reading objects with filtering capabilities
    *
@@ -76,14 +76,14 @@ export interface GraphbackDataProvider<Type = any> {
    * @param page paging context
    * @param orderBy gives the ability to order the results based on a field in ascending or descending order
    */
-  findBy(args?: FindByArgs, selectedFields?: string[]): Promise<Type[]>;
+  findBy: (args?: FindByArgs, selectedFields?: string[]) => Promise<Type[]>
 
   /**
    * Implementation for counting number of objects with filtering capabilities
    *
    * @param filter filter by specific type
    */
-  count(filter: QueryFilter): Promise<number>;
+  count: (filter: QueryFilter) => Promise<number>
 
   /**
    * Read multiple items by their id's (used for lazy data loading purposes)
@@ -93,5 +93,5 @@ export interface GraphbackDataProvider<Type = any> {
    * @param context fields to select from datasource
    * @param filter filter by specific type
    */
-  batchRead(relationField: string, ids: string[], filter: QueryFilter, selectedFields?: string[]): Promise<Type[][]>
+  batchRead: (relationField: string, ids: string[], filter: QueryFilter, selectedFields?: string[]) => Promise<Type[][]>
 }

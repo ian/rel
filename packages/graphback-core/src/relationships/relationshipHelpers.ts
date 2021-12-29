@@ -1,28 +1,28 @@
-import { parseMetadata } from 'graphql-metadata';
-import { GraphQLObjectType, getNamedType, GraphQLField } from 'graphql';
-import { ObjectTypeComposerFieldConfigAsObjectDefinition, ObjectTypeComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose';
-import { ModelDefinition } from '../plugin/ModelDefinition';
-import { getInputTypeName, GraphbackOperationType } from '../crud';
-import { RelationshipAnnotation } from './RelationshipMetadataBuilder';
+import { parseMetadata } from 'graphql-metadata'
+import { GraphQLObjectType, getNamedType, GraphQLField } from 'graphql'
+import { ObjectTypeComposerFieldConfigAsObjectDefinition, ObjectTypeComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
+import { ModelDefinition } from '../plugin/ModelDefinition'
+import { getInputTypeName, GraphbackOperationType } from '../crud'
+import { RelationshipAnnotation } from './RelationshipMetadataBuilder'
 
 /**
  * Parse relationship metadata string to strongly-typed interface
  *
  * @param description field description
  */
-export function parseRelationshipAnnotation(description: string = ''): RelationshipAnnotation | undefined {
-  const relationshipKinds = ['oneToMany', 'oneToOne', 'manyToOne'];
+export function parseRelationshipAnnotation (description: string = ''): RelationshipAnnotation | undefined {
+  const relationshipKinds = ['oneToMany', 'oneToOne', 'manyToOne']
 
   for (const kind of relationshipKinds) {
-    const annotation: any = parseMetadata(kind, description);
+    const annotation: any = parseMetadata(kind, description)
 
     if (!annotation) {
-      continue;
+      continue
     }
 
     // TODO: Should not throw error here
     if (!annotation.field && kind !== 'oneToOne') {
-      throw new Error(`'field' is required on "${kind}" relationship annotations`);
+      throw new Error(`'field' is required on "${kind}" relationship annotations`)
     }
 
     return {
@@ -31,7 +31,7 @@ export function parseRelationshipAnnotation(description: string = ''): Relations
     }
   }
 
-  return undefined;
+  return undefined
 }
 
 /**
@@ -39,7 +39,7 @@ export function parseRelationshipAnnotation(description: string = ''): Relations
  * @param fieldName
  * @param relationships
  */
-export function isOneToManyField(field: GraphQLField<any, any>): boolean {
+export function isOneToManyField (field: GraphQLField<any, any>): boolean {
   const oneToManyAnnotation: any = parseMetadata('oneToMany', field.description)
 
   return !!oneToManyAnnotation
@@ -53,7 +53,7 @@ export function isOneToManyField(field: GraphQLField<any, any>): boolean {
  * @param columnKey
  */
 export const relationshipFieldDescriptionTemplate = (relationshipKind: 'oneToOne' | 'oneToMany' | 'manyToOne', fieldName: string, columnKey: string): string => {
-  return `@${relationshipKind}(field: '${fieldName}', key: '${columnKey}')`;
+  return `@${relationshipKind}(field: '${fieldName}', key: '${columnKey}')`
 }
 
 /**
@@ -64,7 +64,7 @@ export const relationshipFieldDescriptionTemplate = (relationshipKind: 'oneToOne
  * @param columnKey
  */
 export const relationshipOneToOneFieldDescriptionTemplate = (relationshipKind: 'oneToOne' | 'oneToMany' | 'manyToOne', columnKey: string): string => {
-  return `@${relationshipKind}(key: '${columnKey}')`;
+  return `@${relationshipKind}(key: '${columnKey}')`
 }
 
 /**
@@ -74,18 +74,17 @@ export const relationshipOneToOneFieldDescriptionTemplate = (relationshipKind: '
  * @param {ModelDefinition} model - Graphback model definition
  * @param {ObjectTypeComposer} typeComposer - GraphQL Compose Type composer for the model
  */
-export function addRelationshipFields(model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
+export function addRelationshipFields (model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
+  const modelType = model.graphqlType
+  const modelFields = modelType.getFields()
 
-  const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {};
+  const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {}
   for (const current of model.relationships) {
-
     if (!modelFields[current.ownerField.name]) {
       fieldsObj[current.ownerField.name] = {
         type: current.ownerField.type,
         description: current.ownerField.description
-      };
+      }
     }
   }
 
@@ -98,15 +97,14 @@ export function addRelationshipFields(model: ModelDefinition, typeComposer: Obje
  * @param {ModelDefinition} model - Graphback model definition
  * @param {ObjectTypeComposer} typeComposer - GraphQL Compose Type composer for the model
  */
-export function extendRelationshipFields(model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
-  const modelType = model.graphqlType;
+export function extendRelationshipFields (model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
+  const modelType = model.graphqlType
 
-  const modelFields = modelType.getFields();
+  const modelFields = modelType.getFields()
 
   for (const fieldRelationship of model.relationships) {
-
     if (modelFields[fieldRelationship.ownerField.name]) {
-      const modelField = modelFields[fieldRelationship.ownerField.name];
+      const modelField = modelFields[fieldRelationship.ownerField.name]
 
       const partialConfig: Partial<ObjectTypeComposerFieldConfigAsObjectDefinition<any, any>> = {
         type: modelField.type,
@@ -124,9 +122,9 @@ export function extendRelationshipFields(model: ModelDefinition, typeComposer: O
  * @param {ModelDefinition} model - Graphback model definition
  * @param {ObjectTypeComposer} typeComposer - GraphQL Compose Type composer for the model
  */
-export function extendOneToManyFieldArguments(model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
+export function extendOneToManyFieldArguments (model: ModelDefinition, typeComposer: ObjectTypeComposer): void {
+  const modelType = model.graphqlType
+  const modelFields = modelType.getFields()
 
   for (const current of model.relationships) {
     if (modelFields[current.ownerField.name]) {
@@ -140,7 +138,7 @@ export function extendOneToManyFieldArguments(model: ModelDefinition, typeCompos
         args: {
           filter: getInputTypeName(fieldNamedType.name, GraphbackOperationType.FIND)
         }
-      };
+      }
 
       typeComposer.extendField(current.ownerField.name, partialConfig)
     }

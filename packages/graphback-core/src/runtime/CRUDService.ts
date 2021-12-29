@@ -45,7 +45,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
 
   public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     let selectedFields: string[]
-    if (info && !this.crudOptions.subCreate) {
+    if ((info != null) && !this.crudOptions.subCreate) {
       selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
     }
 
@@ -121,19 +121,19 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     }
   }
 
-  public findOne (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async findOne (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     let selectedFields: string[]
-    if (info) {
+    if (info != null) {
       selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
     }
 
-    return this.db.findOne(args, selectedFields)
+    return await this.db.findOne(args, selectedFields)
   }
 
   public async findBy (args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>> {
     let selectedFields: string[]
     let requestedCount: boolean = false
-    if (info) {
+    if (info != null) {
       selectedFields = getSelectedFieldsFromResolverInfo(info, this.model, path)
       requestedCount = path === 'items' && getResolverInfoFieldsList(info).some((field: string) => field === 'count')
     }
@@ -209,13 +209,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
 
   public batchLoadData (relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo) {
     const selectedFields = []
-    if (info) {
+    if (info != null) {
       const selectedFieldsFromInfo = getSelectedFieldsFromResolverInfo(info, this.model)
       selectedFields.push(...selectedFieldsFromInfo)
 
       // only push the relation field if there are fields selected
       // because all fields will be selected otherwise
-      if (selectedFields.length) {
+      if (selectedFields.length > 0) {
         selectedFields.push(relationField)
       }
     }
@@ -223,8 +223,8 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     const fetchedKeys = selectedFields.join('-')
     const keyName = `${this.model.graphqlType.name}-${upperCaseFirstChar(relationField)}-${fetchedKeys}-${JSON.stringify(filter)}-DataLoader`
     if (!context[keyName]) {
-      context[keyName] = new DataLoader<string, any>((keys: string[]) => {
-        return this.db.batchRead(relationField, keys, filter, selectedFields)
+      context[keyName] = new DataLoader<string, any>(async (keys: string[]) => {
+        return await this.db.batchRead(relationField, keys, filter, selectedFields)
       })
     }
 

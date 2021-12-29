@@ -126,7 +126,7 @@ export function getUserModels (modelTypes: GraphQLObjectType[]): GraphQLObjectTy
 export function isInputField (field: GraphQLField<any, any>): boolean {
   const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
-  return !relationshipAnnotation || relationshipAnnotation.kind !== 'oneToMany'
+  return (relationshipAnnotation == null) || relationshipAnnotation.kind !== 'oneToMany'
 }
 
 // tslint:disable-next-line: no-reserved-keywords
@@ -148,7 +148,7 @@ export function getRelationFieldName (field: any, type: any) {
 export function getInputFieldName (field: GraphQLField<any, any>): string {
   const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
-  if (!relationshipAnnotation) {
+  if (relationshipAnnotation == null) {
     return field.name
   }
 
@@ -165,7 +165,7 @@ export function getInputFieldTypeName (modelName: string, field: GraphQLField<an
   if (isObjectType(fieldType) && isModelType(fieldType)) {
     const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
-    if (!relationshipAnnotation) {
+    if (relationshipAnnotation == null) {
       throw new Error(`Missing relationship definition on: "${modelName}.${field.name}". Visit https://graphback.dev/docs/model/datamodel#relationships to see how you can define relationship in your business model.`)
     }
 

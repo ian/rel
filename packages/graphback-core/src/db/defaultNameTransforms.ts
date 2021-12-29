@@ -10,22 +10,22 @@ export type DatabaseNameTransform = (
 
 /**
  * Transform to/from database table name
- * 
+ *
  * @param name - model name
  * @param direction - transform to or from database
  */
-export function defaultTableNameTransform(name: string, direction: DatabaseNameTransformDirection) {
+export function defaultTableNameTransform (name: string, direction: DatabaseNameTransformDirection) {
   if (direction === 'to-db') {
-    return name.toLowerCase();
+    return name.toLowerCase()
   }
 
   return name
 }
 
-export function transformForeignKeyName(name: string, direction: DatabaseNameTransformDirection = 'to-db') {
+export function transformForeignKeyName (name: string, direction: DatabaseNameTransformDirection = 'to-db') {
   if (direction === 'to-db') {
-    return `${name}Id`;
+    return `${name}Id`
   }
 
-  return name;
+  return name
 }

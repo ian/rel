@@ -1,4 +1,4 @@
-import { isWrappingType, GraphQLNonNull, isListType, GraphQLList, GraphQLType, getNamedType, GraphQLInputType, GraphQLOutputType } from 'graphql';
+import { isWrappingType, GraphQLNonNull, isListType, GraphQLList, GraphQLType, getNamedType, GraphQLInputType, GraphQLOutputType } from 'graphql'
 
 type WrappingTypeName = 'GraphQLList' | 'GraphQLNonNull'
 type InputOrOutTypeType = GraphQLInputType | GraphQLOutputType
@@ -9,7 +9,7 @@ type InputOrOutTypeType = GraphQLInputType | GraphQLOutputType
  * @param {GraphQLType} copyFromType - Get the wrapping types from this type
  * @param {GraphQLType} copyToType - Add the wrapping types to this type
  */
-export function copyWrappingType(copyFromType: InputOrOutTypeType, copyToType: InputOrOutTypeType): InputOrOutTypeType {
+export function copyWrappingType (copyFromType: InputOrOutTypeType, copyToType: InputOrOutTypeType): InputOrOutTypeType {
   const wrappers: WrappingTypeName[] = []
 
   let oldTypeCopy = copyFromType

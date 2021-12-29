@@ -20,8 +20,12 @@
     "strictNullChecks": true,
     "lib": [
       "esnext"
-    ]
+    ],
+    "outDir": "dist"
   },
+  "include": [
+    "**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist",

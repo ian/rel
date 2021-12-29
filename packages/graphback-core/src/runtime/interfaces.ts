@@ -1,7 +1,7 @@
-import { ModelDefinition } from '..';
-import { GraphbackCRUDService } from './GraphbackCRUDService';
-import { QueryFilter } from './QueryFilter';
-import { GraphbackDataProvider } from '.';
+import { ModelDefinition } from '..'
+import { GraphbackCRUDService } from './GraphbackCRUDService'
+import { QueryFilter } from './QueryFilter'
+import { GraphbackDataProvider } from '.'
 
 /**
  * Map model names to a CRUD service

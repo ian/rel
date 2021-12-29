@@ -1,43 +1,43 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'bson'
 
 /**
  * Helper function to convert a value to another type
- * 
+ *
  * @param {any} value - Value to convert
  * @param {any} toType - convert value to this type
  */
-export function convertType(value: any, toType: any): string | number | boolean | BigInt | ObjectID {
+export function convertType (value: any, toType: any): string | number | boolean | BigInt | ObjectID {
   if (!value) {
-    return undefined;
+    return undefined
   }
 
   if (toType instanceof ObjectID || value instanceof ObjectID) {
-    return new ObjectID(value);
+    return new ObjectID(value)
   }
 
   switch (typeof toType) {
     case 'string':
-      return String(value);
+      return String(value)
     case 'number':
-      return Number(value);
+      return Number(value)
     case 'bigint':
-      return BigInt(value);
+      return BigInt(value)
     case 'boolean':
-      return Boolean(value);
+      return Boolean(value)
     case 'object':
       if (isDateObject(value)) {
         return new Date(value).getTime()
       }
 
-      return value;
+      return value
     default:
-      return String(value);
+      return String(value)
   }
 }
 
 /**
  * Check if value is a Date object
- * 
- * @param {any} value 
+ *
+ * @param {any} value
  */
-export const isDateObject = (value: any): boolean => Object.prototype.toString.call(value) === '[object Date]';
+export const isDateObject = (value: any): boolean => Object.prototype.toString.call(value) === '[object Date]'

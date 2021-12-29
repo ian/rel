@@ -1,4 +1,4 @@
-import { ObjectID as BsonObjectID } from "bson";
+import { ObjectID as BsonObjectID } from 'bson'
 
 /* eslint-disable */
 export function isObjectID(value: any) {

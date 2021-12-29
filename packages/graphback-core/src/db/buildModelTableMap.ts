@@ -1,7 +1,7 @@
-import { GraphQLField, GraphQLFieldMap, GraphQLObjectType } from "graphql";
+import { GraphQLField, GraphQLFieldMap, GraphQLObjectType } from 'graphql'
 import { parseMetadata } from 'graphql-metadata'
-import { defaultTableNameTransform } from './defaultNameTransforms';
-import { getPrimaryKey } from './getPrimaryKey';
+import { defaultTableNameTransform } from './defaultNameTransforms'
+import { getPrimaryKey } from './getPrimaryKey'
 
 /**
  * Contains mapping information between GraphQL Model type and database table
@@ -24,15 +24,15 @@ export interface ModelTableMap {
  *
  * @param field
  */
-export function getTableName(model: GraphQLObjectType): string {
-  let tableName = defaultTableNameTransform(model.name, 'to-db');
+export function getTableName (model: GraphQLObjectType): string {
+  let tableName = defaultTableNameTransform(model.name, 'to-db')
 
-  const dbAnnotations = parseMetadata('db', model);
+  const dbAnnotations = parseMetadata('db', model)
   if (dbAnnotations && dbAnnotations.name) {
-    tableName = dbAnnotations.name;
+    tableName = dbAnnotations.name
   }
 
-  return tableName;
+  return tableName
 }
 
 /**
@@ -41,29 +41,29 @@ export function getTableName(model: GraphQLObjectType): string {
  *
  * @param field
  */
-export function getColumnName(field: GraphQLField<any, any>): string {
-  let columnName = field.name;
+export function getColumnName (field: GraphQLField<any, any>): string {
+  let columnName = field.name
 
-  const dbAnnotations = parseMetadata('db', field);
+  const dbAnnotations = parseMetadata('db', field)
   if (dbAnnotations && dbAnnotations.name) {
-    columnName = dbAnnotations.name;
+    columnName = dbAnnotations.name
   }
 
-  return columnName;
+  return columnName
 }
 
-function mapFieldsToColumns(fieldMap: GraphQLFieldMap<any, any>): any {
+function mapFieldsToColumns (fieldMap: GraphQLFieldMap<any, any>): any {
   return Object.values(fieldMap).reduce((obj: any, field: GraphQLField<any, any>) => {
-    const columnName = getColumnName(field);
+    const columnName = getColumnName(field)
 
     if (field.name !== columnName) {
-      obj[field.name] = columnName;
+      obj[field.name] = columnName
     }
 
-    //TODO: Map relationship fields
+    // TODO: Map relationship fields
 
-    return obj;
-  }, {});
+    return obj
+  }, {})
 }
 
 /**
@@ -73,9 +73,9 @@ function mapFieldsToColumns(fieldMap: GraphQLFieldMap<any, any>): any {
  * @returns {ModelTableMap} A model containing the table name, any field customisations and a mapping of the primary key field.
  */
 export const buildModelTableMap = (model: GraphQLObjectType): ModelTableMap => {
-  const primaryKeyField = getPrimaryKey(model);
-  const tableName = getTableName(model);
-  const fieldMap = mapFieldsToColumns(model.getFields());
+  const primaryKeyField = getPrimaryKey(model)
+  const tableName = getTableName(model)
+  const fieldMap = mapFieldsToColumns(model.getFields())
 
   return {
     idField: getColumnName(primaryKeyField),

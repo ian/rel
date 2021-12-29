@@ -1,6 +1,6 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { fieldsMap, fieldsList } from 'graphql-fields-list';
-import { ModelDefinition } from './ModelDefinition';
+import { GraphQLResolveInfo } from 'graphql'
+import { fieldsMap, fieldsList } from 'graphql-fields-list'
+import { ModelDefinition } from './ModelDefinition'
 
 /**
  * Find selectable fields from resolve info for a given model starting on a given path
@@ -8,29 +8,29 @@ import { ModelDefinition } from './ModelDefinition';
  * @param model - the model to find the fields from
  * @param path - the root path to start field resolution from.
  */
-export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, model: ModelDefinition, path?: string): string[] => {  
-  const resolverFields = Object.keys(fieldsMap(info, { path }));
+export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, model: ModelDefinition, path?: string): string[] => {
+  const resolverFields = Object.keys(fieldsMap(info, { path }))
 
-  return getModelFieldsFromResolverFields(resolverFields, model);
+  return getModelFieldsFromResolverFields(resolverFields, model)
 }
 
 /**
  * Get the model specific-fields from a full list of fields
- * 
+ *
  * @param {string[]} resolverFields - resolver field names
  * @param {ModelDefinition} model - Graphback model
  */
 export const getModelFieldsFromResolverFields = (resolverFields: string[], model: ModelDefinition): string[] => {
-  const selectedFields = new Set<string>();
+  const selectedFields = new Set<string>()
 
   for (const key of resolverFields) {
-    const correspondingFieldInDatabase = model.fields[key];
+    const correspondingFieldInDatabase = model.fields[key]
     if (correspondingFieldInDatabase && !correspondingFieldInDatabase.transient) {
-      selectedFields.add(correspondingFieldInDatabase.name);
+      selectedFields.add(correspondingFieldInDatabase.name)
     }
   }
 
-  return [...selectedFields];
+  return [...selectedFields]
 }
 
 /**

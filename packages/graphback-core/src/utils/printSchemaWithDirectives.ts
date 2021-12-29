@@ -1,8 +1,8 @@
-import { GraphQLSchema } from 'graphql';
-import { SchemaComposer } from 'graphql-compose';
+import { GraphQLSchema } from 'graphql'
+import { SchemaComposer } from 'graphql-compose'
 
-export function printSchemaWithDirectives(schemaOrSDL: GraphQLSchema | string): string {
+export function printSchemaWithDirectives (schemaOrSDL: GraphQLSchema | string): string {
   const schemaComposer = new SchemaComposer(schemaOrSDL)
 
-  return schemaComposer.toSDL({ exclude: ['String', 'ID', 'Boolean', 'Float', 'Int'] });
+  return schemaComposer.toSDL({ exclude: ['String', 'ID', 'Boolean', 'Float', 'Int'] })
 }

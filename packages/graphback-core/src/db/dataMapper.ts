@@ -1,4 +1,4 @@
-import { ModelTableMap } from './buildModelTableMap';
+import { ModelTableMap } from './buildModelTableMap'
 
 export interface TableDataMap {
   idField?: TableID
@@ -12,12 +12,12 @@ export interface TableID {
   value?: any
 }
 
-function getTableId(idField: string, data: any): TableID {
+function getTableId (idField: string, data: any): TableID {
   if (!idField) { return undefined };
 
-  let value: any;
+  let value: any
   if (data && data[idField]) {
-    value = data[idField];
+    value = data[idField]
   }
 
   return {
@@ -27,15 +27,15 @@ function getTableId(idField: string, data: any): TableID {
 }
 
 export const getDatabaseArguments = (modelMap: ModelTableMap, data?: any): TableDataMap => {
-  const idField = modelMap.idField;
+  const idField = modelMap.idField
   // Transform data if it defined
-  let transFormedData: any;
+  let transFormedData: any
   if (data) {
-    const keys = Object.keys(data);
-    transFormedData = {};
+    const keys = Object.keys(data)
+    transFormedData = {}
     for (const key of keys) {
-      const value: any = data[key];
-      transFormedData[key] = value && typeof value === 'object' ? JSON.stringify(value) : value;
+      const value: any = data[key]
+      transFormedData[key] = value && typeof value === 'object' ? JSON.stringify(value) : value
     }
   };
 

@@ -2,24 +2,24 @@
  * Configuration for global values for graphback
  */
 export interface GraphbackCRUDGeneratorConfig {
-  //Generate create method
-  create?: boolean;
-  //Generate update method
-  update?: boolean;
-  //Generate updateBy method
-  updateBy?: boolean;
+  // Generate create method
+  create?: boolean
+  // Generate update method
+  update?: boolean
+  // Generate updateBy method
+  updateBy?: boolean
   // Generate delete method
-  delete?: boolean;
+  delete?: boolean
   // Generate deleteBy method
-  deleteBy?: boolean;
-  //Generate findOne method
-  findOne?: boolean;
-  //Generate find method
-  find?: boolean;
-  //Generate subscription for create operation
-  subCreate?: boolean;
-  //Generate subscription for update operation
-  subUpdate?: boolean;
-  //Generate subscription for delete operation
-  subDelete?: boolean;
+  deleteBy?: boolean
+  // Generate findOne method
+  findOne?: boolean
+  // Generate find method
+  find?: boolean
+  // Generate subscription for create operation
+  subCreate?: boolean
+  // Generate subscription for update operation
+  subUpdate?: boolean
+  // Generate subscription for delete operation
+  subDelete?: boolean
 }

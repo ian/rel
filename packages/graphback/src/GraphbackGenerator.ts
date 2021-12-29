@@ -1,7 +1,7 @@
-import { GraphbackPluginEngine } from '@graphback/core';
-import { GraphQLSchema } from 'graphql';
-import { loadPlugins } from './loadPlugins';
-import { GraphbackConfig } from './GraphbackConfig';
+import { GraphbackPluginEngine } from '@graphback/core'
+import { GraphQLSchema } from 'graphql'
+import { loadPlugins } from './loadPlugins'
+import { GraphbackConfig } from './GraphbackConfig'
 
 /**
  * GraphbackGenerator
@@ -10,27 +10,25 @@ import { GraphbackConfig } from './GraphbackConfig';
  * See README for examples
  */
 export class GraphbackGenerator {
-  protected config: GraphbackConfig;
-  protected schema: string | GraphQLSchema;
+  protected config: GraphbackConfig
+  protected schema: string | GraphQLSchema
 
-  public constructor(schema: GraphQLSchema | string, config: GraphbackConfig) {
-    this.schema = schema;
-    this.config = config;
+  public constructor (schema: GraphQLSchema | string, config: GraphbackConfig) {
+    this.schema = schema
+    this.config = config
   }
 
   /**
    * Create backend with all related resources
    */
-  public generateSourceCode() {
-    const plugins = loadPlugins(this.config.plugins);
+  public generateSourceCode () {
+    const plugins = loadPlugins(this.config.plugins)
     const pluginEngine = new GraphbackPluginEngine({
       schema: this.schema,
       plugins,
-      config: { crudMethods: this.config.crud },
+      config: { crudMethods: this.config.crud }
     })
 
-    pluginEngine.createResources();
-  }  
+    pluginEngine.createResources()
+  }
 }
-
-

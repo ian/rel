@@ -1,4 +1,4 @@
-import { GraphbackCRUDGeneratorConfig } from "./GraphbackCRUDGeneratorConfig";
+import { GraphbackCRUDGeneratorConfig } from './GraphbackCRUDGeneratorConfig'
 
 /**
  * Configuration for crud generators

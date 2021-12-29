@@ -14,5 +14,5 @@ export interface SchemaFormatter {
    *
    * @param schemaString
    */
-  format(schemaString: string): string
+  format: (schemaString: string) => string
 }

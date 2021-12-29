@@ -1,6 +1,6 @@
-import { GraphQLSchema } from "graphql";
-import { IResolvers } from '@graphql-tools/utils';
-import { GraphbackCoreMetadata } from './GraphbackCoreMetadata';
+import { GraphQLSchema } from 'graphql'
+import { IResolvers } from '@graphql-tools/utils'
+import { GraphbackCoreMetadata } from './GraphbackCoreMetadata'
 
 /**
  * Graphback plugin interface
@@ -21,16 +21,16 @@ export abstract class GraphbackPlugin {
    *
    * @param metadata - metadata object containing schema
    */
-  public transformSchema(metadata: GraphbackCoreMetadata): GraphQLSchema {
-    return metadata.getSchema();
+  public transformSchema (metadata: GraphbackCoreMetadata): GraphQLSchema {
+    return metadata.getSchema()
   }
 
   /**
    * Create resources like files etc. for this plugin.
    * This method should write resouces to filesystem
    */
-  public createResources(metadata: GraphbackCoreMetadata): void {
-    return undefined;
+  public createResources (metadata: GraphbackCoreMetadata): void {
+    return undefined
   }
 
   /**
@@ -39,16 +39,16 @@ export abstract class GraphbackPlugin {
    *
    * @param metadata - metadata object with model metadata
    */
-  public createResolvers(metadata: GraphbackCoreMetadata): IResolvers {
+  public createResolvers (metadata: GraphbackCoreMetadata): IResolvers {
     return undefined
   }
 
-  protected logWarning(message: string): void {
+  protected logWarning (message: string): void {
     // eslint-disable-next-line no-console
     console.log(`Warning - ${this.getPluginName()}: ${message}`)
   }
 
-  protected logError(message: string): void {
+  protected logError (message: string): void {
     // eslint-disable-next-line no-console
     console.error(`Error - ${this.getPluginName()}: ${message}`)
   }
@@ -56,5 +56,5 @@ export abstract class GraphbackPlugin {
   /**
    * @returns Unique name of the plugin
    */
-  public abstract getPluginName(): string;
+  public abstract getPluginName (): string
 };
