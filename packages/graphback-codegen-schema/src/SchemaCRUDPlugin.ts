@@ -1,14 +1,14 @@
 /* eslint-disable max-lines */
-import { resolve, dirname, join } from 'path';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import * as DataLoader from "dataloader";
-import { parseMetadata } from "graphql-metadata";
-import { SchemaComposer, NamedTypeComposer } from 'graphql-compose';
-import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils';
-import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql';
-import { Timestamp, getFieldName, metadataMap, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes,  FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core';
-import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters';
-import { buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions';
+import { resolve, dirname, join } from 'path'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import DataLoader from 'dataloader'
+import { parseMetadata } from 'graphql-metadata'
+import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
+import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
+import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
+import { Timestamp, getFieldName, metadataMap, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
+import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters'
+import { buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
 
 /**
  * Configuration for Schema generator CRUD plugin
@@ -21,7 +21,7 @@ export interface SchemaCRUDPluginConfig {
   outputPath?: string
 }
 
-export const SCHEMA_CRUD_PLUGIN_NAME = "SchemaCRUD";
+export const SCHEMA_CRUD_PLUGIN_NAME = 'SchemaCRUD'
 
 /**
  * Graphback CRUD operations plugin
@@ -38,31 +38,30 @@ export const SCHEMA_CRUD_PLUGIN_NAME = "SchemaCRUD";
  * For example crud.update: false will disable updates for type
  */
 export class SchemaCRUDPlugin extends GraphbackPlugin {
+  private readonly pluginConfig: SchemaCRUDPluginConfig
 
-  private pluginConfig: SchemaCRUDPluginConfig;
-
-  public constructor(pluginConfig?: SchemaCRUDPluginConfig) {
+  public constructor (pluginConfig?: SchemaCRUDPluginConfig) {
     super()
     this.pluginConfig = {
       ...pluginConfig
     }
   }
 
-  public transformSchema(metadata: GraphbackCoreMetadata): GraphQLSchema {
-    const schema = metadata.getSchema();
+  public transformSchema (metadata: GraphbackCoreMetadata): GraphQLSchema {
+    const schema = metadata.getSchema()
 
-    const models = metadata.getModelDefinitions();
+    const models = metadata.getModelDefinitions()
     if (models.length === 0) {
-      this.logWarning("Provided schema has no models. Returning original schema without any changes.")
+      this.logWarning('Provided schema has no models. Returning original schema without any changes.')
 
-      return schema;
+      return schema
     };
 
-    const schemaComposer = new SchemaComposer(schema);
+    const schemaComposer = new SchemaComposer(schema)
 
-    this.buildSchemaModelRelationships(schemaComposer, models);
-    this.buildSchemaForModels(schemaComposer, models);
-    this.addVersionedMetadataFields(schemaComposer, models);
+    this.buildSchemaModelRelationships(schemaComposer, models)
+    this.buildSchemaForModels(schemaComposer, models)
+    this.addVersionedMetadataFields(schemaComposer, models)
 
     return schemaComposer.buildSchema()
   }
@@ -72,20 +71,20 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    *
    * @param {GraphbackCoreMetadata} metadata - Core metatata containing all model information
    */
-  public createResolvers(metadata: GraphbackCoreMetadata): IResolvers {
-    const models = metadata.getModelDefinitions();
+  public createResolvers (metadata: GraphbackCoreMetadata): IResolvers {
+    const models = metadata.getModelDefinitions()
 
     if (models.length === 0) {
       return undefined
     }
 
-    const resolvers: IResolvers = {};
+    const resolvers: IResolvers = {}
 
     // Graphback scalar resolvers
-    const schema = metadata.getSchema();
+    const schema = metadata.getSchema()
     for (const graphbackScalar of graphbackScalarsTypes) {
       if (schema.getType(graphbackScalar.name)) {
-        resolvers[graphbackScalar.name] = graphbackScalar;
+        resolvers[graphbackScalar.name] = graphbackScalar
       }
     }
 
@@ -95,7 +94,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
           ...acc,
           [model.graphqlType.name]: model
         }
-      }, {});
+      }, {})
 
     for (const model of models) {
       this.addQueryResolvers(model, resolvers)
@@ -104,10 +103,10 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       this.addRelationshipResolvers(model, resolvers, modelNameToModelDefinition)
     }
 
-    return resolvers;
+    return resolvers
   }
 
-  public createResources(metadata: GraphbackCoreMetadata): void {
+  public createResources (metadata: GraphbackCoreMetadata): void {
     if (!this.pluginConfig.outputPath) {
       return
     }
@@ -116,49 +115,49 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
 
     // check if user path is to directory or full path to schema
     // assign default file name otherwise
-    if (schemaPath.indexOf('.') === -1) {
-      schemaPath = join(schemaPath, 'schema.graphql');
+    if (!schemaPath.includes('.')) {
+      schemaPath = join(schemaPath, 'schema.graphql')
     }
 
     // get file extension
-    const fileExtension = schemaPath.split('.').pop();
+    const fileExtension = schemaPath.split('.').pop()
 
-    const schemaString = this.transformSchemaToString(metadata.getSchema(), fileExtension);
+    const schemaString = this.transformSchemaToString(metadata.getSchema(), fileExtension)
 
     const outputDir = resolve(dirname(this.pluginConfig.outputPath))
 
     if (!existsSync(outputDir)) {
-      mkdirSync(outputDir, { recursive: true });
+      mkdirSync(outputDir, { recursive: true })
     }
 
-    writeFileSync(schemaPath, schemaString);
+    writeFileSync(schemaPath, schemaString)
   }
 
-  public getPluginName() {
-    return SCHEMA_CRUD_PLUGIN_NAME;
+  public getPluginName () {
+    return SCHEMA_CRUD_PLUGIN_NAME
   }
 
-  protected buildSchemaForModels(schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
-    this.createSchemaCRUDTypes(schemaComposer);
+  protected buildSchemaForModels (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
+    this.createSchemaCRUDTypes(schemaComposer)
 
     for (const model of Object.values(models)) {
-      this.createQueries(model, schemaComposer);
-      this.createMutations(model, schemaComposer);
-      this.createSubscriptions(model, schemaComposer);
+      this.createQueries(model, schemaComposer)
+      this.createMutations(model, schemaComposer)
+      this.createSubscriptions(model, schemaComposer)
     }
 
     for (const model of Object.values(models)) {
-      const modifiedType = schemaComposer.getOTC(model.graphqlType.name);
-      extendOneToManyFieldArguments(model, modifiedType);
+      const modifiedType = schemaComposer.getOTC(model.graphqlType.name)
+      extendOneToManyFieldArguments(model, modifiedType)
     }
   }
 
-  protected createSubscriptions(model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
+  protected createSubscriptions (model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
     const name = model.graphqlType.name
     const modelTC = schemaComposer.getOTC(name)
     const modelType = modelTC.getType()
 
-    buildSubscriptionFilterType(schemaComposer, modelType);
+    buildSubscriptionFilterType(schemaComposer, modelType)
 
     const subscriptionFields = {}
     if (model.crudOptions.subCreate) {
@@ -171,10 +170,10 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         type: GraphQLNonNull(modelType),
         args: {
           filter: {
-            type: subCreateFilterInputType,
-          },
+            type: subCreateFilterInputType
+          }
         }
-      };
+      }
     }
     if (model.crudOptions.subUpdate) {
       const operation = getSubscriptionName(name, GraphbackOperationType.UPDATE)
@@ -186,10 +185,10 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         type: GraphQLNonNull(modelType),
         args: {
           filter: {
-            type: subUpdateFilterInputType,
-          },
+            type: subUpdateFilterInputType
+          }
         }
-      };
+      }
     }
     if (model.crudOptions.subDelete) {
       const operation = getSubscriptionName(name, GraphbackOperationType.DELETE)
@@ -201,45 +200,45 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         type: GraphQLNonNull(modelType),
         args: {
           filter: {
-            type: subDeleteFilterInputType,
-          },
+            type: subDeleteFilterInputType
+          }
         }
-      };
+      }
     }
 
     schemaComposer.Subscription.addFields(subscriptionFields)
   }
 
-  protected createSchema(queryTypes: any, mutationTypes: any, subscriptionTypes: any) {
+  protected createSchema (queryTypes: any, mutationTypes: any, subscriptionTypes: any) {
     const queryType = new GraphQLObjectType({
       name: 'Query',
       fields: () => (queryTypes)
-    });
+    })
 
-    let mutationType;
+    let mutationType
     if (Object.keys(mutationTypes).length !== 0) {
       mutationType = new GraphQLObjectType({
         name: 'Mutation',
         fields: () => (mutationTypes)
-      });
+      })
     }
 
-    let subscriptionType;
+    let subscriptionType
     if (Object.keys(subscriptionTypes).length !== 0) {
       subscriptionType = new GraphQLObjectType({
         name: 'Subscription',
         fields: () => (subscriptionTypes)
-      });
+      })
     }
 
     return new GraphQLSchema({
       query: queryType,
       mutation: mutationType,
       subscription: subscriptionType
-    });
+    })
   }
 
-  protected createMutations(model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
+  protected createMutations (model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
     const name = model.graphqlType.name
     const modelTC = schemaComposer.getOTC(name)
     const modelType = modelTC.getType()
@@ -261,9 +260,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         args: {
           input: {
             type: GraphQLNonNull(createMutationInputType)
-          },
+          }
         }
-      };
+      }
     }
     if (model.crudOptions.update) {
       const operationType = GraphbackOperationType.UPDATE
@@ -277,9 +276,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         args: {
           input: {
             type: GraphQLNonNull(updateMutationInputType)
-          },
+          }
         }
-      };
+      }
     }
     if (model.crudOptions.updateBy) {
       const operationType = GraphbackOperationType.UPDATE_BY
@@ -288,7 +287,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const inputTypeName = getInputTypeName(name, operationType)
       const updateMutationInputType = schemaComposer.getITC(inputTypeName).getType()
       const filterInputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND)).getType()
-      
+
       mutationFields[operation] = {
         type: resultListType,
         args: {
@@ -297,9 +296,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
           },
           input: {
             type: GraphQLNonNull(updateMutationInputType)
-          },
+          }
         }
-      };
+      }
     }
     if (model.crudOptions.delete) {
       const operationType = GraphbackOperationType.DELETE
@@ -314,7 +313,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
             type: GraphQLNonNull(deleteMutationInputType)
           }
         }
-      };
+      }
     }
     if (model.crudOptions.deleteBy) {
       const operationType = GraphbackOperationType.DELETE_BY
@@ -333,18 +332,18 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
             type: GraphQLNonNull(deleteMutationInputType)
           }
         }
-      };
+      }
     }
 
-    schemaComposer.Mutation.addFields(mutationFields);
+    schemaComposer.Mutation.addFields(mutationFields)
   }
 
-  protected createQueries(model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
-    const name = model.graphqlType.name;
+  protected createQueries (model: ModelDefinition, schemaComposer: SchemaComposer<any>) {
+    const name = model.graphqlType.name
     const modelTC = schemaComposer.getOTC(name)
     const modelType = modelTC.getType()
 
-    buildFilterInputType(schemaComposer, modelType);
+    buildFilterInputType(schemaComposer, modelType)
 
     const queryFields = {}
     if (model.crudOptions.findOne) {
@@ -352,7 +351,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       queryFields[operation] = {
         type: model.graphqlType,
         args: buildFindOneFieldMap(model, schemaComposer)
-      };
+      }
     }
     if (model.crudOptions.find) {
       const operationType = GraphbackOperationType.FIND
@@ -375,54 +374,54 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
             type: OrderByInputType
           }
         }
-      };
+      }
     }
 
     schemaComposer.Query.addFields(queryFields)
   }
 
-  protected addVersionedMetadataFields(schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
-    const timeStampInputName = getInputName(Timestamp);
-    let timestampInputType: GraphQLInputObjectType; let timestampType: GraphQLScalarType;
+  protected addVersionedMetadataFields (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
+    const timeStampInputName = getInputName(Timestamp)
+    let timestampInputType: GraphQLInputObjectType; let timestampType: GraphQLScalarType
     for (const model of models) {
-      const name = model.graphqlType.name;
-      const modelTC = schemaComposer.getOTC(name);
-      const desc = model.graphqlType.description;
-      const { markers } = metadataMap;
+      const name = model.graphqlType.name
+      const modelTC = schemaComposer.getOTC(name)
+      const desc = model.graphqlType.description
+      const { markers } = metadataMap
       if (parseMetadata(markers.versioned, desc)) {
-        const updateField = model.fields[metadataMap.fieldNames.updatedAt];
-        const createAtField = model.fields[metadataMap.fieldNames.createdAt];
+        const updateField = model.fields[metadataMap.fieldNames.updatedAt]
+        const createAtField = model.fields[metadataMap.fieldNames.createdAt]
         const errorMessage = (field: string) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${Timestamp.name}" or remove the field.`
 
         if (createAtField && createAtField.type !== Timestamp.name) {
-          throw new Error(errorMessage(metadataMap.fieldNames.createdAt));
+          throw new Error(errorMessage(metadataMap.fieldNames.createdAt))
         }
 
         if (updateField && updateField.type !== Timestamp.name) {
-          throw new Error(errorMessage(metadataMap.fieldNames.updatedAt));
+          throw new Error(errorMessage(metadataMap.fieldNames.updatedAt))
         }
 
         if (!timestampInputType) {
           if (schemaComposer.has(Timestamp.name)) {
-            timestampInputType = schemaComposer.getITC(timeStampInputName).getType();
+            timestampInputType = schemaComposer.getITC(timeStampInputName).getType()
           } else {
-            schemaComposer.createScalarTC(Timestamp);
-            timestampInputType = createInputTypeForScalar(Timestamp);
-            schemaComposer.add(timestampInputType);
+            schemaComposer.createScalarTC(Timestamp)
+            timestampInputType = createInputTypeForScalar(Timestamp)
+            schemaComposer.add(timestampInputType)
           }
 
-          timestampType = schemaComposer.getSTC(Timestamp.name).getType();
+          timestampType = schemaComposer.getSTC(Timestamp.name).getType()
         }
 
-        const metadataFields = createVersionedFields(timestampType);
+        const metadataFields = createVersionedFields(timestampType)
         // metadata fields needed for @versioned
 
-        modelTC.addFields(metadataFields);
+        modelTC.addFields(metadataFields)
 
         const inputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND))
         if (inputType) {
-          const metadataInputFields = createVersionedInputFields(timestampInputType);
-          inputType.addFields(metadataInputFields);
+          const metadataInputFields = createVersionedInputFields(timestampInputType)
+          inputType.addFields(metadataInputFields)
         }
       }
     };
@@ -435,8 +434,8 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {GraphQLSchema} schema
    * @param {string} fileExtension
    */
-  protected transformSchemaToString(schema: GraphQLSchema, fileExtension: string) {
-    const schemaString = printSchemaWithDirectives(schema);
+  protected transformSchemaToString (schema: GraphQLSchema, fileExtension: string) {
+    const schemaString = printSchemaWithDirectives(schema)
     if (this.pluginConfig) {
       if (fileExtension === 'ts') {
         return tsSchemaFormatter.format(schemaString)
@@ -448,7 +447,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         return gqlSchemaFormatter.format(schemaString)
       }
     }
-    throw Error(`Invalid format '${fileExtension}' specified. \`options.format\` supports only \`ts\`, \`js\` and \`graphql\` flags`);
+    throw Error(`Invalid format '${fileExtension}' specified. \`options.format\` supports only \`ts\`, \`js\` and \`graphql\` flags`)
   }
 
   /**
@@ -457,9 +456,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - The model definition with CRUD config and GraphQL typr
    * @param {IResolvers} resolvers - root resolver object
    */
-  protected addQueryResolvers(model: ModelDefinition, resolvers: IResolvers) {
+  protected addQueryResolvers (model: ModelDefinition, resolvers: IResolvers) {
     if (model.crudOptions.findOne || model.crudOptions.find) {
-      resolvers.Query = (resolvers.Query || {}) as IObjectTypeResolver;
+      resolvers.Query = (resolvers.Query || {}) as IObjectTypeResolver
 
       if (model.crudOptions.findOne) {
         this.addFindOneQueryResolver(model, resolvers.Query)
@@ -476,7 +475,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - The model definition with CRUD config and GraphQL typr
    * @param {IResolvers} resolvers - root resolver object
    */
-  protected addMutationResolvers(model: ModelDefinition, resolvers: IResolvers) {
+  protected addMutationResolvers (model: ModelDefinition, resolvers: IResolvers) {
     if (model.crudOptions.create || model.crudOptions.update || model.crudOptions.delete) {
       resolvers.Mutation = (resolvers.Mutation || {}) as IObjectTypeResolver
 
@@ -504,8 +503,8 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - The model definition with CRUD config and GraphQL typr
    * @param {IResolvers} resolvers - root resolver object
    */
-  protected addSubscriptionResolvers(model: ModelDefinition, resolvers: IResolvers) {
-    const modelType = model.graphqlType;
+  protected addSubscriptionResolvers (model: ModelDefinition, resolvers: IResolvers) {
+    const modelType = model.graphqlType
 
     if (model.crudOptions.subCreate || model.crudOptions.subUpdate || model.crudOptions.subDelete) {
       resolvers.Subscription = (resolvers.Subscription || {}) as IObjectTypeResolver
@@ -520,7 +519,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         this.addDeleteSubscriptionResolver(modelType, resolvers.Subscription)
       }
     }
-
   }
 
   /**
@@ -530,7 +528,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {IResolvers} resolversObj - Resolvers object
    * @param modelNameToModelDefinition - model type name to its definition for quick search
    */
-  protected addRelationshipResolvers(model: ModelDefinition, resolversObj: IResolvers, modelNameToModelDefinition: any) {
+  protected addRelationshipResolvers (model: ModelDefinition, resolversObj: IResolvers, modelNameToModelDefinition: any) {
     const relationResolvers = {}
     for (const relationship of model.relationships) {
       if (relationship.kind === 'oneToMany') {
@@ -551,17 +549,17 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model GraphQL object type
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addCreateMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+  protected addCreateMutationResolver (model: ModelDefinition, mutationObj: IObjectTypeResolver) {
     const modelType = model.graphqlType
-    const modelName = modelType.name;
-    const resolverCreateField = getFieldName(modelName, GraphbackOperationType.CREATE);
+    const modelName = modelType.name
+    const resolverCreateField = getFieldName(modelName, GraphbackOperationType.CREATE)
 
     mutationObj[resolverCreateField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].create(args.input, context, info);
+      return context.graphback[modelName].create(args.input, context, info)
     }
   }
 
@@ -571,13 +569,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addUpdateMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
-    const modelName = model.graphqlType.name;
-    const updateField = getFieldName(modelName, GraphbackOperationType.UPDATE);
+  protected addUpdateMutationResolver (model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name
+    const updateField = getFieldName(modelName, GraphbackOperationType.UPDATE)
 
     mutationObj[updateField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].update(args.input, context, info)
@@ -590,13 +588,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addUpdateByMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
-    const modelName = model.graphqlType.name;
-    const updateField = getFieldName(modelName, GraphbackOperationType.UPDATE_BY);
+  protected addUpdateByMutationResolver (model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name
+    const updateField = getFieldName(modelName, GraphbackOperationType.UPDATE_BY)
 
     mutationObj[updateField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].updateBy(args, context, info)
@@ -609,13 +607,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addDeleteMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
-    const modelName = model.graphqlType.name;
-    const deleteField = getFieldName(modelName, GraphbackOperationType.DELETE);
+  protected addDeleteMutationResolver (model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name
+    const deleteField = getFieldName(modelName, GraphbackOperationType.DELETE)
 
     mutationObj[deleteField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].delete(args.input, context, info)
@@ -628,13 +626,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addDeleteByMutationResolver(model: ModelDefinition, mutationObj: IObjectTypeResolver) {
-    const modelName = model.graphqlType.name;
-    const deleteField = getFieldName(modelName, GraphbackOperationType.DELETE_BY);
+  protected addDeleteByMutationResolver (model: ModelDefinition, mutationObj: IObjectTypeResolver) {
+    const modelName = model.graphqlType.name
+    const deleteField = getFieldName(modelName, GraphbackOperationType.DELETE_BY)
 
     mutationObj[deleteField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].deleteBy(args, context, info)
@@ -647,13 +645,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addFindQueryResolver(model: ModelDefinition, queryObj: IObjectTypeResolver) {
+  protected addFindQueryResolver (model: ModelDefinition, queryObj: IObjectTypeResolver) {
     const modelType = model.graphqlType
-    const modelName = modelType.name;
-    const findField = getFieldName(modelName, GraphbackOperationType.FIND);
+    const modelName = modelType.name
+    const findField = getFieldName(modelName, GraphbackOperationType.FIND)
 
     queryObj[findField] = async (_: any, args: FindByArgs, context: GraphbackContext, info: GraphQLResolveInfo) => {
-      return context.graphback[modelName].findBy(args, context, info, 'items')
+      return await context.graphback[modelName].findBy(args, context, info, 'items')
     }
   }
 
@@ -663,15 +661,15 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {ModelDefinition} model - Model definition object
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addFindOneQueryResolver(model: ModelDefinition, queryObj: IObjectTypeResolver) {
+  protected addFindOneQueryResolver (model: ModelDefinition, queryObj: IObjectTypeResolver) {
     const modelType = model.graphqlType
-    const modelName = modelType.name;
-    const findOneField = getFieldName(modelName, GraphbackOperationType.FIND_ONE);
-    const primaryKeyLabel = model.primaryKey.name;
+    const modelName = modelType.name
+    const findOneField = getFieldName(modelName, GraphbackOperationType.FIND_ONE)
+    const primaryKeyLabel = model.primaryKey.name
 
     queryObj[findOneField] = (_: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].findOne({ [primaryKeyLabel]: args.id }, context, info)
@@ -684,17 +682,17 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {GraphQLObjectType} modelType - Model GraphQL object type
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addCreateSubscriptionResolver(modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
-    const modelName = modelType.name;
+  protected addCreateSubscriptionResolver (modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
+    const modelName = modelType.name
     const operation = getSubscriptionName(modelName, GraphbackOperationType.CREATE)
 
     subscriptionObj[operation] = {
       subscribe: (_: any, args: any, context: GraphbackContext) => {
         if (!context.graphback || !context.graphback[modelName]) {
-          throw new Error(`Missing service for ${modelName}`);
+          throw new Error(`Missing service for ${modelName}`)
         }
 
-        return context.graphback[modelName].subscribeToCreate(args.filter, context);
+        return context.graphback[modelName].subscribeToCreate(args.filter, context)
       }
     }
   }
@@ -705,17 +703,17 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {GraphQLObjectType} modelType - Model GraphQL object type
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addUpdateSubscriptionResolver(modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
-    const modelName = modelType.name;
+  protected addUpdateSubscriptionResolver (modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
+    const modelName = modelType.name
     const operation = getSubscriptionName(modelName, GraphbackOperationType.UPDATE)
 
     subscriptionObj[operation] = {
       subscribe: (_: any, args: any, context: GraphbackContext) => {
         if (!context.graphback || !context.graphback[modelName]) {
-          throw new Error(`Missing service for ${modelName}`);
+          throw new Error(`Missing service for ${modelName}`)
         }
 
-        return context.graphback[modelName].subscribeToUpdate(args.filter, context);
+        return context.graphback[modelName].subscribeToUpdate(args.filter, context)
       }
     }
   }
@@ -726,17 +724,17 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {GraphQLObjectType} modelType - Model GraphQL object type
    * @param {IFieldResolver} mutationObj - Mutation resolver object
    */
-  protected addDeleteSubscriptionResolver(modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
-    const modelName = modelType.name;
+  protected addDeleteSubscriptionResolver (modelType: GraphQLObjectType, subscriptionObj: IObjectTypeResolver) {
+    const modelName = modelType.name
     const operation = getSubscriptionName(modelName, GraphbackOperationType.DELETE)
 
     subscriptionObj[operation] = {
       subscribe: (_: any, args: any, context: GraphbackContext) => {
         if (!context.graphback || !context.graphback[modelName]) {
-          throw new Error(`Missing service for ${modelName}`);
+          throw new Error(`Missing service for ${modelName}`)
         }
 
-        return context.graphback[modelName].subscribeToDelete(args.filter, context);
+        return context.graphback[modelName].subscribeToDelete(args.filter, context)
       }
     }
   }
@@ -748,18 +746,18 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {IResolvers} resolverObj - Resolvers object
    * @param modelNameToModelDefinition - model type name to its definition for quick search
    */
-  protected addOneToManyResolver(relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
-    const modelName = relationship.relationType.name;
-    const relationOwner = relationship.ownerField.name;
-    const model = modelNameToModelDefinition[modelName];
+  protected addOneToManyResolver (relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
+    const modelName = relationship.relationType.name
+    const relationOwner = relationship.ownerField.name
+    const model = modelNameToModelDefinition[modelName]
 
     resolverObj[relationOwner] = (parent: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner];
+        return parent[relationOwner]
       }
 
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
       return context.graphback[modelName].batchLoadData(
@@ -768,7 +766,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         args.filter,
         context,
         info
-      );
+      )
     }
   }
 
@@ -779,68 +777,67 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param {IResolvers} resolverObj - Resolvers object
    * @param modelNameToModelDefinition - model type name to its definition for quick search
    */
-  protected addOneToOneResolver(relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
-    const modelName = relationship.relationType.name;
-    const relationIdField = getPrimaryKey(relationship.relationType);
-    const relationOwner = relationship.ownerField.name;
-    const model = modelNameToModelDefinition[modelName];
+  protected addOneToOneResolver (relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
+    const modelName = relationship.relationType.name
+    const relationIdField = getPrimaryKey(relationship.relationType)
+    const relationOwner = relationship.ownerField.name
+    const model = modelNameToModelDefinition[modelName]
 
     resolverObj[relationOwner] = (parent: any, _: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
       if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner];
+        return parent[relationOwner]
       }
 
       if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
+        throw new Error(`Missing service for ${modelName}`)
       }
 
-      const selectedFields = getSelectedFieldsFromResolverInfo(info, model);
-      selectedFields.push(relationIdField.name);
+      const selectedFields = getSelectedFieldsFromResolverInfo(info, model)
+      selectedFields.push(relationIdField.name)
 
-      const fetchedKeys = selectedFields.join('-');
+      const fetchedKeys = selectedFields.join('-')
 
       // construct a unique key to identify the dataloader
-      const dataLoaderName = `${modelName}-${relationship.kind}-${relationIdField.name}-${relationship.relationForeignKey}-${fetchedKeys}-DataLoader`;
+      const dataLoaderName = `${modelName}-${relationship.kind}-${relationIdField.name}-${relationship.relationForeignKey}-${fetchedKeys}-DataLoader`
 
       if (!context[dataLoaderName]) {
         context[dataLoaderName] = new DataLoader<string, any>(async (keys: string[]) => {
-
-          const service = context.graphback[modelName];
-          const results = await service.findBy({ [relationIdField.name]: { in: keys }, }, context, info);
+          const service = context.graphback[modelName]
+          const results = await service.findBy({ [relationIdField.name]: { in: keys } }, context, info)
 
           return keys.map((key: string) => {
-            return results.items.find((item: any) => item[relationIdField.name].toString() === key.toString());
-          });
-        });
+            return results.items.find((item: any) => item[relationIdField.name].toString() === key.toString())
+          })
+        })
       }
 
-      const relationForeignKey = parent[relationship.relationForeignKey];
+      const relationForeignKey = parent[relationship.relationForeignKey]
 
       // eslint-disable-next-line no-null/no-null
       if (relationForeignKey === undefined || relationForeignKey === null) {
         // eslint-disable-next-line no-null/no-null
-        return null;
+        return null
       }
 
       return context[dataLoaderName].load(relationForeignKey)
     }
   }
 
-  private createSchemaCRUDTypes(schemaComposer: SchemaComposer<any>) {
-    schemaComposer.add(PageRequest);
-    schemaComposer.add(IDScalarInputType);
-    schemaComposer.add(SortDirectionEnum);
-    schemaComposer.add(StringScalarInputType);
-    schemaComposer.add(BooleanScalarInputType);
-    schemaComposer.add(createInputTypeForScalar(GraphQLInt));
-    schemaComposer.add(createInputTypeForScalar(GraphQLFloat));
+  private createSchemaCRUDTypes (schemaComposer: SchemaComposer<any>) {
+    schemaComposer.add(PageRequest)
+    schemaComposer.add(IDScalarInputType)
+    schemaComposer.add(SortDirectionEnum)
+    schemaComposer.add(StringScalarInputType)
+    schemaComposer.add(BooleanScalarInputType)
+    schemaComposer.add(createInputTypeForScalar(GraphQLInt))
+    schemaComposer.add(createInputTypeForScalar(GraphQLFloat))
 
     schemaComposer.forEach((tc: NamedTypeComposer<any>) => {
-      const namedType = tc.getType();
+      const namedType = tc.getType()
       if (isScalarType(namedType) && !isSpecifiedScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) {
-        schemaComposer.add(createInputTypeForScalar(namedType));
+        schemaComposer.add(createInputTypeForScalar(namedType))
 
-        return;
+        return
       }
 
       const isRootType = ['Query', 'Subscription', 'Mutation'].includes(namedType.name)
@@ -848,7 +845,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         addCreateObjectInputType(schemaComposer, namedType)
         addUpdateObjectInputType(schemaComposer, namedType)
       }
-    });
+    })
   }
 
   /**
@@ -857,13 +854,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
    * @param schema
    * @param models
    */
-  private buildSchemaModelRelationships(schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
+  private buildSchemaModelRelationships (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
     // create or update relationship fields to the model types.
     for (const model of models) {
-      const modifiedType = schemaComposer.getOTC(model.graphqlType.name);
+      const modifiedType = schemaComposer.getOTC(model.graphqlType.name)
 
-      addRelationshipFields(model, modifiedType);
-      extendRelationshipFields(model, modifiedType);
+      addRelationshipFields(model, modifiedType)
+      extendRelationshipFields(model, modifiedType)
     }
   }
 }

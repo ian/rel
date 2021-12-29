@@ -1,10 +1,10 @@
 module.exports = {
   verbose: true,
-  projects: ["<rootDir>/packages/*/jest.config.js"],
+  projects: ['<rootDir>/packages/*/jest.config.js'],
   collectCoverageFrom: [
-    "<rootDir>/packages/*/src/**/*.ts"
+    '<rootDir>/packages/*/src/**/*.ts'
   ],
-  moduleDirectories: ["node_modules"],
-  preset: "ts-jest",
+  moduleDirectories: ['node_modules'],
+  preset: 'ts-jest',
   testTimeout: 60000
-};
+}

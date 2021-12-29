@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
-    "jsx": "react",
+    "esModuleInterop": true,
     "alwaysStrict": false,
     "sourceMap": true,
     "declaration": true,
@@ -17,7 +17,7 @@
     "noUnusedParameters": false,
     "noImplicitAny": false,
     "noImplicitThis": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "lib": [
       "esnext"
     ]
