@@ -29,12 +29,14 @@ const run = async () => {
   ) => {
     // Setup graphback
     const schema = buildSchema(schemaStr)
-    const defautConfig = {
+    const defaultConfig = {
       create: true,
       update: true,
       findOne: true,
       find: true,
       delete: true,
+      updateBy: true,
+      deleteBy: true,
       subCreate: true,
       subUpdate: true,
       subDelete: true
@@ -42,7 +44,7 @@ const run = async () => {
 
     const metadata = new GraphbackCoreMetadata(
       {
-        crudMethods: defautConfig
+        crudMethods: defaultConfig
       },
       schema
     )

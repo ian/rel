@@ -1,8 +1,6 @@
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
@@ -19,38 +17,22 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __reExport = (target, module2, copyDefault, desc) => {
-  if (module2 && typeof module2 === "object" || typeof module2 === "function") {
-    for (let key of __getOwnPropNames(module2))
-      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
-        __defProp(target, key, { get: () => module2[key], enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable });
-  }
-  return target;
-};
-var __toCommonJS = /* @__PURE__ */ ((cache) => {
-  return (module2, temp) => {
-    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
-  };
-})(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
+  throw new Error('Dynamic require of "' + x + '" is not supported');
+});
 
 // src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  GraphbackGenerator: () => GraphbackGenerator,
-  buildGraphbackAPI: () => buildGraphbackAPI
-});
-__reExport(src_exports, require("@graphback/core"));
+export * from "@graphback/core";
 
 // src/buildGraphbackAPI.ts
-var import_core = require("@graphback/core");
-var import_codegen_schema = require("@graphback/codegen-schema");
-var import_merge = require("@graphql-tools/merge");
-var import_graphql_subscriptions = require("graphql-subscriptions");
+import { GraphbackPluginEngine, printSchemaWithDirectives, createCRUDService } from "@graphback/core";
+import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from "@graphback/codegen-schema";
+import { mergeSchemas } from "@graphql-tools/merge";
+import { PubSub } from "graphql-subscriptions";
 function createServices(models, createService, createProvider) {
   const services = {};
   for (const model of models) {
@@ -71,25 +53,25 @@ function getPlugins(plugins) {
     return acc;
   }, {});
   let schemaPlugin;
-  if (pluginsMap[import_codegen_schema.SCHEMA_CRUD_PLUGIN_NAME]) {
-    schemaPlugin = pluginsMap[import_codegen_schema.SCHEMA_CRUD_PLUGIN_NAME];
-    delete pluginsMap[import_codegen_schema.SCHEMA_CRUD_PLUGIN_NAME];
+  if (pluginsMap[SCHEMA_CRUD_PLUGIN_NAME]) {
+    schemaPlugin = pluginsMap[SCHEMA_CRUD_PLUGIN_NAME];
+    delete pluginsMap[SCHEMA_CRUD_PLUGIN_NAME];
   }
   return [
-    schemaPlugin || new import_codegen_schema.SchemaCRUDPlugin(),
+    schemaPlugin || new SchemaCRUDPlugin(),
     ...Object.values(pluginsMap)
   ];
 }
 function buildGraphbackAPI(model, config) {
   const schemaPlugins = getPlugins(config.plugins);
-  const pluginEngine = new import_core.GraphbackPluginEngine({
+  const pluginEngine = new GraphbackPluginEngine({
     schema: model,
     plugins: schemaPlugins,
     config: { crudMethods: config.crud }
   });
   const metadata = pluginEngine.createResources();
   const models = metadata.getModelDefinitions();
-  const serviceCreator = config.serviceCreator || (0, import_core.createCRUDService)({ pubSub: new import_graphql_subscriptions.PubSub() });
+  const serviceCreator = config.serviceCreator || createCRUDService({ pubSub: new PubSub() });
   const services = createServices(models, serviceCreator, config.dataProviderCreator);
   const contextCreator = (context) => {
     return __spreadProps(__spreadValues({}, context), {
@@ -97,8 +79,8 @@ function buildGraphbackAPI(model, config) {
     });
   };
   const resolvers = metadata.getResolvers();
-  const schemaWithResolvers = (0, import_merge.mergeSchemas)({ schemas: [metadata.getSchema()], resolvers });
-  const typeDefs = (0, import_core.printSchemaWithDirectives)(schemaWithResolvers);
+  const schemaWithResolvers = mergeSchemas({ schemas: [metadata.getSchema()], resolvers });
+  const typeDefs = printSchemaWithDirectives(schemaWithResolvers);
   return {
     schema: schemaWithResolvers,
     typeDefs,
@@ -109,7 +91,7 @@ function buildGraphbackAPI(model, config) {
 }
 
 // src/GraphbackGenerator.ts
-var import_core2 = require("@graphback/core");
+import { GraphbackPluginEngine as GraphbackPluginEngine2 } from "@graphback/core";
 
 // src/loadPlugins.ts
 function loadPlugins(pluginConfigMap) {
@@ -127,7 +109,7 @@ function loadPlugins(pluginConfigMap) {
       pluginName = packageName;
     }
     try {
-      const plugin = require(pluginName);
+      const plugin = __require(pluginName);
       if (plugin.Plugin) {
         const config = pluginConfigMap[pluginLabel];
         pluginInstances.push(new plugin.Plugin(config));
@@ -151,7 +133,7 @@ var GraphbackGenerator = class {
   }
   generateSourceCode() {
     const plugins = loadPlugins(this.config.plugins);
-    const pluginEngine = new import_core2.GraphbackPluginEngine({
+    const pluginEngine = new GraphbackPluginEngine2({
       schema: this.schema,
       plugins,
       config: { crudMethods: this.config.crud }
@@ -159,9 +141,7 @@ var GraphbackGenerator = class {
     pluginEngine.createResources();
   }
 };
-module.exports = __toCommonJS(src_exports);
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
+export {
   GraphbackGenerator,
   buildGraphbackAPI
-});
+};

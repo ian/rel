@@ -10,6 +10,13 @@ input CreateTodoInput {
   c: Int
 }
 
+enum EnumTodoFields {
+  id
+  a
+  b
+  c
+}
+
 input IDInput {
   ne: ID
   eq: ID
@@ -46,6 +53,10 @@ type Mutation {
   deleteTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
 }
 
+input OfTodoInput {
+  of: EnumTodoFields
+}
+
 input OrderByInput {
   field: String!
   order: SortDirectionEnum = ASC
@@ -78,6 +89,21 @@ type Todo {
   a: Int
   b: Int
   c: Int
+
+  """@transient"""
+  count(of: OfTodoInput): Int
+
+  """@transient"""
+  avg(of: OfTodoInput): Int
+
+  """@transient"""
+  max(of: OfTodoInput): Int
+
+  """@transient"""
+  min(of: OfTodoInput): Int
+
+  """@transient"""
+  sum(of: OfTodoInput): Int
 }
 
 input TodoFilter {

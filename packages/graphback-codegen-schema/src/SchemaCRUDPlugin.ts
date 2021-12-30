@@ -59,6 +59,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
 
     const schemaComposer = new SchemaComposer(schema)
 
+    this.createAggregationForModelFields(schemaComposer, models)
     this.buildSchemaModelRelationships(schemaComposer, models)
     this.buildSchemaForModels(schemaComposer, models)
     this.addVersionedMetadataFields(schemaComposer, models)
@@ -342,6 +343,20 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     const name = model.graphqlType.name
     const modelTC = schemaComposer.getOTC(name)
     const modelType = modelTC.getType()
+    const aggFields = {}
+    const aggregations = ['count', 'avg', 'max', 'min', 'sum']
+    aggregations.forEach(agg => {
+      aggFields[agg] = {
+        type: 'Int',
+        args: {
+          of: {
+            type: `Of${name}Input`
+          }
+        },
+        description: '@transient'
+      }
+    })
+    modelTC.addFields(aggFields)
 
     buildFilterInputType(schemaComposer, modelType)
 
@@ -360,7 +375,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const inputTypeName = getInputTypeName(name, operationType)
       const filterInputType = schemaComposer.getITC(inputTypeName).getType()
       const resultListType = createModelListResultType(modelType)
-
       queryFields[operation] = {
         type: GraphQLNonNull(resultListType),
         args: {
@@ -380,9 +394,22 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     schemaComposer.Query.addFields(queryFields)
   }
 
+  protected createAggregationForModelFields (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
+    for (const model of models) {
+      const modelName = model.graphqlType.name
+      const enumName = `Enum${modelName}Fields`
+      const fields = Object.keys(model.fields).filter(field => {
+        return !model.fields[field].transient
+      }).join(' ')
+      schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`)
+      schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`)
+    }
+  }
+
   protected addVersionedMetadataFields (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
     const timeStampInputName = getInputName(Timestamp)
-    let timestampInputType: GraphQLInputObjectType; let timestampType: GraphQLScalarType
+    let timestampInputType: GraphQLInputObjectType
+    let timestampType: GraphQLScalarType
     for (const model of models) {
       const name = model.graphqlType.name
       const modelTC = schemaComposer.getOTC(name)

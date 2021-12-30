@@ -2,7 +2,7 @@
   "name": "@graphback/codegen-schema",
   "version": "1.1.2",
   "description": "GraphQL-Code-Generator compatible schema generator",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rel-js/rel.git"
@@ -12,19 +12,22 @@
   },
   "homepage": "https://github.com/rel-js/rel/tree/master/packages/graphback-codegen-schema#readme",
   "scripts": {
-    "build": "tsup src/index.ts"
+    "build": "tsup src/index.ts --format esm"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "dataloader": "2.0.0",
-    "graphql": "15.8.0",
     "tsup": "^5.11.9"
   },
   "dependencies": {
     "@graphback/core": "*",
     "@graphql-tools/utils": "7.1.4",
+    "graphql": "15.8.0",
     "graphql-compose": "7.23.0",
     "graphql-metadata": "0.7.6",
     "pluralize": "8.0.0"
+  },
+  "peerDependencies": {
+    "graphql": "^15.8.0"
   }
 }

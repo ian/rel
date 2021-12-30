@@ -1,6 +1,6 @@
 import { parseMetadata } from 'graphql-metadata'
 import { mergeResolvers } from '@graphql-tools/merge'
-import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
+import { GraphQLObjectType, GraphQLSchema, getNamedType, GraphQLInt } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
 import { getPrimaryKey } from '../db'
 import { RelationshipMetadataBuilder, FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
@@ -95,7 +95,6 @@ export class GraphbackCoreMetadata {
     let crudOptions = parseMetadata('model', modelType)
     // Merge CRUD options from type with global ones
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions)
-    // Whether to add delta queries
     const { type: primaryKeyType, name } = getPrimaryKey(modelType)
     const primaryKey = {
       name,

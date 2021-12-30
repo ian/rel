@@ -1,6 +1,5 @@
 import {
   buildModelTableMap,
-  getDatabaseArguments,
   getFieldTransformations,
   NoDataError
 } from '@graphback/core'
@@ -101,9 +100,7 @@ export class RedisGraphProvider {
   }
 
   async delete (data, selectedFields) {
-    const { idField } = getDatabaseArguments(this.tableMap, data)
-
-    if (!idField?.value) {
+    if (!data.id) {
       const err = `Cannot delete ${this.collectionName} - missing ID field`
       logger.error(err, 'RedisGraphProvider')
       throw new NoDataError(err)
@@ -111,13 +108,13 @@ export class RedisGraphProvider {
 
     const result = await cypher.delete(
       this.collectionName,
-      idField?.value,
+      data.id,
       selectedFields
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:delete`
       await createStreamGroup(streamKey)
-      await addStreamData(streamKey, { id: idField?.value })
+      await addStreamData(streamKey, { id: data.id })
       return result
     }
     const err = `Cannot delete ${this.collectionName}`

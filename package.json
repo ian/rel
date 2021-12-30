@@ -26,6 +26,11 @@
     "tsup": "^5.11.9",
     "typescript": "*"
   },
+  "pnpm": {
+    "overrides": {
+      "graphql": "15.8.0"
+    }
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "pnpm run -r build",
@@ -35,5 +40,8 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "dependencies": {
+    "graphql": "15.8.0"
   }
 }

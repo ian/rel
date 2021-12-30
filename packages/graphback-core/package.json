@@ -2,7 +2,7 @@
   "name": "@graphback/core",
   "version": "1.1.2",
   "description": "Api for building Graphback generator metadata",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rel-js/rel.git"
@@ -12,10 +12,9 @@
   },
   "homepage": "https://github.com/rel-js/rel/tree/master/packages/graphback-core#readme",
   "scripts": {
-    "build": "tsup src/index.ts"
+    "build": "tsup src/index.ts --format esm"
   },
   "devDependencies": {
-    "graphql": "15.8.0",
     "tsup": "^5.11.9"
   },
   "license": "Apache-2.0",
@@ -24,6 +23,7 @@
     "@graphql-tools/utils": "7.1.4",
     "dataloader": "2.0.0",
     "glob": "7.1.6",
+    "graphql": "15.8.0",
     "graphql-compose": "7.23.0",
     "graphql-fields-list": "2.2.1",
     "graphql-metadata": "0.7.6",
@@ -31,5 +31,8 @@
     "graphql-subscriptions": "2.0.0",
     "pino": "7.6.2",
     "pluralize": "8.0.0"
+  },
+  "peerDependencies": {
+    "graphql": "^15.8.0"
   }
 }
