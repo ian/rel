@@ -75,7 +75,6 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
       const payload = this.buildEventPayload('updated', result)
 
       this.pubSub.publish(topic, payload).catch((error: Error) => {
-        // eslint-disable-next-line no-console
         console.error(`Publishing of updates of "${this.model.graphqlType.name}" with id ${result[this.model.primaryKey.name]} failed: ${error.message}`)
       })
     }
@@ -93,10 +92,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async delete (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    // if (info && !this.crudOptions.subDelete) { SHOULD ALWAYS LOOK FOR PROJECTION
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
-    // }
-
     const result = await this.db.delete(data, selectedFields)
 
     if (this.pubSub && this.crudOptions.subDelete) {

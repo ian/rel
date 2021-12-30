@@ -5,14 +5,13 @@
   "description": "The modern backend framework for frontend developers.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rel-js/monorepo.git"
+    "url": "git+https://github.com/rel-js/rel.git"
   },
-  "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/rel-js/monorepo/issues"
+    "url": "https://github.com/rel-js/rel/issues"
   },
-  "homepage": "https://github.com/rel-js/monorepo#readme",
+  "homepage": "https://github.com/rel-js/rel#readme",
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
@@ -23,10 +22,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "husky": "4.3.6",
-    "jest": "26.6.3",
-    "nyc": "15.1.0",
-    "replace": "1.2.0",
-    "ts-jest": "26.4.4",
+    "replace": "1.2.1",
     "tsup": "^5.11.9",
     "typescript": "*"
   },
@@ -38,13 +34,6 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "changelog": {
-    "labels": {
-      "feature": "New Features",
-      "bug": "Bug Fixes",
-      "docs": "Documentation"
     }
   }
 }

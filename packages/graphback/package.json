@@ -3,37 +3,20 @@
   "version": "1.1.2",
   "description": "Auto generate resolvers on top of the graphql and database of your choice",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
-  "typescript": {
-    "definition": "types/index.d.ts"
-  },
   "author": "wtrocki@redhat.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aerogear/graphback.git"
+    "url": "git+https://github.com/rel-js/rel.git"
   },
   "bugs": {
-    "url": "https://github.com/aerogear/graphback/issues"
+    "url": "https://github.com/rel-js/rel/issues"
   },
-  "homepage": "https://github.com/aerogear/graphback/tree/master/packages/graphback#readme",
+  "homepage": "https://github.com/rel-js/rel/tree/master/packages/graphback#readme",
   "scripts": {
-    "clean": "rimraf coverage dist types",
-    "build": "tsup src/index.ts",
-    "watch": "tsc -w ",
-    "lint": "eslint -t stylish --project \"tsconfig.json\"",
-    "test": "jest"
-  },
-  "engines": {
-    "node": ">=10.15.3"
+    "build": "tsup src/index.ts"
   },
   "devDependencies": {
-    "@types/jest": "26.0.19",
-    "@types/node": "12.19.9",
     "graphql": "15.8.0",
-    "jest": "26.6.3",
-    "rimraf": "3.0.2",
-    "ts-jest": "26.4.4",
-    "ts-node": "9.1.1",
     "tsup": "^5.11.9"
   },
   "license": "Apache-2.0",
@@ -41,7 +24,6 @@
     "@graphback/codegen-schema": "*",
     "@graphback/core": "*",
     "@graphql-tools/merge": "6.2.6",
-    "graphql-subscriptions": "2.0.0",
-    "tslib": "2.3.1"
+    "graphql-subscriptions": "2.0.0"
   }
 }

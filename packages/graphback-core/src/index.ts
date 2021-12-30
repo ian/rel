@@ -11,14 +11,12 @@ export * from './plugin/GraphbackCoreMetadata'
 
 export * from './relationships/RelationshipMetadataBuilder'
 export * from './relationships/relationshipHelpers'
-export * from './annotations/DefaultValueAnnotation'
-
+export * from './db'
 export * from './utils/printSchemaWithDirectives'
 export * from './utils/metadataAnnotations'
 export * from './utils/fieldTransformHelpers'
 export * from './utils/isTransientField'
 
 export * from './runtime'
-export * from './db'
 
 export * from './scalars'

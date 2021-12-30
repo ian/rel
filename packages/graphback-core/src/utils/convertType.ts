@@ -1,18 +1,12 @@
-import { ObjectID } from 'bson'
-
 /**
  * Helper function to convert a value to another type
  *
  * @param {any} value - Value to convert
  * @param {any} toType - convert value to this type
  */
-export function convertType (value: any, toType: any): string | number | boolean | BigInt | ObjectID {
+export function convertType (value: any, toType: any): string | number | boolean | BigInt {
   if (!value) {
     return undefined
-  }
-
-  if (toType instanceof ObjectID || value instanceof ObjectID) {
-    return new ObjectID(value)
   }
 
   switch (typeof toType) {

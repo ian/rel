@@ -70,11 +70,9 @@ __export(src_exports, {
   FILTER_SUPPORTED_SCALARS: () => FILTER_SUPPORTED_SCALARS,
   GUID: () => GUID,
   GraphbackCoreMetadata: () => GraphbackCoreMetadata,
-  GraphbackObjectID: () => GraphbackObjectID,
   GraphbackOperationType: () => GraphbackOperationType,
   GraphbackPlugin: () => GraphbackPlugin,
   GraphbackPluginEngine: () => GraphbackPluginEngine,
-  GraphbackProxyService: () => GraphbackProxyService,
   HSL: () => HSL,
   HSLA: () => HSLA,
   HexColorCode: () => HexColorCode,
@@ -117,7 +115,6 @@ __export(src_exports, {
   UUID: () => UUID,
   UtcOffset: () => UtcOffset,
   addRelationshipFields: () => addRelationshipFields,
-  buildModelTableMap: () => buildModelTableMap,
   createCRUDService: () => createCRUDService,
   createInMemoryFilterPredicate: () => createInMemoryFilterPredicate,
   defaultTableNameTransform: () => defaultTableNameTransform,
@@ -125,8 +122,6 @@ __export(src_exports, {
   extendRelationshipFields: () => extendRelationshipFields,
   filterModelTypes: () => filterModelTypes,
   filterNonModelTypes: () => filterNonModelTypes,
-  getColumnName: () => getColumnName,
-  getDatabaseArguments: () => getDatabaseArguments,
   getFieldName: () => getFieldName,
   getFieldTransformations: () => getFieldTransformations,
   getInputFieldName: () => getInputFieldName,
@@ -139,7 +134,6 @@ __export(src_exports, {
   getResolverInfoFieldsList: () => getResolverInfoFieldsList,
   getSelectedFieldsFromResolverInfo: () => getSelectedFieldsFromResolverInfo,
   getSubscriptionName: () => getSubscriptionName,
-  getTableName: () => getTableName,
   getUserModels: () => getUserModels,
   graphbackScalarsTypes: () => graphbackScalarsTypes,
   isAutoPrimaryKey: () => isAutoPrimaryKey,
@@ -3072,14 +3066,14 @@ function undefineIfEmpty(arr) {
 var GraphQLScalarType = /* @__PURE__ */ function() {
   function GraphQLScalarType3(config) {
     var _config$parseValue, _config$serialize, _config$parseLiteral;
-    var parseValue2 = (_config$parseValue = config.parseValue) !== null && _config$parseValue !== void 0 ? _config$parseValue : identityFunc;
+    var parseValue = (_config$parseValue = config.parseValue) !== null && _config$parseValue !== void 0 ? _config$parseValue : identityFunc;
     this.name = config.name;
     this.description = config.description;
     this.specifiedByUrl = config.specifiedByUrl;
     this.serialize = (_config$serialize = config.serialize) !== null && _config$serialize !== void 0 ? _config$serialize : identityFunc;
-    this.parseValue = parseValue2;
+    this.parseValue = parseValue;
     this.parseLiteral = (_config$parseLiteral = config.parseLiteral) !== null && _config$parseLiteral !== void 0 ? _config$parseLiteral : function(node, variables) {
-      return parseValue2(valueFromASTUntyped(node, variables));
+      return parseValue(valueFromASTUntyped(node, variables));
     };
     this.extensions = config.extensions && toObjMap(config.extensions);
     this.astNode = config.astNode;
@@ -3385,7 +3379,7 @@ var GraphQLEnumType = /* @__PURE__ */ function() {
     }
     return enumValue.name;
   };
-  _proto5.parseValue = function parseValue2(inputValue) {
+  _proto5.parseValue = function parseValue(inputValue) {
     if (typeof inputValue !== "string") {
       var valueStr = inspect(inputValue);
       throw new GraphQLError('Enum "'.concat(this.name, '" cannot represent non-string value: ').concat(valueStr, ".") + didYouMeanEnumValue(this, valueStr));
@@ -3396,7 +3390,7 @@ var GraphQLEnumType = /* @__PURE__ */ function() {
     }
     return enumValue.value;
   };
-  _proto5.parseLiteral = function parseLiteral7(valueNode, _variables) {
+  _proto5.parseLiteral = function parseLiteral6(valueNode, _variables) {
     if (valueNode.kind !== Kind.ENUM) {
       var valueStr = print(valueNode);
       throw new GraphQLError('Enum "'.concat(this.name, '" cannot represent non-enum value: ').concat(valueStr, ".") + didYouMeanEnumValue(this, valueStr), valueNode);
@@ -7425,7 +7419,7 @@ var GraphbackPlugin = class {
 };
 
 // src/plugin/GraphbackCoreMetadata.ts
-var import_graphql_metadata7 = require("graphql-metadata");
+var import_graphql_metadata6 = require("graphql-metadata");
 var import_merge = require("@graphql-tools/merge");
 var import_utils2 = require("@graphql-tools/utils");
 
@@ -7442,9 +7436,6 @@ function transformForeignKeyName(name, direction = "to-db") {
   }
   return name;
 }
-
-// src/db/buildModelTableMap.ts
-var import_graphql_metadata3 = require("graphql-metadata");
 
 // src/db/getPrimaryKey.ts
 var import_graphql_metadata2 = require("graphql-metadata");
@@ -7481,82 +7472,11 @@ function isAutoPrimaryKey(field) {
   const { type, name: fieldName } = field;
   const baseType = getNamedType(type);
   const name = baseType.name;
-  return (fieldName === "id" && name === "ID" || fieldName === "_id" && name === "GraphbackObjectID") && isScalarType(baseType);
+  return fieldName === "id" && name === "ID" && isScalarType(baseType);
 }
-
-// src/db/buildModelTableMap.ts
-function getTableName(model) {
-  let tableName = defaultTableNameTransform(model.name, "to-db");
-  const dbAnnotations = (0, import_graphql_metadata3.parseMetadata)("db", model);
-  if (dbAnnotations && dbAnnotations.name) {
-    tableName = dbAnnotations.name;
-  }
-  return tableName;
-}
-function getColumnName(field) {
-  let columnName = field.name;
-  const dbAnnotations = (0, import_graphql_metadata3.parseMetadata)("db", field);
-  if (dbAnnotations && dbAnnotations.name) {
-    columnName = dbAnnotations.name;
-  }
-  return columnName;
-}
-function mapFieldsToColumns(fieldMap) {
-  return Object.values(fieldMap).reduce((obj, field) => {
-    const columnName = getColumnName(field);
-    if (field.name !== columnName) {
-      obj[field.name] = columnName;
-    }
-    return obj;
-  }, {});
-}
-var buildModelTableMap = (model) => {
-  const primaryKeyField = getPrimaryKey(model);
-  const tableName = getTableName(model);
-  const fieldMap = mapFieldsToColumns(model.getFields());
-  return {
-    idField: getColumnName(primaryKeyField),
-    typeName: model.name,
-    tableName,
-    fieldMap
-  };
-};
-
-// src/db/dataMapper.ts
-function getTableId(idField, data) {
-  if (!idField) {
-    return void 0;
-  }
-  ;
-  let value;
-  if (data && data[idField]) {
-    value = data[idField];
-  }
-  return {
-    name: idField,
-    value
-  };
-}
-var getDatabaseArguments = (modelMap, data) => {
-  const idField = modelMap.idField;
-  let transFormedData;
-  if (data) {
-    const keys = Object.keys(data);
-    transFormedData = {};
-    for (const key of keys) {
-      const value = data[key];
-      transFormedData[key] = value && typeof value === "object" ? JSON.stringify(value) : value;
-    }
-  }
-  ;
-  return {
-    idField: getTableId(idField, data),
-    data: transFormedData
-  };
-};
 
 // src/relationships/RelationshipMetadataBuilder.ts
-var import_graphql_metadata5 = require("graphql-metadata");
+var import_graphql_metadata4 = require("graphql-metadata");
 
 // src/utils/hasListType.ts
 function hasListType(outputType) {
@@ -7569,11 +7489,11 @@ function hasListType(outputType) {
 }
 
 // src/relationships/relationshipHelpers.ts
-var import_graphql_metadata4 = require("graphql-metadata");
+var import_graphql_metadata3 = require("graphql-metadata");
 function parseRelationshipAnnotation(description = "") {
   const relationshipKinds = ["oneToMany", "oneToOne", "manyToOne"];
   for (const kind of relationshipKinds) {
-    const annotation = (0, import_graphql_metadata4.parseMetadata)(kind, description);
+    const annotation = (0, import_graphql_metadata3.parseMetadata)(kind, description);
     if (!annotation) {
       continue;
     }
@@ -7587,7 +7507,7 @@ function parseRelationshipAnnotation(description = "") {
   return void 0;
 }
 function isOneToManyField(field) {
-  const oneToManyAnnotation = (0, import_graphql_metadata4.parseMetadata)("oneToMany", field.description);
+  const oneToManyAnnotation = (0, import_graphql_metadata3.parseMetadata)("oneToMany", field.description);
   return !!oneToManyAnnotation;
 }
 var relationshipFieldDescriptionTemplate = (relationshipKind, fieldName, columnKey) => {
@@ -7737,7 +7657,7 @@ ${field.description}` : "";
     return field;
   }
   updateManyToOneField(field, relationFieldName, columnName) {
-    const manyToOneMetadata = (0, import_graphql_metadata5.parseMetadata)("manyToOne", field.description);
+    const manyToOneMetadata = (0, import_graphql_metadata4.parseMetadata)("manyToOne", field.description);
     if (!manyToOneMetadata || !manyToOneMetadata.key) {
       const columnField = columnName || transformForeignKeyName(field.name);
       const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
@@ -7860,9 +7780,9 @@ ${field.description}` : "";
 };
 
 // src/utils/isTransientField.ts
-var import_graphql_metadata6 = require("graphql-metadata");
+var import_graphql_metadata5 = require("graphql-metadata");
 function isTransientField(field) {
-  return (0, import_graphql_metadata6.parseMetadata)("transient", field);
+  return (0, import_graphql_metadata5.parseMetadata)("transient", field);
 }
 
 // src/plugin/GraphbackCoreMetadata.ts
@@ -7918,10 +7838,10 @@ var GraphbackCoreMetadata = class {
   }
   getGraphQLTypesWithModel() {
     const types = (0, import_utils2.getUserTypesFromSchema)(this.schema);
-    return types.filter((modelType) => (0, import_graphql_metadata7.parseMetadata)("model", modelType));
+    return types.filter((modelType) => (0, import_graphql_metadata6.parseMetadata)("model", modelType));
   }
   buildModel(modelType, relationships) {
-    let crudOptions = (0, import_graphql_metadata7.parseMetadata)("model", modelType);
+    let crudOptions = (0, import_graphql_metadata6.parseMetadata)("model", modelType);
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions);
     const { type: primaryKeyType, name } = getPrimaryKey(modelType);
     const primaryKey = {
@@ -8062,7 +7982,7 @@ var metadataMap = {
 };
 
 // src/utils/fieldTransformHelpers.ts
-var import_graphql_metadata8 = require("graphql-metadata");
+var import_graphql_metadata7 = require("graphql-metadata");
 var TransformType = /* @__PURE__ */ ((TransformType2) => {
   TransformType2["UPDATE"] = "onUpdateFieldTransform";
   TransformType2["CREATE"] = "onCreateFieldTransform";
@@ -8075,7 +7995,7 @@ function getFieldTransformations(baseType) {
     ["onUpdateFieldTransform" /* UPDATE */]: []
   };
   for (const field of Object.values(fieldMap)) {
-    if ((0, import_graphql_metadata8.parseMetadata)("updatedAt", field.description)) {
+    if ((0, import_graphql_metadata7.parseMetadata)("updatedAt", field.description)) {
       fieldTransformMap["onUpdateFieldTransform" /* UPDATE */].push({
         fieldName: field.name,
         transform: () => {
@@ -8089,7 +8009,7 @@ function getFieldTransformations(baseType) {
         }
       });
     }
-    if ((0, import_graphql_metadata8.parseMetadata)("createdAt", field.description)) {
+    if ((0, import_graphql_metadata7.parseMetadata)("createdAt", field.description)) {
       fieldTransformMap["onCreateFieldTransform" /* CREATE */].push({
         fieldName: field.name,
         transform: () => {
@@ -8106,13 +8026,9 @@ var import_dataloader = __toESM(require("dataloader"));
 var import_graphql_subscriptions = require("graphql-subscriptions");
 
 // src/utils/convertType.ts
-var import_bson = require("bson");
 function convertType(value, toType) {
   if (!value) {
     return void 0;
-  }
-  if (toType instanceof import_bson.ObjectID || value instanceof import_bson.ObjectID) {
-    return new import_bson.ObjectID(value);
   }
   switch (typeof toType) {
     case "string":
@@ -8134,31 +8050,6 @@ function convertType(value, toType) {
 }
 var isDateObject = (value) => Object.prototype.toString.call(value) === "[object Date]";
 
-// src/scalars/objectId.ts
-var import_bson2 = require("bson");
-function isObjectID(value) {
-  if (value instanceof import_bson2.ObjectID) {
-    return true;
-  }
-  try {
-    const BsonExtObjectID = require("bson-ext").ObjectID;
-    return value instanceof BsonExtObjectID;
-  } catch {
-  }
-  return false;
-}
-function parseObjectID(value) {
-  let ObjectID2 = import_bson2.ObjectID;
-  try {
-    ObjectID2 = require("bson-ext").ObjectID;
-  } catch {
-  }
-  return new ObjectID2(value);
-}
-function getObjectIDTimestamp(value) {
-  return value.getTimestamp();
-}
-
 // src/runtime/createInMemoryFilterPredicate.ts
 var predicateMap = {
   eq: (filterValue) => (fieldValue) => {
@@ -8179,25 +8070,16 @@ var predicateMap = {
   ge: (filterValue) => (fieldValue) => {
     const parsedFieldValue = convertType(fieldValue, filterValue);
     const parsedFilterValue = convertType(filterValue, parsedFieldValue);
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) >= getObjectIDTimestamp(parsedFilterValue);
-    }
     return parsedFieldValue >= parsedFilterValue;
   },
   le: (filterValue) => (fieldValue) => {
     const parsedFieldValue = convertType(fieldValue, filterValue);
     const parsedFilterValue = convertType(filterValue, parsedFieldValue);
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) <= getObjectIDTimestamp(parsedFilterValue);
-    }
     return parsedFieldValue <= parsedFilterValue;
   },
   lt: (filterValue) => (fieldValue) => {
     const parsedFieldValue = convertType(fieldValue, filterValue);
     const parsedFilterValue = convertType(filterValue, parsedFieldValue);
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) < getObjectIDTimestamp(parsedFilterValue);
-    }
     return parsedFieldValue < parsedFilterValue;
   },
   in: (filterValue) => (fieldValue) => {
@@ -8209,12 +8091,6 @@ var predicateMap = {
       const fromValDate = convertType(fromVal, fieldValue);
       const toValDate = convertType(toVal, fieldValue);
       return fieldValDate >= fromValDate && fieldValDate <= toValDate;
-    }
-    if (isObjectID(fromVal) || isObjectID(toVal) || isObjectID(fieldValue)) {
-      const toValTimestamp = getObjectIDTimestamp(parseObjectID(toVal.toString()));
-      const fromValTimestamp = getObjectIDTimestamp(parseObjectID(fromVal.toString()));
-      const fieldValTimestamp = getObjectIDTimestamp(parseObjectID(fieldValue.toString()));
-      return fieldValTimestamp >= fromValTimestamp && fieldValTimestamp <= toValTimestamp;
     }
     const parsedFieldValue = Number(fieldValue);
     return parsedFieldValue >= Number(fromVal) && parsedFieldValue <= Number(toVal);
@@ -8466,47 +8342,6 @@ var NoDataError = class extends Error {
   }
 };
 
-// src/runtime/GraphbackProxyService.ts
-var GraphbackProxyService = class {
-  proxiedService;
-  constructor(service) {
-    this.proxiedService = service;
-  }
-  async create(data, context, info) {
-    return await this.proxiedService.create(data, context, info);
-  }
-  async update(data, context, info) {
-    return await this.proxiedService.update(data, context, info);
-  }
-  async delete(data, context, info) {
-    return await this.proxiedService.delete(data, context, info);
-  }
-  async findOne(args, context, info) {
-    return await this.proxiedService.findOne(args, context, info);
-  }
-  async findBy(args, context, info, path) {
-    return await this.proxiedService.findBy(args, context, info, path);
-  }
-  async updateBy(args, context, info) {
-    return await this.proxiedService.updateBy(args, context, info);
-  }
-  async deleteBy(args, context, info) {
-    return await this.proxiedService.deleteBy(args, context, info);
-  }
-  subscribeToCreate(filter, context) {
-    return this.proxiedService.subscribeToCreate(filter, context);
-  }
-  subscribeToUpdate(filter, context) {
-    return this.proxiedService.subscribeToUpdate(filter, context);
-  }
-  subscribeToDelete(filter, context) {
-    return this.proxiedService.subscribeToDelete(filter, context);
-  }
-  batchLoadData(relationField, id, filter, context, info) {
-    return this.proxiedService.batchLoadData(relationField, id, filter, context, info);
-  }
-};
-
 // src/runtime/QueryFilter.ts
 var FILTER_SUPPORTED_SCALARS = [
   "ID",
@@ -8514,7 +8349,6 @@ var FILTER_SUPPORTED_SCALARS = [
   "Boolean",
   "Int",
   "Float",
-  "GraphbackObjectID",
   "Timestamp",
   "Time",
   "Date",
@@ -8698,12 +8532,6 @@ var Date_ = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig
 var DateTime = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(import_graphql_scalars.DateTimeResolver)), {
   name: "DateTime"
 }));
-var _a = extractConfig(import_graphql_scalars.ObjectIDResolver), { parseLiteral: parseLiteral6, parseValue } = _a, objectIDConfig = __objRest(_a, ["parseLiteral", "parseValue"]);
-var GraphbackObjectID = new GraphQLScalarType(__spreadProps(__spreadValues({}, objectIDConfig), {
-  name: "GraphbackObjectID",
-  parseValue: (value) => parseObjectID(parseValue(value)),
-  parseLiteral: (ast, variables) => parseObjectID(parseLiteral6(ast, variables))
-}));
 var JSON_ = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(import_graphql_scalars.JSONResolver)), {
   name: "JSON"
 }));
@@ -8755,7 +8583,6 @@ var graphbackScalarsTypes = [
   Time,
   Date_,
   JSON_,
-  GraphbackObjectID,
   DateTime,
   Timestamp,
   JSONObject
@@ -8786,11 +8613,9 @@ module.exports = __toCommonJS(src_exports);
   FILTER_SUPPORTED_SCALARS,
   GUID,
   GraphbackCoreMetadata,
-  GraphbackObjectID,
   GraphbackOperationType,
   GraphbackPlugin,
   GraphbackPluginEngine,
-  GraphbackProxyService,
   HSL,
   HSLA,
   HexColorCode,
@@ -8833,7 +8658,6 @@ module.exports = __toCommonJS(src_exports);
   UUID,
   UtcOffset,
   addRelationshipFields,
-  buildModelTableMap,
   createCRUDService,
   createInMemoryFilterPredicate,
   defaultTableNameTransform,
@@ -8841,8 +8665,6 @@ module.exports = __toCommonJS(src_exports);
   extendRelationshipFields,
   filterModelTypes,
   filterNonModelTypes,
-  getColumnName,
-  getDatabaseArguments,
   getFieldName,
   getFieldTransformations,
   getInputFieldName,
@@ -8855,7 +8677,6 @@ module.exports = __toCommonJS(src_exports);
   getResolverInfoFieldsList,
   getSelectedFieldsFromResolverInfo,
   getSubscriptionName,
-  getTableName,
   getUserModels,
   graphbackScalarsTypes,
   isAutoPrimaryKey,

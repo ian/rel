@@ -1,5 +1,3 @@
-import { ObjectID } from 'bson'
-
 /**
  * Filter mapping for scalars that exit
  */
@@ -11,7 +9,6 @@ export interface Scalars {
   Float: number
   JSON: any
   JSONObject: { [key: string]: any }
-  GraphbackObjectID: ObjectID | string
   BigInt: number
   Byte: string
   Currency: string
@@ -61,7 +58,7 @@ export interface Scalars {
 
 // Names of the scalars that support Graphback filter type generation
 export const FILTER_SUPPORTED_SCALARS = [
-  'ID', 'String', 'Boolean', 'Int', 'Float', 'GraphbackObjectID', 'Timestamp',
+  'ID', 'String', 'Boolean', 'Int', 'Float', 'Timestamp',
   'Time', 'Date', 'DateTime', 'BigInt', 'Byte', 'Currency', 'DID', 'Duration', 'EmailAddress',
   'GUID', 'HSL', 'HSLA', 'HexColorCode', 'Hexadecimal', 'IBAN', 'IPv4', 'IPv6', 'ISBN',
   'ISO8601Duration', 'Latitude', 'LocalDate', 'LocalEndTime', 'LocalTime',
@@ -142,17 +139,6 @@ export interface DateTimeInput {
   gt?: Maybe<Scalars['DateTime']>
   in?: Maybe<Array<Scalars['DateTime']>>
   between?: Maybe<Array<Scalars['DateTime']>>
-}
-
-export interface GraphbackObjectIdInput {
-  ne?: Maybe<Scalars['GraphbackObjectID']>
-  eq?: Maybe<Scalars['GraphbackObjectID']>
-  le?: Maybe<Scalars['GraphbackObjectID']>
-  lt?: Maybe<Scalars['GraphbackObjectID']>
-  ge?: Maybe<Scalars['GraphbackObjectID']>
-  gt?: Maybe<Scalars['GraphbackObjectID']>
-  in?: Maybe<Array<Scalars['GraphbackObjectID']>>
-  between?: Maybe<Array<Scalars['GraphbackObjectID']>>
 }
 
 export interface TimeInput {
@@ -638,7 +624,7 @@ MACInput | NegativeFloatInput | NegativeIntInput | NonEmptyStringInput | NonNega
 NonNegativeIntInput | NonPositiveFloatInput | NonPositiveIntInput | PhoneNumberInput |
 PortInput | PositiveFloatInput | PositiveIntInput | PostalCodeInput | RGBAInput |
 RGBInput | URLInput | USCurrencyInput | UUIDInput | UtcOffsetInput |
-DateInput | DateTimeInput | GraphbackObjectIdInput | TimeInput | TimestampInput
+DateInput | DateTimeInput | TimeInput | TimestampInput
 
 export type QueryFilterOperator = keyof IdInput | keyof BooleanInput | keyof StringInput | keyof FloatInput | keyof IntInput | keyof GraphbackScalarInput
 /**

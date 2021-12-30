@@ -1,5 +1,4 @@
 import { convertType, isDateObject } from '../utils/convertType'
-import { parseObjectID, isObjectID, getObjectIDTimestamp } from '../scalars/objectId'
 import { QueryFilter } from './QueryFilter'
 
 type PredicateFn = (input: any) => boolean
@@ -42,32 +41,17 @@ const predicateMap: IPredicate = {
     const parsedFieldValue = convertType(fieldValue, filterValue)
     const parsedFilterValue = convertType(filterValue, parsedFieldValue)
 
-    // if values are of MongoDb ObjectID, convert to timestamp before comparison
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) >= getObjectIDTimestamp(parsedFilterValue)
-    }
-
     return parsedFieldValue >= parsedFilterValue
   },
   le: (filterValue: InputType) => (fieldValue: InputType) => {
     const parsedFieldValue = convertType(fieldValue, filterValue)
     const parsedFilterValue = convertType(filterValue, parsedFieldValue)
 
-    // if values are of MongoDb ObjectID, convert to timestamp before comparison
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) <= getObjectIDTimestamp(parsedFilterValue)
-    }
-
     return parsedFieldValue <= parsedFilterValue
   },
   lt: (filterValue: InputType) => (fieldValue: InputType) => {
     const parsedFieldValue = convertType(fieldValue, filterValue)
     const parsedFilterValue = convertType(filterValue, parsedFieldValue)
-
-    // if values are of MongoDb ObjectID, convert to timestamp before comparison
-    if (isObjectID(parsedFieldValue) && isObjectID(parsedFilterValue)) {
-      return getObjectIDTimestamp(parsedFieldValue) < getObjectIDTimestamp(parsedFilterValue)
-    }
 
     return parsedFieldValue < parsedFilterValue
   },
@@ -81,15 +65,6 @@ const predicateMap: IPredicate = {
       const toValDate = convertType(toVal, fieldValue)
 
       return fieldValDate >= fromValDate && fieldValDate <= toValDate
-    }
-
-    // if values are of MongoDb ObjectID, convert to timestamp before comparison
-    if (isObjectID(fromVal) || isObjectID(toVal) || isObjectID(fieldValue)) {
-      const toValTimestamp = getObjectIDTimestamp(parseObjectID(toVal.toString()))
-      const fromValTimestamp = getObjectIDTimestamp(parseObjectID(fromVal.toString()))
-      const fieldValTimestamp = getObjectIDTimestamp(parseObjectID(fieldValue.toString()))
-
-      return fieldValTimestamp >= fromValTimestamp && fieldValTimestamp <= toValTimestamp
     }
 
     const parsedFieldValue = Number(fieldValue)

@@ -1,4 +1,4 @@
-import { GraphQLNamedType, GraphQLScalarType, ValueNode } from 'graphql'
+import { GraphQLNamedType, GraphQLScalarType } from 'graphql'
 import {
   BigIntResolver, ByteResolver, CurrencyResolver, DurationResolver,
   EmailAddressResolver, GUIDResolver, HSLAResolver, HSLResolver,
@@ -13,9 +13,8 @@ import {
   JWTResolver, LongitudeResolver, LocalEndTimeResolver,
   NonPositiveFloatResolver, NonPositiveIntResolver,
   TimeResolver, TimestampResolver, DateResolver, DateTimeResolver,
-  ObjectIDResolver, JSONResolver, JSONObjectResolver
+  JSONResolver, JSONObjectResolver
 } from 'graphql-scalars'
-import { parseObjectID } from './objectId'
 
 export const BigInt_ = new GraphQLScalarType({
   ...extractConfig(BigIntResolver),
@@ -162,14 +161,6 @@ export const DateTime = new GraphQLScalarType({
   name: 'DateTime'
 })
 
-const { parseLiteral, parseValue, ...objectIDConfig } = extractConfig(ObjectIDResolver)
-export const GraphbackObjectID = new GraphQLScalarType({
-  ...objectIDConfig,
-  name: 'GraphbackObjectID',
-  parseValue: (value: any) => parseObjectID(parseValue(value)),
-  parseLiteral: (ast: ValueNode, variables: { [key: string]: any}) => parseObjectID(parseLiteral(ast, variables))
-})
-
 export const JSON_ = new GraphQLScalarType({
   ...extractConfig(JSONResolver),
   name: 'JSON'
@@ -186,7 +177,7 @@ export const graphbackScalarsTypes = [BigInt_, Byte, Currency, DID, Duration, Em
   NegativeInt, NonEmptyString, NonNegativeFloat, NonNegativeInt, NonPositiveFloat,
   NonPositiveInt, PhoneNumber, Port, PositiveFloat, PositiveInt, PostalCode,
   RGB, RGBA, URL, USCurrency, UUID, UtcOffset,
-  Time, Date_, JSON_, GraphbackObjectID, DateTime, Timestamp, JSONObject]
+  Time, Date_, JSON_, DateTime, Timestamp, JSONObject]
 
 /**
  * Checks if the type is on the default Graphback supported scalars

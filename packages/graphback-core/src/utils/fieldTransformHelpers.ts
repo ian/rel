@@ -1,5 +1,5 @@
 import { parseMetadata } from 'graphql-metadata'
-import { GraphQLField, GraphQLObjectType } from 'graphql'
+import { GraphQLObjectType } from 'graphql'
 
 export type FieldTransformer = (value?: any) => any
 

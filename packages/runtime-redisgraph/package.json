@@ -19,7 +19,6 @@
     "eslint-plugin-node": "^11",
     "eslint-plugin-promise": "^5",
     "graphql": "15.8.0",
-    "graphql-migrations": "1.1.2",
     "mockdate": "^3.0.5",
     "tsup": "^5.11.9",
     "uvu": "^0.5.2"

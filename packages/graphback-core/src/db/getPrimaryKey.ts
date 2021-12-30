@@ -57,5 +57,5 @@ export function isAutoPrimaryKey (field: GraphQLField<any, any> | GraphQLInputFi
   const baseType = getNamedType(type)
   const name = baseType.name
 
-  return ((fieldName === 'id' && name === 'ID') || (fieldName === '_id' && name === 'GraphbackObjectID')) && isScalarType(baseType)
+  return fieldName === 'id' && name === 'ID' && isScalarType(baseType)
 }
