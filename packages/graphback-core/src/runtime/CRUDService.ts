@@ -91,7 +91,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     }
   }
 
-  public async delete (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
     const result = await this.db.delete(data, selectedFields)
 

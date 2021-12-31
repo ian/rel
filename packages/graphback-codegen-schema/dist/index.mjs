@@ -887,11 +887,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       const deleteMutationInputType = schemaComposer.getITC(inputTypeName).getType();
       mutationFields[operation] = {
         type: modelType,
-        args: {
-          input: {
-            type: GraphQLNonNull3(deleteMutationInputType)
-          }
-        }
+        args: buildFindOneFieldMap(model, schemaComposer)
       };
     }
     if (model.crudOptions.deleteBy) {
@@ -1127,7 +1123,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].delete(args.input, context, info);
+      return context.graphback[modelName].delete(args, context, info);
     };
   }
   addDeleteByMutationResolver(model, mutationObj) {

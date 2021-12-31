@@ -1,6 +1,6 @@
 import { parseMetadata } from 'graphql-metadata'
 import { mergeResolvers } from '@graphql-tools/merge'
-import { GraphQLObjectType, GraphQLSchema, getNamedType, GraphQLInt } from 'graphql'
+import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
 import { getPrimaryKey } from '../db'
 import { RelationshipMetadataBuilder, FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'

@@ -49,7 +49,7 @@ type Mutation {
   createTodo(input: CreateTodoInput!): Todo
   updateTodo(input: MutateTodoInput!): Todo
   updateTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
-  deleteTodo(input: MutateTodoInput!): Todo
+  deleteTodo(id: ID!): Todo
   deleteTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
 }
 

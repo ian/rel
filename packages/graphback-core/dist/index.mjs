@@ -992,12 +992,12 @@ var CRUDService = class {
     this.db = db;
     this.pubSub = config.pubSub;
   }
-  async create(data, context, info) {
+  async create(data2, context, info) {
     let selectedFields;
     if (info != null && !this.crudOptions.subCreate) {
       selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
     }
-    const result = await this.db.create(data, selectedFields);
+    const result = await this.db.create(data2, selectedFields);
     if (this.pubSub && this.crudOptions.subCreate) {
       const topic = this.subscriptionTopicMapping("create" /* CREATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("new", result);
@@ -1007,9 +1007,9 @@ var CRUDService = class {
     }
     return result;
   }
-  async update(data, context, info) {
+  async update(data2, context, info) {
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
-    const result = await this.db.update(data, selectedFields);
+    const result = await this.db.update(data2, selectedFields);
     if (this.pubSub && this.crudOptions.subUpdate) {
       const topic = this.subscriptionTopicMapping("update" /* UPDATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("updated", result);
@@ -1026,7 +1026,7 @@ var CRUDService = class {
       items: result
     };
   }
-  async delete(data, context, info) {
+  async delete(args, context, info) {
     const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
     const result = await this.db.delete(data, selectedFields);
     if (this.pubSub && this.crudOptions.subDelete) {
