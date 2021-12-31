@@ -82,6 +82,7 @@ importers:
       glob: 7.1.6
       graphql: 15.8.0
       graphql-compose: 7.23.0
+      graphql-fields: ^2.0.3
       graphql-fields-list: 2.2.1
       graphql-metadata: 0.7.6
       graphql-scalars: 1.14.1
@@ -96,6 +97,7 @@ importers:
       glob: 7.1.6
       graphql: 15.8.0
       graphql-compose: 7.23.0_graphql@15.8.0
+      graphql-fields: 2.0.3
       graphql-fields-list: 2.2.1
       graphql-metadata: 0.7.6_graphql@15.8.0
       graphql-scalars: 1.14.1_graphql@15.8.0
@@ -2955,6 +2957,10 @@ packages:
 
   /graphql-fields-list/2.2.1:
     resolution: {integrity: sha512-A1kDrFWfn6gNGnlrncaTe7EMziR9bpxYqPB4vfZ9CAzQvZB7t32/vSlHnzMWUKt0u1PmXmHtZPxQoBErf6ghRg==}
+    dev: false
+
+  /graphql-fields/2.0.3:
+    resolution: {integrity: sha512-x3VE5lUcR4XCOxPIqaO4CE+bTK8u6gVouOdpQX9+EKHr+scqtK5Pp/l8nIGqIpN1TUlkKE6jDCCycm/WtLRAwA==}
     dev: false
 
   /graphql-metadata/0.7.6_graphql@15.8.0:

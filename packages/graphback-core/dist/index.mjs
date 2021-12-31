@@ -759,9 +759,13 @@ function getModelByName(name, models) {
 }
 
 // src/plugin/getSelectedFieldsFromResolverInfo.ts
-import { fieldsMap, fieldsList } from "graphql-fields-list";
+import graphqlFields from "graphql-fields";
 var getSelectedFieldsFromResolverInfo = (info, model, path) => {
-  const resolverFields = Object.keys(fieldsMap(info, { path }));
+  let projectionObj = graphqlFields(info);
+  if (path) {
+    projectionObj = projectionObj[path];
+  }
+  const resolverFields = Object.keys(projectionObj);
   return getModelFieldsFromResolverFields(resolverFields, model);
 };
 var getModelFieldsFromResolverFields = (resolverFields, model) => {

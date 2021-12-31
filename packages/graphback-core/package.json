@@ -25,7 +25,7 @@
     "glob": "7.1.6",
     "graphql": "15.8.0",
     "graphql-compose": "7.23.0",
-    "graphql-fields-list": "2.2.1",
+    "graphql-fields": "^2.0.3",
     "graphql-metadata": "0.7.6",
     "graphql-scalars": "1.14.1",
     "graphql-subscriptions": "2.0.0",

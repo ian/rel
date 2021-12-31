@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql'
-import { fieldsMap, fieldsList } from 'graphql-fields-list'
+import graphqlFields from 'graphql-fields'
 import { ModelDefinition } from './ModelDefinition'
 
 /**
@@ -9,7 +9,11 @@ import { ModelDefinition } from './ModelDefinition'
  * @param path - the root path to start field resolution from.
  */
 export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, model: ModelDefinition, path?: string): string[] => {
-  const resolverFields = Object.keys(fieldsMap(info, { path }))
+  let projectionObj = graphqlFields(info)
+  if (path) {
+    projectionObj = projectionObj[path]
+  }
+  const resolverFields = Object.keys(projectionObj)
 
   return getModelFieldsFromResolverFields(resolverFields, model)
 }
