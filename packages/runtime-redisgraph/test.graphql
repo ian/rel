@@ -50,7 +50,7 @@ type Mutation {
   updateTodo(input: MutateTodoInput!): Todo
   updateTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
   deleteTodo(id: ID!): Todo
-  deleteTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
+  deleteTodos(filter: TodoFilter): TodoMutationResultList
 }
 
 input OfTodoInput {

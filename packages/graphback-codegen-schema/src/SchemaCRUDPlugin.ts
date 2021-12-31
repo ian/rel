@@ -324,9 +324,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         args: {
           filter: {
             type: filterInputType
-          },
-          input: {
-            type: GraphQLNonNull(deleteMutationInputType)
           }
         }
       }
