@@ -22,21 +22,27 @@ Rel is the end-to-end backend framework:
 
 ## Quickstart
 
-Install rel.js into an existing project or as a standalone instance:
+Install rel.js with npm:
 
 ```sh
-npx create-rel-app@latest
+npm install -g reljs
 ```
 
-Then run `npx rel-cli dev` to start the server on [http://localhost:4000](http://localhost:4000).
+Then boostrap Rel into your project:
+
+```
+rel init
+```
+
+Afterwards, Then run `npx rel-cli dev` to start the server on [http://localhost:4000](http://localhost:4000).
 
 Other things available to you after install:
 
 - Visit http://localhost:4000/playground for a GraphQL playground.
 - Edit `rel/schema.graphql` to change your schema and generated client.
-- Integrate Rel with the frontend of your choice: (next.js, svelte, Vue, Expo)
-- Configure server endpoints, streams, and background jobs.
-<!-- - Browse the extension marketplace -->
+  <!-- - Integrate Rel with the frontend of your choice: (next.js, svelte, Vue, Expo) -->
+  <!-- - Configure server endpoints, streams, and background jobs. -->
+  <!-- - Browse the extension marketplace -->
 
 ## Community
 
@@ -47,7 +53,7 @@ Other things available to you after install:
 ## Roadmap
 
 - [x] Alpha (current): We are activelly developing Rel and not recommending for production yet.
-- [ ] Public Alpha (Q2 2022): Public release for curious developers and hobby projects. Follow along: https://github.com/orgs/rel-js/projects/2
+- [ ] Public Alpha (Q2 2022): [Public release](https://github.com/orgs/rel-js/projects/2) for curious developers and hobby projects.
 - [ ] Public Beta: Stable enough for most non-enterprise use-cases
 - [ ] Public: Production-ready
 
