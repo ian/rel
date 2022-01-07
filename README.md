@@ -15,7 +15,7 @@ Rel is the end-to-end backend framework:
 - [x] Auto-generated client (TypeScript)
 - [ ] Authentication and authorization
 - [x] Realtime subscriptions
-- [x] Delayed + scheduled jobs
+- [ ] Delayed + scheduled jobs
 - [x] Event streams / hooks
 - [ ] Plugins + Extensions
 - [ ] Hosting (later 2022)
