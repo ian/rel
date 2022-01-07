@@ -10,13 +10,13 @@
 
 Rel is the end-to-end backend framework:
 
-- ✅ Schema driven (`schema.graphql`)
-- ✅ CRUD + custom endpoints
-- ✅ Auto-generated client (TypeScript)
+- [x] Schema driven (`schema.graphql`)
+- [x] CRUD + custom endpoints
+- [x] Auto-generated client (TypeScript)
 - [ ] Authentication and authorization
-- ✅ Realtime subscriptions
-- ✅ Delayed + scheduled jobs
-- ✅ Event streams / hooks
+- [x] Realtime subscriptions
+- [x] Delayed + scheduled jobs
+- [x] Event streams / hooks
 - [ ] Plugins + Extensions
 - [ ] Hosting (later 2022)
 
