@@ -109,9 +109,7 @@ importers:
     specifiers:
       chalk: ^5.0.0
       child_process: ^1.0.2
-      chokidar: ^3.5.1
       commander: ^7.2.0
-      debounce: ^1.2.1
       dotenv: ^8.2.0
       fs-utils: ^0.7.0
       inquirer: ^8.2.0
@@ -119,9 +117,7 @@ importers:
     dependencies:
       chalk: 5.0.0
       child_process: 1.0.2
-      chokidar: 3.5.2
       commander: 7.2.0
-      debounce: 1.2.1
       dotenv: 8.6.0
       fs-utils: 0.7.0
       inquirer: 8.2.0
@@ -1894,10 +1890,6 @@ packages:
 
   /dateformat/4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
-    dev: false
-
-  /debounce/1.2.1:
-    resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
     dev: false
 
   /debug/2.6.9:

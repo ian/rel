@@ -1,5 +1,5 @@
 {
-  "name": "rel-server",
+  "name": "@reljs/server",
   "version": "0.0.0",
   "description": "",
   "type": "module",
