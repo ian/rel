@@ -43,5 +43,11 @@
   },
   "dependencies": {
     "graphql": "15.8.0"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": true
   }
 }

@@ -39,11 +39,5 @@
   },
   "devDependencies": {
     "tsup": "^5.11.9"
-  },
-  "prettier": {
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": false,
-    "singleQuote": true
   }
 }

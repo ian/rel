@@ -34,7 +34,7 @@ Then boostrap Rel into your project:
 rel init
 ```
 
-Afterwards, Then run `npx rel-cli dev` to start the server on [http://localhost:4000](http://localhost:4000).
+Afterwards, Then run `rel dev` to start the server on [http://localhost:4000](http://localhost:4000).
 
 Other things available to you after install:
 
