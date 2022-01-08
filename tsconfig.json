@@ -18,17 +18,9 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": true,
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "outDir": "dist"
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "types"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "types"]
 }

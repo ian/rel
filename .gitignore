@@ -32,6 +32,7 @@ build/
 
 # Misc
 .DS_Store
+*.ignore
 
 ## Compiled sources
 lib
