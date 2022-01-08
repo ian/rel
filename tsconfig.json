@@ -22,5 +22,9 @@
     "outDir": "dist"
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "types"]
+  "exclude": ["node_modules", "dist", "types"],
+  "references": [
+    { "path": "./packages/rel-cli/" },
+    { "path": "./packages/rel-server/" }
+  ]
 }

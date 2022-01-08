@@ -1,9 +1,9 @@
 {
-  "name": "@reljs/server",
+  "name": "rel-server",
   "version": "0.0.0",
   "description": "",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rel-js/rel.git"
@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/rel-js/rel#readme",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "tsup src/index.ts --target esnext --format esm"
   },
   "dependencies": {

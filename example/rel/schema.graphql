@@ -1,0 +1,13 @@
+"""@model"""
+type Post {
+  id: ID!
+  body: String!
+  owner: User!
+}
+
+"""@model"""
+type User {
+  id: ID!
+  name: String!
+  post: [Post]
+}

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+../packages/rel-cli/dist/rel.js dev
+
