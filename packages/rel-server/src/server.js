@@ -10,6 +10,7 @@ import fastifyCors from 'fastify-cors'
 import * as yoga from 'graphql-yoga'
 
 export default (config) => {
+  const { dir } = config
   const logger = new Logger({
     debug: !!process.env.REL_DEBUG,
   })
@@ -17,7 +18,7 @@ export default (config) => {
   const port = Number(process.env.REL_PORT) || 4000
   const host = process.env.REL_HOST || 'localhost'
   const app = Fastify()
-  const dir = packageDirectorySync() + '/rel'
+  // const dir = packageDirectorySync() + '/rel'
 
   app.register(fastifyCors)
   app.register(AltairFastify, {
