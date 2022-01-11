@@ -154,7 +154,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async findBy (args, selectedFields) {
+  async findBy (args, selectedFields, fieldArgs) {
     const filterQuery = buildQuery(args?.filter)
     if (args?.page?.offset && args.page.offset < 0) {
       const err = 'Invalid offset value. Please use an offset of greater than or equal to 0 in queries'
@@ -177,7 +177,8 @@ export class RedisGraphProvider {
         skip: args?.page?.offset,
         limit: args?.page?.limit
       },
-      selectedFields
+      selectedFields,
+      fieldArgs
     )
 
     if (data) {
@@ -198,7 +199,7 @@ export class RedisGraphProvider {
     })
   }
 
-  async batchRead (relationField, ids, filter, selectedFields) {
+  async batchRead (relationField, ids, filter, selectedFields, fieldArgs) {
     filter = filter || {}
     filter[relationField] = { in: ids }
     const filterQuery = buildQuery(filter)
@@ -207,7 +208,8 @@ export class RedisGraphProvider {
       {
         where: filterQuery
       },
-      selectedFields
+      selectedFields,
+      fieldArgs
     )
 
     if (dbResult) {

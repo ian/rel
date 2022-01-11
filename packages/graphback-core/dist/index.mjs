@@ -760,15 +760,23 @@ function getModelByName(name, models) {
 
 // src/plugin/getSelectedFieldsFromResolverInfo.ts
 import graphqlFields from "graphql-fields";
-var getSelectedFieldsFromResolverInfo = (info, model, path) => {
-  let projectionObj = graphqlFields(info);
+var getSelectedFieldsFromResolverInfo = (info, model, isMutation = false, path) => {
+  let projectionObj = graphqlFields(info, {}, { processArguments: true });
   if (path) {
     projectionObj = projectionObj[path];
   }
   const resolverFields = Object.keys(projectionObj);
-  return getModelFieldsFromResolverFields(resolverFields, model);
+  const fieldArgs = {};
+  if (!isMutation) {
+    resolverFields.forEach((k) => {
+      if (projectionObj[k].__arguments) {
+        fieldArgs[k] = projectionObj[k].__arguments;
+      }
+    });
+  }
+  return getModelFieldsFromResolverFields(resolverFields, fieldArgs, model);
 };
-var getModelFieldsFromResolverFields = (resolverFields, model) => {
+var getModelFieldsFromResolverFields = (resolverFields, fieldArgs, model) => {
   const selectedFields = /* @__PURE__ */ new Set();
   for (const key of resolverFields) {
     const correspondingFieldInDatabase = model.fields[key];
@@ -776,7 +784,7 @@ var getModelFieldsFromResolverFields = (resolverFields, model) => {
       selectedFields.add(correspondingFieldInDatabase.name);
     }
   }
-  return [...selectedFields];
+  return [[...selectedFields], fieldArgs];
 };
 var getResolverInfoFieldsList = (info, path) => fieldsList(info, { path });
 
@@ -997,10 +1005,7 @@ var CRUDService = class {
     this.pubSub = config.pubSub;
   }
   async create(data2, context, info) {
-    let selectedFields;
-    if (info != null && !this.crudOptions.subCreate) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
-    }
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.create(data2, selectedFields);
     if (this.pubSub && this.crudOptions.subCreate) {
       const topic = this.subscriptionTopicMapping("create" /* CREATE */, this.model.graphqlType.name);
@@ -1012,7 +1017,7 @@ var CRUDService = class {
     return result;
   }
   async update(data2, context, info) {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.update(data2, selectedFields);
     if (this.pubSub && this.crudOptions.subUpdate) {
       const topic = this.subscriptionTopicMapping("update" /* UPDATE */, this.model.graphqlType.name);
@@ -1024,14 +1029,14 @@ var CRUDService = class {
     return result;
   }
   async updateBy(args, context, info) {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true);
     const result = await this.db.updateBy(args, selectedFields);
     return {
       items: result
     };
   }
   async delete(args, context, info) {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.delete(data, selectedFields);
     if (this.pubSub && this.crudOptions.subDelete) {
       const topic = this.subscriptionTopicMapping("delete" /* DELETE */, this.model.graphqlType.name);
@@ -1043,27 +1048,21 @@ var CRUDService = class {
     return result;
   }
   async deleteBy(args, context, info) {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.deleteBy(args, selectedFields);
     return {
       items: result
     };
   }
   async findOne(args, context, info) {
-    let selectedFields;
-    if (info != null) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model);
-    }
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model);
     return await this.db.findOne(args, selectedFields);
   }
   async findBy(args, context, info, path) {
-    let selectedFields;
     let requestedCount = false;
-    if (info != null) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model, path);
-      requestedCount = path === "items" && getResolverInfoFieldsList(info).some((field) => field === "count");
-    }
-    const items = await this.db.findBy(args, selectedFields);
+    const [selectedFields, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model, false, path);
+    requestedCount = path === "items" && getResolverInfoFieldsList(info).some((field) => field === "count");
+    const items = await this.db.findBy(args, selectedFields, fieldArgs);
     const resultPageInfo = __spreadValues({
       offset: 0
     }, args == null ? void 0 : args.page);
@@ -1112,18 +1111,16 @@ var CRUDService = class {
   }
   batchLoadData(relationField, id, filter, context, info) {
     const selectedFields = [];
-    if (info != null) {
-      const selectedFieldsFromInfo = getSelectedFieldsFromResolverInfo(info, this.model);
-      selectedFields.push(...selectedFieldsFromInfo);
-      if (selectedFields.length > 0) {
-        selectedFields.push(relationField);
-      }
+    const [selectedFieldsFromInfo, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model);
+    selectedFields.push(...selectedFieldsFromInfo);
+    if (selectedFields.length > 0) {
+      selectedFields.push(relationField);
     }
     const fetchedKeys = selectedFields.join("-");
     const keyName = `${this.model.graphqlType.name}-${upperCaseFirstChar(relationField)}-${fetchedKeys}-${JSON.stringify(filter)}-DataLoader`;
     if (!context[keyName]) {
       context[keyName] = new DataLoader(async (keys) => {
-        return await this.db.batchRead(relationField, keys, filter, selectedFields);
+        return await this.db.batchRead(relationField, keys, filter, selectedFields, fieldArgs);
       });
     }
     if (id === void 0 || id === null) {
@@ -1564,3 +1561,4 @@ export {
   transformForeignKeyName,
   upperCaseFirstChar
 };
+//# sourceMappingURL=index.mjs.map

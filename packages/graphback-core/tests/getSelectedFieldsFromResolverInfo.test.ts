@@ -1,12 +1,11 @@
-import { GraphQLSchema, buildSchema, assertObjectType, GraphQLResolveInfo } from "graphql"
-import { GraphbackCoreMetadata } from "../src/plugin/GraphbackCoreMetadata";
+import { GraphQLSchema, buildSchema, assertObjectType, GraphQLResolveInfo } from 'graphql'
+import { GraphbackCoreMetadata } from '../src/plugin/GraphbackCoreMetadata'
 import { ModelDefinition } from '../src/plugin/ModelDefinition'
-import { getModelFieldsFromResolverFields } from '../src/plugin/getSelectedFieldsFromResolverInfo';
+import { getModelFieldsFromResolverFields } from '../src/plugin/getSelectedFieldsFromResolverInfo'
 
 describe('getSelectedFieldsFromResolverInfo', () => {
-
   const setup = (schemaAST: string): { schema: GraphQLSchema, metadata: GraphbackCoreMetadata } => {
-    const schema = buildSchema(schemaAST);
+    const schema = buildSchema(schemaAST)
 
     const metadata = new GraphbackCoreMetadata({ crudMethods: {} }, schema)
 
@@ -22,11 +21,11 @@ type User {
   surname: String
   """@transient"""
   fullName: String
-}`);
+}`)
 
-    const userModel = metadata.getModelDefinitions().find((m: ModelDefinition) => m.graphqlType.name === 'User');
+    const userModel = metadata.getModelDefinitions().find((m: ModelDefinition) => m.graphqlType.name === 'User')
 
-    const selectedFields = getModelFieldsFromResolverFields(['id', 'forename', 'surname', 'fullName'], userModel)
+    const selectedFields = getModelFieldsFromResolverFields(['id', 'forename', 'surname', 'fullName'], {}, userModel)
 
     expect(selectedFields).toEqual(['id', 'forename', 'surname'])
   })

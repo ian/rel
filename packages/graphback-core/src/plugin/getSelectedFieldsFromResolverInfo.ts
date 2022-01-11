@@ -8,14 +8,22 @@ import { ModelDefinition } from './ModelDefinition'
  * @param model - the model to find the fields from
  * @param path - the root path to start field resolution from.
  */
-export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, model: ModelDefinition, path?: string): string[] => {
-  let projectionObj = graphqlFields(info)
+export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, model: ModelDefinition, isMutation = false, path?: string): string[] => {
+  let projectionObj = graphqlFields(info, {}, { processArguments: true })
   if (path) {
     projectionObj = projectionObj[path]
   }
   const resolverFields = Object.keys(projectionObj)
+  const fieldArgs = {}
+  if (!isMutation) {
+    resolverFields.forEach(k => {
+      if (projectionObj[k].__arguments) {
+        fieldArgs[k] = projectionObj[k].__arguments
+      }
+    })
+  }
 
-  return getModelFieldsFromResolverFields(resolverFields, model)
+  return getModelFieldsFromResolverFields(resolverFields, fieldArgs, model)
 }
 
 /**
@@ -24,7 +32,7 @@ export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, mode
  * @param {string[]} resolverFields - resolver field names
  * @param {ModelDefinition} model - Graphback model
  */
-export const getModelFieldsFromResolverFields = (resolverFields: string[], model: ModelDefinition): string[] => {
+export const getModelFieldsFromResolverFields = (resolverFields: string[], fieldArgs: any, model: ModelDefinition): string[] => {
   const selectedFields = new Set<string>()
 
   for (const key of resolverFields) {
@@ -34,7 +42,7 @@ export const getModelFieldsFromResolverFields = (resolverFields: string[], model
     }
   }
 
-  return [...selectedFields]
+  return [[...selectedFields], fieldArgs]
 }
 
 /**
