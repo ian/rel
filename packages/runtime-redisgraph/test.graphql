@@ -17,6 +17,12 @@ enum EnumTodoFields {
   c
 }
 
+enum EnumTodoNumberFields {
+  a
+  b
+  c
+}
+
 input IDInput {
   ne: ID
   eq: ID
@@ -57,6 +63,10 @@ input OfTodoInput {
   of: EnumTodoFields
 }
 
+input OfTodoNumberInput {
+  of: EnumTodoNumberFields
+}
+
 input OrderByInput {
   field: String!
   order: SortDirectionEnum = ASC
@@ -94,16 +104,16 @@ type Todo {
   count(of: OfTodoInput): Int
 
   """@transient"""
-  avg(of: OfTodoInput): Int
+  avg(of: OfTodoNumberInput): Int
 
   """@transient"""
-  max(of: OfTodoInput): Int
+  max(of: OfTodoNumberInput): Int
 
   """@transient"""
-  min(of: OfTodoInput): Int
+  min(of: OfTodoNumberInput): Int
 
   """@transient"""
-  sum(of: OfTodoInput): Int
+  sum(of: OfTodoNumberInput): Int
 }
 
 input TodoFilter {

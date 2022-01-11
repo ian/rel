@@ -912,18 +912,29 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
     const modelTC = schemaComposer.getOTC(name);
     const modelType = modelTC.getType();
     const aggFields = {};
-    const aggregations = ["count", "avg", "max", "min", "sum"];
-    aggregations.forEach((agg) => {
-      aggFields[agg] = {
-        type: "Int",
-        args: {
-          of: {
-            type: `Of${name}Input`
-          }
-        },
-        description: "@transient"
-      };
-    });
+    const aggregations = ["avg", "max", "min", "sum"];
+    aggFields.count = {
+      type: "Int",
+      args: {
+        of: {
+          type: `Of${name}Input`
+        }
+      },
+      description: "@transient"
+    };
+    if (schemaComposer.has(`Of${name}NumberInput`)) {
+      aggregations.forEach((agg) => {
+        aggFields[agg] = {
+          type: "Int",
+          args: {
+            of: {
+              type: `Of${name}NumberInput`
+            }
+          },
+          description: "@transient"
+        };
+      });
+    }
     modelTC.addFields(aggFields);
     buildFilterInputType(schemaComposer, modelType);
     const queryFields = {};
@@ -961,11 +972,34 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
     for (const model of models) {
       const modelName = model.graphqlType.name;
       const enumName = `Enum${modelName}Fields`;
-      const fields = Object.keys(model.fields).filter((field) => {
+      const numberEnumName = `Enum${modelName}NumberFields`;
+      const fieldKeys = Object.keys(model.fields);
+      const fields = fieldKeys.filter((field) => {
         return !model.fields[field].transient;
       }).join(" ");
+      const numberTypes = [
+        "Int",
+        "Float",
+        "BigInt",
+        "NonPositiveFloat",
+        "NonPositiveInt",
+        "NonNegativeInt",
+        "NonNegativeFloat",
+        "NegativeFloat",
+        "NegativeInt",
+        "PositiveInt",
+        "PositiveFloat"
+      ];
+      const numberFields = fieldKeys.filter((field) => {
+        return numberTypes.includes(model.fields[field].type.replace("!", ""));
+      }).join(" ");
+      console.log(numberEnumName, numberFields, modelName);
       schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`);
       schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`);
+      if (numberFields !== "") {
+        schemaComposer.createEnumTC(`enum ${numberEnumName} { ${numberFields} }`);
+        schemaComposer.createInputTC(`input Of${modelName}NumberInput { of: ${numberEnumName}}`);
+      }
     }
   }
   addVersionedMetadataFields(schemaComposer, models) {
