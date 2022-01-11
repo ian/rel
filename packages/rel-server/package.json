@@ -32,7 +32,7 @@
     "graphback": "*",
     "graphql": "15.8.0",
     "graphql-redis-subscriptions": "^2.4.2",
-    "graphql-yoga": "2.0.0-alpha.6",
+    "graphql-yoga": "2.0.0-alpha.7",
     "nodemon": "^2.0.15",
     "pkg-dir": "^6.0.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",

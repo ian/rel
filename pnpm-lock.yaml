@@ -144,7 +144,7 @@ importers:
       graphback: '*'
       graphql: 15.8.0
       graphql-redis-subscriptions: ^2.4.2
-      graphql-yoga: 2.0.0-alpha.6
+      graphql-yoga: 2.0.0-alpha.7
       nodemon: ^2.0.15
       pkg-dir: ^6.0.1
       redis-stream-helper: github:thelinuxlich/redis-stream-helper
@@ -164,7 +164,7 @@ importers:
       graphback: link:../graphback
       graphql: 15.8.0
       graphql-redis-subscriptions: 2.4.2
-      graphql-yoga: 2.0.0-alpha.6_graphql@15.8.0
+      graphql-yoga: 2.0.0-alpha.7_graphql@15.8.0
       nodemon: 2.0.15
       pkg-dir: 6.0.1
       redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
@@ -248,15 +248,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       tslib: 2.0.3
-    dev: false
-
-  /@ardatan/graphql-helix/0.1.12_graphql@15.8.0:
-    resolution: {integrity: sha512-0fWr5A0/i69p6oORcwvInfPoKLO/JbcxtsukABGBp0UbnOjrDipHGNgEe8gReX2ROEyW45fj+LukgxzMldsUDg==}
-    peerDependencies:
-      graphql: ^15.3.0 || ^16.0.0
-    dependencies:
-      cross-undici-fetch: 0.1.12
-      graphql: 15.8.0
     dev: false
 
   /@aws-crypto/sha256-js/1.2.2:
@@ -736,6 +727,15 @@ packages:
       tslib: 2.3.1
     dev: false
 
+  /@graphql-tools/utils/8.6.1_graphql@15.8.0:
+    resolution: {integrity: sha512-uxcfHCocp4ENoIiovPxUWZEHOnbXqj3ekWc0rm7fUhW93a1xheARNHcNKhwMTR+UKXVJbTFQdGI1Rl5XdyvDBg==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      graphql: 15.8.0
+      tslib: 2.3.1
+    dev: false
+
   /@graphql-typed-document-node/core/3.1.1_graphql@15.8.0:
     resolution: {integrity: sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==}
     peerDependencies:
@@ -744,8 +744,8 @@ packages:
       graphql: 15.8.0
     dev: false
 
-  /@graphql-yoga/core/0.2.0-alpha.5_graphql@15.8.0:
-    resolution: {integrity: sha512-BrFpe3nKrJ5S0b9Vvjfg4IpuoICUDiMCvilC7Yj/RIfW8QYXZyxImWJdztxgSfGEE9e0WdHP/9HKE3WnYOGktQ==}
+  /@graphql-yoga/core/0.2.0-alpha.6_graphql@15.8.0:
+    resolution: {integrity: sha512-le1EcSH8nxlTA0+T24fYqsTVYZoIx+u7cdVdnaoKTDAmJMJtkHkIyxVmIDHOmeVbif6Il5YZuB5pYl8YD0nv+g==}
     peerDependencies:
       graphql: ^15.2.0 || ^16.0.0
     dependencies:
@@ -754,18 +754,20 @@ packages:
       '@envelop/parser-cache': 2.2.1_1f1a10d31b9f1cafbefa765e81944f1a
       '@envelop/validation-cache': 2.3.0_1f1a10d31b9f1cafbefa765e81944f1a
       '@graphql-tools/schema': 8.3.1_graphql@15.8.0
-      '@graphql-yoga/handler': 0.2.0-alpha.2_graphql@15.8.0
+      '@graphql-yoga/handler': 0.2.0-alpha.3_graphql@15.8.0
       graphql: 15.8.0
     dev: false
 
-  /@graphql-yoga/handler/0.2.0-alpha.2_graphql@15.8.0:
-    resolution: {integrity: sha512-gwFRYWVGUaI0ufIejnGbUzmGaVjYXAv8V56pmdk58YriclsRHi/SozJPJc56lMZUj3Szf3C/gUBsyMZrupx/nQ==}
+  /@graphql-yoga/handler/0.2.0-alpha.3_graphql@15.8.0:
+    resolution: {integrity: sha512-Z5H2CFwVskK3l+cGrUwK4uUa0b/ev1gEGAc/Ahxx4xfuGAE3/laYgBZxWBWfIjmLqgLiCT1ylYQvkVbDrR/2Ew==}
     peerDependencies:
       graphql: ^15.2.0 || ^16.0.0
     dependencies:
-      '@ardatan/graphql-helix': 0.1.12_graphql@15.8.0
-      cross-undici-fetch: 0.1.12
+      '@graphql-tools/utils': 8.6.1_graphql@15.8.0
+      cross-undici-fetch: 0.1.14
+      dset: 3.1.1
       graphql: 15.8.0
+      graphql-helix: 1.11.0_graphql@15.8.0
     dev: false
 
   /@graphql-yoga/subscription/0.1.0-alpha.0:
@@ -1859,14 +1861,15 @@ packages:
       which: 2.0.2
     dev: true
 
-  /cross-undici-fetch/0.1.12:
-    resolution: {integrity: sha512-JNUr0ANEwc3MEUT5xBl2fVnCJqcPa7hpQfEYNsrCG/7/M4pUH5W0nQOe6FKAQGB6SqFPyAeoEn8G375QXWxwWQ==}
+  /cross-undici-fetch/0.1.14:
+    resolution: {integrity: sha512-DDR6F34whCOwwBnZoqqIPZwpYzz418BPNXdDMdz0NFjTxNT+kMNLINTjZA3TxU469JbXSVTzfNpdTxUQN6MjhQ==}
     dependencies:
       abort-controller: 3.0.0
       form-data-encoder: 1.7.1
       formdata-node: 4.3.1
       node-fetch: 2.6.6
       undici: 4.12.1
+      web-streams-polyfill: 3.2.0
     dev: false
 
   /crypto-random-string/2.0.0:
@@ -2054,6 +2057,11 @@ packages:
   /dotenv/8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
     engines: {node: '>=10'}
+    dev: false
+
+  /dset/3.1.1:
+    resolution: {integrity: sha512-hYf+jZNNqJBD2GiMYb+5mqOIX4R4RRHXU3qWMWYN+rqcR2/YpRL2bUHr8C8fU+5DNvqYjJ8YvMGSLuVPWU1cNg==}
+    engines: {node: '>=4'}
     dev: false
 
   /duplexer3/0.1.4:
@@ -3182,6 +3190,14 @@ packages:
     resolution: {integrity: sha512-x3VE5lUcR4XCOxPIqaO4CE+bTK8u6gVouOdpQX9+EKHr+scqtK5Pp/l8nIGqIpN1TUlkKE6jDCCycm/WtLRAwA==}
     dev: false
 
+  /graphql-helix/1.11.0_graphql@15.8.0:
+    resolution: {integrity: sha512-JFBuIsfeNDTTotAkHzwTmXgSpFi2bfoX4E8ZlXfgQB2gD8XgOWSTJc1ujN59ZrGBI8M/99h3tEIaH5grR17EIA==}
+    peerDependencies:
+      graphql: ^15.3.0 || ^16.0.0
+    dependencies:
+      graphql: 15.8.0
+    dev: false
+
   /graphql-metadata/0.7.6_graphql@15.8.0:
     resolution: {integrity: sha512-Zho8c/oSWH1k/XmLq8yVIT+DpYRh5SDAURkEROLkqMYPJy3LI7PyfmT40zZbHFwt9hDGHtoW74rhVfsd6doZYQ==}
     peerDependencies:
@@ -3263,17 +3279,18 @@ packages:
       graphql: 15.8.0
     dev: false
 
-  /graphql-yoga/2.0.0-alpha.6_graphql@15.8.0:
-    resolution: {integrity: sha512-cqiYnZU/apr0l7ocJjfTutvHw2OXI6IYIEbNMrlp68LU6FPvTZYvE94YIXD59rCb1Nh0D+/8G+HxRhIrM6GGMw==}
+  /graphql-yoga/2.0.0-alpha.7_graphql@15.8.0:
+    resolution: {integrity: sha512-6pb1tCgFzmvmWA8vNBkOChEF9jRpbeJsAij62DmZ4eO/W9p2cDjRefjsaFumUwC93b/x3YKSUOtLGA6LzqOWzg==}
     peerDependencies:
       graphql: ^15.2.0 || ^16.0.0
     dependencies:
-      '@ardatan/graphql-helix': 0.1.12_graphql@15.8.0
       '@envelop/core': 1.6.5_graphql@15.8.0
+      '@graphql-tools/utils': 8.6.1_graphql@15.8.0
       '@graphql-typed-document-node/core': 3.1.1_graphql@15.8.0
-      '@graphql-yoga/core': 0.2.0-alpha.5_graphql@15.8.0
-      '@graphql-yoga/handler': 0.2.0-alpha.2_graphql@15.8.0
+      '@graphql-yoga/core': 0.2.0-alpha.6_graphql@15.8.0
+      '@graphql-yoga/handler': 0.2.0-alpha.3_graphql@15.8.0
       '@graphql-yoga/subscription': 0.1.0-alpha.0
+      cross-undici-fetch: 0.1.14
       graphql: 15.8.0
       light-my-request: 4.7.0
       pino: 7.6.2
@@ -6021,6 +6038,11 @@ packages:
     resolution: {integrity: sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=}
     dependencies:
       defaults: 1.0.3
+    dev: false
+
+  /web-streams-polyfill/3.2.0:
+    resolution: {integrity: sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==}
+    engines: {node: '>= 8'}
     dev: false
 
   /web-streams-polyfill/4.0.0-beta.1:

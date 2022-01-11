@@ -3,8 +3,8 @@ import fs from 'fs'
 
 export default ({ dir, logger }) => {
   generate({
-    schema: fs.readFileSync(dir + '/schema/schema.graphql').toString(),
-    output: dir + '/gql-client',
+    schema: fs.readFileSync(dir + '/gen/schema.graphql').toString(),
+    output: dir + '/gen/gql-client',
   })
     .then(() => {
       logger.info(`GraphQL Client generated at ${dir + '/gql-client'}`, 'INIT')

@@ -7,7 +7,7 @@ import Fastify from 'fastify'
 import goTrace from '@go-trace/tracer'
 import Logger from '@ptkdev/logger'
 import fastifyCors from 'fastify-cors'
-import * as yoga from 'graphql-yoga'
+import {createServer} from 'graphql-yoga'
 
 export default (config) => {
   const { dir } = config
@@ -40,7 +40,7 @@ export default (config) => {
 
   // logger.info(`Schema generated at ${dir + "/schema"}`, "INIT");
 
-  const graphQLServer = new yoga.GraphQLServer({
+  const graphQLServer = createServer({
     schema,
     context: contextCreator,
     enableLogging: false,

@@ -15,7 +15,7 @@ export default ({ dir }) => {
       }),
       plugins: [
         new SchemaCRUDPlugin({
-          outputPath: dir + '/schema.graphql',
+          outputPath: dir + '/gen/schema.graphql',
         }),
       ],
     })
