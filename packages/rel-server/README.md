@@ -1,3 +1,3 @@
 # Rel Server
 
-See https://rel.run/docs for more information on Rel.
+See [https://github.com/rel-js/rel](https://github.com/rel-js/rel) for full documentation.
