@@ -1,0 +1,35 @@
+{
+  "name": "reljs",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Visit https://rel.run/docs to view the full documentation.",
+  "repository": "https://github.com/runrel/rel",
+  "author": "Ian Hunter <ian@rel.run>",
+  "license": "MIT",
+  "bin": {
+    "rel": "./dist/bin/rel.js"
+  },
+  "main": "dist/bin/rel.js",
+  "types": "dist/bin/rel.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "tsup bin/rel.ts --sourcemap inline --target esnext --format esm"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "child_process": "^1.0.2",
+    "chokidar": "^3.5.2",
+    "commander": "^7.2.0",
+    "debounce": "^1.2.1",
+    "dotenv": "^8.2.0",
+    "fs-utils": "^0.7.0",
+    "inquirer": "^8.2.0",
+    "ora": "^5.3.0",
+    "rel-server": "workspace:^0.0.0"
+  },
+  "defDependencies": {},
+  "gitHead": "5e37d0fda7603768722e40c2e0f4c409533ff26a"
+}

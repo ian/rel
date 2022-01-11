@@ -27,8 +27,8 @@ export class GraphbackPluginEngine {
   private readonly plugins: GraphbackPlugin[]
   private readonly metadata: GraphbackCoreMetadata
 
-  public constructor ({ schema, config, plugins }: GraphBackPluginEngineOptions) {
-    this.plugins = (plugins != null) || []
+  public constructor ({ schema, config, plugins = [] }: GraphBackPluginEngineOptions) {
+    this.plugins = plugins
     if (!schema) {
       throw new Error('Plugin engine requires schema')
     }

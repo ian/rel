@@ -709,8 +709,8 @@ var GraphbackCoreMetadata = class {
 var GraphbackPluginEngine = class {
   plugins;
   metadata;
-  constructor({ schema, config, plugins }) {
-    this.plugins = plugins != null || [];
+  constructor({ schema, config, plugins = [] }) {
+    this.plugins = plugins;
     if (!schema) {
       throw new Error("Plugin engine requires schema");
     }

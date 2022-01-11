@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es5",
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
+  },
+  "include": ["bin", "commands", "lib"]
+}

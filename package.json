@@ -34,7 +34,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "pnpm run -r build",
-    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
+    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph",
+    "ian:error": "pnpm build && "
   },
   "husky": {
     "hooks": {
@@ -43,5 +44,11 @@
   },
   "dependencies": {
     "graphql": "15.8.0"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": true
   }
 }

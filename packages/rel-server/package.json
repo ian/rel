@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rel-js/rel.git"
@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/rel-js/rel#readme",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "tsup src/index.ts --target esnext --format esm --sourcemap" 
   },
   "dependencies": {
@@ -31,7 +32,7 @@
     "graphback": "*",
     "graphql": "15.8.0",
     "graphql-redis-subscriptions": "^2.4.2",
-    "graphql-yoga": "2.0.0-alpha.6",
+    "graphql-yoga": "2.0.0-alpha.7",
     "nodemon": "^2.0.15",
     "pkg-dir": "^6.0.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
