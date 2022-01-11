@@ -44,10 +44,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    let selectedFields: string[]
-    if ((info != null) && !this.crudOptions.subCreate) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
-    }
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
     const result = await this.db.create(data, selectedFields)
 
@@ -65,7 +62,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
     const result = await this.db.update(data, selectedFields)
 
@@ -83,7 +80,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true)
     const result = await this.db.updateBy(args, selectedFields)
 
     return {
@@ -92,7 +89,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
     const result = await this.db.delete(data, selectedFields)
 
     if (this.pubSub && this.crudOptions.subDelete) {
@@ -109,7 +106,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
-    const selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
     const result = await this.db.deleteBy(args, selectedFields)
 
     return {
@@ -118,23 +115,16 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async findOne (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
-    let selectedFields: string[]
-    if (info != null) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model)
-    }
-
+    const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model)
     return await this.db.findOne(args, selectedFields)
   }
 
   public async findBy (args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>> {
-    let selectedFields: string[]
     let requestedCount: boolean = false
-    if (info != null) {
-      selectedFields = getSelectedFieldsFromResolverInfo(info, this.model, path)
-      requestedCount = path === 'items' && getResolverInfoFieldsList(info).some((field: string) => field === 'count')
-    }
+    const [selectedFields, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model, false, path)
+    requestedCount = path === 'items' && getResolverInfoFieldsList(info).some((field: string) => field === 'count')
 
-    const items: Type[] = await this.db.findBy(args, selectedFields)
+    const items: Type[] = await this.db.findBy(args, selectedFields, fieldArgs)
 
     // set page values for returned object
     const resultPageInfo = {
@@ -205,22 +195,20 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
 
   public batchLoadData (relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo) {
     const selectedFields = []
-    if (info != null) {
-      const selectedFieldsFromInfo = getSelectedFieldsFromResolverInfo(info, this.model)
-      selectedFields.push(...selectedFieldsFromInfo)
+    const [selectedFieldsFromInfo, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model)
+    selectedFields.push(...selectedFieldsFromInfo)
 
-      // only push the relation field if there are fields selected
-      // because all fields will be selected otherwise
-      if (selectedFields.length > 0) {
-        selectedFields.push(relationField)
-      }
+    // only push the relation field if there are fields selected
+    // because all fields will be selected otherwise
+    if (selectedFields.length > 0) {
+      selectedFields.push(relationField)
     }
 
     const fetchedKeys = selectedFields.join('-')
     const keyName = `${this.model.graphqlType.name}-${upperCaseFirstChar(relationField)}-${fetchedKeys}-${JSON.stringify(filter)}-DataLoader`
     if (!context[keyName]) {
       context[keyName] = new DataLoader<string, any>(async (keys: string[]) => {
-        return await this.db.batchRead(relationField, keys, filter, selectedFields)
+        return await this.db.batchRead(relationField, keys, filter, selectedFields, fieldArgs)
       })
     }
 

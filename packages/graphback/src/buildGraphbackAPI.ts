@@ -71,8 +71,7 @@ function createServices (models: ModelDefinition[], createService: GraphbackServ
 interface PluginMap { [name: string]: GraphbackPlugin}
 
 function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
-  plugins = (plugins != null) || []
-  const pluginsMap: PluginMap = plugins.reduce((acc: PluginMap, plugin: GraphbackPlugin) => {
+  const pluginsMap: PluginMap = plugins?.reduce((acc: PluginMap, plugin: GraphbackPlugin) => {
     if (acc[plugin.getPluginName()]) {
       // eslint-disable-next-line no-console
       console.debug(`Plugin ${plugin.getPluginName()} is already defined and will be overridden`)
@@ -81,7 +80,7 @@ function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
     acc[plugin.getPluginName()] = plugin
 
     return acc
-  }, {})
+  }, {}) || {}
 
   let schemaPlugin: GraphbackPlugin
 

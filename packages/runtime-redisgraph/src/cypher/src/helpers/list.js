@@ -1,10 +1,16 @@
 import buildWhereQuery from '../util/buildWhereQuery.js'
 import cleanPrefix from '../util/cleanPrefix.js'
 
-export async function cypherList (label, opts, projection = []) {
+export async function cypherList (label, opts, projection = [], fieldArgs = {}) {
   const { order = 'id', skip, limit, where } = opts || {}
 
   const cypherQuery = []
+
+  const aggregations = ['sum', 'count', 'max', 'min', 'avg']
+
+  const agg = aggregations.find(agg => !!fieldArgs[agg])
+
+  const aggField = agg ? fieldArgs[agg]?.__arguments.find(a => !!a.of)?.of : null
 
   cypherQuery.push(`MATCH (node:${label})`)
 
@@ -26,14 +32,17 @@ export async function cypherList (label, opts, projection = []) {
   }
 
   // @todo support multiple returns
-  cypherQuery.push(`RETURN ${projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : 'node'}`)
+
+  const fields = projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : (aggField ? '' : 'node')
+
+  cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(node.' + aggField.value + ')' : '')}`)
 
   // order
-  if (order) cypherQuery.push(`ORDER BY node.${order}`)
+  if (order && !aggField) cypherQuery.push(`ORDER BY node.${order}`)
 
   // pagination
-  if (skip) cypherQuery.push(`SKIP ${skip}`)
-  if (limit) cypherQuery.push(`LIMIT ${limit}`)
+  if (skip && !aggField) cypherQuery.push(`SKIP ${skip}`)
+  if (limit && !aggField) cypherQuery.push(`LIMIT ${limit}`)
 
   const query = cypherQuery.join(' ')
 

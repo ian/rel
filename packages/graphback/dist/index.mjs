@@ -44,14 +44,13 @@ function createServices(models, createService, createProvider) {
   return services;
 }
 function getPlugins(plugins) {
-  plugins = plugins != null || [];
-  const pluginsMap = plugins.reduce((acc, plugin) => {
+  const pluginsMap = (plugins == null ? void 0 : plugins.reduce((acc, plugin) => {
     if (acc[plugin.getPluginName()]) {
       console.debug(`Plugin ${plugin.getPluginName()} is already defined and will be overridden`);
     }
     acc[plugin.getPluginName()] = plugin;
     return acc;
-  }, {});
+  }, {})) || {};
   let schemaPlugin;
   if (pluginsMap[SCHEMA_CRUD_PLUGIN_NAME]) {
     schemaPlugin = pluginsMap[SCHEMA_CRUD_PLUGIN_NAME];
@@ -145,3 +144,4 @@ export {
   GraphbackGenerator,
   buildGraphbackAPI
 };
+//# sourceMappingURL=index.mjs.map
