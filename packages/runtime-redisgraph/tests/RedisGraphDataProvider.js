@@ -806,19 +806,21 @@ test('Aggregations', async () => {
     }
   )
 
-  let items = await context.providers.Todo.findBy({}, [],{count: {__arguments: [{of: {value: 'a'}}]}})
+  const args = {__arguments: [{of: {value: 'a'}}]}
+
+  let items = await context.providers.Todo.findBy({}, [],{count: args})
   assert.is(items.length, 1)
   assert.is(items[0]["count(a)"], 4)
-  items = await context.providers.Todo.findBy({}, [],{sum: {__arguments: [{of: {value: 'a'}}]}})
+  items = await context.providers.Todo.findBy({}, [],{sum: args})
   assert.is(items.length, 1)
   assert.is(items[0]["sum(a)"], 11)
-  items = await context.providers.Todo.findBy({}, [],{min: {__arguments: [{of: {value: 'a'}}]}})
+  items = await context.providers.Todo.findBy({}, [],{min: args})
   assert.is(items.length, 1)
   assert.is(items[0]["min(a)"], 1)
-  items = await context.providers.Todo.findBy({}, [],{max: {__arguments: [{of: {value: 'a'}}]}})
+  items = await context.providers.Todo.findBy({}, [],{max: args})
   assert.is(items.length, 1)
   assert.is(items[0]["max(a)"], 6)
-  items = await context.providers.Todo.findBy({}, [],{avg: {__arguments: [{of: {value: 'a'}}]}})
+  items = await context.providers.Todo.findBy({}, [],{avg: args})
   assert.is(items.length, 1)
   assert.is(items[0]["avg(a)"], 2.75)
 })
