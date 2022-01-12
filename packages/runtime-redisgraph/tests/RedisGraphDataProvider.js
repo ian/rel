@@ -72,8 +72,6 @@ test('Test crud', async () => {
 
   assert.is(todo.text, 'create a todo')
 
-  console.log('TODO', todo)
-
   todo = await context.providers.Todos.update(
     {
       id: todo.id,
@@ -763,6 +761,141 @@ test('a || (a && b)', async () => {
   const items = await context.providers.Todo.findBy({ filter })
 
   assert.is(items.length, 3)
+})
+
+test('Aggregations', async () => {
+  context = await createTestingContext(
+    `
+    """@model"""
+    type Todo {
+      id: ID!
+      a: Int
+      b: Int
+      c: Int
+    }
+    `,
+    {
+      seedData: {
+        Todo: [
+          {
+            id: 1,
+            a: 1,
+            b: 5,
+            c: 8
+          },
+          {
+            id: 2,
+            a: 2,
+            b: 3,
+            c: 10
+          },
+          {
+            id: 3,
+            a: 2,
+            b: 3,
+            c: 3
+          },
+          {
+            id: 4,
+            a: 6,
+            b: 6,
+            c: 3
+          }
+        ]
+      }
+    }
+  )
+
+  let items = await context.providers.Todo.findBy({}, [],{count: {__arguments: [{of: {value: 'a'}}]}})
+  assert.is(items.length, 1)
+  assert.is(items[0]["count(a)"], 4)
+  items = await context.providers.Todo.findBy({}, [],{sum: {__arguments: [{of: {value: 'a'}}]}})
+  assert.is(items.length, 1)
+  assert.is(items[0]["sum(a)"], 11)
+  items = await context.providers.Todo.findBy({}, [],{min: {__arguments: [{of: {value: 'a'}}]}})
+  assert.is(items.length, 1)
+  assert.is(items[0]["min(a)"], 1)
+  items = await context.providers.Todo.findBy({}, [],{max: {__arguments: [{of: {value: 'a'}}]}})
+  assert.is(items.length, 1)
+  assert.is(items[0]["max(a)"], 6)
+  items = await context.providers.Todo.findBy({}, [],{avg: {__arguments: [{of: {value: 'a'}}]}})
+  assert.is(items.length, 1)
+  assert.is(items[0]["avg(a)"], 2.75)
+})
+
+test('Aggregations with group', async () => {
+  context = await createTestingContext(
+    `
+    """@model"""
+    type Todo {
+      id: ID!
+      a: Int
+      b: Int
+      c: Int
+    }
+    `,
+    {
+      seedData: {
+        Todo: [
+          {
+            id: 1,
+            a: 1,
+            b: 5,
+            c: 8
+          },
+          {
+            id: 2,
+            a: 2,
+            b: 3,
+            c: 10
+          },
+          {
+            id: 3,
+            a: 2,
+            b: 2,
+            c: 3
+          },
+          {
+            id: 4,
+            a: 6,
+            b: 6,
+            c: 3
+          }
+        ]
+      }
+    }
+  )
+
+  const filter = {
+    a: {
+      gt: 1
+    },
+  }
+
+  const selectedFields = ["a"]
+
+  const args = {__arguments: [{of: {value: 'b'}}]}
+
+  let items = await context.providers.Todo.findBy({filter}, selectedFields,{count: args})
+  assert.is(items.length, 2)
+  assert.is(items[0]["count(b)"], 2)
+  assert.is(items[1]["count(b)"], 1)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{sum: args})
+  assert.is(items.length, 2)
+  assert.is(items[0]["sum(b)"], 5)
+  assert.is(items[1]["sum(b)"], 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{min: args})
+  assert.is(items.length, 2)
+  assert.is(items[0]["min(b)"], 2)
+  assert.is(items[1]["min(b)"], 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{max: args})
+  assert.is(items.length, 2)
+  assert.is(items[0]["max(b)"], 3)
+  assert.is(items[1]["max(b)"], 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{avg: args})
+  assert.is(items.length, 2)
+  assert.is(items[0]["avg(b)"], 2.5)
+  assert.is(items[1]["avg(b)"], 6)
 })
 
 test.run()

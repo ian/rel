@@ -993,7 +993,6 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       const numberFields = fieldKeys.filter((field) => {
         return numberTypes.includes(model.fields[field].type.replace("!", ""));
       }).join(" ");
-      console.log(numberEnumName, numberFields, modelName);
       schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`);
       schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`);
       if (numberFields !== "") {

@@ -15,8 +15,7 @@ export async function cypherCreate (label, params, projection = [], opts = {}) {
     ...opts
   })
 
-  const res = await this.exec1(
-    ` 
+  const query = ` 
       CREATE (node:${label} { ${paramsCypher} })
       RETURN ${
         projection.length > 0
@@ -29,8 +28,9 @@ export async function cypherCreate (label, params, projection = [], opts = {}) {
           : 'node'
       };
     `
-  )
 
+  const res = await this.exec1(query)
+  
   // if (opts.after) await opts.after(node)
 
   return projection.length > 0 ? cleanPrefix(res, 'node.') : res.node

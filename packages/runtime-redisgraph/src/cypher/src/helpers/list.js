@@ -33,8 +33,9 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
 
   // @todo support multiple returns
 
-  const fields = projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : (aggField ? '' : 'node')
 
+
+  const fields = projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : (aggField ? '' : 'node')
   cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(node.' + aggField.value + ')' : '')}`)
 
   // order
@@ -48,5 +49,5 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
 
   const res = await this.exec(query)
 
-  return (projection.length > 0 ? cleanPrefix(res, 'node.') : res.map(x => x.node))
+  return (projection.length > 0 || aggField ? cleanPrefix(res, 'node.') : res.map(x => x.node))
 }
