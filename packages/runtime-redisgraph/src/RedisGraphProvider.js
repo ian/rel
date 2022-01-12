@@ -171,9 +171,7 @@ export class RedisGraphProvider {
       this.collectionName,
       {
         where: filterQuery,
-        order: args?.orderBy
-          ? args?.orderBy?.field + ' ' + (args?.orderBy?.order || 'asc')
-          : undefined,
+        order: args?.orderBy,
         skip: args?.page?.offset,
         limit: args?.page?.limit
       },

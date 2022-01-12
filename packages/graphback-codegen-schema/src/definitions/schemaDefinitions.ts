@@ -95,6 +95,16 @@ export const SortDirectionEnum = new GraphQLEnumType({
   }
 })
 
+export const buildOrderByInputType = (modelName) => {
+  return new GraphQLInputObjectType({
+    name: modelName+ "OrderByInput",
+    fields: {
+      field: { type: "Enum" + modelName + "Fields" },
+      order: { type: SortDirectionEnum, defaultValue: 'asc' }
+    }
+  })
+}
+
 export const OrderByInputType = new GraphQLInputObjectType({
   name: OrderByInputTypeName,
   fields: {

@@ -67,11 +67,6 @@ input OfTodoNumberInput {
   of: EnumTodoNumberFields
 }
 
-input OrderByInput {
-  field: String!
-  order: SortDirectionEnum = ASC
-}
-
 input PageRequest {
   limit: Int
   offset: Int
@@ -79,7 +74,7 @@ input PageRequest {
 
 type Query {
   getTodo(id: ID!): Todo
-  findTodos(filter: TodoFilter, page: PageRequest, orderBy: OrderByInput): TodoResultList!
+  findTodos(filter: TodoFilter, page: PageRequest, orderBy: [TodoOrderByInput]): TodoResultList!
 }
 
 enum SortDirectionEnum {
@@ -128,6 +123,11 @@ input TodoFilter {
 
 type TodoMutationResultList {
   items: [Todo]!
+}
+
+input TodoOrderByInput {
+  field: EnumTodoFields
+  order: SortDirectionEnum = ASC
 }
 
 type TodoResultList {

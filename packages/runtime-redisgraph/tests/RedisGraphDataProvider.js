@@ -94,7 +94,7 @@ test('find first 1 todo(s) excluding first todo', async () => {
     }
   })
   const todos = await context.providers.Todos.findBy(
-    { page: { limit: 1, offset: 1 }, orderBy: { field: 'order' } },
+    { page: { limit: 1, offset: 1 }, orderBy: [{ field: 'order' }] },
     ['text']
   )
 
@@ -212,7 +212,7 @@ test('test orderby w/o order', async () => {
   })
 
   const todos = await context.providers.Todos.findBy(
-    { filter: { text: { contains: 'todo' } }, orderBy: { field: 'text' } },
+    { filter: { text: { contains: 'todo' } }, orderBy: [{ field: 'text' }] },
     fields
   )
   for (let t = 0; t < todos.length; t++) {
@@ -236,7 +236,7 @@ test('test orderby with desc order', async () => {
   const todos = await context.providers.Todos.findBy(
     {
       filter: { text: { contains: 'todo' } },
-      orderBy: { field: 'text', order: 'desc' }
+      orderBy: [{ field: 'text', order: 'desc' }]
     },
     fields
   )

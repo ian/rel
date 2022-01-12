@@ -2,7 +2,7 @@ import buildWhereQuery from '../util/buildWhereQuery.js'
 import cleanPrefix from '../util/cleanPrefix.js'
 
 export async function cypherList (label, opts, projection = [], fieldArgs = {}) {
-  const { order = 'id', skip, limit, where } = opts || {}
+  const { order , skip, limit, where } = opts || {}
 
   const cypherQuery = []
 
@@ -41,7 +41,12 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
   cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(' + (isDistinct ? 'DISTINCT ' : '') + 'node.' + aggField.value + ')' : '')}`)
 
   // order
-  if (order && !aggField) cypherQuery.push(`ORDER BY node.${order}`)
+  if (Array.isArray(order) && !aggField) {
+    const orderFields = order.reduce((previous, current, idx, arr) => {
+      return previous + `node.${current.field} ${current.order ?? "asc"}${idx === arr.length - 1 ? '' : ','}`
+    }, "")
+    cypherQuery.push(`ORDER BY ${orderFields}`)
+  }
 
   // pagination
   if (skip && !aggField) cypherQuery.push(`SKIP ${skip}`)

@@ -431,6 +431,15 @@ var SortDirectionEnum = new GraphQLEnumType({
     ASC: { value: "asc" }
   }
 });
+var buildOrderByInputType = (modelName) => {
+  return new GraphQLInputObjectType({
+    name: modelName + "OrderByInput",
+    fields: {
+      field: { type: "Enum" + modelName + "Fields" },
+      order: { type: SortDirectionEnum, defaultValue: "asc" }
+    }
+  });
+};
 var OrderByInputType = new GraphQLInputObjectType({
   name: OrderByInputTypeName,
   fields: {
@@ -967,7 +976,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
             type: PageRequest
           },
           orderBy: {
-            type: OrderByInputType
+            type: [buildOrderByInputType(name)]
           }
         }
       };
@@ -1319,6 +1328,7 @@ export {
   buildFilterInputType,
   buildFindOneFieldMap,
   buildMutationInputType,
+  buildOrderByInputType,
   buildSubscriptionFilterType,
   createInputTypeForScalar,
   createModelListResultType,
