@@ -101,19 +101,19 @@ type Todo {
   c: Int
 
   """@transient"""
-  count(of: OfTodoInput): Int
+  count(of: OfTodoInput, distinct: Boolean): Int
 
   """@transient"""
-  avg(of: OfTodoNumberInput): Int
+  avg(of: OfTodoNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  max(of: OfTodoNumberInput): Int
+  max(of: OfTodoNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  min(of: OfTodoNumberInput): Int
+  min(of: OfTodoNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  sum(of: OfTodoNumberInput): Int
+  sum(of: OfTodoNumberInput, distinct: Boolean): Int
 }
 
 input TodoFilter {

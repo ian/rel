@@ -11,6 +11,7 @@ importers:
       '@commitlint/config-conventional': 11.0.0
       '@typescript-eslint/eslint-plugin': ^4.33.0
       eslint: ^7.32.0
+      eslint-config-prettier: ^8.3.0
       eslint-config-standard-with-typescript: ^21.0.1
       eslint-plugin-import: ^2.25.3
       eslint-plugin-node: ^11.1.0
@@ -27,6 +28,7 @@ importers:
       '@commitlint/config-conventional': 11.0.0
       '@typescript-eslint/eslint-plugin': 4.33.0_eslint@7.32.0+typescript@4.5.4
       eslint: 7.32.0
+      eslint-config-prettier: 8.3.0_eslint@7.32.0
       eslint-config-standard-with-typescript: 21.0.1_aad86e1eb9f54ca9a02bcdb7eb427e42
       eslint-plugin-import: 2.25.3_eslint@7.32.0
       eslint-plugin-node: 11.1.0_eslint@7.32.0
@@ -2371,6 +2373,15 @@ packages:
   /escape-string-regexp/4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
+    dev: true
+
+  /eslint-config-prettier/8.3.0_eslint@7.32.0:
+    resolution: {integrity: sha512-BgZuLUSeKzvlL/VUjx/Yb787VQ26RU3gGjA3iiFvdsp/2bMfVIWUVP7tjxtjS0e+HP409cPlPvNkQloz8C91ew==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
+    dependencies:
+      eslint: 7.32.0
     dev: true
 
   /eslint-config-standard-with-typescript/21.0.1_aad86e1eb9f54ca9a02bcdb7eb427e42:

@@ -12,6 +12,8 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
 
   const aggField = agg ? fieldArgs[agg]?.__arguments.find(a => !!a.of)?.of : null
 
+  const isDistinct = agg ? fieldArgs[agg]?.__arguments.find(a => !!a.distinct)?.distinct?.value : false
+  
   cypherQuery.push(`MATCH (node:${label})`)
 
   // @todo - geo
@@ -36,7 +38,7 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
 
 
   const fields = projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : (aggField ? '' : 'node')
-  cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(node.' + aggField.value + ')' : '')}`)
+  cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(' + (isDistinct ? 'DISTINCT ' : '') + 'node.' + aggField.value + ')' : '')}`)
 
   // order
   if (order && !aggField) cypherQuery.push(`ORDER BY node.${order}`)
@@ -45,7 +47,7 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
   if (skip && !aggField) cypherQuery.push(`SKIP ${skip}`)
   if (limit && !aggField) cypherQuery.push(`LIMIT ${limit}`)
 
-  const query = cypherQuery.join(' ')
+  const query = cypherQuery.join(' ') 
 
   const res = await this.exec(query)
 

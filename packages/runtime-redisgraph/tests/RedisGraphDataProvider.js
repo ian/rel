@@ -900,4 +900,85 @@ test('Aggregations with group', async () => {
   assert.is(items[1].avg, 6)
 })
 
+test('Aggregations with group and DISTINCT', async () => {
+  context = await createTestingContext(
+    `
+    """@model"""
+    type Todo {
+      id: ID!
+      a: Int
+      b: Int
+      c: Int
+    }
+    `,
+    {
+      seedData: {
+        Todo: [
+          {
+            id: 1,
+            a: 1,
+            b: 5,
+            c: 8
+          },
+          {
+            id: 2,
+            a: 2,
+            b: 3,
+            c: 10
+          },
+          {
+            id: 3,
+            a: 2,
+            b: 2,
+            c: 3
+          },
+          {
+            id: 4,
+            a: 2,
+            b: 2,
+            c: 3
+          },
+          {
+            id: 5,
+            a: 6,
+            b: 6,
+            c: 3
+          }
+        ]
+      }
+    }
+  )
+
+  const filter = {
+    a: {
+      gt: 1
+    },
+  }
+
+  const selectedFields = ["a"]
+
+  const args = {__arguments: [{of: {value: 'b'}}, {distinct: {value: true}}]}
+
+  let items = await context.providers.Todo.findBy({filter}, selectedFields,{count: args})
+  assert.is(items.length, 2)
+  assert.is(items[0].count, 2)
+  assert.is(items[1].count, 1)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{sum: args})
+  assert.is(items.length, 2)
+  assert.is(items[0].sum, 5)
+  assert.is(items[1].sum, 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{min: args})
+  assert.is(items.length, 2)
+  assert.is(items[0].min, 2)
+  assert.is(items[1].min, 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{max: args})
+  assert.is(items.length, 2)
+  assert.is(items[0].max, 3)
+  assert.is(items[1].max, 6)
+  items = await context.providers.Todo.findBy({filter}, selectedFields,{avg: args})
+  assert.is(items.length, 2)
+  assert.is(items[0].avg, 2.5)
+  assert.is(items[1].avg, 6)
+})
+
 test.run()

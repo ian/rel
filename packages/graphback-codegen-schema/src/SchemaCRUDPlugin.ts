@@ -343,6 +343,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       args: {
         of: {
           type: `Of${name}Input`
+        },
+        distinct: {
+          type: "Boolean"
         }
       },
       description: '@transient'
@@ -354,6 +357,9 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
           args: {
             of: {
               type: `Of${name}NumberInput`
+            },
+            distinct: {
+              type: "Boolean"
             }
           },
           description: '@transient'
