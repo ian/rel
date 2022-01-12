@@ -4,7 +4,8 @@ export default (obj, prefix) => {
       if (typeof _obj === 'object' && _obj !== null) {
         const newObj = {}
         Object.keys(_obj).forEach(key => {
-          newObj[key.replace(prefix, '')] = _obj[key]
+          const cleanedKey = key.replace(prefix, '').replace(/\([a-zA-Z0-9]+\)/, '')
+          newObj[cleanedKey] = _obj[key]
         })
         return newObj
       } else {

@@ -410,7 +410,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const numberTypes = ["Int", "Float","BigInt", "NonPositiveFloat", "NonPositiveInt", "NonNegativeInt", 
       "NonNegativeFloat", "NegativeFloat", "NegativeInt", "PositiveInt", "PositiveFloat"]
       const numberFields = fieldKeys.filter(field => {
-        return numberTypes.includes(model.fields[field].type.replace("!", ""))
+        return !model.fields[field].transient && numberTypes.includes(model.fields[field].type.replace("!", ""))
       }).join(' ')
       schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`)
       schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`)

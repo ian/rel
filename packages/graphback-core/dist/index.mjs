@@ -1062,8 +1062,7 @@ var CRUDService = class {
     let requestedCount = false;
     const [selectedFields, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model, false, path);
     requestedCount = path === "items" && getResolverInfoFieldsList(info).some((field) => field === "count");
-    const fieldArgKeys = Object.keys(fieldArgs);
-    const items = await this.db.findBy(args, selectedFields.filter((f) => !fieldArgKeys.includes(f)), fieldArgs);
+    const items = await this.db.findBy(args, selectedFields, fieldArgs);
     const resultPageInfo = __spreadValues({
       offset: 0
     }, args == null ? void 0 : args.page);
