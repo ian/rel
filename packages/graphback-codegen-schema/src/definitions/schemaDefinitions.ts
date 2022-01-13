@@ -99,7 +99,7 @@ export const buildOrderByInputType = (modelName) => {
   return new GraphQLInputObjectType({
     name: modelName+ "OrderByInput",
     fields: {
-      field: { type: "Enum" + modelName + "Fields" },
+      field: { type: modelName + "FieldsEnum" },
       order: { type: SortDirectionEnum, defaultValue: 'asc' }
     }
   })

@@ -435,7 +435,7 @@ var buildOrderByInputType = (modelName) => {
   return new GraphQLInputObjectType({
     name: modelName + "OrderByInput",
     fields: {
-      field: { type: "Enum" + modelName + "Fields" },
+      field: { type: modelName + "FieldsEnum" },
       order: { type: SortDirectionEnum, defaultValue: "asc" }
     }
   });
@@ -986,8 +986,8 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
   createAggregationForModelFields(schemaComposer, models) {
     for (const model of models) {
       const modelName = model.graphqlType.name;
-      const enumName = `Enum${modelName}Fields`;
-      const numberEnumName = `Enum${modelName}NumberFields`;
+      const enumName = `${modelName}FieldsEnum`;
+      const numberEnumName = `${modelName}NumberFieldsEnum`;
       const fieldKeys = Object.keys(model.fields);
       const fields = fieldKeys.filter((field) => {
         return !model.fields[field].transient;

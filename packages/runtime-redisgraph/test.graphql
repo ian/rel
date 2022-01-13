@@ -10,19 +10,6 @@ input CreateTodoInput {
   c: Int
 }
 
-enum EnumTodoFields {
-  id
-  a
-  b
-  c
-}
-
-enum EnumTodoNumberFields {
-  a
-  b
-  c
-}
-
 input IDInput {
   ne: ID
   eq: ID
@@ -60,11 +47,11 @@ type Mutation {
 }
 
 input OfTodoInput {
-  of: EnumTodoFields
+  of: TodoFieldsEnum
 }
 
 input OfTodoNumberInput {
-  of: EnumTodoNumberFields
+  of: TodoNumberFieldsEnum
 }
 
 input PageRequest {
@@ -111,6 +98,13 @@ type Todo {
   sum(of: OfTodoNumberInput, distinct: Boolean): Int
 }
 
+enum TodoFieldsEnum {
+  id
+  a
+  b
+  c
+}
+
 input TodoFilter {
   id: IDInput
   a: IntInput
@@ -125,8 +119,14 @@ type TodoMutationResultList {
   items: [Todo]!
 }
 
+enum TodoNumberFieldsEnum {
+  a
+  b
+  c
+}
+
 input TodoOrderByInput {
-  field: EnumTodoFields
+  field: TodoFieldsEnum
   order: SortDirectionEnum = ASC
 }
 
