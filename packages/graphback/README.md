@@ -43,7 +43,7 @@ import Knex from 'knex';
 
 const db = Knex({...});
 
-const { typeDefs, resolvers, contextCreator } = buildGraphbackAPI(schema, {
+const { typeDefs, resolvers, contextCreator } = await buildGraphbackAPI(schema, {
   dataProviderCreator: createKnexDbProvider(db)
 });
 ```

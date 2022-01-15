@@ -22,4 +22,5 @@ export interface GraphbackCRUDGeneratorConfig {
   subUpdate?: boolean
   // Generate subscription for delete operation
   subDelete?: boolean
+  unique?: string[]
 }

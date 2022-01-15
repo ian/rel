@@ -658,6 +658,7 @@ var GraphbackCoreMetadata = class {
   buildModel(modelType, relationships) {
     let crudOptions = parseMetadata7("model", modelType);
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions);
+    const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : [];
     const { type: primaryKeyType, name } = getPrimaryKey(modelType);
     const primaryKey = {
       name,
@@ -700,6 +701,7 @@ var GraphbackCoreMetadata = class {
       primaryKey,
       crudOptions,
       relationships,
+      uniqueFields,
       graphqlType: modelType
     };
   }
@@ -1004,9 +1006,12 @@ var CRUDService = class {
     this.db = db;
     this.pubSub = config.pubSub;
   }
-  async create(data2, context, info) {
+  async initializeUniqueIndex() {
+    return await this.db.initializeUniqueIndex(this.model.uniqueFields);
+  }
+  async create(data2, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.create(data2, selectedFields);
+    const result = await this.db.create(data2, selectedFields, uniqueFields);
     if (this.pubSub && this.crudOptions.subCreate) {
       const topic = this.subscriptionTopicMapping("create" /* CREATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("new", result);
@@ -1016,9 +1021,9 @@ var CRUDService = class {
     }
     return result;
   }
-  async update(data2, context, info) {
+  async update(data2, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.update(data2, selectedFields);
+    const result = await this.db.update(data2, selectedFields, uniqueFields);
     if (this.pubSub && this.crudOptions.subUpdate) {
       const topic = this.subscriptionTopicMapping("update" /* UPDATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("updated", result);
@@ -1028,16 +1033,16 @@ var CRUDService = class {
     }
     return result;
   }
-  async updateBy(args, context, info) {
+  async updateBy(args, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true);
-    const result = await this.db.updateBy(args, selectedFields);
+    const result = await this.db.updateBy(args, selectedFields, uniqueFields);
     return {
       items: result
     };
   }
-  async delete(args, context, info) {
+  async delete(args, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.delete(data, selectedFields);
+    const result = await this.db.delete(data, selectedFields, uniqueFields);
     if (this.pubSub && this.crudOptions.subDelete) {
       const topic = this.subscriptionTopicMapping("delete" /* DELETE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("deleted", result);
@@ -1047,9 +1052,9 @@ var CRUDService = class {
     }
     return result;
   }
-  async deleteBy(args, context, info) {
+  async deleteBy(args, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.deleteBy(args, selectedFields);
+    const result = await this.db.deleteBy(args, selectedFields, uniqueFields);
     return {
       items: result
     };
@@ -1141,13 +1146,15 @@ var CRUDService = class {
 // src/runtime/createCRUDService.ts
 import { PubSub } from "graphql-subscriptions";
 function createCRUDService(config) {
-  return (model, dataProvider) => {
+  return async (model, dataProvider) => {
     const serviceConfig = __spreadProps(__spreadValues({
       pubSub: new PubSub()
     }, config), {
       crudOptions: model.crudOptions
     });
-    return new CRUDService(model, dataProvider, serviceConfig);
+    const crudService = new CRUDService(model, dataProvider, serviceConfig);
+    await crudService.initializeUniqueIndex();
+    return crudService;
   };
 }
 

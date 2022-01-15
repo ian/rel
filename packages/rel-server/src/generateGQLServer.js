@@ -4,11 +4,11 @@ import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import fs from 'fs'
 import { RedisPubSub } from 'graphql-redis-subscriptions'
 
-export default ({ dir }) => {
+export default async ({ dir }) => {
   const dataProviderCreator = createRedisGraphProvider()
   const schema_ = fs.readFileSync(dir + '/schema.graphql')
   const { typeDefs, resolvers, schema, services, contextCreator } =
-    buildGraphbackAPI(schema_.toString(), {
+    await buildGraphbackAPI(schema_.toString(), {
       dataProviderCreator,
       serviceCreator: createCRUDService({
         pubSub: new RedisPubSub(),

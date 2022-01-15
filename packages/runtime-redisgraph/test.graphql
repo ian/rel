@@ -4,10 +4,9 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
-input CreateTodoInput {
-  a: Int
-  b: Int
-  c: Int
+input CreateTodosInput {
+  text: String
+  order: Int
 }
 
 input IDInput {
@@ -31,27 +30,24 @@ input IntInput {
   between: [Int!]
 }
 
-input MutateTodoInput {
+input MutateTodosInput {
   id: ID!
-  a: Int
-  b: Int
-  c: Int
+  text: String
+  order: Int
 }
 
 type Mutation {
-  createTodo(input: CreateTodoInput!): Todo
-  updateTodo(input: MutateTodoInput!): Todo
-  updateTodos(filter: TodoFilter, input: MutateTodoInput!): TodoMutationResultList
-  deleteTodo(id: ID!): Todo
-  deleteTodos(filter: TodoFilter): TodoMutationResultList
+  createTodos(input: CreateTodosInput!): Todos
+  updateTodos(filter: TodosFilter, input: MutateTodosInput!): TodosMutationResultList
+  deleteTodos(filter: TodosFilter): TodosMutationResultList
 }
 
-input OfTodoInput {
-  of: TodoFieldsEnum
+input OfTodosInput {
+  of: TodosFieldsEnum
 }
 
-input OfTodoNumberInput {
-  of: TodoNumberFieldsEnum
+input OfTodosNumberInput {
+  of: TodosNumberFieldsEnum
 }
 
 input PageRequest {
@@ -60,8 +56,8 @@ input PageRequest {
 }
 
 type Query {
-  getTodo(id: ID!): Todo
-  findTodos(filter: TodoFilter, page: PageRequest, orderBy: [TodoOrderByInput]): TodoResultList!
+  getTodos(id: ID!): Todos
+  findTodos(filter: TodosFilter, page: PageRequest, orderBy: [TodosOrderByInput]): TodosResultList!
 }
 
 enum SortDirectionEnum {
@@ -69,80 +65,87 @@ enum SortDirectionEnum {
   ASC
 }
 
+input StringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  in: [String!]
+  contains: String
+  startsWith: String
+  endsWith: String
+}
+
 type Subscription {
-  newTodo(filter: TodoSubscriptionFilter): Todo!
-  updatedTodo(filter: TodoSubscriptionFilter): Todo!
-  deletedTodo(filter: TodoSubscriptionFilter): Todo!
+  newTodos(filter: TodosSubscriptionFilter): Todos!
+  updatedTodos(filter: TodosSubscriptionFilter): Todos!
+  deletedTodos(filter: TodosSubscriptionFilter): Todos!
 }
 
-"""@model"""
-type Todo {
+"""@model(unique: ['text'])"""
+type Todos {
   id: ID!
-  a: Int
-  b: Int
-  c: Int
+  text: String
+  order: Int
 
   """@transient"""
-  count(of: OfTodoInput, distinct: Boolean): Int
+  count(of: OfTodosInput, distinct: Boolean): Int
 
   """@transient"""
-  avg(of: OfTodoNumberInput, distinct: Boolean): Int
+  avg(of: OfTodosNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  max(of: OfTodoNumberInput, distinct: Boolean): Int
+  max(of: OfTodosNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  min(of: OfTodoNumberInput, distinct: Boolean): Int
+  min(of: OfTodosNumberInput, distinct: Boolean): Int
 
   """@transient"""
-  sum(of: OfTodoNumberInput, distinct: Boolean): Int
+  sum(of: OfTodosNumberInput, distinct: Boolean): Int
 }
 
-enum TodoFieldsEnum {
+enum TodosFieldsEnum {
   id
-  a
-  b
-  c
+  text
+  order
 }
 
-input TodoFilter {
+input TodosFilter {
   id: IDInput
-  a: IntInput
-  b: IntInput
-  c: IntInput
-  and: [TodoFilter!]
-  or: [TodoFilter!]
-  not: TodoFilter
+  text: StringInput
+  order: IntInput
+  and: [TodosFilter!]
+  or: [TodosFilter!]
+  not: TodosFilter
 }
 
-type TodoMutationResultList {
-  items: [Todo]!
+type TodosMutationResultList {
+  items: [Todos]!
 }
 
-enum TodoNumberFieldsEnum {
-  a
-  b
-  c
+enum TodosNumberFieldsEnum {
+  order
 }
 
-input TodoOrderByInput {
-  field: TodoFieldsEnum
+input TodosOrderByInput {
+  field: TodosFieldsEnum
   order: SortDirectionEnum = ASC
 }
 
-type TodoResultList {
-  items: [Todo]!
+type TodosResultList {
+  items: [Todos]!
   offset: Int
   limit: Int
   count: Int
 }
 
-input TodoSubscriptionFilter {
-  and: [TodoSubscriptionFilter!]
-  or: [TodoSubscriptionFilter!]
-  not: TodoSubscriptionFilter
+input TodosSubscriptionFilter {
+  and: [TodosSubscriptionFilter!]
+  or: [TodosSubscriptionFilter!]
+  not: TodosSubscriptionFilter
   id: IDInput
-  a: IntInput
-  b: IntInput
-  c: IntInput
+  text: StringInput
+  order: IntInput
 }

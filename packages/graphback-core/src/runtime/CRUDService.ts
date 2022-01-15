@@ -43,10 +43,14 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     this.pubSub = config.pubSub
   }
 
-  public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async initializeUniqueIndex() {
+    return await this.db.initializeUniqueIndex(this.model.uniqueFields)
+  }
+
+  public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
-    const result = await this.db.create(data, selectedFields)
+    const result = await this.db.create(data, selectedFields, uniqueFields)
 
     if (this.pubSub && this.crudOptions.subCreate) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.CREATE, this.model.graphqlType.name)
@@ -61,10 +65,10 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
-    const result = await this.db.update(data, selectedFields)
+    const result = await this.db.update(data, selectedFields, uniqueFields)
 
     if (this.pubSub && this.crudOptions.subUpdate) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.UPDATE, this.model.graphqlType.name)
@@ -79,18 +83,18 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
+  public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true)
-    const result = await this.db.updateBy(args, selectedFields)
+    const result = await this.db.updateBy(args, selectedFields, uniqueFields)
 
     return {
       items: result
     }
   }
 
-  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
-    const result = await this.db.delete(data, selectedFields)
+    const result = await this.db.delete(data, selectedFields, uniqueFields)
 
     if (this.pubSub && this.crudOptions.subDelete) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.DELETE, this.model.graphqlType.name)
@@ -105,9 +109,9 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
+  public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
-    const result = await this.db.deleteBy(args, selectedFields)
+    const result = await this.db.deleteBy(args, selectedFields, uniqueFields)
 
     return {
       items: result
@@ -120,7 +124,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async findBy (args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>> {
-    let requestedCount: boolean = false
+    let requestedCount = false
     const [selectedFields, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model, false, path)
     requestedCount = path === 'items' && getResolverInfoFieldsList(info).some((field: string) => field === 'count')
     const items: Type[] = await this.db.findBy(args, selectedFields, fieldArgs)

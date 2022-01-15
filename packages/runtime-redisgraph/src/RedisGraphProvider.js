@@ -3,16 +3,17 @@ import {
   getFieldTransformations,
   NoDataError
 } from '@graphback/core'
-import { v4 as uuid } from 'uuid'
+import { v4 as uuid, v5 } from 'uuid'
 import logger from './logger.js'
 import { buildQuery } from './queryBuilder.js'
 import cypher from './cypher/src/index.js'
 import RedisStreamHelper from 'redis-stream-helper'
+import Redis from "ioredis"
 const { createStreamGroup, addStreamData } = RedisStreamHelper(
-  process.env.REDIS_PORT,
-  process.env.REDIS_HOST
+  process.env.REDIS_PORT, process.env.REDIS_HOST
 )
-
+const redis = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
+const UNIQUE_NAMESPACE = '9003d956-f170-47c6-b3fb-c8af0e9ada83';
 /**
  * Graphback provider that connnects to the RedisGraph database
  */
@@ -24,12 +25,14 @@ export class RedisGraphProvider {
     this.fieldTransformMap = getFieldTransformations(model.graphqlType)
   }
 
-  async create (data, selectedFields) {
+  async create (data, selectedFields, uniqueFields = []) {
     this.fieldTransformMap.onCreateFieldTransform.forEach(f => {
       data[f.fieldName] = f.transform(f.fieldName)
     })
 
     data.id = uuid()
+
+    await this.checkUniqueness("Create", data, uniqueFields)
 
     const result = await cypher.create(
       this.collectionName,
@@ -42,12 +45,13 @@ export class RedisGraphProvider {
       await addStreamData(streamKey, data)
       return result
     }
+    await this.removeUniqueValue(data, uniqueFields)
     const err = `Cannot create ${this.collectionName}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async update (data, selectedFields) {
+  async update (data, selectedFields, uniqueFields = []) {
     if (!data.id) {
       const err = `Cannot update ${this.collectionName} - missing ID field`
       logger.error(err, 'RedisGraphProvider')
@@ -56,9 +60,29 @@ export class RedisGraphProvider {
 
     const id = data.id
 
+    let entity
+    let shouldVerifyUniqueness = false
+
     this.fieldTransformMap.onUpdateFieldTransform.forEach(f => {
       data[f.fieldName] = f.transform(f.fieldName)
     })
+
+    if(uniqueFields.length > 0) {
+      entity = await cypher.find(this.collectionName, { id: data.id }, uniqueFields)
+      if(entity) {
+        uniqueFields.forEach(f => {
+          if(data[f] && data[f] !== entity[f]) {
+            shouldVerifyUniqueness = true
+            entity[f] = data[f]
+          }
+        })
+        if(shouldVerifyUniqueness) {
+          await this.checkUniqueness("Update", entity, uniqueFields)
+          await this.generateUniqueValue(entity, uniqueFields)
+        }
+      }
+    }
+
     const result = await cypher.update(
       this.collectionName,
       id,
@@ -72,16 +96,45 @@ export class RedisGraphProvider {
       await addStreamData(streamKey, data)
       return result
     }
+    if(shouldVerifyUniqueness) {
+      await this.removeUniqueValue(entity, uniqueFields)
+    }
     const err = `Cannot update ${this.collectionName}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async updateBy (args, selectedFields) {
+  async updateBy (args, selectedFields, uniqueFields = []) {
     const filterQuery = buildQuery(args?.filter)
     this.fieldTransformMap.onUpdateFieldTransform.forEach(f => {
       args.input[f.fieldName] = f.transform(f.fieldName)
     })
+    const uniqueValues = []
+    if(uniqueFields.length > 0) {
+      const data = await cypher.list(
+        this.collectionName,
+        {
+          where: filterQuery
+        },
+        uniqueFields
+      )
+      for(let i = 0; i < data.length; i++) {
+        let shouldVerifyUniqueness = false
+        let entity = {}
+        const item = data[i]
+        uniqueFields.forEach(f => {
+          if(item[f] && item[f] !== args.input[f]) {
+            shouldVerifyUniqueness = true
+            entity[f] = args.input[f]
+          }
+        })
+        if(shouldVerifyUniqueness) {
+          await this.checkUniqueness("UpdateBy", entity, uniqueFields)
+          await this.generateUniqueValue(entity, uniqueFields)
+          uniqueValues.push(entity)
+        }
+      }
+    }
     const result = await cypher.updateBy(
       this.collectionName,
       filterQuery,
@@ -94,16 +147,27 @@ export class RedisGraphProvider {
       await addStreamData(streamKey, result)
       return result
     }
+    if(uniqueFields.length > 0) {
+      for(let i = 0; i < uniqueValues.length; i++) {
+        await this.removeUniqueValue(uniqueValues[i], uniqueFields)
+      }
+    }
     const err = `Cannot update ${this.collectionName}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async delete (data, selectedFields) {
+  async delete (data, selectedFields, uniqueFields = []) {
     if (!data.id) {
       const err = `Cannot delete ${this.collectionName} - missing ID field`
       logger.error(err, 'RedisGraphProvider')
       throw new NoDataError(err)
+    }
+
+    let entity
+
+    if(uniqueFields.length > 0) {
+      entity = await cypher.find(this.collectionName, { id: data.id }, uniqueFields)
     }
 
     const result = await cypher.delete(
@@ -115,6 +179,7 @@ export class RedisGraphProvider {
       const streamKey = `rel:${this.collectionName}:delete`
       await createStreamGroup(streamKey)
       await addStreamData(streamKey, { id: data.id })
+      await this.removeUniqueValue(entity, uniqueFields)
       return result
     }
     const err = `Cannot delete ${this.collectionName}`
@@ -122,17 +187,28 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async deleteBy (args, selectedFields) {
+  async deleteBy (args, selectedFields, uniqueFields = []) {
     const filterQuery = buildQuery(args?.filter)
+    const _selectedFields = uniqueFields.length > 0 ? selectedFields.concat(uniqueFields).filter((item, pos) => c.indexOf(item) === pos) : selectedFields
     const result = await cypher.deleteBy(
       this.collectionName,
       filterQuery,
-      selectedFields
+      _selectedFields
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:delete_by`
       await createStreamGroup(streamKey)
       await addStreamData(streamKey, result)
+      if(uniqueFields.length > 0) {
+        for(let i = 0; i < result.length; i++) {
+          await this.removeUniqueValue(result[i], uniqueFields)
+          Object.keys(result[i]).forEach(k => {
+            if(!selectedFields.includes(k)) {
+              delete result[i][k]
+            }
+          })
+        }
+      }
       return result
     }
     const err = `Cannot delete ${this.collectionName}`
@@ -223,5 +299,72 @@ export class RedisGraphProvider {
     const err = `No results for ${this.collectionName} and id: ${JSON.stringify(ids)}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
+  }
+
+  async initializeUniqueIndex(uniqueFields = []) {
+    const uniqueDefRedisKey = `rel:unique:definition:${this.collectionName}`
+    const uniqueKeyDefinition = await redis.get(uniqueDefRedisKey)
+    const addUniqueValues = async () => {
+      if(uniqueFields.length > 0) {
+        await redis.set(uniqueDefRedisKey, JSON.stringify({
+          fields: uniqueFields,
+          initialized: false
+        }))
+        const items = await cypher.list(
+          this.collectionName,
+          {},
+          uniqueFields
+        )
+        for(let i = 0; i < items.length; i++) {
+          const uniqueValue = this.generateUniqueValue(items[i], uniqueFields)
+          await redis.set(`rel:unique:${this.collectionName}:${v5(uniqueValue, UNIQUE_NAMESPACE)}`, "1")
+        }
+        await redis.set(uniqueDefRedisKey, JSON.stringify({
+          fields: uniqueFields,
+          initialized: true
+        }))
+      } else {
+        await redis.del(uniqueDefRedisKey)
+      }
+    }
+    if(uniqueKeyDefinition) {
+      const uniqueKeyInfo = JSON.parse(uniqueKeyDefinition)
+      if(JSON.stringify(uniqueKeyInfo.fields) === JSON.stringify(uniqueFields)) {
+        if(!uniqueKeyInfo.initialized) {
+          await addUniqueValues()
+        }
+      } else {
+        const uniqueKeys = await redis.keys(`rel:unique:${this.collectionName}*`)
+        if(uniqueKeys.length > 0) {
+          await redis.del(...uniqueKeys)
+        }
+        await addUniqueValues()
+      }
+    } else {
+      await addUniqueValues()
+    }
+  }
+
+  async checkUniqueness(mutationName, data, uniqueFields = []) {
+    if(uniqueFields.length > 0) {
+      const key = `rel:unique:${this.collectionName}:${v5(this.generateUniqueValue(data, uniqueFields),UNIQUE_NAMESPACE)}`
+      const uniqueValue = await redis.get(key)
+      if(uniqueValue) {
+        throw new Error(`The ${mutationName} mutation would violate ${this.collectionName} UNIQUE constraint`)
+      } else {
+        await redis.set(key, "1")
+      }
+    }
+  }
+
+  async removeUniqueValue(data, uniqueFields) {
+    if(uniqueFields.length > 0) {
+      const key = `rel:unique:${this.collectionName}:${v5(this.generateUniqueValue(data, uniqueFields),UNIQUE_NAMESPACE)}`
+      await redis.del(key)
+    }
+  }
+
+  generateUniqueValue(data, fields) {
+    return fields.reduce((previous, current) => previous + current + ":" + data[current], "")
   }
 }

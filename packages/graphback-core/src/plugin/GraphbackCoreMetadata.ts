@@ -95,6 +95,7 @@ export class GraphbackCoreMetadata {
     let crudOptions = parseMetadata('model', modelType)
     // Merge CRUD options from type with global ones
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions)
+    const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : []
     const { type: primaryKeyType, name } = getPrimaryKey(modelType)
     const primaryKey = {
       name,
@@ -145,6 +146,7 @@ export class GraphbackCoreMetadata {
       primaryKey,
       crudOptions,
       relationships,
+      uniqueFields,
       graphqlType: modelType
     }
   }

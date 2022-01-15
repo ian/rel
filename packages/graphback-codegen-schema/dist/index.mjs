@@ -1138,7 +1138,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].create(args.input, context, info);
+      return context.graphback[modelName].create(args.input, context, info, model.uniqueFields);
     };
   }
   addUpdateMutationResolver(model, mutationObj) {
@@ -1148,7 +1148,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].update(args.input, context, info);
+      return context.graphback[modelName].update(args.input, context, info, model.uniqueFields);
     };
   }
   addUpdateByMutationResolver(model, mutationObj) {
@@ -1158,7 +1158,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].updateBy(args, context, info);
+      return context.graphback[modelName].updateBy(args, context, info, model.uniqueFields);
     };
   }
   addDeleteMutationResolver(model, mutationObj) {
@@ -1168,7 +1168,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].delete(args, context, info);
+      return context.graphback[modelName].delete(args, context, info, model.uniqueFields);
     };
   }
   addDeleteByMutationResolver(model, mutationObj) {
@@ -1178,7 +1178,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].deleteBy(args, context, info);
+      return context.graphback[modelName].deleteBy(args, context, info, model.uniqueFields);
     };
   }
   addFindQueryResolver(model, queryObj) {

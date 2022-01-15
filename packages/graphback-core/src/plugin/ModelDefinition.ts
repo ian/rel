@@ -24,6 +24,7 @@ export interface ModelDefinition {
   graphqlType: GraphQLObjectType
   relationships: FieldRelationshipMetadata[]
   crudOptions: GraphbackCRUDGeneratorConfig
+  uniqueFields: string[]
 }
 
 export function getModelByName (name: string, models: ModelDefinition[]): ModelDefinition | undefined {

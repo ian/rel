@@ -30,6 +30,10 @@ test.after(async () => {
 test.after.each(async () => {
   try {
     await cypher.deleteAll()
+    const keys = await redis.keys("rel*")
+    if(keys.length > 0) {
+      await redis.del(...keys)
+    }
     MockDate.reset()
   } catch (e) {
     console.log(e)
@@ -41,7 +45,7 @@ let context
 const fields = ['id', 'text']
 
 const todoSchema = `
-  """@model"""
+  """@model(unique: ['text'])"""
   type Todos {
     id: ID!
     text: String,
@@ -979,6 +983,36 @@ test('Aggregations with group and DISTINCT', async () => {
   assert.is(items.length, 2)
   assert.is(items[0].avg, 2.5)
   assert.is(items[1].avg, 6)
+})
+
+test('Test UNIQUE constraint', async () => {
+  context = await createTestingContext(todoSchema, {
+    seedData: {
+      Todos: defaultTodoSeed
+    }
+  })
+  const uniqueFields = ["text"]
+  assert.throws(await context.providers.Todos.create({
+    text: 'todo'
+  },[], uniqueFields))
+
+  let todo = await context.providers.Todos.create({
+    text: 'todo3'
+  },[], uniqueFields)
+
+  assert.throws(await context.providers.Todos.update(
+    {
+      id: todo.id,
+      text: 'todo'
+    },
+    fields,
+  ), uniqueFields)
+
+  await context.providers.Todos.delete({ id: todo.id }, fields, uniqueFields)
+  
+  assert.throws(await context.providers.Todos.create({
+    text: 'todo3'
+  }))
 })
 
 test.run()

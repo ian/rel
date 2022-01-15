@@ -55,13 +55,13 @@ export interface GraphbackAPI {
 export type GraphbackServiceCreator = (model: ModelDefinition, dataProvider: GraphbackDataProvider) => GraphbackCRUDService
 export type GraphbackDataProviderCreator = (model: ModelDefinition) => GraphbackDataProvider
 
-function createServices (models: ModelDefinition[], createService: GraphbackServiceCreator, createProvider: GraphbackDataProviderCreator) {
+async function createServices (models: ModelDefinition[], createService: Promise<GraphbackServiceCreator>, createProvider: GraphbackDataProviderCreator) {
   const services: GraphbackServiceConfigMap = {}
 
   for (const model of models) {
     const modelType = model.graphqlType
     const modelProvider = createProvider(model)
-    const modelService = createService(model, modelProvider)
+    const modelService = await createService(model, modelProvider)
     services[modelType.name] = modelService
   }
 
@@ -108,7 +108,7 @@ function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
  *
  * @returns {GraphbackAPI} Generated schema, CRUD resolvers and services
  */
-export function buildGraphbackAPI (model: string | GraphQLSchema, config: GraphbackAPIConfig): GraphbackAPI {
+export async function buildGraphbackAPI (model: string | GraphQLSchema, config: GraphbackAPIConfig): GraphbackAPI {
   const schemaPlugins: GraphbackPlugin[] = getPlugins(config.plugins)
 
   const pluginEngine = new GraphbackPluginEngine({
@@ -123,7 +123,7 @@ export function buildGraphbackAPI (model: string | GraphQLSchema, config: Graphb
   // Set a default ServiceCreator in the event the config does not have one
   const serviceCreator = config.serviceCreator || createCRUDService({ pubSub: new PubSub() })
 
-  const services = createServices(models, serviceCreator, config.dataProviderCreator)
+  const services = await createServices(models, serviceCreator, config.dataProviderCreator)
   const contextCreator = (context: any) => {
     return {
       ...context,

@@ -63,7 +63,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     this.buildSchemaModelRelationships(schemaComposer, models)
     this.buildSchemaForModels(schemaComposer, models)
     this.addVersionedMetadataFields(schemaComposer, models)
-
+    
     return schemaComposer.buildSchema()
   }
 
@@ -607,7 +607,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].create(args.input, context, info)
+      return context.graphback[modelName].create(args.input, context, info, model.uniqueFields)
     }
   }
 
@@ -626,7 +626,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].update(args.input, context, info)
+      return context.graphback[modelName].update(args.input, context, info, model.uniqueFields)
     }
   }
 
@@ -645,7 +645,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].updateBy(args, context, info)
+      return context.graphback[modelName].updateBy(args, context, info, model.uniqueFields)
     }
   }
 
@@ -664,7 +664,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].delete(args, context, info)
+      return context.graphback[modelName].delete(args, context, info, model.uniqueFields)
     }
   }
 
@@ -683,7 +683,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].deleteBy(args, context, info)
+      return context.graphback[modelName].deleteBy(args, context, info, model.uniqueFields)
     }
   }
 

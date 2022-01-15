@@ -11,13 +11,17 @@ export interface CreateCRUDServiceOptions {
 }
 
 export function createCRUDService (config?: CreateCRUDServiceOptions): ServiceCreator {
-  return (model: ModelDefinition, dataProvider: GraphbackDataProvider): GraphbackCRUDService => {
+  return async (model: ModelDefinition, dataProvider: GraphbackDataProvider): GraphbackCRUDService => {
     const serviceConfig: CRUDServiceConfig = {
       pubSub: new PubSub(),
       ...config,
       crudOptions: model.crudOptions
     }
 
-    return new CRUDService(model, dataProvider, serviceConfig)
+    const crudService = new CRUDService(model, dataProvider, serviceConfig)
+
+    await crudService.initializeUniqueIndex()
+
+    return crudService
   }
 }

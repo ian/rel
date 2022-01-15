@@ -30,7 +30,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  create: (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
+  create: (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]) => Promise<Type>
 
   /**
    * Implementation for object updates
@@ -38,7 +38,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data including id
    * @param context context object passed from graphql or rest layer
    */
-  update: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
+  update: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]) => Promise<Type>
 
   /**
    * Implementation for object deletes
@@ -46,7 +46,7 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data data used for consistency reasons
    * @param context context object passed from graphql or rest layer
    */
-  delete: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<Type>
+  delete: (data: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]) => Promise<Type>
 
   /**
    * Fetch a single record by its unique attribute(s)
@@ -74,14 +74,14 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param data input data including id
    * @param context context object passed from graphql or rest layer
    */
-  updateBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<ResultList<Type>>
+  updateBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]) => Promise<ResultList<Type>>
   /**
    * Implementation for object deletes by filter
    *
    * @param data data used for consistency reasons
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo) => Promise<ResultList<Type>>
+  deleteBy: (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]) => Promise<ResultList<Type>>
 
   /**
    * Subscription for all creation events

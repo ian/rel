@@ -9,7 +9,7 @@ import Logger from '@ptkdev/logger'
 import fastifyCors from 'fastify-cors'
 import {createServer} from 'graphql-yoga'
 
-export default (config) => {
+export default async (config) => {
   const { dir } = config
   const logger = new Logger({
     debug: !!process.env.REL_DEBUG,
@@ -33,7 +33,7 @@ export default (config) => {
 
   // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
 
-  const { schema, contextCreator } = generateGQLServer({
+  const { schema, contextCreator } = await generateGQLServer({
     dir,
     logger,
   })

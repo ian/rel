@@ -33,12 +33,12 @@ import { GraphbackPluginEngine, printSchemaWithDirectives, createCRUDService } f
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from "@graphback/codegen-schema";
 import { mergeSchemas } from "@graphql-tools/merge";
 import { PubSub } from "graphql-subscriptions";
-function createServices(models, createService, createProvider) {
+async function createServices(models, createService, createProvider) {
   const services = {};
   for (const model of models) {
     const modelType = model.graphqlType;
     const modelProvider = createProvider(model);
-    const modelService = createService(model, modelProvider);
+    const modelService = await createService(model, modelProvider);
     services[modelType.name] = modelService;
   }
   return services;
@@ -61,7 +61,7 @@ function getPlugins(plugins) {
     ...Object.values(pluginsMap)
   ];
 }
-function buildGraphbackAPI(model, config) {
+async function buildGraphbackAPI(model, config) {
   const schemaPlugins = getPlugins(config.plugins);
   const pluginEngine = new GraphbackPluginEngine({
     schema: model,
@@ -71,7 +71,7 @@ function buildGraphbackAPI(model, config) {
   const metadata = pluginEngine.createResources();
   const models = metadata.getModelDefinitions();
   const serviceCreator = config.serviceCreator || createCRUDService({ pubSub: new PubSub() });
-  const services = createServices(models, serviceCreator, config.dataProviderCreator);
+  const services = await createServices(models, serviceCreator, config.dataProviderCreator);
   const contextCreator = (context) => {
     return __spreadProps(__spreadValues({}, context), {
       graphback: services
