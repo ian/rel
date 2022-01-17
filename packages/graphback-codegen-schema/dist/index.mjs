@@ -283,7 +283,7 @@ import { resolve, dirname, join } from "path";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { SchemaComposer } from "graphql-compose";
 import { GraphQLNonNull as GraphQLNonNull3, GraphQLObjectType as GraphQLObjectType2, GraphQLSchema, GraphQLInt as GraphQLInt2, GraphQLFloat, isScalarType as isScalarType2, isSpecifiedScalarType, isObjectType as isObjectType2 } from "graphql";
-import { Timestamp, getFieldName, metadataMap as metadataMap2, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName as getInputTypeName2, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey as getPrimaryKey2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName as getInputTypeName2, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey as getPrimaryKey2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
 
 // src/writer/schemaFormatters.ts
 init_esm_shims();
@@ -321,7 +321,7 @@ ${schemaString}`;
 // src/definitions/schemaDefinitions.ts
 init_esm_shims();
 import { GraphQLInputObjectType, GraphQLList as GraphQLList2, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull as GraphQLNonNull2, getNamedType as getNamedType2, isScalarType, isEnumType, isObjectType, isInputObjectType, getNullableType, isListType as isListType2 } from "graphql";
-import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, metadataMap, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from "@graphback/core";
+import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from "@graphback/core";
 
 // src/definitions/copyWrappingType.ts
 init_esm_shims();
@@ -662,23 +662,21 @@ var createModelListResultType = (modelType) => {
 };
 function createVersionedInputFields(versionedInputType) {
   return {
-    [metadataMap.fieldNames.createdAt]: {
+    createdAt: {
       type: versionedInputType
     },
-    [metadataMap.fieldNames.updatedAt]: {
+    updatedAt: {
       type: versionedInputType
     }
   };
 }
 function createVersionedFields(type) {
   return {
-    [metadataMap.fieldNames.createdAt]: {
-      type,
-      description: `@${metadataMap.markers.createdAt}`
+    createdAt: {
+      type
     },
-    [metadataMap.fieldNames.updatedAt]: {
-      type,
-      description: `@${metadataMap.markers.updatedAt}`
+    updatedAt: {
+      type
     }
   };
 }
@@ -1034,14 +1032,14 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
     for (const model of models) {
       const name = model.graphqlType.name;
       const modelTC = schemaComposer.getOTC(name);
-      const updateField = model.fields[metadataMap2.fieldNames.updatedAt];
-      const createAtField = model.fields[metadataMap2.fieldNames.createdAt];
+      const updateField = model.fields.updatedAt;
+      const createAtField = model.fields.createdAt;
       const errorMessage = (field) => `@model ${name} cannot contain custom "${field}" field since it is generated automatically.`;
       if (createAtField && createAtField.type !== Timestamp.name) {
-        throw new Error(errorMessage(metadataMap2.fieldNames.createdAt));
+        throw new Error(errorMessage("createdAt"));
       }
       if (updateField && updateField.type !== Timestamp.name) {
-        throw new Error(errorMessage(metadataMap2.fieldNames.updatedAt));
+        throw new Error(errorMessage("updatedAt"));
       }
       if (!timestampInputType) {
         if (schemaComposer.has(Timestamp.name)) {

@@ -1,6 +1,5 @@
 import {
   buildModelTableMap,
-  getFieldTransformations,
   NoDataError
 } from '@graphback/core'
 import { v4 as uuid, v5 } from 'uuid'
@@ -22,14 +21,10 @@ export class RedisGraphProvider {
     this.db = cypher
     this.tableMap = buildModelTableMap(model.graphqlType)
     this.collectionName = this.tableMap.tableName
-    this.fieldTransformMap = getFieldTransformations(model.graphqlType)
   }
 
   async create (data, selectedFields, uniqueFields = []) {
-    this.fieldTransformMap.onCreateFieldTransform.forEach(f => {
-      data[f.fieldName] = f.transform(f.fieldName)
-    })
-
+    data.createdAt = new Date().getTime()
     data.__id = uuid()
 
     if(uniqueFields.length > 0) {
@@ -66,9 +61,7 @@ export class RedisGraphProvider {
     let shouldVerifyUniqueness = false
     let uniqueKey
 
-    this.fieldTransformMap.onUpdateFieldTransform.forEach(f => {
-      data[f.fieldName] = f.transform(f.fieldName)
-    })
+    data.updatedAt = new Date().getTime()
 
     if(uniqueFields.length > 0) {
       entity = await cypher.find(this.collectionName, { __id: data.__id }, uniqueFields)
@@ -115,9 +108,11 @@ export class RedisGraphProvider {
       ["__id"]
     )
     const items = []
+    const updatedAt = new Date().getTime()
     for(let i = 0; i < data.length; i++) {
       const obj = args.input
       obj.__id = data[i].__id
+      obj.updatedAt = updatedAt
       items.push(await this.update(obj, selectedFields, uniqueFields))
     }
     if(items.length > 0) {

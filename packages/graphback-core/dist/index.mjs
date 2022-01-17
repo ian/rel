@@ -799,19 +799,6 @@ function printSchemaWithDirectives(schemaOrSDL) {
   return schemaComposer.toSDL({ exclude: ["String", "ID", "Boolean", "Float", "Int"] });
 }
 
-// src/utils/metadataAnnotations.ts
-var metadataMap = {
-  markers: {
-    createdAt: "createdAt",
-    updatedAt: "updatedAt",
-    versioned: "versioned"
-  },
-  fieldNames: {
-    createdAt: "createdAt",
-    updatedAt: "updatedAt"
-  }
-};
-
 // src/utils/fieldTransformHelpers.ts
 import { parseMetadata as parseMetadata8 } from "graphql-metadata";
 var TransformType = /* @__PURE__ */ ((TransformType2) => {
@@ -1562,7 +1549,6 @@ export {
   isSpecifiedGraphbackScalarType,
   isTransientField,
   lowerCaseFirstChar,
-  metadataMap,
   parseRelationshipAnnotation,
   printSchemaWithDirectives,
   relationshipFieldDescriptionTemplate,

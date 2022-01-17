@@ -5,7 +5,7 @@ import DataLoader from 'dataloader'
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
-import { Timestamp, getFieldName, metadataMap, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
 import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters'
 import { buildOrderByInputType,buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
 
@@ -447,16 +447,16 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     for (const model of models) {
       const name = model.graphqlType.name
       const modelTC = schemaComposer.getOTC(name)
-      const updateField = model.fields[metadataMap.fieldNames.updatedAt]
-      const createAtField = model.fields[metadataMap.fieldNames.createdAt]
+      const updateField = model.fields.updatedAt
+      const createAtField = model.fields.createdAt
       const errorMessage = (field: string) => `@model ${name} cannot contain custom "${field}" field since it is generated automatically.`
 
       if (createAtField && createAtField.type !== Timestamp.name) {
-        throw new Error(errorMessage(metadataMap.fieldNames.createdAt))
+        throw new Error(errorMessage("createdAt"))
       }
 
       if (updateField && updateField.type !== Timestamp.name) {
-        throw new Error(errorMessage(metadataMap.fieldNames.updatedAt))
+        throw new Error(errorMessage("updatedAt"))
       }
 
       if (!timestampInputType) {

@@ -13,7 +13,6 @@ export * from './relationships/RelationshipMetadataBuilder'
 export * from './relationships/relationshipHelpers'
 export * from './db'
 export * from './utils/printSchemaWithDirectives'
-export * from './utils/metadataAnnotations'
 export * from './utils/fieldTransformHelpers'
 export * from './utils/isTransientField'
 

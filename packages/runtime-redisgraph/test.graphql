@@ -120,11 +120,7 @@ type Todos {
 
   """@transient"""
   sum(of: OfTodosNumberInput, distinct: Boolean): Int
-
-  """@createdAt"""
   createdAt: Timestamp
-
-  """@updatedAt"""
   updatedAt: Timestamp
 }
 

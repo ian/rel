@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { GraphQLInputObjectType, GraphQLNamedInputType, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull, GraphQLField, getNamedType, isScalarType, GraphQLInputFieldMap, GraphQLScalarType, GraphQLNamedType, GraphQLInputField, isEnumType, isObjectType, isInputObjectType, GraphQLInputType, getNullableType, isListType } from 'graphql'
-import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, metadataMap, ModelDefinition, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from '@graphback/core'
+import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, ModelDefinition, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from '@graphback/core'
 import { SchemaComposer } from 'graphql-compose'
 import { copyWrappingType } from './copyWrappingType'
 
@@ -383,10 +383,10 @@ export const createModelListResultType = (modelType: GraphQLObjectType) => {
 
 export function createVersionedInputFields (versionedInputType: GraphQLInputObjectType) {
   return {
-    [metadataMap.fieldNames.createdAt]: {
+    createdAt: {
       type: versionedInputType
     },
-    [metadataMap.fieldNames.updatedAt]: {
+    updatedAt: {
       type: versionedInputType
     }
   }
@@ -394,13 +394,11 @@ export function createVersionedInputFields (versionedInputType: GraphQLInputObje
 
 export function createVersionedFields (type: GraphQLScalarType) {
   return {
-    [metadataMap.fieldNames.createdAt]: {
+    createdAt: {
       type,
-      description: `@${metadataMap.markers.createdAt}`
     },
-    [metadataMap.fieldNames.updatedAt]: {
+    updatedAt: {
       type,
-      description: `@${metadataMap.markers.updatedAt}`
     }
   }
 }
