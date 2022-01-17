@@ -2,7 +2,6 @@ import { parseMetadata } from 'graphql-metadata'
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
-import { getPrimaryKey } from '../db'
 import { RelationshipMetadataBuilder, FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
 import { isTransientField } from '../utils/isTransientField'
 import { GraphbackCRUDGeneratorConfig } from './GraphbackCRUDGeneratorConfig'
@@ -96,14 +95,17 @@ export class GraphbackCoreMetadata {
     // Merge CRUD options from type with global ones
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions)
     const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : []
-    const { type: primaryKeyType, name } = getPrimaryKey(modelType)
     const primaryKey = {
-      name,
-      type: getNamedType(primaryKeyType).name
+      name: "__id",
+      type: "ID"
     }
     // parse fields
     const modelFields = modelType.getFields()
     const fields: ModelFieldMap = {}
+
+    fields.__id = {
+      type: "ID"
+    }
 
     for (const field of Object.keys(modelFields)) {
       let fieldName = field

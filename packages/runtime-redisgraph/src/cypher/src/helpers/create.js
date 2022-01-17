@@ -1,21 +1,22 @@
 import { paramify } from '../util/params.js'
 import cleanPrefix from '../util/cleanPrefix.js'
 
-const DEFAULT_CREATE_OPTS = {
-  id: false
-}
-
 export async function cypherCreate (label, params, projection = [], opts = {}) {
   const toParams = {
     ...params
   }
 
   const paramsCypher = paramify(toParams, {
-    ...DEFAULT_CREATE_OPTS,
     ...opts
   })
 
-  const query = ` 
+  let query = ''
+
+  if(params.__unique) {
+    query += `OPTIONAL MATCH (unique_node:${label} { __unique: "${params.__unique}"}) WITH unique_node WHERE unique_node IS NULL `
+  }
+
+  query += ` 
       CREATE (node:${label} { ${paramsCypher} })
       RETURN ${
         projection.length > 0

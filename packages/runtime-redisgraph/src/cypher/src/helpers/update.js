@@ -5,25 +5,21 @@ import cleanPrefix from '../util/cleanPrefix.js'
 
 const { isEmpty } = _
 
-const DEFAULT_UPDATE_OPTS = {
-  id: false
-}
-
 export async function cypherUpdate (
   label,
-  id,
+  __id,
   params,
   projection = [],
   opts = {}
 ) {
-  const node = await this.find(label, { id })
+  const node = await this.find(label, { __id })
 
   if (!node) {
-    throw new Error(`Unknown ${label} id = ${id}`)
+    throw new Error(`Unknown ${label} __id = ${__id}`)
   }
 
   const toParams = diff(node, params, {
-    ignore: ['id', '__typename']
+    ignore: ['__id', '__typename']
   })
 
   if (isEmpty(toParams)) {
@@ -32,21 +28,25 @@ export async function cypherUpdate (
   }
 
   const paramsCypher = paramify(toParams, {
-    ...DEFAULT_UPDATE_OPTS,
     ...opts,
     prefix: 'node.',
     separator: '='
   })
 
-  const query = `
-      MATCH (node:${label} { ${paramify({ id })} })
+  let query = ''
+
+  if(params.__unique) {
+    query += `OPTIONAL MATCH (unique_node:${label} { __unique: "${params.__unique}"}) WITH unique_node WHERE unique_node IS NULL `
+  }
+  query += `
+      MATCH (node:${label} { ${paramify({ __id })} })
       SET ${paramsCypher}
       RETURN ${projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : 'node'};
     `
 
   const res = await this.exec1(query)
 
-  if (!res) throw new Error(`${label} not found`)
+  if (!res) throw new Error(`${label} not found${params.__unique ? " or UNIQUE constraint violated" : ""}`)
 
   return (projection.length > 0 ? cleanPrefix(res, 'node.') : res.node)
 }

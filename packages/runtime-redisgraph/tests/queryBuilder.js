@@ -1,4 +1,3 @@
-import MockDate from 'mockdate'
 import { buildQuery } from '../src/queryBuilder.js'
 import initEnv from './setup/__util__.js'
 import cypher from '../src/cypher/src/index.js'
@@ -31,7 +30,6 @@ test.after(async () => {
 test.after.each(async () => {
   try {
     await cypher.deleteAll()
-    MockDate.reset()
   } catch (e) {
     console.log(e)
   }
@@ -40,7 +38,6 @@ test.after.each(async () => {
 const postSchema = `
       """@model"""
       type Post {
-        id: ID!
         text: String
         likes: Int
       }
@@ -64,7 +61,7 @@ test('can filter ID', async () => {
   })
 
   const findPost = await context.providers.Post.findBy({
-    filter: { id: { eq: newPost.id } }
+    filter: { __id: { eq: newPost.__id } }
   })
   assert.is(findPost.length, 1)
   assert.is(findPost[0].text, newPost.text)
@@ -325,21 +322,19 @@ test('escaping regex strings', async () => {
   }
 })
 
-test('can filter @versioned metadata fields', async () => {
+test.skip('can filter metadata fields', async () => {
   context = await createTestingContext(`
     """
     @model
-    @versioned
     """
     type Post {
-    id: ID!
     text: String
     }
     `)
 
   const startTime = 1590679886048
 
-  MockDate.set(startTime)
+  //MockDate.set(startTime)
 
   let currentTime = startTime
 
@@ -349,7 +344,7 @@ test('can filter @versioned metadata fields', async () => {
 
   for (let i = 0; i < data.length; i++) {
     currentTime = currentTime + 3000
-    MockDate.set(currentTime)
+    //MockDate.set(currentTime)
     await context.providers.Post.create({ text: data[i] })
   }
 

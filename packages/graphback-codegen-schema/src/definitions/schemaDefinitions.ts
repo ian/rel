@@ -150,8 +150,8 @@ export function buildFindOneFieldMap (modelType: ModelDefinition, schemaComposer
   const { type } = modelType.primaryKey
 
   return {
-    id: {
-      name: 'id',
+    __id: {
+      name: '__id',
       type: GraphQLNonNull(schemaComposer.getAnyTC(type).getType()),
       description: undefined,
       extensions: undefined,

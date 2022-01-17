@@ -31,9 +31,9 @@ input IntInput {
 }
 
 input MutateTodosInput {
-  id: ID!
   text: String
   order: Int
+  __id: ID
 }
 
 type Mutation {
@@ -56,7 +56,7 @@ input PageRequest {
 }
 
 type Query {
-  getTodos(id: ID!): Todos
+  getTodos(__id: ID!): Todos
   findTodos(filter: TodosFilter, page: PageRequest, orderBy: [TodosOrderByInput]): TodosResultList!
 }
 
@@ -84,11 +84,27 @@ type Subscription {
   deletedTodos(filter: TodosSubscriptionFilter): Todos!
 }
 
+"""
+The javascript `Date` as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+input TimestampInput {
+  ne: Timestamp
+  eq: Timestamp
+  le: Timestamp
+  lt: Timestamp
+  ge: Timestamp
+  gt: Timestamp
+  in: [Timestamp!]
+  between: [Timestamp!]
+}
+
 """@model(unique: ['text'])"""
 type Todos {
-  id: ID!
   text: String
   order: Int
+  __id: ID
 
   """@transient"""
   count(of: OfTodosInput, distinct: Boolean): Int
@@ -104,21 +120,29 @@ type Todos {
 
   """@transient"""
   sum(of: OfTodosNumberInput, distinct: Boolean): Int
+
+  """@createdAt"""
+  createdAt: Timestamp
+
+  """@updatedAt"""
+  updatedAt: Timestamp
 }
 
 enum TodosFieldsEnum {
-  id
+  __id
   text
   order
 }
 
 input TodosFilter {
-  id: IDInput
   text: StringInput
   order: IntInput
+  __id: IDInput
   and: [TodosFilter!]
   or: [TodosFilter!]
   not: TodosFilter
+  createdAt: TimestampInput
+  updatedAt: TimestampInput
 }
 
 type TodosMutationResultList {
@@ -145,7 +169,7 @@ input TodosSubscriptionFilter {
   and: [TodosSubscriptionFilter!]
   or: [TodosSubscriptionFilter!]
   not: TodosSubscriptionFilter
-  id: IDInput
   text: StringInput
   order: IntInput
+  __id: IDInput
 }

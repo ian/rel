@@ -195,6 +195,10 @@ import { mergeResolvers } from "@graphql-tools/merge";
 import { getNamedType as getNamedType5 } from "graphql";
 import { getUserTypesFromSchema as getUserTypesFromSchema2 } from "@graphql-tools/utils";
 
+// src/relationships/RelationshipMetadataBuilder.ts
+import { isObjectType as isObjectType2, GraphQLNonNull, GraphQLList, getNamedType as getNamedType4 } from "graphql";
+import { parseMetadata as parseMetadata5 } from "graphql-metadata";
+
 // src/db/defaultNameTransforms.ts
 function defaultTableNameTransform(name, direction) {
   if (direction === "to-db") {
@@ -245,7 +249,7 @@ function isAutoPrimaryKey(field) {
   const { type, name: fieldName } = field;
   const baseType = getNamedType2(type);
   const name = baseType.name;
-  return fieldName === "id" && name === "ID" && isScalarType2(baseType);
+  return fieldName === "__id" && name === "ID" && isScalarType2(baseType);
 }
 
 // src/db/buildModelTableMap.ts
@@ -286,10 +290,6 @@ var buildModelTableMap = (model) => {
     fieldMap
   };
 };
-
-// src/relationships/RelationshipMetadataBuilder.ts
-import { isObjectType as isObjectType2, GraphQLNonNull, GraphQLList, getNamedType as getNamedType4 } from "graphql";
-import { parseMetadata as parseMetadata5 } from "graphql-metadata";
 
 // src/utils/hasListType.ts
 import { isWrappingType, isListType } from "graphql";
@@ -659,13 +659,15 @@ var GraphbackCoreMetadata = class {
     let crudOptions = parseMetadata7("model", modelType);
     crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions);
     const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : [];
-    const { type: primaryKeyType, name } = getPrimaryKey(modelType);
     const primaryKey = {
-      name,
-      type: getNamedType5(primaryKeyType).name
+      name: "__id",
+      type: "ID"
     };
     const modelFields = modelType.getFields();
     const fields = {};
+    fields.__id = {
+      type: "ID"
+    };
     for (const field of Object.keys(modelFields)) {
       let fieldName = field;
       let type = "";

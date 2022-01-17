@@ -1,8 +1,7 @@
-import { v4 as uuid } from 'uuid'
 import { coerce } from './coercion.js'
 
 export function paramsBuilder (params, opts = {}) {
-  const { id = false, except = null, only = null } = opts
+  const { except = null, only = null } = opts
 
   const res = {}
 
@@ -15,7 +14,6 @@ export function paramsBuilder (params, opts = {}) {
     res[key] = params[key]
   }
 
-  if (id) res.id = uuid()
   return res
 }
 

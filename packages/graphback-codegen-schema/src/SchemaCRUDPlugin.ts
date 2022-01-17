@@ -2,7 +2,6 @@
 import { resolve, dirname, join } from 'path'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import DataLoader from 'dataloader'
-import { parseMetadata } from 'graphql-metadata'
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
@@ -62,7 +61,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     this.createAggregationForModelFields(schemaComposer, models)
     this.buildSchemaModelRelationships(schemaComposer, models)
     this.buildSchemaForModels(schemaComposer, models)
-    this.addVersionedMetadataFields(schemaComposer, models)
+    this.addMetadataFields(schemaComposer, models)
     
     return schemaComposer.buildSchema()
   }
@@ -142,13 +141,27 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     this.createSchemaCRUDTypes(schemaComposer)
 
     for (const model of Object.values(models)) {
+      const modelName = model.graphqlType.name
+      let modifiedType = schemaComposer.getOTC(modelName)
+      const errorMessage = (field: string) => `@model ${modelName} cannot contain custom "${field}" field since it is generated automatically.`
+
+      if(model.fields.id) {
+        throw new Error(errorMessage("id"))
+      }
+
+      if(model.fields.__unique) {
+        throw new Error(errorMessage("__unique"))
+      }
+
+      modifiedType.addFields({
+        __id: {
+          type: "ID"
+        }
+      })
       this.createQueries(model, schemaComposer)
       this.createMutations(model, schemaComposer)
       this.createSubscriptions(model, schemaComposer)
-    }
-
-    for (const model of Object.values(models)) {
-      const modifiedType = schemaComposer.getOTC(model.graphqlType.name)
+      modifiedType = schemaComposer.getOTC(modelName)
       extendOneToManyFieldArguments(model, modifiedType)
     }
   }
@@ -427,50 +440,45 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     }
   }
 
-  protected addVersionedMetadataFields (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
+  protected addMetadataFields (schemaComposer: SchemaComposer<any>, models: ModelDefinition[]) {
     const timeStampInputName = getInputName(Timestamp)
     let timestampInputType: GraphQLInputObjectType
     let timestampType: GraphQLScalarType
     for (const model of models) {
       const name = model.graphqlType.name
       const modelTC = schemaComposer.getOTC(name)
-      const desc = model.graphqlType.description
-      const { markers } = metadataMap
-      if (parseMetadata(markers.versioned, desc)) {
-        const updateField = model.fields[metadataMap.fieldNames.updatedAt]
-        const createAtField = model.fields[metadataMap.fieldNames.createdAt]
-        const errorMessage = (field: string) => `Type "${model.graphqlType.name}" annotated with @versioned, cannot contain custom "${field}" field since it is generated automatically. Either remove the @versioned annotation, change the type of the field to "${Timestamp.name}" or remove the field.`
+      const updateField = model.fields[metadataMap.fieldNames.updatedAt]
+      const createAtField = model.fields[metadataMap.fieldNames.createdAt]
+      const errorMessage = (field: string) => `@model ${name} cannot contain custom "${field}" field since it is generated automatically.`
 
-        if (createAtField && createAtField.type !== Timestamp.name) {
-          throw new Error(errorMessage(metadataMap.fieldNames.createdAt))
+      if (createAtField && createAtField.type !== Timestamp.name) {
+        throw new Error(errorMessage(metadataMap.fieldNames.createdAt))
+      }
+
+      if (updateField && updateField.type !== Timestamp.name) {
+        throw new Error(errorMessage(metadataMap.fieldNames.updatedAt))
+      }
+
+      if (!timestampInputType) {
+        if (schemaComposer.has(Timestamp.name)) {
+          timestampInputType = schemaComposer.getITC(timeStampInputName).getType()
+        } else {
+          schemaComposer.createScalarTC(Timestamp)
+          timestampInputType = createInputTypeForScalar(Timestamp)
+          schemaComposer.add(timestampInputType)
         }
 
-        if (updateField && updateField.type !== Timestamp.name) {
-          throw new Error(errorMessage(metadataMap.fieldNames.updatedAt))
-        }
+        timestampType = schemaComposer.getSTC(Timestamp.name).getType()
+      }
 
-        if (!timestampInputType) {
-          if (schemaComposer.has(Timestamp.name)) {
-            timestampInputType = schemaComposer.getITC(timeStampInputName).getType()
-          } else {
-            schemaComposer.createScalarTC(Timestamp)
-            timestampInputType = createInputTypeForScalar(Timestamp)
-            schemaComposer.add(timestampInputType)
-          }
+      const metadataFields = createVersionedFields(timestampType)
+     
+      modelTC.addFields(metadataFields)
 
-          timestampType = schemaComposer.getSTC(Timestamp.name).getType()
-        }
-
-        const metadataFields = createVersionedFields(timestampType)
-        // metadata fields needed for @versioned
-
-        modelTC.addFields(metadataFields)
-
-        const inputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND))
-        if (inputType) {
-          const metadataInputFields = createVersionedInputFields(timestampInputType)
-          inputType.addFields(metadataInputFields)
-        }
+      const inputType = schemaComposer.getITC(getInputTypeName(name, GraphbackOperationType.FIND))
+      if (inputType) {
+        const metadataInputFields = createVersionedInputFields(timestampInputType)
+        inputType.addFields(metadataInputFields)
       }
     };
   }

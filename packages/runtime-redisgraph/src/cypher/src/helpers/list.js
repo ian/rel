@@ -16,26 +16,10 @@ export async function cypherList (label, opts, projection = [], fieldArgs = {}) 
   
   cypherQuery.push(`MATCH (node:${label})`)
 
-  // @todo - geo
-  // if (geo?.boundingBox) {
-  //   const { southWest, northEast } = geo.boundingBox
-
-  //   cypherQuery.push(`
-  //       WITH node, point({ latitude: ${southWest.lat}, longitude: ${southWest.lng} }) AS southWest, point({ latitude: ${northEast.lat}, longitude: ${northEast.lng} }) AS northEast
-  //       `)
-
-  //   cypherWhere.push("node.geo > southWest")
-  //   cypherWhere.push("node.geo < northEast")
-  // }
-
   if (typeof where === 'object' && Object.keys(where).length > 0) {
     const whereQuery = buildWhereQuery(where, { prefix: 'node.' })
     cypherQuery.push(`WHERE ${whereQuery}`)
   }
-
-  // @todo support multiple returns
-
-
 
   const fields = projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : (aggField ? '' : 'node')
   cypherQuery.push(`RETURN ${fields + (fields !== '' && aggField ? ',' : '') + (aggField ? agg + '(' + (isDistinct ? 'DISTINCT ' : '') + 'node.' + aggField.value + ')' : '')}`)

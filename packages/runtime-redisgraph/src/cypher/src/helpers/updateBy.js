@@ -3,10 +3,6 @@ import { paramify } from '../util/params.js'
 import cleanPrefix from '../util/cleanPrefix.js'
 import buildWhereQuery from '../util/buildWhereQuery.js'
 
-const DEFAULT_UPDATE_OPTS = {
-  id: false
-}
-
 export async function cypherUpdateBy (
   label,
   where,
@@ -15,11 +11,10 @@ export async function cypherUpdateBy (
   opts = {}
 ) {
   const toParams = diff({}, params, {
-    ignore: ['id', '__typename']
+    ignore: ['__id', '__typename']
   })
 
   const paramsCypher = paramify(toParams, {
-    ...DEFAULT_UPDATE_OPTS,
     ...opts,
     prefix: 'node.',
     separator: '='
