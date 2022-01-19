@@ -105,14 +105,11 @@ var getSubscriptionName = (typeName, action) => {
   }
   return "";
 };
-function isModelType(graphqlType) {
-  return true;
-}
 function filterModelTypes(schema) {
-  return getUserTypesFromSchema(schema).filter(isModelType);
+  return getUserTypesFromSchema(schema);
 }
 function getUserModels(modelTypes) {
-  return modelTypes.filter(isModelType);
+  return modelTypes;
 }
 function isInputField(field) {
   const relationshipAnnotation = parseRelationshipAnnotation(field.description);
@@ -143,7 +140,7 @@ function getInputFieldName(field) {
 }
 function getInputFieldTypeName(modelName, field, operation) {
   const fieldType = getNamedType(field.type);
-  if (isObjectType(fieldType) && isModelType(fieldType)) {
+  if (isObjectType(fieldType)) {
     const relationshipAnnotation = parseRelationshipAnnotation(field.description);
     if (relationshipAnnotation == null) {
       throw new Error(`Missing relationship definition on: "${modelName}.${field.name}". Visit https://graphback.dev/docs/model/datamodel#relationships to see how you can define relationship in your business model.`);
@@ -154,7 +151,7 @@ function getInputFieldTypeName(modelName, field, operation) {
   if (isScalarType(fieldType) || isEnumType(fieldType)) {
     return fieldType.name;
   }
-  if (isObjectType(fieldType) && !isModelType(fieldType)) {
+  if (isObjectType(fieldType)) {
     if (operation === "find" /* FIND */) {
       return void 0;
     }
@@ -563,7 +560,7 @@ var RelationshipMetadataBuilder = class {
       [owner.name]: {},
       [fieldType.name]: {}
     };
-    if (!isObjectType2(fieldType) || !isModelType(fieldType)) {
+    if (!isObjectType2(fieldType)) {
       return void 0;
     }
     if (parseRelationshipAnnotation(field.description)) {
@@ -625,7 +622,7 @@ var RelationshipMetadataBuilder = class {
   }
   isManyToOne(field, owner) {
     const relationType = getNamedType5(field.type);
-    if (!isObjectType2(relationType) || !isModelType(relationType)) {
+    if (!isObjectType2(relationType)) {
       return false;
     }
     const relationFields = Object.values(relationType.getFields());
@@ -782,9 +779,6 @@ ${field.description}` : "";
     const fieldBaseType = getNamedType5(field.type);
     if (!isObjectType2(fieldBaseType)) {
       throw new Error(`${modelName}.${field.name} is marked as a relationship field, but has type ${fieldBaseType.name}. Relationship fields must be object types.`);
-    }
-    if (!isModelType(fieldBaseType)) {
-      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but type ${fieldBaseType.name} is missing the @model annotation.`);
     }
   }
 };
@@ -1518,7 +1512,6 @@ export {
   graphbackScalarsTypes,
   isAutoPrimaryKey,
   isInputField,
-  isModelType,
   isOneToManyField,
   isSpecifiedGraphbackJSONScalarType,
   isSpecifiedGraphbackScalarType,

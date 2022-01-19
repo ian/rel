@@ -5,7 +5,7 @@ import DataLoader from 'dataloader'
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
-import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
 import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters'
 import { buildOrderByInputType,buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
 
@@ -858,7 +858,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       }
 
       const isRootType = ['Query', 'Subscription', 'Mutation'].includes(namedType.name)
-      if (isObjectType(namedType) && !isModelType(namedType) && !isRootType) {
+      if (isObjectType(namedType) && !isRootType) {
         addCreateObjectInputType(schemaComposer, namedType)
         addUpdateObjectInputType(schemaComposer, namedType)
       }

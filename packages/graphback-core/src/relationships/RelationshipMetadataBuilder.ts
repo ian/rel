@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { GraphQLObjectType, GraphQLField, isObjectType, GraphQLScalarType, GraphQLOutputType, GraphQLNonNull, GraphQLList, getNamedType, assertObjectType, assertListType } from 'graphql';
 import * as pluralize from 'pluralize';
-import { isModelType, lowerCaseFirstChar } from '../crud';
+import { lowerCaseFirstChar } from '../crud';
 import { transformForeignKeyName } from '../db';
 import { hasListType } from '../utils/hasListType';
 import { ModelDefinition } from '../plugin/ModelDefinition';
@@ -149,7 +149,7 @@ export class RelationshipMetadataBuilder {
       [fieldType.name]: {}
     }
 
-    if (!isObjectType(fieldType) || !isModelType(fieldType)) {
+    if (!isObjectType(fieldType)) {
       return undefined
     }
 
@@ -226,7 +226,7 @@ export class RelationshipMetadataBuilder {
   private isManyToOne(field: GraphQLField<any, any>, owner: GraphQLObjectType): boolean {
     const relationType = getNamedType(field.type)
 
-    if (!isObjectType(relationType) || !isModelType(relationType)) {
+    if (!isObjectType(relationType)) {
       return false
     }
 
@@ -431,10 +431,6 @@ export class RelationshipMetadataBuilder {
 
     if (!isObjectType(fieldBaseType)) {
       throw new Error(`${modelName}.${field.name} is marked as a relationship field, but has type ${fieldBaseType.name}. Relationship fields must be object types.`);
-    }
-
-    if (!isModelType(fieldBaseType)) {
-      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but type ${fieldBaseType.name} is missing the @model annotation.`);
     }
   }
 }

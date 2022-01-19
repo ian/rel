@@ -96,17 +96,13 @@ export const getSubscriptionName = (typeName: string, action: GraphbackOperation
   return ''
 }
 
-export function isModelType (graphqlType: GraphQLObjectType): boolean {
-  return true
-}
-
 /**
  * Get only user types annotated by ```@model```
  *
  * @param schema
  */
 export function filterModelTypes (schema: GraphQLSchema): GraphQLObjectType[] {
-  return getUserTypesFromSchema(schema).filter(isModelType)
+  return getUserTypesFromSchema(schema)
 }
 
 /**
@@ -116,7 +112,7 @@ export function filterModelTypes (schema: GraphQLSchema): GraphQLObjectType[] {
  */
 
 export function getUserModels (modelTypes: GraphQLObjectType[]): GraphQLObjectType[] {
-  return modelTypes.filter(isModelType)
+  return modelTypes
 }
 
 export function isInputField (field: GraphQLField<any, any>): boolean {
@@ -158,7 +154,7 @@ export function getInputFieldName (field: GraphQLField<any, any>): string {
 export function getInputFieldTypeName (modelName: string, field: GraphQLField<any, any>, operation: GraphbackOperationType): string {
   const fieldType = getNamedType(field.type)
 
-  if (isObjectType(fieldType) && isModelType(fieldType)) {
+  if (isObjectType(fieldType)) {
     const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
     if (relationshipAnnotation == null) {
@@ -174,7 +170,7 @@ export function getInputFieldTypeName (modelName: string, field: GraphQLField<an
     return fieldType.name
   }
 
-  if (isObjectType(fieldType) && !isModelType(fieldType)) {
+  if (isObjectType(fieldType)) {
     // TODO: Filtering on JSON fields
     if (operation === GraphbackOperationType.FIND) {
       return undefined

@@ -283,7 +283,7 @@ import { resolve, dirname, join } from "path";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { SchemaComposer } from "graphql-compose";
 import { GraphQLNonNull as GraphQLNonNull3, GraphQLObjectType as GraphQLObjectType2, GraphQLSchema, GraphQLInt as GraphQLInt2, GraphQLFloat, isScalarType as isScalarType2, isSpecifiedScalarType, isObjectType as isObjectType2 } from "graphql";
-import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, extendOneToManyFieldArguments, getInputTypeName as getInputTypeName2, getSelectedFieldsFromResolverInfo, isModelType, getPrimaryKey as getPrimaryKey2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, extendOneToManyFieldArguments, getInputTypeName as getInputTypeName2, getSelectedFieldsFromResolverInfo, getPrimaryKey as getPrimaryKey2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
 
 // src/writer/schemaFormatters.ts
 init_esm_shims();
@@ -1270,7 +1270,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
         return;
       }
       const isRootType = ["Query", "Subscription", "Mutation"].includes(namedType.name);
-      if (isObjectType2(namedType) && !isModelType(namedType) && !isRootType) {
+      if (isObjectType2(namedType) && !isRootType) {
         addCreateObjectInputType(schemaComposer, namedType);
         addUpdateObjectInputType(schemaComposer, namedType);
       }
