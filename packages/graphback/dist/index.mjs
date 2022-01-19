@@ -61,12 +61,11 @@ function getPlugins(plugins) {
     ...Object.values(pluginsMap)
   ];
 }
-async function buildGraphbackAPI(model, config) {
+async function buildGraphbackAPI(model) {
   const schemaPlugins = getPlugins(config.plugins);
   const pluginEngine = new GraphbackPluginEngine({
     schema: model,
-    plugins: schemaPlugins,
-    config: { crudMethods: config.crud }
+    plugins: schemaPlugins
   });
   const metadata = pluginEngine.createResources();
   const models = metadata.getModelDefinitions();
@@ -110,8 +109,8 @@ function loadPlugins(pluginConfigMap) {
     try {
       const plugin = __require(pluginName);
       if (plugin.Plugin) {
-        const config = pluginConfigMap[pluginLabel];
-        pluginInstances.push(new plugin.Plugin(config));
+        const config2 = pluginConfigMap[pluginLabel];
+        pluginInstances.push(new plugin.Plugin(config2));
       } else {
         console.log(`${pluginName} plugin is not exporting 'Plugin' class`);
       }
@@ -126,16 +125,15 @@ function loadPlugins(pluginConfigMap) {
 var GraphbackGenerator = class {
   config;
   schema;
-  constructor(schema, config) {
+  constructor(schema, config2) {
     this.schema = schema;
-    this.config = config;
+    this.config = config2;
   }
   generateSourceCode() {
     const plugins = loadPlugins(this.config.plugins);
     const pluginEngine = new GraphbackPluginEngine2({
       schema: this.schema,
-      plugins,
-      config: { crudMethods: this.config.crud }
+      plugins
     });
     pluginEngine.createResources();
   }

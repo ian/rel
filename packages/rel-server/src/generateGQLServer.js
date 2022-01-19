@@ -2,13 +2,14 @@ import { buildGraphbackAPI, createCRUDService } from 'graphback'
 import { createRedisGraphProvider } from 'runtime-redisgraph'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import fs from 'fs'
+import { directives } from "@graphback/core"
 import { RedisPubSub } from 'graphql-redis-subscriptions'
 
 export default async ({ dir }) => {
   const dataProviderCreator = createRedisGraphProvider()
   const schema_ = fs.readFileSync(dir + '/schema.graphql')
   const { typeDefs, resolvers, schema, services, contextCreator } =
-    await buildGraphbackAPI(schema_.toString(), {
+    await buildGraphbackAPI(directives + schema_.toString(), {
       dataProviderCreator,
       serviceCreator: createCRUDService({
         pubSub: new RedisPubSub(),

@@ -1,5 +1,4 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
-import { parseMetadata } from 'graphql-metadata'
 import pluralize from 'pluralize'
 import { getUserTypesFromSchema } from '@graphql-tools/utils'
 import { parseRelationshipAnnotation, transformForeignKeyName, getPrimaryKey } from '..'
@@ -98,7 +97,7 @@ export const getSubscriptionName = (typeName: string, action: GraphbackOperation
 }
 
 export function isModelType (graphqlType: GraphQLObjectType): boolean {
-  return !!parseMetadata('model', graphqlType.description)
+  return true
 }
 
 /**
@@ -115,9 +114,6 @@ export function filterModelTypes (schema: GraphQLSchema): GraphQLObjectType[] {
  *
  * @param schema
  */
-export function filterNonModelTypes (schema: GraphQLSchema): GraphQLObjectType[] {
-  return getUserTypesFromSchema(schema).filter((t: GraphQLObjectType) => !isModelType(t))
-}
 
 export function getUserModels (modelTypes: GraphQLObjectType[]): GraphQLObjectType[] {
   return modelTypes.filter(isModelType)

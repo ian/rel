@@ -1,3 +1,13 @@
+directive @model on OBJECT
+
+directive @unique on FIELD_DEFINITION
+
+directive @relation on FIELD_DEFINITION
+
+directive @transient on FIELD_DEFINITION
+
+directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, differsFrom: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, notEqual: Float) on ARGUMENT_DEFINITION | FIELD_DEFINITION
+
 """Exposes a URL that specifies the behaviour of this scalar."""
 directive @specifiedBy(
   """The URL that specifies the behaviour of this scalar."""
@@ -100,25 +110,14 @@ input TimestampInput {
   between: [Timestamp!]
 }
 
-"""@model(unique: ['text'])"""
 type Todos {
-  text: String
+  text: String @unique
   order: Int
   __id: ID
-
-  """@transient"""
   count(of: OfTodosInput, distinct: Boolean): Int
-
-  """@transient"""
   avg(of: OfTodosNumberInput, distinct: Boolean): Int
-
-  """@transient"""
   max(of: OfTodosNumberInput, distinct: Boolean): Int
-
-  """@transient"""
   min(of: OfTodosNumberInput, distinct: Boolean): Int
-
-  """@transient"""
   sum(of: OfTodosNumberInput, distinct: Boolean): Int
   createdAt: Timestamp
   updatedAt: Timestamp

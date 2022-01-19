@@ -25,8 +25,7 @@ export class GraphbackGenerator {
     const plugins = loadPlugins(this.config.plugins)
     const pluginEngine = new GraphbackPluginEngine({
       schema: this.schema,
-      plugins,
-      config: { crudMethods: this.config.crud }
+      plugins
     })
 
     pluginEngine.createResources()

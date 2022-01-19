@@ -1,5 +1,4 @@
 import { GraphQLField, GraphQLObjectType, getNamedType, isScalarType, GraphQLInputField } from 'graphql'
-import { parseMetadata } from 'graphql-metadata'
 
 /**
  * Returns the primary key field of a GraphQL object.
@@ -15,11 +14,7 @@ export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any
   let primaryKey: GraphQLField<any, any>
   let primariesCount = 0
   for (const field of fields) {
-    const hasIdMarker = parseMetadata('id', field)
-    if (hasIdMarker) {
-      primaryKey = field
-      primariesCount += 1
-    } else if (isAutoPrimaryKey(field)) {
+    if (isAutoPrimaryKey(field)) {
       autoPrimaryKeyFromScalar.push(field)
     }
   }

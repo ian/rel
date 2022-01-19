@@ -1,14 +1,10 @@
 import { GraphQLSchema } from 'graphql'
-import { ServiceCreator, DataProviderCreator, GraphbackPlugin, GraphbackPluginEngine, GraphbackCRUDGeneratorConfig, printSchemaWithDirectives, ModelDefinition, GraphbackServiceConfigMap, GraphbackContext, createCRUDService, GraphbackDataProvider, GraphbackCRUDService } from '@graphback/core'
+import { ServiceCreator, DataProviderCreator, GraphbackPlugin, GraphbackPluginEngine, printSchemaWithDirectives, ModelDefinition, GraphbackServiceConfigMap, GraphbackContext, createCRUDService, GraphbackDataProvider, GraphbackCRUDService } from '@graphback/core'
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from '@graphback/codegen-schema'
 import { mergeSchemas } from '@graphql-tools/merge'
 import { PubSub } from 'graphql-subscriptions'
 
 export interface GraphbackAPIConfig {
-  /**
-   * Global CRUD configuration
-   */
-  crud?: GraphbackCRUDGeneratorConfig
   /**
    * Schema plugins to perform automatic changes to the schema
    */
@@ -103,18 +99,16 @@ function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
  * @param {GraphbackAPIConfig} config
  * @param {GraphbackServiceCreator} [config.serviceCreator] - Creator class specifying which default CRUD service should be created for each model.
  * @param {GraphbackDataProviderCreator} config.dataProviderCreator - Creator class specifying which default database provider should be created for each model.
- * @param {GraphbackCRUDGeneratorConfig} [config.crud] - Global CRUD configuration for the Graphback API.
  * @param {GraphbackPlugin[]} [config.plugins] - Schema plugins to perform automatic changes to the generated schema
  *
  * @returns {GraphbackAPI} Generated schema, CRUD resolvers and services
  */
-export async function buildGraphbackAPI (model: string | GraphQLSchema, config: GraphbackAPIConfig): GraphbackAPI {
+export async function buildGraphbackAPI (model: string | GraphQLSchema): GraphbackAPI {
   const schemaPlugins: GraphbackPlugin[] = getPlugins(config.plugins)
 
   const pluginEngine = new GraphbackPluginEngine({
     schema: model,
-    plugins: schemaPlugins,
-    config: { crudMethods: config.crud }
+    plugins: schemaPlugins
   })
 
   const metadata = pluginEngine.createResources()

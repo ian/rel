@@ -1,4 +1,3 @@
-import { parseMetadata } from 'graphql-metadata'
 import { GraphQLObjectType, getNamedType, GraphQLField } from 'graphql'
 import { ObjectTypeComposerFieldConfigAsObjectDefinition, ObjectTypeComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
 import { ModelDefinition } from '../plugin/ModelDefinition'
@@ -14,8 +13,8 @@ export function parseRelationshipAnnotation (description: string = ''): Relation
   const relationshipKinds = ['oneToMany', 'oneToOne', 'manyToOne']
 
   for (const kind of relationshipKinds) {
-    const annotation: any = parseMetadata(kind, description)
-
+    let annotation = false
+    // TODO reimplement relationships
     if (!annotation) {
       continue
     }
@@ -40,7 +39,7 @@ export function parseRelationshipAnnotation (description: string = ''): Relation
  * @param relationships
  */
 export function isOneToManyField (field: GraphQLField<any, any>): boolean {
-  const oneToManyAnnotation: any = parseMetadata('oneToMany', field.description)
+  const oneToManyAnnotation = false
 
   return !!oneToManyAnnotation
 }

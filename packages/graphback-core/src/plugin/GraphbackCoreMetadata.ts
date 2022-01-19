@@ -1,38 +1,19 @@
-import { parseMetadata } from 'graphql-metadata'
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
 import { RelationshipMetadataBuilder, FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
-import { isTransientField } from '../utils/isTransientField'
-import { GraphbackCRUDGeneratorConfig } from './GraphbackCRUDGeneratorConfig'
 import { ModelDefinition, ModelFieldMap } from './ModelDefinition'
-import { GraphbackGlobalConfig } from './GraphbackGlobalConfig'
-
-const defaultCRUDGeneratorConfig = {
-  create: true,
-  update: true,
-  updateBy: true,
-  findOne: true,
-  find: true,
-  delete: true,
-  deleteBy: true,
-  subCreate: true,
-  subUpdate: true,
-  subDelete: true
-}
 
 /**
  * Contains Graphback Core Models
  */
 export class GraphbackCoreMetadata {
-  private readonly supportedCrudMethods: GraphbackCRUDGeneratorConfig
   private schema: GraphQLSchema
   private resolvers: IResolvers
   private models: ModelDefinition[]
 
-  public constructor (globalConfig: GraphbackGlobalConfig, schema: GraphQLSchema) {
+  public constructor (schema: GraphQLSchema) {
     this.schema = schema
-    this.supportedCrudMethods = Object.assign({}, defaultCRUDGeneratorConfig, globalConfig?.crudMethods)
   }
 
   public getSchema () {
@@ -66,11 +47,8 @@ export class GraphbackCoreMetadata {
     // Get actual user types
     const modelTypes = this.getGraphQLTypesWithModel()
 
-    const relationshipBuilder = new RelationshipMetadataBuilder(modelTypes)
-    relationshipBuilder.build()
-
     for (const modelType of modelTypes) {
-      const model = this.buildModel(modelType, relationshipBuilder.getModelRelationships(modelType.name))
+      const model = this.buildModel(modelType)
       this.models.push(model)
     }
 
@@ -85,16 +63,11 @@ export class GraphbackCoreMetadata {
    * @param schema
    */
   public getGraphQLTypesWithModel (): GraphQLObjectType[] {
-    const types = getUserTypesFromSchema(this.schema)
-
-    return types.filter((modelType: GraphQLObjectType) => parseMetadata('model', modelType))
+    return getUserTypesFromSchema(this.schema)
   }
 
-  private buildModel (modelType: GraphQLObjectType, relationships: FieldRelationshipMetadata[]): ModelDefinition {
-    let crudOptions = parseMetadata('model', modelType)
+  private buildModel (modelType: GraphQLObjectType): ModelDefinition {
     // Merge CRUD options from type with global ones
-    crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions)
-    const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : []
     const primaryKey = {
       name: "__id",
       type: "ID"
@@ -107,13 +80,15 @@ export class GraphbackCoreMetadata {
       type: "ID"
     }
 
+    const uniqueFields = []
+
     for (const field of Object.keys(modelFields)) {
       let fieldName = field
       let type: string = ''
 
       const graphqlField = modelFields[field]
 
-      if (isTransientField(graphqlField)) {
+      if (graphqlField.extensions?.directives?.transient) {
         fields[field] = {
           name: field,
           transient: true,
@@ -122,19 +97,11 @@ export class GraphbackCoreMetadata {
         continue
       }
 
-      const foundRelationship = relationships.find((relationship: FieldRelationshipMetadata) => relationship.ownerField.name === field)
-
-      if (foundRelationship != null) {
-        if (foundRelationship.kind !== 'oneToMany') {
-          fieldName = foundRelationship.relationForeignKey
-          type = getNamedType(foundRelationship.relationType).name // TODO properly retrieve field type for foreign key
-        } else {
-          fieldName = primaryKey.name
-          type = primaryKey.type
-        }
-      } else {
-        type = getNamedType(modelFields[field].type).name
+      if (graphqlField.extensions?.directives?.unique) {
+        uniqueFields.push(field)
       }
+
+      type = getNamedType(modelFields[field].type).name
 
       fields[field] = {
         name: fieldName,
@@ -146,8 +113,7 @@ export class GraphbackCoreMetadata {
     return {
       fields,
       primaryKey,
-      crudOptions,
-      relationships,
+      relationships: [],
       uniqueFields,
       graphqlType: modelType
     }

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { GraphQLInputObjectType, GraphQLNamedInputType, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull, GraphQLField, getNamedType, isScalarType, GraphQLInputFieldMap, GraphQLScalarType, GraphQLNamedType, GraphQLInputField, isEnumType, isObjectType, isInputObjectType, GraphQLInputType, getNullableType, isListType } from 'graphql'
-import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, ModelDefinition, FILTER_SUPPORTED_SCALARS, isTransientField, isAutoPrimaryKey } from '@graphback/core'
+import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, ModelDefinition, FILTER_SUPPORTED_SCALARS, isAutoPrimaryKey } from '@graphback/core'
 import { SchemaComposer } from 'graphql-compose'
 import { copyWrappingType } from './copyWrappingType'
 
@@ -118,13 +118,11 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
   const fields: Array<GraphQLField<any, any>> = Object.values(modelType.getFields())
 
   for (const field of fields) {
-    if (isTransientField(field) || isOneToManyField(field)) {
+    const typeName = getInputFieldTypeName(modelType.name, field, operationType)
+    if (!typeName) {
       continue
     }
-
-    const typeName = getInputFieldTypeName(modelType.name, field, operationType)
-
-    if (!typeName) {
+    if(field?.extensions?.directives?.transient) {
       continue
     }
 
@@ -132,11 +130,19 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
     const type = schemaComposer.getAnyTC(typeName).getType()
     const wrappedType = copyWrappingType(field.type, type) as GraphQLInputType
 
+    const extensions = {}
+
+    if(field?.extensions?.directives?.constraint) {
+      extensions.directives = {
+        constraint: field.extensions.directives.constraint
+      }
+    }
+
     const inputField: GraphQLInputField = {
       name,
       type: wrappedType,
       description: undefined,
-      extensions: [],
+      extensions,
       deprecationReason: field.deprecationReason
     }
 
@@ -234,8 +240,7 @@ export const buildSubscriptionFilterType = (schemaComposer: SchemaComposer<any>,
   const modelFields = Object.values(modelType.getFields())
   const subscriptionFilterFields = modelFields.filter((f: GraphQLField<any, any>) => {
     const namedType = getNamedType(f.type)
-
-    return !isTransientField(f) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
+    return !f.extensions?.directives?.transient && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
   })
 
   const fields = {

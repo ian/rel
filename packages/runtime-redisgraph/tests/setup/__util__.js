@@ -1,7 +1,8 @@
 import { buildSchema } from 'graphql'
 import {
   GraphbackCoreMetadata,
-  printSchemaWithDirectives
+  printSchemaWithDirectives,
+  directives
 } from '@graphback/core'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import { RedisGraphProvider } from '../../src/RedisGraphProvider.js'
@@ -28,24 +29,10 @@ const run = async () => {
     config
   ) => {
     // Setup graphback
+    schemaStr = directives + schemaStr
     const schema = buildSchema(schemaStr)
-    const defaultConfig = {
-      create: true,
-      update: true,
-      findOne: true,
-      find: true,
-      delete: true,
-      updateBy: true,
-      deleteBy: true,
-      subCreate: true,
-      subUpdate: true,
-      subDelete: true
-    }
-
+    
     const metadata = new GraphbackCoreMetadata(
-      {
-        crudMethods: defaultConfig
-      },
       schema
     )
 

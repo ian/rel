@@ -32,7 +32,6 @@ var __objRest = (source, exclude) => {
 
 // src/crud/mappingHelpers.ts
 import { getNamedType, isObjectType, isScalarType, isEnumType } from "graphql";
-import { parseMetadata } from "graphql-metadata";
 import pluralize from "pluralize";
 import { getUserTypesFromSchema } from "@graphql-tools/utils";
 
@@ -107,13 +106,10 @@ var getSubscriptionName = (typeName, action) => {
   return "";
 };
 function isModelType(graphqlType) {
-  return !!parseMetadata("model", graphqlType.description);
+  return true;
 }
 function filterModelTypes(schema) {
   return getUserTypesFromSchema(schema).filter(isModelType);
-}
-function filterNonModelTypes(schema) {
-  return getUserTypesFromSchema(schema).filter((t) => !isModelType(t));
 }
 function getUserModels(modelTypes) {
   return modelTypes.filter(isModelType);
@@ -190,437 +186,15 @@ var GraphbackPlugin = class {
 import { buildSchema } from "graphql";
 
 // src/plugin/GraphbackCoreMetadata.ts
-import { parseMetadata as parseMetadata7 } from "graphql-metadata";
 import { mergeResolvers } from "@graphql-tools/merge";
-import { getNamedType as getNamedType5 } from "graphql";
+import { getNamedType as getNamedType2 } from "graphql";
 import { getUserTypesFromSchema as getUserTypesFromSchema2 } from "@graphql-tools/utils";
-
-// src/relationships/RelationshipMetadataBuilder.ts
-import { isObjectType as isObjectType2, GraphQLNonNull, GraphQLList, getNamedType as getNamedType4 } from "graphql";
-import { parseMetadata as parseMetadata5 } from "graphql-metadata";
-
-// src/db/defaultNameTransforms.ts
-function defaultTableNameTransform(name, direction) {
-  if (direction === "to-db") {
-    return name.toLowerCase();
-  }
-  return name;
-}
-function transformForeignKeyName(name, direction = "to-db") {
-  if (direction === "to-db") {
-    return `${name}Id`;
-  }
-  return name;
-}
-
-// src/db/getPrimaryKey.ts
-import { getNamedType as getNamedType2, isScalarType as isScalarType2 } from "graphql";
-import { parseMetadata as parseMetadata2 } from "graphql-metadata";
-function getPrimaryKey(graphqlType) {
-  const fields = Object.values(graphqlType.getFields());
-  const autoPrimaryKeyFromScalar = [];
-  let primaryKey;
-  let primariesCount = 0;
-  for (const field of fields) {
-    const hasIdMarker = parseMetadata2("id", field);
-    if (hasIdMarker) {
-      primaryKey = field;
-      primariesCount += 1;
-    } else if (isAutoPrimaryKey(field)) {
-      autoPrimaryKeyFromScalar.push(field);
-    }
-  }
-  if (primariesCount > 1) {
-    throw new Error(`${graphqlType.name} type should not have multiple '@id' annotations.`);
-  }
-  if (primaryKey) {
-    return primaryKey;
-  }
-  if (autoPrimaryKeyFromScalar.length > 1) {
-    throw new Error(`${graphqlType.name} type should not have two potential primary keys: "_id" and "id". Use '@id' annotations to indicate which one is to be used.`);
-  }
-  primaryKey = autoPrimaryKeyFromScalar.shift();
-  if (!primaryKey) {
-    throw new Error(`${graphqlType.name} type has no primary field.`);
-  }
-  return primaryKey;
-}
-function isAutoPrimaryKey(field) {
-  const { type, name: fieldName } = field;
-  const baseType = getNamedType2(type);
-  const name = baseType.name;
-  return fieldName === "__id" && name === "ID" && isScalarType2(baseType);
-}
-
-// src/db/buildModelTableMap.ts
-import { parseMetadata as parseMetadata3 } from "graphql-metadata";
-function getTableName(model) {
-  let tableName = defaultTableNameTransform(model.name, "to-db");
-  const dbAnnotations = parseMetadata3("db", model);
-  if (dbAnnotations && dbAnnotations.name) {
-    tableName = dbAnnotations.name;
-  }
-  return tableName;
-}
-function getColumnName(field) {
-  let columnName = field.name;
-  const dbAnnotations = parseMetadata3("db", field);
-  if (dbAnnotations && dbAnnotations.name) {
-    columnName = dbAnnotations.name;
-  }
-  return columnName;
-}
-function mapFieldsToColumns(fieldMap) {
-  return Object.values(fieldMap).reduce((obj, field) => {
-    const columnName = getColumnName(field);
-    if (field.name !== columnName) {
-      obj[field.name] = columnName;
-    }
-    return obj;
-  }, {});
-}
-var buildModelTableMap = (model) => {
-  const primaryKeyField = getPrimaryKey(model);
-  const tableName = getTableName(model);
-  const fieldMap = mapFieldsToColumns(model.getFields());
-  return {
-    idField: getColumnName(primaryKeyField),
-    typeName: model.name,
-    tableName,
-    fieldMap
-  };
-};
-
-// src/utils/hasListType.ts
-import { isWrappingType, isListType } from "graphql";
-function hasListType(outputType) {
-  if (isListType(outputType)) {
-    return true;
-  } else if (isWrappingType(outputType)) {
-    return hasListType(outputType.ofType);
-  }
-  return false;
-}
-
-// src/relationships/relationshipHelpers.ts
-import { parseMetadata as parseMetadata4 } from "graphql-metadata";
-import { getNamedType as getNamedType3 } from "graphql";
-function parseRelationshipAnnotation(description = "") {
-  const relationshipKinds = ["oneToMany", "oneToOne", "manyToOne"];
-  for (const kind of relationshipKinds) {
-    const annotation = parseMetadata4(kind, description);
-    if (!annotation) {
-      continue;
-    }
-    if (!annotation.field && kind !== "oneToOne") {
-      throw new Error(`'field' is required on "${kind}" relationship annotations`);
-    }
-    return __spreadValues({
-      kind
-    }, annotation);
-  }
-  return void 0;
-}
-function isOneToManyField(field) {
-  const oneToManyAnnotation = parseMetadata4("oneToMany", field.description);
-  return !!oneToManyAnnotation;
-}
-var relationshipFieldDescriptionTemplate = (relationshipKind, fieldName, columnKey) => {
-  return `@${relationshipKind}(field: '${fieldName}', key: '${columnKey}')`;
-};
-var relationshipOneToOneFieldDescriptionTemplate = (relationshipKind, columnKey) => {
-  return `@${relationshipKind}(key: '${columnKey}')`;
-};
-function addRelationshipFields(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  const fieldsObj = {};
-  for (const current of model.relationships) {
-    if (!modelFields[current.ownerField.name]) {
-      fieldsObj[current.ownerField.name] = {
-        type: current.ownerField.type,
-        description: current.ownerField.description
-      };
-    }
-  }
-  typeComposer.addFields(fieldsObj);
-}
-function extendRelationshipFields(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  for (const fieldRelationship of model.relationships) {
-    if (modelFields[fieldRelationship.ownerField.name]) {
-      const modelField = modelFields[fieldRelationship.ownerField.name];
-      const partialConfig = {
-        type: modelField.type,
-        description: fieldRelationship.ownerField.description
-      };
-      typeComposer.extendField(fieldRelationship.ownerField.name, partialConfig);
-    }
-  }
-}
-function extendOneToManyFieldArguments(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  for (const current of model.relationships) {
-    if (modelFields[current.ownerField.name]) {
-      const fieldNamedType = getNamedType3(current.ownerField.type);
-      if (current.kind !== "oneToMany") {
-        continue;
-      }
-      const partialConfig = {
-        args: {
-          filter: getInputTypeName(fieldNamedType.name, "find" /* FIND */)
-        }
-      };
-      typeComposer.extendField(current.ownerField.name, partialConfig);
-    }
-  }
-}
-
-// src/relationships/RelationshipMetadataBuilder.ts
-var RelationshipMetadataBuilder = class {
-  modelTypes;
-  relationships;
-  constructor(modelTypes) {
-    this.relationships = [];
-    this.modelTypes = modelTypes;
-  }
-  build() {
-    for (const modelType of this.modelTypes) {
-      this.buildModelRelationshipContext(modelType);
-    }
-  }
-  getRelationships() {
-    return this.relationships;
-  }
-  getModelRelationships(modelName) {
-    return this.relationships.filter((relationship) => relationship.owner.name === modelName);
-  }
-  buildModelRelationshipContext(modelType) {
-    const fields = Object.values(modelType.getFields());
-    for (let field of fields) {
-      const annotation = parseRelationshipAnnotation(field.description);
-      if (annotation == null) {
-        continue;
-      }
-      this.validateRelationshipField(modelType.name, field, annotation);
-      const relationType = getNamedType4(field.type);
-      let relationField = relationType.getFields()[annotation.field];
-      if (annotation.kind === "oneToMany") {
-        field = this.updateOneToManyField(field, annotation.field, annotation.key);
-        if (!relationField) {
-          relationField = this.createManyToOneField(annotation.field, modelType, field.name, annotation.key);
-        } else {
-          relationField = this.updateManyToOneField(relationField, field.name, annotation.key);
-        }
-        const oneToManyAnnotation = annotation.key ? annotation : parseRelationshipAnnotation(field.description);
-        const manyToOneAnnotation = parseRelationshipAnnotation(relationField.description);
-        this.addOneToMany(modelType, field, oneToManyAnnotation, manyToOneAnnotation);
-        this.addManyToOne(relationType, relationField, manyToOneAnnotation);
-      } else if (annotation.kind === "manyToOne") {
-        if (!relationField) {
-          relationField = this.createOneToManyField(annotation.field, modelType, field.name, annotation.key);
-        }
-        const oneToManyAnnotation = parseRelationshipAnnotation(relationField.description);
-        this.addManyToOne(modelType, field, annotation);
-        this.addOneToMany(relationType, relationField, oneToManyAnnotation, annotation);
-      } else if (annotation.kind === "oneToOne") {
-        field = this.updateOneToOneField(field, annotation.key);
-        const oneToOneAnnotation = annotation.key ? annotation : parseRelationshipAnnotation(field.description);
-        this.addOneToOne(modelType, field, oneToOneAnnotation);
-      }
-    }
-  }
-  createOneToManyField(fieldName, baseType, relationFieldName, columnName) {
-    const columnField = columnName || transformForeignKeyName(relationFieldName);
-    const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
-    const fieldType = GraphQLNonNull(GraphQLList(baseType));
-    return {
-      name: fieldName,
-      description: fieldDescription,
-      type: fieldType,
-      args: [],
-      extensions: [],
-      isDeprecated: false,
-      deprecationReason: void 0
-    };
-  }
-  createManyToOneField(fieldName, baseType, relationFieldName, columnName) {
-    const columnField = columnName || transformForeignKeyName(fieldName);
-    const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
-    return {
-      name: fieldName,
-      description: fieldDescription,
-      type: baseType,
-      args: [],
-      extensions: [],
-      isDeprecated: false,
-      deprecationReason: void 0
-    };
-  }
-  updateOneToManyField(field, relationFieldName, columnName) {
-    if (!columnName) {
-      const columnField = transformForeignKeyName(relationFieldName);
-      const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
-      const oldDescription = field.description ? `
-${field.description}` : "";
-      return __spreadProps(__spreadValues({}, field), {
-        description: `${fieldDescription}${oldDescription}`
-      });
-    }
-    return field;
-  }
-  updateManyToOneField(field, relationFieldName, columnName) {
-    const manyToOneMetadata = parseMetadata5("manyToOne", field.description);
-    if (!manyToOneMetadata || !manyToOneMetadata.key) {
-      const columnField = columnName || transformForeignKeyName(field.name);
-      const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
-      const oldDescription = field.description ? `
-${field.description}` : "";
-      return __spreadProps(__spreadValues({}, field), {
-        description: `${fieldDescription}${oldDescription}`
-      });
-    }
-    return field;
-  }
-  updateOneToOneField(field, columnName) {
-    if (!columnName) {
-      const columnField = transformForeignKeyName(field.name);
-      const fieldDescription = relationshipOneToOneFieldDescriptionTemplate("oneToOne", columnField);
-      const oldDescription = field.description ? `
-${field.description}` : "";
-      return __spreadProps(__spreadValues({}, field), {
-        description: `${fieldDescription}${oldDescription}`
-      });
-    }
-    return field;
-  }
-  addOneToMany(ownerType, field, oneToManyAnnotation, corresspondingManyToOneMetadata) {
-    this.validateOneToManyRelationship(ownerType.name, field, oneToManyAnnotation, corresspondingManyToOneMetadata);
-    if (!oneToManyAnnotation.key) {
-      return;
-    }
-    const relationType = getNamedType4(field.type);
-    const oneToMany = {
-      kind: "oneToMany",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: oneToManyAnnotation.field,
-      relationForeignKey: oneToManyAnnotation.key
-    };
-    this.relationships.push(oneToMany);
-  }
-  addManyToOne(ownerType, field, manyToOneAnnotation) {
-    this.validateManyToOneField(ownerType.name, field, manyToOneAnnotation);
-    if (!manyToOneAnnotation.key) {
-      return;
-    }
-    const relationType = getNamedType4(field.type);
-    const manyToOne = {
-      kind: "manyToOne",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: manyToOneAnnotation.field,
-      relationForeignKey: manyToOneAnnotation.key
-    };
-    this.relationships.push(manyToOne);
-  }
-  addOneToOne(ownerType, field, oneToOneAnnotation) {
-    this.validateOneToOneRelationship(ownerType.name, field, oneToOneAnnotation);
-    if (!oneToOneAnnotation.key) {
-      return;
-    }
-    const relationType = getNamedType4(field.type);
-    const oneToOne = {
-      kind: "oneToOne",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: oneToOneAnnotation.field,
-      relationForeignKey: oneToOneAnnotation.key
-    };
-    this.relationships.push(oneToOne);
-  }
-  validateOneToManyRelationship(modelName, field, oneToManyMetadata, corresspondingManyToOneMetadata) {
-    this.validateRelationshipField(modelName, field, oneToManyMetadata);
-    if (oneToManyMetadata.kind !== "oneToMany") {
-      throw new Error(`${modelName}.${field.name} should be a @oneToMany field, but has a @${oneToManyMetadata.kind} annotation`);
-    }
-    const relationModelType = getNamedType4(field.type);
-    const relationField = relationModelType.getFields()[oneToManyMetadata.field];
-    if (!relationField) {
-      return;
-    }
-    if (hasListType(relationField.type)) {
-      throw new Error(`${relationModelType.name}.${relationField.name} is a list type, but should be '${relationField.name}: ${modelName}'.`);
-    }
-    const relationFieldBaseType = getNamedType4(relationField.type);
-    if (!isObjectType2(relationFieldBaseType) || relationFieldBaseType.name !== modelName) {
-      throw new Error(`${modelName}.${field.name} relationship field maps to ${relationModelType.name}.${relationField.name} (${relationFieldBaseType.name} type) which should be ${modelName} type.`);
-    }
-    if ((oneToManyMetadata == null ? void 0 : oneToManyMetadata.key) !== (corresspondingManyToOneMetadata == null ? void 0 : corresspondingManyToOneMetadata.key)) {
-      throw new Error(`${modelName}.${field.name} and ${relationModelType.name}.${relationField.name} 'key' annotations are different. Ensure both are the same, or remove one so that it can be generated.`);
-    }
-  }
-  validateManyToOneField(modelName, field, manyToOneAnnotation) {
-    this.validateRelationshipField(modelName, field, manyToOneAnnotation);
-    if (manyToOneAnnotation.kind !== "manyToOne") {
-      throw new Error(`${modelName}.${field.name} should be a @manyToOne field, but has a @${manyToOneAnnotation.kind} annotation`);
-    }
-  }
-  validateOneToOneRelationship(modelName, field, oneToOneAnnotation) {
-    this.validateRelationshipField(modelName, field, oneToOneAnnotation);
-    if (oneToOneAnnotation.kind !== "oneToOne") {
-      throw new Error(`${modelName}.${field.name} should be a @oneToOne field, but has a ${oneToOneAnnotation.kind} annotation`);
-    }
-    if (hasListType(field.type)) {
-      throw new Error(`${modelName}.${field.name} is a list type, but should be an object.`);
-    }
-  }
-  validateRelationshipField(modelName, field, relationshipAnnotation) {
-    if (!relationshipAnnotation) {
-      throw new Error(`${modelName}.${field.name} is missing a relationship annotation.`);
-    }
-    const fieldBaseType = getNamedType4(field.type);
-    if (!isObjectType2(fieldBaseType)) {
-      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but has type ${fieldBaseType.name}. Relationship fields must be object types.`);
-    }
-    if (!isModelType(fieldBaseType)) {
-      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but type ${fieldBaseType.name} is missing the @model annotation.`);
-    }
-  }
-};
-
-// src/utils/isTransientField.ts
-import { parseMetadata as parseMetadata6 } from "graphql-metadata";
-function isTransientField(field) {
-  return parseMetadata6("transient", field);
-}
-
-// src/plugin/GraphbackCoreMetadata.ts
-var defaultCRUDGeneratorConfig = {
-  create: true,
-  update: true,
-  updateBy: true,
-  findOne: true,
-  find: true,
-  delete: true,
-  deleteBy: true,
-  subCreate: true,
-  subUpdate: true,
-  subDelete: true
-};
 var GraphbackCoreMetadata = class {
-  supportedCrudMethods;
   schema;
   resolvers;
   models;
-  constructor(globalConfig, schema) {
+  constructor(schema) {
     this.schema = schema;
-    this.supportedCrudMethods = Object.assign({}, defaultCRUDGeneratorConfig, globalConfig == null ? void 0 : globalConfig.crudMethods);
   }
   getSchema() {
     return this.schema;
@@ -643,22 +217,17 @@ var GraphbackCoreMetadata = class {
   getModelDefinitions() {
     this.models = [];
     const modelTypes = this.getGraphQLTypesWithModel();
-    const relationshipBuilder = new RelationshipMetadataBuilder(modelTypes);
-    relationshipBuilder.build();
     for (const modelType of modelTypes) {
-      const model = this.buildModel(modelType, relationshipBuilder.getModelRelationships(modelType.name));
+      const model = this.buildModel(modelType);
       this.models.push(model);
     }
     return this.models;
   }
   getGraphQLTypesWithModel() {
-    const types = getUserTypesFromSchema2(this.schema);
-    return types.filter((modelType) => parseMetadata7("model", modelType));
+    return getUserTypesFromSchema2(this.schema);
   }
-  buildModel(modelType, relationships) {
-    let crudOptions = parseMetadata7("model", modelType);
-    crudOptions = Object.assign({}, this.supportedCrudMethods, crudOptions);
-    const uniqueFields = Array.isArray(crudOptions.unique) ? crudOptions.unique : [];
+  buildModel(modelType) {
+    var _a, _b, _c, _d;
     const primaryKey = {
       name: "__id",
       type: "ID"
@@ -668,30 +237,23 @@ var GraphbackCoreMetadata = class {
     fields.__id = {
       type: "ID"
     };
+    const uniqueFields = [];
     for (const field of Object.keys(modelFields)) {
       let fieldName = field;
       let type = "";
       const graphqlField = modelFields[field];
-      if (isTransientField(graphqlField)) {
+      if ((_b = (_a = graphqlField.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.transient) {
         fields[field] = {
           name: field,
           transient: true,
-          type: getNamedType5(graphqlField.type).name
+          type: getNamedType2(graphqlField.type).name
         };
         continue;
       }
-      const foundRelationship = relationships.find((relationship) => relationship.ownerField.name === field);
-      if (foundRelationship != null) {
-        if (foundRelationship.kind !== "oneToMany") {
-          fieldName = foundRelationship.relationForeignKey;
-          type = getNamedType5(foundRelationship.relationType).name;
-        } else {
-          fieldName = primaryKey.name;
-          type = primaryKey.type;
-        }
-      } else {
-        type = getNamedType5(modelFields[field].type).name;
+      if ((_d = (_c = graphqlField.extensions) == null ? void 0 : _c.directives) == null ? void 0 : _d.unique) {
+        uniqueFields.push(field);
       }
+      type = getNamedType2(modelFields[field].type).name;
       fields[field] = {
         name: fieldName,
         type,
@@ -701,8 +263,7 @@ var GraphbackCoreMetadata = class {
     return {
       fields,
       primaryKey,
-      crudOptions,
-      relationships,
+      relationships: [],
       uniqueFields,
       graphqlType: modelType
     };
@@ -713,7 +274,7 @@ var GraphbackCoreMetadata = class {
 var GraphbackPluginEngine = class {
   plugins;
   metadata;
-  constructor({ schema, config, plugins = [] }) {
+  constructor({ schema, plugins = [] }) {
     this.plugins = plugins;
     if (!schema) {
       throw new Error("Plugin engine requires schema");
@@ -724,7 +285,7 @@ var GraphbackPluginEngine = class {
     } else {
       graphQLSchema = schema;
     }
-    this.metadata = new GraphbackCoreMetadata(config, graphQLSchema);
+    this.metadata = new GraphbackCoreMetadata(graphQLSchema);
   }
   registerPlugin(...plugins) {
     this.plugins.push(...plugins);
@@ -792,51 +353,447 @@ var getModelFieldsFromResolverFields = (resolverFields, fieldArgs, model) => {
 };
 var getResolverInfoFieldsList = (info, path) => fieldsList(info, { path });
 
+// src/relationships/RelationshipMetadataBuilder.ts
+import { isObjectType as isObjectType2, GraphQLNonNull, GraphQLList, getNamedType as getNamedType5, assertObjectType } from "graphql";
+import * as pluralize2 from "pluralize";
+
+// src/db/defaultNameTransforms.ts
+function defaultTableNameTransform(name, direction) {
+  if (direction === "to-db") {
+    return name.toLowerCase();
+  }
+  return name;
+}
+function transformForeignKeyName(name, direction = "to-db") {
+  if (direction === "to-db") {
+    return `${name}Id`;
+  }
+  return name;
+}
+
+// src/db/getPrimaryKey.ts
+import { getNamedType as getNamedType3, isScalarType as isScalarType2 } from "graphql";
+function getPrimaryKey(graphqlType) {
+  const fields = Object.values(graphqlType.getFields());
+  const autoPrimaryKeyFromScalar = [];
+  let primaryKey;
+  let primariesCount = 0;
+  for (const field of fields) {
+    if (isAutoPrimaryKey(field)) {
+      autoPrimaryKeyFromScalar.push(field);
+    }
+  }
+  if (primariesCount > 1) {
+    throw new Error(`${graphqlType.name} type should not have multiple '@id' annotations.`);
+  }
+  if (primaryKey) {
+    return primaryKey;
+  }
+  if (autoPrimaryKeyFromScalar.length > 1) {
+    throw new Error(`${graphqlType.name} type should not have two potential primary keys: "_id" and "id". Use '@id' annotations to indicate which one is to be used.`);
+  }
+  primaryKey = autoPrimaryKeyFromScalar.shift();
+  if (!primaryKey) {
+    throw new Error(`${graphqlType.name} type has no primary field.`);
+  }
+  return primaryKey;
+}
+function isAutoPrimaryKey(field) {
+  const { type, name: fieldName } = field;
+  const baseType = getNamedType3(type);
+  const name = baseType.name;
+  return fieldName === "__id" && name === "ID" && isScalarType2(baseType);
+}
+
+// src/db/buildModelTableMap.ts
+function getTableName(model) {
+  const tableName = defaultTableNameTransform(model.name, "to-db");
+  return tableName;
+}
+function getColumnName(field) {
+  const columnName = field.name;
+  return columnName;
+}
+function mapFieldsToColumns(fieldMap) {
+  return Object.values(fieldMap).reduce((obj, field) => {
+    const columnName = getColumnName(field);
+    if (field.name !== columnName) {
+      obj[field.name] = columnName;
+    }
+    return obj;
+  }, {});
+}
+var buildModelTableMap = (model) => {
+  const primaryKeyField = getPrimaryKey(model);
+  const tableName = getTableName(model);
+  const fieldMap = mapFieldsToColumns(model.getFields());
+  return {
+    idField: getColumnName(primaryKeyField),
+    typeName: model.name,
+    tableName,
+    fieldMap
+  };
+};
+
+// src/utils/hasListType.ts
+import { isWrappingType, isListType } from "graphql";
+function hasListType(outputType) {
+  if (isListType(outputType)) {
+    return true;
+  } else if (isWrappingType(outputType)) {
+    return hasListType(outputType.ofType);
+  }
+  return false;
+}
+
+// src/relationships/relationshipHelpers.ts
+import { getNamedType as getNamedType4 } from "graphql";
+function parseRelationshipAnnotation(description = "") {
+  const relationshipKinds = ["oneToMany", "oneToOne", "manyToOne"];
+  for (const kind of relationshipKinds) {
+    let annotation = false;
+    if (!annotation) {
+      continue;
+    }
+    if (!annotation.field && kind !== "oneToOne") {
+      throw new Error(`'field' is required on "${kind}" relationship annotations`);
+    }
+    return __spreadValues({
+      kind
+    }, annotation);
+  }
+  return void 0;
+}
+function isOneToManyField(field) {
+  const oneToManyAnnotation = false;
+  return !!oneToManyAnnotation;
+}
+var relationshipFieldDescriptionTemplate = (relationshipKind, fieldName, columnKey) => {
+  return `@${relationshipKind}(field: '${fieldName}', key: '${columnKey}')`;
+};
+var relationshipOneToOneFieldDescriptionTemplate = (relationshipKind, columnKey) => {
+  return `@${relationshipKind}(key: '${columnKey}')`;
+};
+function addRelationshipFields(model, typeComposer) {
+  const modelType = model.graphqlType;
+  const modelFields = modelType.getFields();
+  const fieldsObj = {};
+  for (const current of model.relationships) {
+    if (!modelFields[current.ownerField.name]) {
+      fieldsObj[current.ownerField.name] = {
+        type: current.ownerField.type,
+        description: current.ownerField.description
+      };
+    }
+  }
+  typeComposer.addFields(fieldsObj);
+}
+function extendRelationshipFields(model, typeComposer) {
+  const modelType = model.graphqlType;
+  const modelFields = modelType.getFields();
+  for (const fieldRelationship of model.relationships) {
+    if (modelFields[fieldRelationship.ownerField.name]) {
+      const modelField = modelFields[fieldRelationship.ownerField.name];
+      const partialConfig = {
+        type: modelField.type,
+        description: fieldRelationship.ownerField.description
+      };
+      typeComposer.extendField(fieldRelationship.ownerField.name, partialConfig);
+    }
+  }
+}
+function extendOneToManyFieldArguments(model, typeComposer) {
+  const modelType = model.graphqlType;
+  const modelFields = modelType.getFields();
+  for (const current of model.relationships) {
+    if (modelFields[current.ownerField.name]) {
+      const fieldNamedType = getNamedType4(current.ownerField.type);
+      if (current.kind !== "oneToMany") {
+        continue;
+      }
+      const partialConfig = {
+        args: {
+          filter: getInputTypeName(fieldNamedType.name, "find" /* FIND */)
+        }
+      };
+      typeComposer.extendField(current.ownerField.name, partialConfig);
+    }
+  }
+}
+
+// src/relationships/RelationshipMetadataBuilder.ts
+var RelationshipMetadataBuilder = class {
+  models;
+  relationshipMetadataConfigMap = {};
+  constructor(models) {
+    this.models = models;
+    for (const model of models) {
+      this.relationshipMetadataConfigMap[model.graphqlType.name] = {};
+    }
+  }
+  build() {
+    for (const model of this.models) {
+      this.buildModelRelationshipContext(model);
+    }
+    return this.relationshipMetadataConfigMap;
+  }
+  getRelationships() {
+    return this.relationshipMetadataConfigMap;
+  }
+  getModelRelationships(modelName) {
+    return this.relationshipMetadataConfigMap[modelName];
+  }
+  buildModelRelationshipContext(model) {
+    const modelType = model.graphqlType;
+    const fields = Object.values(modelType.getFields());
+    for (let field of fields) {
+      const annotation = parseRelationshipAnnotation(field.description);
+      if (!annotation) {
+        const relationMetadata = this.getRelationshipMetadata(field, modelType);
+        if (relationMetadata) {
+          this.relationshipMetadataConfigMap = Object.assign({}, this.relationshipMetadataConfigMap, relationMetadata);
+        }
+        continue;
+      }
+    }
+  }
+  getRelationshipMetadata(field, owner) {
+    const fieldType = getNamedType5(field.type);
+    const modelRelationshipConfigMap = {
+      [owner.name]: {},
+      [fieldType.name]: {}
+    };
+    if (!isObjectType2(fieldType) || !isModelType(fieldType)) {
+      return void 0;
+    }
+    if (parseRelationshipAnnotation(field.description)) {
+      return void 0;
+    }
+    if (hasListType(field.type)) {
+      const ownerName = owner.name;
+      const relationFieldName = lowerCaseFirstChar(ownerName);
+      const relationForeignKey = relationFieldName;
+      const manyToOneField = fieldType.getFields()[relationFieldName];
+      modelRelationshipConfigMap[owner.name][field.name] = {
+        kind: "oneToMany",
+        owner,
+        ownerField: this.updateOneToManyField(field, relationFieldName),
+        relationType: fieldType,
+        relationFieldName,
+        relationForeignKey
+      };
+      modelRelationshipConfigMap[fieldType.name][relationFieldName] = {
+        kind: "manyToOne",
+        owner: getNamedType5(field.type),
+        ownerField: manyToOneField || this.createManyToOneField(relationFieldName, owner, pluralize2(lowerCaseFirstChar(fieldType.name))),
+        relationType: owner,
+        relationFieldName: field.name,
+        relationForeignKey
+      };
+    } else if (this.isManyToOne(field, owner)) {
+      const relationFieldName = pluralize2(lowerCaseFirstChar(owner.name));
+      const foreignKeyName = field.name;
+      const oneToManyField = fieldType.getFields()[relationFieldName];
+      const oneToManyAnnotation = parseRelationshipAnnotation(oneToManyField == null ? void 0 : oneToManyField.description);
+      modelRelationshipConfigMap[owner.name][field.name] = {
+        kind: "manyToOne",
+        owner,
+        ownerField: this.updateManyToOneField(field, relationFieldName, (oneToManyAnnotation == null ? void 0 : oneToManyAnnotation.key) || foreignKeyName),
+        relationType: fieldType,
+        relationFieldName,
+        relationForeignKey: foreignKeyName
+      };
+      modelRelationshipConfigMap[fieldType.name][relationFieldName] = {
+        kind: "oneToMany",
+        owner: fieldType,
+        ownerField: oneToManyField || this.createOneToManyField(relationFieldName, owner, fieldType.name),
+        relationType: owner,
+        relationFieldName: field.name,
+        relationForeignKey: foreignKeyName
+      };
+    } else {
+      const foreignKeyName = lowerCaseFirstChar(field.name);
+      modelRelationshipConfigMap[owner.name][field.name] = {
+        kind: "oneToOne",
+        owner,
+        ownerField: this.updateOneToOneField(field, foreignKeyName),
+        relationType: fieldType,
+        relationFieldName: foreignKeyName
+      };
+    }
+    return modelRelationshipConfigMap;
+  }
+  isManyToOne(field, owner) {
+    const relationType = getNamedType5(field.type);
+    if (!isObjectType2(relationType) || !isModelType(relationType)) {
+      return false;
+    }
+    const relationFields = Object.values(relationType.getFields());
+    const oneToManyField = relationFields.find((f) => {
+      return getNamedType5(f.type).name === owner.name && hasListType(f.type);
+    });
+    return Boolean(oneToManyField);
+  }
+  createOneToManyField(fieldName, baseType, relationFieldName, columnName) {
+    const columnField = columnName || transformForeignKeyName(relationFieldName);
+    const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
+    const fieldType = GraphQLNonNull(GraphQLList(baseType));
+    return {
+      name: fieldName,
+      description: fieldDescription,
+      type: fieldType,
+      args: [],
+      extensions: [],
+      isDeprecated: false,
+      deprecationReason: void 0
+    };
+  }
+  createManyToOneField(fieldName, baseType, relationFieldName, columnName) {
+    const columnField = columnName || transformForeignKeyName(fieldName);
+    const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
+    return {
+      name: fieldName,
+      description: fieldDescription,
+      type: baseType,
+      args: [],
+      extensions: [],
+      isDeprecated: false,
+      deprecationReason: void 0
+    };
+  }
+  updateOneToManyField(field, relationFieldName) {
+    const columnField = relationFieldName;
+    const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
+    const oldDescription = field.description ? `
+${field.description}` : "";
+    return __spreadProps(__spreadValues({}, field), {
+      description: `${fieldDescription}${oldDescription}`
+    });
+  }
+  updateManyToOneField(field, relationFieldName, columnName) {
+    if (!manyToOneMetadata || !manyToOneMetadata.key) {
+      const columnField = columnName || field.name;
+      const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
+      const oldDescription = field.description ? `
+${field.description}` : "";
+      return __spreadProps(__spreadValues({}, field), {
+        description: `${fieldDescription}${oldDescription}`
+      });
+    }
+    return field;
+  }
+  updateOneToOneField(field, columnName) {
+    if (!columnName) {
+      const columnField = field.name;
+      const fieldDescription = relationshipOneToOneFieldDescriptionTemplate("oneToOne", columnField);
+      const oldDescription = field.description ? `
+${field.description}` : "";
+      return __spreadProps(__spreadValues({}, field), {
+        description: `${fieldDescription}${oldDescription}`
+      });
+    }
+    return field;
+  }
+  addOneToMany(ownerType, field, oneToManyAnnotation, corresspondingManyToOneMetadata) {
+    this.validateOneToManyRelationship(ownerType.name, field, oneToManyAnnotation, corresspondingManyToOneMetadata);
+    if (!oneToManyAnnotation.key) {
+      return;
+    }
+    const relationType = assertObjectType(getNamedType5(field.type));
+    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
+      kind: "oneToMany",
+      owner: ownerType,
+      ownerField: field,
+      relationType,
+      relationFieldName: oneToManyAnnotation.field,
+      relationForeignKey: oneToManyAnnotation.key
+    };
+  }
+  addManyToOne(ownerType, field, manyToOneAnnotation) {
+    this.validateManyToOneField(ownerType.name, field, manyToOneAnnotation);
+    if (!manyToOneAnnotation.key) {
+      return;
+    }
+    const relationType = assertObjectType(getNamedType5(field.type));
+    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
+      kind: "manyToOne",
+      owner: ownerType,
+      ownerField: field,
+      relationType,
+      relationFieldName: manyToOneAnnotation.field,
+      relationForeignKey: manyToOneAnnotation.key
+    };
+  }
+  addOneToOne(ownerType, field, oneToOneAnnotation) {
+    this.validateOneToOneRelationship(ownerType.name, field, oneToOneAnnotation);
+    if (!oneToOneAnnotation.key) {
+      return;
+    }
+    const relationType = assertObjectType(getNamedType5(field.type));
+    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
+      kind: "oneToOne",
+      owner: ownerType,
+      ownerField: field,
+      relationType,
+      relationFieldName: oneToOneAnnotation.field,
+      relationForeignKey: oneToOneAnnotation.key
+    };
+  }
+  validateOneToManyRelationship(modelName, field, oneToManyMetadata, corresspondingManyToOneMetadata) {
+    this.validateRelationshipField(modelName, field, oneToManyMetadata);
+    if (oneToManyMetadata.kind !== "oneToMany") {
+      throw new Error(`${modelName}.${field.name} should be a @oneToMany field, but has a @${oneToManyMetadata.kind} annotation`);
+    }
+    const relationModelType = assertObjectType(getNamedType5(field.type));
+    const relationField = relationModelType.getFields()[oneToManyMetadata.field];
+    if (!relationField) {
+      return;
+    }
+    if (hasListType(relationField.type)) {
+      throw new Error(`${relationModelType.name}.${relationField.name} is a list type, but should be '${relationField.name}: ${modelName}'.`);
+    }
+    const relationFieldBaseType = getNamedType5(relationField.type);
+    if (!isObjectType2(relationFieldBaseType) || relationFieldBaseType.name !== modelName) {
+      throw new Error(`${modelName}.${field.name} relationship field maps to ${relationModelType.name}.${relationField.name} (${relationFieldBaseType.name} type) which should be ${modelName} type.`);
+    }
+    if ((oneToManyMetadata == null ? void 0 : oneToManyMetadata.key) !== (corresspondingManyToOneMetadata == null ? void 0 : corresspondingManyToOneMetadata.key)) {
+      throw new Error(`${modelName}.${field.name} and ${relationModelType.name}.${relationField.name} 'key' annotations are different. Ensure both are the same, or remove one so that it can be generated.`);
+    }
+  }
+  validateManyToOneField(modelName, field, manyToOneAnnotation) {
+    this.validateRelationshipField(modelName, field, manyToOneAnnotation);
+    if (manyToOneAnnotation.kind !== "manyToOne") {
+      throw new Error(`${modelName}.${field.name} should be a @manyToOne field, but has a @${manyToOneAnnotation.kind} annotation`);
+    }
+  }
+  validateOneToOneRelationship(modelName, field, oneToOneAnnotation) {
+    this.validateRelationshipField(modelName, field, oneToOneAnnotation);
+    if (oneToOneAnnotation.kind !== "oneToOne") {
+      throw new Error(`${modelName}.${field.name} should be a @oneToOne field, but has a ${oneToOneAnnotation.kind} annotation`);
+    }
+    if (hasListType(field.type)) {
+      throw new Error(`${modelName}.${field.name} is a list type, but should be an object.`);
+    }
+  }
+  validateRelationshipField(modelName, field, relationshipAnnotation) {
+    if (!relationshipAnnotation) {
+      throw new Error(`${modelName}.${field.name} is missing a relationship annotation.`);
+    }
+    const fieldBaseType = getNamedType5(field.type);
+    if (!isObjectType2(fieldBaseType)) {
+      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but has type ${fieldBaseType.name}. Relationship fields must be object types.`);
+    }
+    if (!isModelType(fieldBaseType)) {
+      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but type ${fieldBaseType.name} is missing the @model annotation.`);
+    }
+  }
+};
+
 // src/utils/printSchemaWithDirectives.ts
 import { SchemaComposer } from "graphql-compose";
 function printSchemaWithDirectives(schemaOrSDL) {
   const schemaComposer = new SchemaComposer(schemaOrSDL);
   return schemaComposer.toSDL({ exclude: ["String", "ID", "Boolean", "Float", "Int"] });
-}
-
-// src/utils/fieldTransformHelpers.ts
-import { parseMetadata as parseMetadata8 } from "graphql-metadata";
-var TransformType = /* @__PURE__ */ ((TransformType2) => {
-  TransformType2["UPDATE"] = "onUpdateFieldTransform";
-  TransformType2["CREATE"] = "onCreateFieldTransform";
-  return TransformType2;
-})(TransformType || {});
-function getFieldTransformations(baseType) {
-  const fieldMap = baseType.getFields();
-  const fieldTransformMap = {
-    ["onCreateFieldTransform" /* CREATE */]: [],
-    ["onUpdateFieldTransform" /* UPDATE */]: []
-  };
-  for (const field of Object.values(fieldMap)) {
-    if (parseMetadata8("updatedAt", field.description)) {
-      fieldTransformMap["onUpdateFieldTransform" /* UPDATE */].push({
-        fieldName: field.name,
-        transform: () => {
-          return new Date().getTime();
-        }
-      });
-      fieldTransformMap["onCreateFieldTransform" /* CREATE */].push({
-        fieldName: field.name,
-        transform: () => {
-          return new Date().getTime();
-        }
-      });
-    }
-    if (parseMetadata8("createdAt", field.description)) {
-      fieldTransformMap["onCreateFieldTransform" /* CREATE */].push({
-        fieldName: field.name,
-        transform: () => {
-          return new Date().getTime();
-        }
-      });
-    }
-  }
-  return fieldTransformMap;
 }
 
 // src/runtime/CRUDService.ts
@@ -988,10 +945,8 @@ var CRUDService = class {
   db;
   model;
   pubSub;
-  crudOptions;
   constructor(model, db, config) {
     this.model = model;
-    this.crudOptions = config.crudOptions;
     this.db = db;
     this.pubSub = config.pubSub;
   }
@@ -1001,7 +956,7 @@ var CRUDService = class {
   async create(data2, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.create(data2, selectedFields, uniqueFields);
-    if (this.pubSub && this.crudOptions.subCreate) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("create" /* CREATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("new", result);
       this.pubSub.publish(topic, payload).catch((error) => {
@@ -1013,7 +968,7 @@ var CRUDService = class {
   async update(data2, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.update(data2, selectedFields, uniqueFields);
-    if (this.pubSub && this.crudOptions.subUpdate) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("update" /* UPDATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("updated", result);
       this.pubSub.publish(topic, payload).catch((error) => {
@@ -1032,7 +987,7 @@ var CRUDService = class {
   async delete(args, context, info, uniqueFields) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
     const result = await this.db.delete(data, selectedFields, uniqueFields);
-    if (this.pubSub && this.crudOptions.subDelete) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("delete" /* DELETE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("deleted", result);
       this.pubSub.publish(topic, payload).catch((error) => {
@@ -1136,11 +1091,9 @@ var CRUDService = class {
 import { PubSub } from "graphql-subscriptions";
 function createCRUDService(config) {
   return async (model, dataProvider) => {
-    const serviceConfig = __spreadProps(__spreadValues({
+    const serviceConfig = __spreadValues({
       pubSub: new PubSub()
-    }, config), {
-      crudOptions: model.crudOptions
-    });
+    }, config);
     const crudService = new CRUDService(model, dataProvider, serviceConfig);
     await crudService.initializeUniqueIndex();
     return crudService;
@@ -1459,6 +1412,30 @@ function extractConfig(wrappedScalar) {
   const _a = wrappedScalar.toConfig(), { name } = _a, config = __objRest(_a, ["name"]);
   return config;
 }
+
+// src/utils/directives.ts
+var directives = `
+      directive @model on OBJECT
+      directive @unique on FIELD_DEFINITION
+      directive @relation on FIELD_DEFINITION
+      directive @transient on FIELD_DEFINITION
+      directive @constraint(
+        minLength: Int
+        maxLength: Int
+        startsWith: String
+        endsWith: String
+        contains: String
+        notContains: String
+        pattern: String
+        format: String
+        differsFrom: String
+        min: Float
+        max: Float
+        exclusiveMin: Float
+        exclusiveMax: Float
+        notEqual: Float
+      ) on ARGUMENT_DEFINITION | FIELD_DEFINITION
+    `;
 export {
   BigInt_,
   Byte,
@@ -1511,7 +1488,6 @@ export {
   RelationshipMetadataBuilder,
   Time,
   Timestamp,
-  TransformType,
   URL,
   USCurrency,
   UUID,
@@ -1521,13 +1497,12 @@ export {
   createCRUDService,
   createInMemoryFilterPredicate,
   defaultTableNameTransform,
+  directives,
   extendOneToManyFieldArguments,
   extendRelationshipFields,
   filterModelTypes,
-  filterNonModelTypes,
   getColumnName,
   getFieldName,
-  getFieldTransformations,
   getInputFieldName,
   getInputFieldTypeName,
   getInputTypeName,
@@ -1547,7 +1522,6 @@ export {
   isOneToManyField,
   isSpecifiedGraphbackJSONScalarType,
   isSpecifiedGraphbackScalarType,
-  isTransientField,
   lowerCaseFirstChar,
   parseRelationshipAnnotation,
   printSchemaWithDirectives,

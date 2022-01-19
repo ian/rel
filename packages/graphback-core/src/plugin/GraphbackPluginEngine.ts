@@ -1,6 +1,5 @@
 import { buildSchema, GraphQLSchema } from 'graphql'
 import { GraphbackCoreMetadata } from './GraphbackCoreMetadata'
-import { GraphbackGlobalConfig } from './GraphbackGlobalConfig'
 import { GraphbackPlugin } from './GraphbackPlugin'
 
 /**
@@ -8,7 +7,6 @@ import { GraphbackPlugin } from './GraphbackPlugin'
  */
 export interface GraphBackPluginEngineOptions {
   schema: GraphQLSchema | string
-  config?: GraphbackGlobalConfig
   plugins?: GraphbackPlugin[]
 }
 /**
@@ -27,7 +25,7 @@ export class GraphbackPluginEngine {
   private readonly plugins: GraphbackPlugin[]
   private readonly metadata: GraphbackCoreMetadata
 
-  public constructor ({ schema, config, plugins = [] }: GraphBackPluginEngineOptions) {
+  public constructor ({ schema, plugins = [] }: GraphBackPluginEngineOptions) {
     this.plugins = plugins
     if (!schema) {
       throw new Error('Plugin engine requires schema')
@@ -38,7 +36,7 @@ export class GraphbackPluginEngine {
     } else {
       graphQLSchema = schema
     }
-    this.metadata = new GraphbackCoreMetadata(config, graphQLSchema)
+    this.metadata = new GraphbackCoreMetadata(graphQLSchema)
   }
 
   public registerPlugin (...plugins: GraphbackPlugin[]): void {

@@ -36,7 +36,6 @@ test.after.each(async () => {
 })
 
 const postSchema = `
-      """@model"""
       type Post {
         text: String
         likes: Int
@@ -324,11 +323,8 @@ test('escaping regex strings', async () => {
 
 test.skip('can filter metadata fields', async () => {
   context = await createTestingContext(`
-    """
-    @model
-    """
     type Post {
-    text: String
+      text: String
     }
     `)
 

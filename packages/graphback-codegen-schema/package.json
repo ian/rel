@@ -24,7 +24,6 @@
     "@graphql-tools/utils": "7.1.4",
     "graphql": "15.8.0",
     "graphql-compose": "7.23.0",
-    "graphql-metadata": "0.7.6",
     "pluralize": "8.0.0"
   },
   "peerDependencies": {

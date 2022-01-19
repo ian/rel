@@ -3,8 +3,6 @@
 export * from './crud'
 export * from './plugin/GraphbackPlugin'
 export * from './plugin/GraphbackPluginEngine'
-export * from './plugin/GraphbackGlobalConfig'
-export * from './plugin/GraphbackCRUDGeneratorConfig'
 export * from './plugin/ModelDefinition'
 export * from './plugin/getSelectedFieldsFromResolverInfo'
 export * from './plugin/GraphbackCoreMetadata'
@@ -13,9 +11,9 @@ export * from './relationships/RelationshipMetadataBuilder'
 export * from './relationships/relationshipHelpers'
 export * from './db'
 export * from './utils/printSchemaWithDirectives'
-export * from './utils/fieldTransformHelpers'
-export * from './utils/isTransientField'
 
 export * from './runtime'
 
 export * from './scalars'
+
+export * from './utils/directives'

@@ -54,7 +54,7 @@ test('Test plugin engine', async () => {
   }
 
   let engine = new GraphbackPluginEngine({ schema: schemaText });
-  engine = new GraphbackPluginEngine({ schema: buildSchema(schemaText), config: { crudMethods } });
+  engine = new GraphbackPluginEngine({ schema: buildSchema(schemaText)});
 
   expect.assertions(6);
 

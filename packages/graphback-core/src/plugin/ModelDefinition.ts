@@ -1,6 +1,5 @@
 import { GraphQLObjectType } from 'graphql'
 import { FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
-import { GraphbackCRUDGeneratorConfig } from './GraphbackCRUDGeneratorConfig'
 
 /**
  * Describe the name and type of primary key
@@ -23,7 +22,6 @@ export interface ModelDefinition {
   fields: ModelFieldMap
   graphqlType: GraphQLObjectType
   relationships: FieldRelationshipMetadata[]
-  crudOptions: GraphbackCRUDGeneratorConfig
   uniqueFields: string[]
 }
 

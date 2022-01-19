@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import { PubSubEngine, withFilter } from 'graphql-subscriptions'
 import { GraphQLResolveInfo } from 'graphql'
-import { GraphbackCRUDGeneratorConfig, GraphbackOperationType, upperCaseFirstChar, getSubscriptionName } from '..'
+import { GraphbackOperationType, upperCaseFirstChar, getSubscriptionName } from '..'
 import { ModelDefinition } from '../plugin/ModelDefinition'
 import { getSelectedFieldsFromResolverInfo, getResolverInfoFieldsList } from '../plugin/getSelectedFieldsFromResolverInfo'
 import { createInMemoryFilterPredicate } from './createInMemoryFilterPredicate'
@@ -17,11 +17,6 @@ export interface CRUDServiceConfig {
    * PubSub implementation for creating subscriptions
    */
   pubSub?: PubSubEngine
-
-  /**
-   * Model-specific CRUD configuration
-   */
-  crudOptions: GraphbackCRUDGeneratorConfig
 }
 /**
  * Default implementation of the CRUD service offering following capabilities:
@@ -34,11 +29,9 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   protected db: GraphbackDataProvider
   protected model: ModelDefinition
   protected pubSub: PubSubEngine
-  protected crudOptions: GraphbackCRUDGeneratorConfig
 
   public constructor (model: ModelDefinition, db: GraphbackDataProvider, config: CRUDServiceConfig) {
     this.model = model
-    this.crudOptions = config.crudOptions
     this.db = db
     this.pubSub = config.pubSub
   }
@@ -52,7 +45,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
 
     const result = await this.db.create(data, selectedFields, uniqueFields)
 
-    if (this.pubSub && this.crudOptions.subCreate) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.CREATE, this.model.graphqlType.name)
       // TODO use subscription name mapping
       const payload = this.buildEventPayload('new', result)
@@ -70,7 +63,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
 
     const result = await this.db.update(data, selectedFields, uniqueFields)
 
-    if (this.pubSub && this.crudOptions.subUpdate) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.UPDATE, this.model.graphqlType.name)
       // TODO use subscription name mapping
       const payload = this.buildEventPayload('updated', result)
@@ -96,7 +89,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
     const result = await this.db.delete(data, selectedFields, uniqueFields)
 
-    if (this.pubSub && this.crudOptions.subDelete) {
+    if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.DELETE, this.model.graphqlType.name)
       const payload = this.buildEventPayload('deleted', result)
 

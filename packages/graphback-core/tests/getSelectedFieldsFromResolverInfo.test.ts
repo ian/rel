@@ -7,7 +7,7 @@ describe('getSelectedFieldsFromResolverInfo', () => {
   const setup = (schemaAST: string): { schema: GraphQLSchema, metadata: GraphbackCoreMetadata } => {
     const schema = buildSchema(schemaAST)
 
-    const metadata = new GraphbackCoreMetadata({ crudMethods: {} }, schema)
+    const metadata = new GraphbackCoreMetadata(schema)
 
     return { metadata, schema }
   }

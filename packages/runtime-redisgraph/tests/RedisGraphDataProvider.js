@@ -39,9 +39,8 @@ let context
 const fields = ['__id', 'text']
 
 const todoSchema = `
-  """@model(unique: ['text'])"""
   type Todos {
-    text: String,
+    text: String @unique,
     order: Int
   }
   `
@@ -242,9 +241,6 @@ test('test orderby with desc order', async () => {
 
 test.skip('createdAt', async () => {
   context = await createTestingContext(`
-    """
-    @model
-    """
     type Note {
       text: String
     }
@@ -260,9 +256,6 @@ test.skip('createdAt', async () => {
 
 test.skip('updatedAt', async () => {
   context = await createTestingContext(`
-    """
-    @model
-    """
     type Note {
       text: String
     }
@@ -292,7 +285,6 @@ test.skip('updatedAt', async () => {
 test('select only requested fields', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todos {
      text: String,
      description: String
@@ -342,7 +334,7 @@ test('select only requested fields', async () => {
 
 test('get todos with field value not in a given arrray argument', async () => {
   context = await createTestingContext(
-    `"""@model"""
+    `
     type Todo {
      items: Int
     }
@@ -404,7 +396,6 @@ test('get todos with field value not in a given arrray argument', async () => {
 test('a && (b || c)', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -465,7 +456,6 @@ test('a && (b || c)', async () => {
 test('a && (b || c) starting at first OR', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -530,7 +520,6 @@ test('a && (b || c) starting at first OR', async () => {
 test('a && (c || b) from nested OR', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -595,7 +584,6 @@ test('a && (c || b) from nested OR', async () => {
 test('a || a || a', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -658,7 +646,6 @@ test('a || a || a', async () => {
 test('a || (a && b)', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -723,7 +710,6 @@ test('a || (a && b)', async () => {
 test('Aggregations', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -779,7 +765,6 @@ test('Aggregations', async () => {
 test('Aggregations with group', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int
@@ -848,7 +833,6 @@ test('Aggregations with group', async () => {
 test('Aggregations with group and DISTINCT', async () => {
   context = await createTestingContext(
     `
-    """@model"""
     type Todo {
       a: Int
       b: Int

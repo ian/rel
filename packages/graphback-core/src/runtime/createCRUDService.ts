@@ -15,7 +15,6 @@ export function createCRUDService (config?: CreateCRUDServiceOptions): ServiceCr
     const serviceConfig: CRUDServiceConfig = {
       pubSub: new PubSub(),
       ...config,
-      crudOptions: model.crudOptions
     }
 
     const crudService = new CRUDService(model, dataProvider, serviceConfig)

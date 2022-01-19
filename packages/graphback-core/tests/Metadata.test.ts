@@ -1,8 +1,8 @@
 import { buildSchema } from 'graphql'
-import { GraphbackCoreMetadata, GraphbackCRUDGeneratorConfig, getModelByName } from '../src'
+import { GraphbackCoreMetadata, getModelByName } from '../src'
 
-const setup = (model: string, config?: { crudMethods?: GraphbackCRUDGeneratorConfig }) => {
-  const metadata = new GraphbackCoreMetadata({ crudMethods: config?.crudMethods }, buildSchema(model))
+const setup = (model: string) => {
+  const metadata = new GraphbackCoreMetadata(buildSchema(model))
 
   return { metadata }
 }
@@ -32,9 +32,8 @@ type Note {
 
   const models = metadata.getModelDefinitions()
 
-  const { crudOptions, fields, relationships, primaryKey } = getModelByName('Note', models)
+  const { fields, relationships, primaryKey } = getModelByName('Note', models)
 
-  expect(crudOptions).toBeDefined()
   expect(relationships).toHaveLength(1)
   expect(fields).toEqual({
     id: {
@@ -56,32 +55,6 @@ type Note {
   expect(primaryKey).toEqual({
     name: 'id',
     type: 'ID'
-  })
-})
-
-test('Model has default crud configuration', async () => {
-  const { metadata } = setup(`
-"""
-@model
-"""
-type Note {
-  id: ID!
-  title: String!
-}`)
-
-  const models = metadata.getModelDefinitions()
-
-  const { crudOptions } = getModelByName('Note', models)
-
-  expect(crudOptions).toEqual({
-    findOne: true,
-    find: true,
-    create: true,
-    update: true,
-    delete: true,
-    subCreate: true,
-    subDelete: true,
-    subUpdate: true
   })
 })
 
@@ -108,7 +81,4 @@ type Comment {
 
   const note = getModelByName('Note', models)
   const comment = getModelByName('Comment', models)
-
-  expect(note.crudOptions.create).toBe(false)
-  expect(comment.crudOptions.create).toBe(true)
 })
