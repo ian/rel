@@ -3,7 +3,7 @@ import { ServiceCreator, DataProviderCreator, GraphbackPlugin, GraphbackPluginEn
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from '@graphback/codegen-schema'
 import { mergeSchemas } from '@graphql-tools/merge'
 import { PubSub } from 'graphql-subscriptions'
-import { constraint } from 'node-graphql-constraint-lambda'
+import { constraintDirective } from 'graphql-constraint-directive'
 
 export interface GraphbackAPIConfig {
   /**
@@ -128,12 +128,9 @@ export async function buildGraphbackAPI (model: string | GraphQLSchema,config = 
 
   const resolvers = metadata.getResolvers()
 
+  const schema = constraintDirective()(metadata.getSchema())
   // merge resolvers into schema to make it executable
-  const schemaWithResolvers = mergeSchemas({ schemas: [metadata.getSchema()], resolvers,
-    schemaDirectives: {
-      constraint
-    } 
-  })
+  const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers})
 
   const typeDefs = printSchemaWithDirectives(schemaWithResolvers)
 

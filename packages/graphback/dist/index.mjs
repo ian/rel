@@ -33,7 +33,7 @@ import { GraphbackPluginEngine, printSchemaWithDirectives, createCRUDService } f
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from "@graphback/codegen-schema";
 import { mergeSchemas } from "@graphql-tools/merge";
 import { PubSub } from "graphql-subscriptions";
-import { constraint } from "node-graphql-constraint-lambda";
+import { constraintDirective } from "graphql-constraint-directive";
 async function createServices(models, createService, createProvider) {
   const services = {};
   for (const model of models) {
@@ -78,13 +78,8 @@ async function buildGraphbackAPI(model, config = {}) {
     });
   };
   const resolvers = metadata.getResolvers();
-  const schemaWithResolvers = mergeSchemas({
-    schemas: [metadata.getSchema()],
-    resolvers,
-    schemaDirectives: {
-      constraint
-    }
-  });
+  const schema = constraintDirective()(metadata.getSchema());
+  const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers });
   const typeDefs = printSchemaWithDirectives(schemaWithResolvers);
   return {
     schema: schemaWithResolvers,

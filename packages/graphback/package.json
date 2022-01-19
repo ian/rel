@@ -24,8 +24,8 @@
     "@graphback/core": "*",
     "@graphql-tools/merge": "6.2.6",
     "graphql": "15.8.0",
-    "graphql-subscriptions": "2.0.0",
-    "node-graphql-constraint-lambda": "^3.2.2"
+    "graphql-constraint-directive": "^2.3.0",
+    "graphql-subscriptions": "2.0.0"
   },
   "peerDependencies": {
     "graphql": "^15.8.0"

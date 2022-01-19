@@ -237,8 +237,7 @@ var buildFilterInputType = (schemaComposer, modelType) => {
       const type = getInputName(namedType);
       scalarInputFields[field.name] = {
         name: field.name,
-        type,
-        extensions: field.extensions
+        type
       };
     }
   }
