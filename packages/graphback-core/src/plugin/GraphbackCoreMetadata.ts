@@ -1,7 +1,6 @@
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
-import { RelationshipMetadataBuilder, FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
 import { ModelDefinition, ModelFieldMap } from './ModelDefinition'
 
 /**
@@ -88,7 +87,7 @@ export class GraphbackCoreMetadata {
 
       const graphqlField = modelFields[field]
 
-      if (graphqlField.extensions?.directives?.transient) {
+      if (graphqlField.extensions?.directives?.some?.(d => d.name === "transient")) {
         fields[field] = {
           name: field,
           transient: true,
@@ -97,7 +96,7 @@ export class GraphbackCoreMetadata {
         continue
       }
 
-      if (graphqlField.extensions?.directives?.unique) {
+      if (graphqlField.extensions?.directives?.some?.(d => d.name === "unique")) {
         uniqueFields.push(field)
       }
 

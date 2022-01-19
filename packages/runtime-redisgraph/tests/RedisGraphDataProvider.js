@@ -910,29 +910,28 @@ test('Test UNIQUE constraint', async () => {
       Todos: defaultTodoSeed
     }
   })
-  const uniqueFields = ["text"]
   try {
     await context.providers.Todos.create({
       text: 'todo'
-    },[], uniqueFields)
+    },[])
     assert.unreachable()
   } catch(e) {}
 
   const todo = await context.providers.Todos.create({
       text: 'todo3'
-    },[], uniqueFields)
+    },[])
   try {
     await context.providers.Todos.update(
       {
         __id: todo.__id,
         text: 'todo'
       },
-      fields, uniqueFields)
+      fields)
 
     assert.unreachable()
   } catch(e) {}
 
-  await context.providers.Todos.delete({ __id: todo.__id }, fields, uniqueFields)
+  await context.providers.Todos.delete({ __id: todo.__id }, fields)
   
   try {
     await context.providers.Todos.create({

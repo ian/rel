@@ -1,6 +1,6 @@
 import { GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
 import pluralize from 'pluralize'
-import { parseRelationshipAnnotation, transformForeignKeyName, getPrimaryKey } from '..'
+import { parseRelationshipAnnotation, getPrimaryKey } from '..'
 import { GraphbackOperationType } from './GraphbackOperationType'
 
 // TODO it is esential to document this element
@@ -95,52 +95,14 @@ export const getSubscriptionName = (typeName: string, action: GraphbackOperation
   return ''
 }
 
-export function isInputField (field: GraphQLField<any, any>): boolean {
-  const relationshipAnnotation = parseRelationshipAnnotation(field.description)
-
-  return (relationshipAnnotation == null) || relationshipAnnotation.kind !== 'oneToMany'
-}
-
-// tslint:disable-next-line: no-reserved-keywords
-export function getRelationFieldName (field: any, type: any) {
-  let fieldName: string
-  if (field.annotations.OneToOne) {
-    fieldName = field.annotations.OneToOne.field
-  } else if (field.annotations.ManyToOne) {
-    fieldName = field.annotations.ManyToOne.field
-  } else if (field.annotations.OneToMany) {
-    fieldName = field.annotations.OneToMany.field
-  } else {
-    fieldName = type.name
-  }
-
-  return fieldName
-}
-
 export function getInputFieldName (field: GraphQLField<any, any>): string {
-  const relationshipAnnotation = parseRelationshipAnnotation(field.description)
-
-  if (relationshipAnnotation == null) {
-    return field.name
-  }
-
-  if (relationshipAnnotation.kind === 'oneToMany') {
-    throw new Error('Not inputtable field!')
-  }
-
-  return relationshipAnnotation.key || transformForeignKeyName(field.name)
+  return field.name
 }
 
 export function getInputFieldTypeName (modelName: string, field: GraphQLField<any, any>, operation: GraphbackOperationType): string {
   const fieldType = getNamedType(field.type)
 
   if (isObjectType(fieldType)) {
-    const relationshipAnnotation = parseRelationshipAnnotation(field.description)
-
-    if (relationshipAnnotation == null) {
-      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}".`)
-    }
-
     const idField = getPrimaryKey(fieldType)
 
     return getNamedType(idField.type).name

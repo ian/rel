@@ -7,8 +7,6 @@ export * from './plugin/ModelDefinition'
 export * from './plugin/getSelectedFieldsFromResolverInfo'
 export * from './plugin/GraphbackCoreMetadata'
 
-export * from './relationships/RelationshipMetadataBuilder'
-export * from './relationships/relationshipHelpers'
 export * from './db'
 export * from './utils/printSchemaWithDirectives'
 

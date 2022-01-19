@@ -1,5 +1,4 @@
 import { GraphQLObjectType } from 'graphql'
-import { FieldRelationshipMetadata } from '../relationships/RelationshipMetadataBuilder'
 
 /**
  * Describe the name and type of primary key
@@ -21,7 +20,7 @@ export interface ModelDefinition {
   primaryKey: FieldDescriptor
   fields: ModelFieldMap
   graphqlType: GraphQLObjectType
-  relationships: FieldRelationshipMetadata[]
+  relationships: string[]
   uniqueFields: string[]
 }
 

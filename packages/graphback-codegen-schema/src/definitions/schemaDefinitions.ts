@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { GraphQLInputObjectType, GraphQLNamedInputType, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull, GraphQLField, getNamedType, isScalarType, GraphQLInputFieldMap, GraphQLScalarType, GraphQLNamedType, GraphQLInputField, isEnumType, isObjectType, isInputObjectType, GraphQLInputType, getNullableType, isListType } from 'graphql'
-import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, isOneToManyField, getPrimaryKey, ModelDefinition, FILTER_SUPPORTED_SCALARS, isAutoPrimaryKey } from '@graphback/core'
+import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, getPrimaryKey, ModelDefinition, FILTER_SUPPORTED_SCALARS, isAutoPrimaryKey } from '@graphback/core'
 import { SchemaComposer } from 'graphql-compose'
 import { copyWrappingType } from './copyWrappingType'
 
@@ -122,7 +122,7 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
     if (!typeName) {
       continue
     }
-    if(field?.extensions?.directives?.transient) {
+    if(field?.extensions?.directives?.some?.(d => d.name === "transient")) {
       continue
     }
 
@@ -132,10 +132,10 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
 
     const extensions = {}
 
-    if(field?.extensions?.directives?.constraint) {
-      extensions.directives = {
-        constraint: field.extensions.directives.constraint
-      }
+    const constraintDirective = field?.extensions?.directives?.find?.(d => d.name === "constraint")
+
+    if(constraintDirective) {
+      extensions.directives = [constraintDirective]
     }
 
     const inputField: GraphQLInputField = {
@@ -240,7 +240,7 @@ export const buildSubscriptionFilterType = (schemaComposer: SchemaComposer<any>,
   const modelFields = Object.values(modelType.getFields())
   const subscriptionFilterFields = modelFields.filter((f: GraphQLField<any, any>) => {
     const namedType = getNamedType(f.type)
-    return !f.extensions?.directives?.transient && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
+    return !f.extensions?.directives?.some?.(d => d.name === "transient") && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
   })
 
   const fields = {

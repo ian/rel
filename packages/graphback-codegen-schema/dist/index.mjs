@@ -1,11 +1,7 @@
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -21,272 +17,15 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-};
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __reExport = (target, module, copyDefault, desc) => {
-  if (module && typeof module === "object" || typeof module === "function") {
-    for (let key of __getOwnPropNames(module))
-      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== "default"))
-        __defProp(target, key, { get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable });
-  }
-  return target;
-};
-var __toESM = (module, isNodeMode) => {
-  return __reExport(__markAsModule(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", !isNodeMode && module && module.__esModule ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
-};
-
-// ../../node_modules/.pnpm/tsup@5.11.9_typescript@4.5.4/node_modules/tsup/assets/esm_shims.js
-var init_esm_shims = __esm({
-  "../../node_modules/.pnpm/tsup@5.11.9_typescript@4.5.4/node_modules/tsup/assets/esm_shims.js"() {
-  }
-});
-
-// ../../node_modules/.pnpm/dataloader@2.0.0/node_modules/dataloader/index.js
-var require_dataloader = __commonJS({
-  "../../node_modules/.pnpm/dataloader@2.0.0/node_modules/dataloader/index.js"(exports, module) {
-    "use strict";
-    init_esm_shims();
-    var DataLoader2 = /* @__PURE__ */ function() {
-      function DataLoader3(batchLoadFn, options) {
-        if (typeof batchLoadFn !== "function") {
-          throw new TypeError("DataLoader must be constructed with a function which accepts " + ("Array<key> and returns Promise<Array<value>>, but got: " + batchLoadFn + "."));
-        }
-        this._batchLoadFn = batchLoadFn;
-        this._maxBatchSize = getValidMaxBatchSize(options);
-        this._batchScheduleFn = getValidBatchScheduleFn(options);
-        this._cacheKeyFn = getValidCacheKeyFn(options);
-        this._cacheMap = getValidCacheMap(options);
-        this._batch = null;
-      }
-      var _proto = DataLoader3.prototype;
-      _proto.load = function load(key) {
-        if (key === null || key === void 0) {
-          throw new TypeError("The loader.load() function must be called with a value," + ("but got: " + String(key) + "."));
-        }
-        var batch = getCurrentBatch(this);
-        var cacheMap = this._cacheMap;
-        var cacheKey = this._cacheKeyFn(key);
-        if (cacheMap) {
-          var cachedPromise = cacheMap.get(cacheKey);
-          if (cachedPromise) {
-            var cacheHits = batch.cacheHits || (batch.cacheHits = []);
-            return new Promise(function(resolve2) {
-              cacheHits.push(function() {
-                return resolve2(cachedPromise);
-              });
-            });
-          }
-        }
-        batch.keys.push(key);
-        var promise = new Promise(function(resolve2, reject) {
-          batch.callbacks.push({
-            resolve: resolve2,
-            reject
-          });
-        });
-        if (cacheMap) {
-          cacheMap.set(cacheKey, promise);
-        }
-        return promise;
-      };
-      _proto.loadMany = function loadMany(keys) {
-        if (!isArrayLike(keys)) {
-          throw new TypeError("The loader.loadMany() function must be called with Array<key> " + ("but got: " + keys + "."));
-        }
-        var loadPromises = [];
-        for (var i = 0; i < keys.length; i++) {
-          loadPromises.push(this.load(keys[i])["catch"](function(error) {
-            return error;
-          }));
-        }
-        return Promise.all(loadPromises);
-      };
-      _proto.clear = function clear(key) {
-        var cacheMap = this._cacheMap;
-        if (cacheMap) {
-          var cacheKey = this._cacheKeyFn(key);
-          cacheMap["delete"](cacheKey);
-        }
-        return this;
-      };
-      _proto.clearAll = function clearAll() {
-        var cacheMap = this._cacheMap;
-        if (cacheMap) {
-          cacheMap.clear();
-        }
-        return this;
-      };
-      _proto.prime = function prime(key, value) {
-        var cacheMap = this._cacheMap;
-        if (cacheMap) {
-          var cacheKey = this._cacheKeyFn(key);
-          if (cacheMap.get(cacheKey) === void 0) {
-            var promise;
-            if (value instanceof Error) {
-              promise = Promise.reject(value);
-              promise["catch"](function() {
-              });
-            } else {
-              promise = Promise.resolve(value);
-            }
-            cacheMap.set(cacheKey, promise);
-          }
-        }
-        return this;
-      };
-      return DataLoader3;
-    }();
-    var enqueuePostPromiseJob = typeof process === "object" && typeof process.nextTick === "function" ? function(fn) {
-      if (!resolvedPromise) {
-        resolvedPromise = Promise.resolve();
-      }
-      resolvedPromise.then(function() {
-        return process.nextTick(fn);
-      });
-    } : setImmediate || setTimeout;
-    var resolvedPromise;
-    function getCurrentBatch(loader) {
-      var existingBatch = loader._batch;
-      if (existingBatch !== null && !existingBatch.hasDispatched && existingBatch.keys.length < loader._maxBatchSize && (!existingBatch.cacheHits || existingBatch.cacheHits.length < loader._maxBatchSize)) {
-        return existingBatch;
-      }
-      var newBatch = {
-        hasDispatched: false,
-        keys: [],
-        callbacks: []
-      };
-      loader._batch = newBatch;
-      loader._batchScheduleFn(function() {
-        return dispatchBatch(loader, newBatch);
-      });
-      return newBatch;
-    }
-    function dispatchBatch(loader, batch) {
-      batch.hasDispatched = true;
-      if (batch.keys.length === 0) {
-        resolveCacheHits(batch);
-        return;
-      }
-      var batchPromise = loader._batchLoadFn(batch.keys);
-      if (!batchPromise || typeof batchPromise.then !== "function") {
-        return failedDispatch(loader, batch, new TypeError("DataLoader must be constructed with a function which accepts Array<key> and returns Promise<Array<value>>, but the function did " + ("not return a Promise: " + String(batchPromise) + ".")));
-      }
-      batchPromise.then(function(values) {
-        if (!isArrayLike(values)) {
-          throw new TypeError("DataLoader must be constructed with a function which accepts Array<key> and returns Promise<Array<value>>, but the function did " + ("not return a Promise of an Array: " + String(values) + "."));
-        }
-        if (values.length !== batch.keys.length) {
-          throw new TypeError("DataLoader must be constructed with a function which accepts Array<key> and returns Promise<Array<value>>, but the function did not return a Promise of an Array of the same length as the Array of keys." + ("\n\nKeys:\n" + String(batch.keys)) + ("\n\nValues:\n" + String(values)));
-        }
-        resolveCacheHits(batch);
-        for (var i = 0; i < batch.callbacks.length; i++) {
-          var value = values[i];
-          if (value instanceof Error) {
-            batch.callbacks[i].reject(value);
-          } else {
-            batch.callbacks[i].resolve(value);
-          }
-        }
-      })["catch"](function(error) {
-        return failedDispatch(loader, batch, error);
-      });
-    }
-    function failedDispatch(loader, batch, error) {
-      resolveCacheHits(batch);
-      for (var i = 0; i < batch.keys.length; i++) {
-        loader.clear(batch.keys[i]);
-        batch.callbacks[i].reject(error);
-      }
-    }
-    function resolveCacheHits(batch) {
-      if (batch.cacheHits) {
-        for (var i = 0; i < batch.cacheHits.length; i++) {
-          batch.cacheHits[i]();
-        }
-      }
-    }
-    function getValidMaxBatchSize(options) {
-      var shouldBatch = !options || options.batch !== false;
-      if (!shouldBatch) {
-        return 1;
-      }
-      var maxBatchSize = options && options.maxBatchSize;
-      if (maxBatchSize === void 0) {
-        return Infinity;
-      }
-      if (typeof maxBatchSize !== "number" || maxBatchSize < 1) {
-        throw new TypeError("maxBatchSize must be a positive number: " + maxBatchSize);
-      }
-      return maxBatchSize;
-    }
-    function getValidBatchScheduleFn(options) {
-      var batchScheduleFn = options && options.batchScheduleFn;
-      if (batchScheduleFn === void 0) {
-        return enqueuePostPromiseJob;
-      }
-      if (typeof batchScheduleFn !== "function") {
-        throw new TypeError("batchScheduleFn must be a function: " + batchScheduleFn);
-      }
-      return batchScheduleFn;
-    }
-    function getValidCacheKeyFn(options) {
-      var cacheKeyFn = options && options.cacheKeyFn;
-      if (cacheKeyFn === void 0) {
-        return function(key) {
-          return key;
-        };
-      }
-      if (typeof cacheKeyFn !== "function") {
-        throw new TypeError("cacheKeyFn must be a function: " + cacheKeyFn);
-      }
-      return cacheKeyFn;
-    }
-    function getValidCacheMap(options) {
-      var shouldCache = !options || options.cache !== false;
-      if (!shouldCache) {
-        return null;
-      }
-      var cacheMap = options && options.cacheMap;
-      if (cacheMap === void 0) {
-        return /* @__PURE__ */ new Map();
-      }
-      if (cacheMap !== null) {
-        var cacheFunctions = ["get", "set", "delete", "clear"];
-        var missingFunctions = cacheFunctions.filter(function(fnName) {
-          return cacheMap && typeof cacheMap[fnName] !== "function";
-        });
-        if (missingFunctions.length !== 0) {
-          throw new TypeError("Custom cacheMap missing methods: " + missingFunctions.join(", "));
-        }
-      }
-      return cacheMap;
-    }
-    function isArrayLike(x) {
-      return typeof x === "object" && x !== null && typeof x.length === "number" && (x.length === 0 || x.length > 0 && Object.prototype.hasOwnProperty.call(x, x.length - 1));
-    }
-    module.exports = DataLoader2;
-  }
-});
-
-// src/index.ts
-init_esm_shims();
 
 // src/SchemaCRUDPlugin.ts
-init_esm_shims();
-var import_dataloader = __toESM(require_dataloader());
 import { resolve, dirname, join } from "path";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { SchemaComposer } from "graphql-compose";
 import { GraphQLNonNull as GraphQLNonNull3, GraphQLObjectType as GraphQLObjectType2, GraphQLSchema, GraphQLInt as GraphQLInt2, GraphQLFloat, isScalarType as isScalarType2, isSpecifiedScalarType, isObjectType as isObjectType2 } from "graphql";
-import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, extendOneToManyFieldArguments, getInputTypeName as getInputTypeName2, getSelectedFieldsFromResolverInfo, getPrimaryKey as getPrimaryKey2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackOperationType as GraphbackOperationType2, GraphbackPlugin, getInputTypeName as getInputTypeName2, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS as FILTER_SUPPORTED_SCALARS2 } from "@graphback/core";
 
 // src/writer/schemaFormatters.ts
-init_esm_shims();
 var noteString = "NOTE: This schema was generated by Rel and should not be changed manually";
 var tsSchemaFormatter = {
   format: (schemaString) => {
@@ -319,12 +58,10 @@ ${schemaString}`;
 };
 
 // src/definitions/schemaDefinitions.ts
-init_esm_shims();
 import { GraphQLInputObjectType, GraphQLList as GraphQLList2, GraphQLBoolean, GraphQLInt, GraphQLString, GraphQLID, GraphQLEnumType, GraphQLObjectType, GraphQLNonNull as GraphQLNonNull2, getNamedType as getNamedType2, isScalarType, isEnumType, isObjectType, isInputObjectType, getNullableType, isListType as isListType2 } from "graphql";
 import { GraphbackOperationType, getInputTypeName, getInputFieldName, getInputFieldTypeName, getPrimaryKey, FILTER_SUPPORTED_SCALARS, isAutoPrimaryKey } from "@graphback/core";
 
 // src/definitions/copyWrappingType.ts
-init_esm_shims();
 import { isWrappingType, GraphQLNonNull, isListType, GraphQLList, getNamedType } from "graphql";
 function copyWrappingType(copyFromType, copyToType) {
   const wrappers = [];
@@ -447,7 +184,7 @@ var OrderByInputType = new GraphQLInputObjectType({
   }
 });
 function getModelInputFields(schemaComposer, modelType, operationType) {
-  var _a, _b, _c, _d;
+  var _a, _b, _c, _d, _e, _f;
   const inputFields = [];
   const fields = Object.values(modelType.getFields());
   for (const field of fields) {
@@ -455,17 +192,16 @@ function getModelInputFields(schemaComposer, modelType, operationType) {
     if (!typeName) {
       continue;
     }
-    if ((_b = (_a = field == null ? void 0 : field.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.transient) {
+    if ((_c = (_b = (_a = field == null ? void 0 : field.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) {
       continue;
     }
     const name = getInputFieldName(field);
     const type = schemaComposer.getAnyTC(typeName).getType();
     const wrappedType = copyWrappingType(field.type, type);
     const extensions = {};
-    if ((_d = (_c = field == null ? void 0 : field.extensions) == null ? void 0 : _c.directives) == null ? void 0 : _d.constraint) {
-      extensions.directives = {
-        constraint: field.extensions.directives.constraint
-      };
+    const constraintDirective = (_f = (_e = (_d = field == null ? void 0 : field.extensions) == null ? void 0 : _d.directives) == null ? void 0 : _e.find) == null ? void 0 : _f.call(_e, (d) => d.name === "constraint");
+    if (constraintDirective) {
+      extensions.directives = [constraintDirective];
     }
     const inputField = {
       name,
@@ -548,9 +284,9 @@ var buildSubscriptionFilterType = (schemaComposer, modelType) => {
   const inputTypeName = getInputTypeName(modelType.name, GraphbackOperationType.SUBSCRIPTION_CREATE);
   const modelFields = Object.values(modelType.getFields());
   const subscriptionFilterFields = modelFields.filter((f) => {
-    var _a, _b;
+    var _a, _b, _c;
     const namedType = getNamedType2(f.type);
-    return !((_b = (_a = f.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.transient) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType);
+    return !((_c = (_b = (_a = f.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType);
   });
   const fields = {
     and: {
@@ -776,7 +512,6 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       this.createMutations(model, schemaComposer);
       this.createSubscriptions(model, schemaComposer);
       modifiedType = schemaComposer.getOTC(modelName);
-      extendOneToManyFieldArguments(model, modifiedType);
     }
   }
   createSubscriptions(model, schemaComposer) {
@@ -1089,19 +824,6 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
     this.addUpdateSubscriptionResolver(modelType, resolvers.Subscription);
     this.addDeleteSubscriptionResolver(modelType, resolvers.Subscription);
   }
-  addRelationshipResolvers(model, resolversObj, modelNameToModelDefinition) {
-    const relationResolvers = {};
-    for (const relationship of model.relationships) {
-      if (relationship.kind === "oneToMany") {
-        this.addOneToManyResolver(relationship, relationResolvers, modelNameToModelDefinition);
-      } else {
-        this.addOneToOneResolver(relationship, relationResolvers, modelNameToModelDefinition);
-      }
-    }
-    if (Object.keys(relationResolvers).length > 0) {
-      resolversObj[model.graphqlType.name] = relationResolvers;
-    }
-  }
   addCreateMutationResolver(model, mutationObj) {
     const modelType = model.graphqlType;
     const modelName = modelType.name;
@@ -1110,7 +832,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].create(args.input, context, info, model.uniqueFields);
+      return context.graphback[modelName].create(args.input, context, info);
     };
   }
   addUpdateMutationResolver(model, mutationObj) {
@@ -1120,7 +842,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].update(args.input, context, info, model.uniqueFields);
+      return context.graphback[modelName].update(args.input, context, info);
     };
   }
   addUpdateByMutationResolver(model, mutationObj) {
@@ -1130,7 +852,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].updateBy(args, context, info, model.uniqueFields);
+      return context.graphback[modelName].updateBy(args, context, info);
     };
   }
   addDeleteMutationResolver(model, mutationObj) {
@@ -1140,7 +862,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].delete(args, context, info, model.uniqueFields);
+      return context.graphback[modelName].delete(args, context, info);
     };
   }
   addDeleteByMutationResolver(model, mutationObj) {
@@ -1150,7 +872,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }
-      return context.graphback[modelName].deleteBy(args, context, info, model.uniqueFields);
+      return context.graphback[modelName].deleteBy(args, context, info);
     };
   }
   addFindQueryResolver(model, queryObj) {
@@ -1207,52 +929,6 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
         }
         return context.graphback[modelName].subscribeToDelete(args.filter, context);
       }
-    };
-  }
-  addOneToManyResolver(relationship, resolverObj, modelNameToModelDefinition) {
-    const modelName = relationship.relationType.name;
-    const relationOwner = relationship.ownerField.name;
-    const model = modelNameToModelDefinition[modelName];
-    resolverObj[relationOwner] = (parent, args, context, info) => {
-      if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner];
-      }
-      if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
-      }
-      return context.graphback[modelName].batchLoadData(relationship.relationForeignKey, parent[model.primaryKey.name], args.filter, context, info);
-    };
-  }
-  addOneToOneResolver(relationship, resolverObj, modelNameToModelDefinition) {
-    const modelName = relationship.relationType.name;
-    const relationIdField = getPrimaryKey2(relationship.relationType);
-    const relationOwner = relationship.ownerField.name;
-    const model = modelNameToModelDefinition[modelName];
-    resolverObj[relationOwner] = (parent, _, context, info) => {
-      if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner];
-      }
-      if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`);
-      }
-      const selectedFields = getSelectedFieldsFromResolverInfo(info, model);
-      selectedFields.push(relationIdField.name);
-      const fetchedKeys = selectedFields.join("-");
-      const dataLoaderName = `${modelName}-${relationship.kind}-${relationIdField.name}-${relationship.relationForeignKey}-${fetchedKeys}-DataLoader`;
-      if (!context[dataLoaderName]) {
-        context[dataLoaderName] = new import_dataloader.default(async (keys) => {
-          const service = context.graphback[modelName];
-          const results = await service.findBy({ [relationIdField.name]: { in: keys } }, context, info);
-          return keys.map((key) => {
-            return results.items.find((item) => item[relationIdField.name].toString() === key.toString());
-          });
-        });
-      }
-      const relationForeignKey = parent[relationship.relationForeignKey];
-      if (relationForeignKey === void 0 || relationForeignKey === null) {
-        return null;
-      }
-      return context[dataLoaderName].load(relationForeignKey);
     };
   }
   createSchemaCRUDTypes(schemaComposer) {

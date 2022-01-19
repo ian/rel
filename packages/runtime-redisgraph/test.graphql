@@ -17,6 +17,11 @@ directive @specifiedBy(
 input CreateTodosInput {
   text: String
   order: Int
+  count: Int
+  avg: Int
+  max: Int
+  min: Int
+  sum: Int
 }
 
 input IDInput {
@@ -44,6 +49,11 @@ input MutateTodosInput {
   text: String
   order: Int
   __id: ID
+  count: Int
+  avg: Int
+  max: Int
+  min: Int
+  sum: Int
 }
 
 type Mutation {
@@ -133,6 +143,11 @@ input TodosFilter {
   text: StringInput
   order: IntInput
   __id: IDInput
+  count: IntInput
+  avg: IntInput
+  max: IntInput
+  min: IntInput
+  sum: IntInput
   and: [TodosFilter!]
   or: [TodosFilter!]
   not: TodosFilter
@@ -167,4 +182,9 @@ input TodosSubscriptionFilter {
   text: StringInput
   order: IntInput
   __id: IDInput
+  count: IntInput
+  avg: IntInput
+  max: IntInput
+  min: IntInput
+  sum: IntInput
 }

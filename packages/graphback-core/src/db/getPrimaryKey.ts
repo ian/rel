@@ -2,36 +2,23 @@ import { GraphQLField, GraphQLObjectType, getNamedType, isScalarType, GraphQLInp
 
 /**
  * Returns the primary key field of a GraphQL object.
- * First looks for the existence of a `@id` field annotation,
- * otherwise tries to find an `id: ID` field.
- *
  * @param graphqlType
  */
 export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any, any> {
   const fields = Object.values(graphqlType.getFields())
 
   const autoPrimaryKeyFromScalar: Array<GraphQLField<any, any>> = []
-  let primaryKey: GraphQLField<any, any>
-  let primariesCount = 0
   for (const field of fields) {
     if (isAutoPrimaryKey(field)) {
       autoPrimaryKeyFromScalar.push(field)
     }
   }
 
-  if (primariesCount > 1) {
-    throw new Error(`${graphqlType.name} type should not have multiple '@id' annotations.`)
-  }
-
-  if (primaryKey) {
-    return primaryKey
-  }
-
   if (autoPrimaryKeyFromScalar.length > 1) {
-    throw new Error(`${graphqlType.name} type should not have two potential primary keys: "_id" and "id". Use '@id' annotations to indicate which one is to be used.`)
+    throw new Error(`${graphqlType.name} type should not have two potential primary keys.`)
   }
 
-  primaryKey = autoPrimaryKeyFromScalar.shift()
+  const primaryKey = autoPrimaryKeyFromScalar.shift()
 
   if (!primaryKey) {
     throw new Error(`${graphqlType.name} type has no primary field.`)
@@ -43,8 +30,7 @@ export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any
 /**
  * Check if a GraphQLField can be inferred as a primary key, specific for each database:
  * A field is a potential primary key if:
- * - is named "id" and has type "ID", auto increment primary key for relational database
- * - is named "_id" and has scalar type "GraphbackObectID", a BSON primary key for MongoDB
+ * - is named "__id" and has type "ID", auto increment primary key for relational database
  * @param field
  */
 export function isAutoPrimaryKey (field: GraphQLField<any, any> | GraphQLInputField): boolean {

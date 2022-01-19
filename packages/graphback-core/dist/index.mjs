@@ -104,40 +104,12 @@ var getSubscriptionName = (typeName, action) => {
   }
   return "";
 };
-function isInputField(field) {
-  const relationshipAnnotation = parseRelationshipAnnotation(field.description);
-  return relationshipAnnotation == null || relationshipAnnotation.kind !== "oneToMany";
-}
-function getRelationFieldName(field, type) {
-  let fieldName;
-  if (field.annotations.OneToOne) {
-    fieldName = field.annotations.OneToOne.field;
-  } else if (field.annotations.ManyToOne) {
-    fieldName = field.annotations.ManyToOne.field;
-  } else if (field.annotations.OneToMany) {
-    fieldName = field.annotations.OneToMany.field;
-  } else {
-    fieldName = type.name;
-  }
-  return fieldName;
-}
 function getInputFieldName(field) {
-  const relationshipAnnotation = parseRelationshipAnnotation(field.description);
-  if (relationshipAnnotation == null) {
-    return field.name;
-  }
-  if (relationshipAnnotation.kind === "oneToMany") {
-    throw new Error("Not inputtable field!");
-  }
-  return relationshipAnnotation.key || transformForeignKeyName(field.name);
+  return field.name;
 }
 function getInputFieldTypeName(modelName, field, operation) {
   const fieldType = getNamedType(field.type);
   if (isObjectType(fieldType)) {
-    const relationshipAnnotation = parseRelationshipAnnotation(field.description);
-    if (relationshipAnnotation == null) {
-      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}".`);
-    }
     const idField = getPrimaryKey(fieldType);
     return getNamedType(idField.type).name;
   }
@@ -217,7 +189,7 @@ var GraphbackCoreMetadata = class {
     return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f;
     const primaryKey = {
       name: "__id",
       type: "ID"
@@ -232,7 +204,7 @@ var GraphbackCoreMetadata = class {
       let fieldName = field;
       let type = "";
       const graphqlField = modelFields[field];
-      if ((_b = (_a = graphqlField.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.transient) {
+      if ((_c = (_b = (_a = graphqlField.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) {
         fields[field] = {
           name: field,
           transient: true,
@@ -240,7 +212,7 @@ var GraphbackCoreMetadata = class {
         };
         continue;
       }
-      if ((_d = (_c = graphqlField.extensions) == null ? void 0 : _c.directives) == null ? void 0 : _d.unique) {
+      if ((_f = (_e = (_d = graphqlField.extensions) == null ? void 0 : _d.directives) == null ? void 0 : _e.some) == null ? void 0 : _f.call(_e, (d) => d.name === "unique")) {
         uniqueFields.push(field);
       }
       type = getNamedType2(modelFields[field].type).name;
@@ -343,46 +315,20 @@ var getModelFieldsFromResolverFields = (resolverFields, fieldArgs, model) => {
 };
 var getResolverInfoFieldsList = (info, path) => fieldsList(info, { path });
 
-// src/relationships/RelationshipMetadataBuilder.ts
-import { isObjectType as isObjectType2, GraphQLNonNull, GraphQLList, getNamedType as getNamedType5, assertObjectType } from "graphql";
-import * as pluralize2 from "pluralize";
-
-// src/db/defaultNameTransforms.ts
-function defaultTableNameTransform(name, direction) {
-  if (direction === "to-db") {
-    return name.toLowerCase();
-  }
-  return name;
-}
-function transformForeignKeyName(name, direction = "to-db") {
-  if (direction === "to-db") {
-    return `${name}Id`;
-  }
-  return name;
-}
-
 // src/db/getPrimaryKey.ts
 import { getNamedType as getNamedType3, isScalarType as isScalarType2 } from "graphql";
 function getPrimaryKey(graphqlType) {
   const fields = Object.values(graphqlType.getFields());
   const autoPrimaryKeyFromScalar = [];
-  let primaryKey;
-  let primariesCount = 0;
   for (const field of fields) {
     if (isAutoPrimaryKey(field)) {
       autoPrimaryKeyFromScalar.push(field);
     }
   }
-  if (primariesCount > 1) {
-    throw new Error(`${graphqlType.name} type should not have multiple '@id' annotations.`);
-  }
-  if (primaryKey) {
-    return primaryKey;
-  }
   if (autoPrimaryKeyFromScalar.length > 1) {
-    throw new Error(`${graphqlType.name} type should not have two potential primary keys: "_id" and "id". Use '@id' annotations to indicate which one is to be used.`);
+    throw new Error(`${graphqlType.name} type should not have two potential primary keys.`);
   }
-  primaryKey = autoPrimaryKeyFromScalar.shift();
+  const primaryKey = autoPrimaryKeyFromScalar.shift();
   if (!primaryKey) {
     throw new Error(`${graphqlType.name} type has no primary field.`);
   }
@@ -394,387 +340,6 @@ function isAutoPrimaryKey(field) {
   const name = baseType.name;
   return fieldName === "__id" && name === "ID" && isScalarType2(baseType);
 }
-
-// src/db/buildModelTableMap.ts
-function getTableName(model) {
-  const tableName = defaultTableNameTransform(model.name, "to-db");
-  return tableName;
-}
-function getColumnName(field) {
-  const columnName = field.name;
-  return columnName;
-}
-function mapFieldsToColumns(fieldMap) {
-  return Object.values(fieldMap).reduce((obj, field) => {
-    const columnName = getColumnName(field);
-    if (field.name !== columnName) {
-      obj[field.name] = columnName;
-    }
-    return obj;
-  }, {});
-}
-var buildModelTableMap = (model) => {
-  const primaryKeyField = getPrimaryKey(model);
-  const tableName = getTableName(model);
-  const fieldMap = mapFieldsToColumns(model.getFields());
-  return {
-    idField: getColumnName(primaryKeyField),
-    typeName: model.name,
-    tableName,
-    fieldMap
-  };
-};
-
-// src/utils/hasListType.ts
-import { isWrappingType, isListType } from "graphql";
-function hasListType(outputType) {
-  if (isListType(outputType)) {
-    return true;
-  } else if (isWrappingType(outputType)) {
-    return hasListType(outputType.ofType);
-  }
-  return false;
-}
-
-// src/relationships/relationshipHelpers.ts
-import { getNamedType as getNamedType4 } from "graphql";
-function parseRelationshipAnnotation(description = "") {
-  const relationshipKinds = ["oneToMany", "oneToOne", "manyToOne"];
-  for (const kind of relationshipKinds) {
-    let annotation = false;
-    if (!annotation) {
-      continue;
-    }
-    if (!annotation.field && kind !== "oneToOne") {
-      throw new Error(`'field' is required on "${kind}" relationship annotations`);
-    }
-    return __spreadValues({
-      kind
-    }, annotation);
-  }
-  return void 0;
-}
-function isOneToManyField(field) {
-  const oneToManyAnnotation = false;
-  return !!oneToManyAnnotation;
-}
-var relationshipFieldDescriptionTemplate = (relationshipKind, fieldName, columnKey) => {
-  return `@${relationshipKind}(field: '${fieldName}', key: '${columnKey}')`;
-};
-var relationshipOneToOneFieldDescriptionTemplate = (relationshipKind, columnKey) => {
-  return `@${relationshipKind}(key: '${columnKey}')`;
-};
-function addRelationshipFields(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  const fieldsObj = {};
-  for (const current of model.relationships) {
-    if (!modelFields[current.ownerField.name]) {
-      fieldsObj[current.ownerField.name] = {
-        type: current.ownerField.type,
-        description: current.ownerField.description
-      };
-    }
-  }
-  typeComposer.addFields(fieldsObj);
-}
-function extendRelationshipFields(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  for (const fieldRelationship of model.relationships) {
-    if (modelFields[fieldRelationship.ownerField.name]) {
-      const modelField = modelFields[fieldRelationship.ownerField.name];
-      const partialConfig = {
-        type: modelField.type,
-        description: fieldRelationship.ownerField.description
-      };
-      typeComposer.extendField(fieldRelationship.ownerField.name, partialConfig);
-    }
-  }
-}
-function extendOneToManyFieldArguments(model, typeComposer) {
-  const modelType = model.graphqlType;
-  const modelFields = modelType.getFields();
-  for (const current of model.relationships) {
-    if (modelFields[current.ownerField.name]) {
-      const fieldNamedType = getNamedType4(current.ownerField.type);
-      if (current.kind !== "oneToMany") {
-        continue;
-      }
-      const partialConfig = {
-        args: {
-          filter: getInputTypeName(fieldNamedType.name, "find" /* FIND */)
-        }
-      };
-      typeComposer.extendField(current.ownerField.name, partialConfig);
-    }
-  }
-}
-
-// src/relationships/RelationshipMetadataBuilder.ts
-var RelationshipMetadataBuilder = class {
-  models;
-  relationshipMetadataConfigMap = {};
-  constructor(models) {
-    this.models = models;
-    for (const model of models) {
-      this.relationshipMetadataConfigMap[model.graphqlType.name] = {};
-    }
-  }
-  build() {
-    for (const model of this.models) {
-      this.buildModelRelationshipContext(model);
-    }
-    return this.relationshipMetadataConfigMap;
-  }
-  getRelationships() {
-    return this.relationshipMetadataConfigMap;
-  }
-  getModelRelationships(modelName) {
-    return this.relationshipMetadataConfigMap[modelName];
-  }
-  buildModelRelationshipContext(model) {
-    const modelType = model.graphqlType;
-    const fields = Object.values(modelType.getFields());
-    for (let field of fields) {
-      const annotation = parseRelationshipAnnotation(field.description);
-      if (!annotation) {
-        const relationMetadata = this.getRelationshipMetadata(field, modelType);
-        if (relationMetadata) {
-          this.relationshipMetadataConfigMap = Object.assign({}, this.relationshipMetadataConfigMap, relationMetadata);
-        }
-        continue;
-      }
-    }
-  }
-  getRelationshipMetadata(field, owner) {
-    const fieldType = getNamedType5(field.type);
-    const modelRelationshipConfigMap = {
-      [owner.name]: {},
-      [fieldType.name]: {}
-    };
-    if (!isObjectType2(fieldType)) {
-      return void 0;
-    }
-    if (parseRelationshipAnnotation(field.description)) {
-      return void 0;
-    }
-    if (hasListType(field.type)) {
-      const ownerName = owner.name;
-      const relationFieldName = lowerCaseFirstChar(ownerName);
-      const relationForeignKey = relationFieldName;
-      const manyToOneField = fieldType.getFields()[relationFieldName];
-      modelRelationshipConfigMap[owner.name][field.name] = {
-        kind: "oneToMany",
-        owner,
-        ownerField: this.updateOneToManyField(field, relationFieldName),
-        relationType: fieldType,
-        relationFieldName,
-        relationForeignKey
-      };
-      modelRelationshipConfigMap[fieldType.name][relationFieldName] = {
-        kind: "manyToOne",
-        owner: getNamedType5(field.type),
-        ownerField: manyToOneField || this.createManyToOneField(relationFieldName, owner, pluralize2(lowerCaseFirstChar(fieldType.name))),
-        relationType: owner,
-        relationFieldName: field.name,
-        relationForeignKey
-      };
-    } else if (this.isManyToOne(field, owner)) {
-      const relationFieldName = pluralize2(lowerCaseFirstChar(owner.name));
-      const foreignKeyName = field.name;
-      const oneToManyField = fieldType.getFields()[relationFieldName];
-      const oneToManyAnnotation = parseRelationshipAnnotation(oneToManyField == null ? void 0 : oneToManyField.description);
-      modelRelationshipConfigMap[owner.name][field.name] = {
-        kind: "manyToOne",
-        owner,
-        ownerField: this.updateManyToOneField(field, relationFieldName, (oneToManyAnnotation == null ? void 0 : oneToManyAnnotation.key) || foreignKeyName),
-        relationType: fieldType,
-        relationFieldName,
-        relationForeignKey: foreignKeyName
-      };
-      modelRelationshipConfigMap[fieldType.name][relationFieldName] = {
-        kind: "oneToMany",
-        owner: fieldType,
-        ownerField: oneToManyField || this.createOneToManyField(relationFieldName, owner, fieldType.name),
-        relationType: owner,
-        relationFieldName: field.name,
-        relationForeignKey: foreignKeyName
-      };
-    } else {
-      const foreignKeyName = lowerCaseFirstChar(field.name);
-      modelRelationshipConfigMap[owner.name][field.name] = {
-        kind: "oneToOne",
-        owner,
-        ownerField: this.updateOneToOneField(field, foreignKeyName),
-        relationType: fieldType,
-        relationFieldName: foreignKeyName
-      };
-    }
-    return modelRelationshipConfigMap;
-  }
-  isManyToOne(field, owner) {
-    const relationType = getNamedType5(field.type);
-    if (!isObjectType2(relationType)) {
-      return false;
-    }
-    const relationFields = Object.values(relationType.getFields());
-    const oneToManyField = relationFields.find((f) => {
-      return getNamedType5(f.type).name === owner.name && hasListType(f.type);
-    });
-    return Boolean(oneToManyField);
-  }
-  createOneToManyField(fieldName, baseType, relationFieldName, columnName) {
-    const columnField = columnName || transformForeignKeyName(relationFieldName);
-    const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
-    const fieldType = GraphQLNonNull(GraphQLList(baseType));
-    return {
-      name: fieldName,
-      description: fieldDescription,
-      type: fieldType,
-      args: [],
-      extensions: [],
-      isDeprecated: false,
-      deprecationReason: void 0
-    };
-  }
-  createManyToOneField(fieldName, baseType, relationFieldName, columnName) {
-    const columnField = columnName || transformForeignKeyName(fieldName);
-    const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
-    return {
-      name: fieldName,
-      description: fieldDescription,
-      type: baseType,
-      args: [],
-      extensions: [],
-      isDeprecated: false,
-      deprecationReason: void 0
-    };
-  }
-  updateOneToManyField(field, relationFieldName) {
-    const columnField = relationFieldName;
-    const fieldDescription = relationshipFieldDescriptionTemplate("oneToMany", relationFieldName, columnField);
-    const oldDescription = field.description ? `
-${field.description}` : "";
-    return __spreadProps(__spreadValues({}, field), {
-      description: `${fieldDescription}${oldDescription}`
-    });
-  }
-  updateManyToOneField(field, relationFieldName, columnName) {
-    if (!manyToOneMetadata || !manyToOneMetadata.key) {
-      const columnField = columnName || field.name;
-      const fieldDescription = relationshipFieldDescriptionTemplate("manyToOne", relationFieldName, columnField);
-      const oldDescription = field.description ? `
-${field.description}` : "";
-      return __spreadProps(__spreadValues({}, field), {
-        description: `${fieldDescription}${oldDescription}`
-      });
-    }
-    return field;
-  }
-  updateOneToOneField(field, columnName) {
-    if (!columnName) {
-      const columnField = field.name;
-      const fieldDescription = relationshipOneToOneFieldDescriptionTemplate("oneToOne", columnField);
-      const oldDescription = field.description ? `
-${field.description}` : "";
-      return __spreadProps(__spreadValues({}, field), {
-        description: `${fieldDescription}${oldDescription}`
-      });
-    }
-    return field;
-  }
-  addOneToMany(ownerType, field, oneToManyAnnotation, corresspondingManyToOneMetadata) {
-    this.validateOneToManyRelationship(ownerType.name, field, oneToManyAnnotation, corresspondingManyToOneMetadata);
-    if (!oneToManyAnnotation.key) {
-      return;
-    }
-    const relationType = assertObjectType(getNamedType5(field.type));
-    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
-      kind: "oneToMany",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: oneToManyAnnotation.field,
-      relationForeignKey: oneToManyAnnotation.key
-    };
-  }
-  addManyToOne(ownerType, field, manyToOneAnnotation) {
-    this.validateManyToOneField(ownerType.name, field, manyToOneAnnotation);
-    if (!manyToOneAnnotation.key) {
-      return;
-    }
-    const relationType = assertObjectType(getNamedType5(field.type));
-    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
-      kind: "manyToOne",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: manyToOneAnnotation.field,
-      relationForeignKey: manyToOneAnnotation.key
-    };
-  }
-  addOneToOne(ownerType, field, oneToOneAnnotation) {
-    this.validateOneToOneRelationship(ownerType.name, field, oneToOneAnnotation);
-    if (!oneToOneAnnotation.key) {
-      return;
-    }
-    const relationType = assertObjectType(getNamedType5(field.type));
-    this.relationshipMetadataConfigMap[ownerType.name][field.name] = {
-      kind: "oneToOne",
-      owner: ownerType,
-      ownerField: field,
-      relationType,
-      relationFieldName: oneToOneAnnotation.field,
-      relationForeignKey: oneToOneAnnotation.key
-    };
-  }
-  validateOneToManyRelationship(modelName, field, oneToManyMetadata, corresspondingManyToOneMetadata) {
-    this.validateRelationshipField(modelName, field, oneToManyMetadata);
-    if (oneToManyMetadata.kind !== "oneToMany") {
-      throw new Error(`${modelName}.${field.name} should be a @oneToMany field, but has a @${oneToManyMetadata.kind} annotation`);
-    }
-    const relationModelType = assertObjectType(getNamedType5(field.type));
-    const relationField = relationModelType.getFields()[oneToManyMetadata.field];
-    if (!relationField) {
-      return;
-    }
-    if (hasListType(relationField.type)) {
-      throw new Error(`${relationModelType.name}.${relationField.name} is a list type, but should be '${relationField.name}: ${modelName}'.`);
-    }
-    const relationFieldBaseType = getNamedType5(relationField.type);
-    if (!isObjectType2(relationFieldBaseType) || relationFieldBaseType.name !== modelName) {
-      throw new Error(`${modelName}.${field.name} relationship field maps to ${relationModelType.name}.${relationField.name} (${relationFieldBaseType.name} type) which should be ${modelName} type.`);
-    }
-    if ((oneToManyMetadata == null ? void 0 : oneToManyMetadata.key) !== (corresspondingManyToOneMetadata == null ? void 0 : corresspondingManyToOneMetadata.key)) {
-      throw new Error(`${modelName}.${field.name} and ${relationModelType.name}.${relationField.name} 'key' annotations are different. Ensure both are the same, or remove one so that it can be generated.`);
-    }
-  }
-  validateManyToOneField(modelName, field, manyToOneAnnotation) {
-    this.validateRelationshipField(modelName, field, manyToOneAnnotation);
-    if (manyToOneAnnotation.kind !== "manyToOne") {
-      throw new Error(`${modelName}.${field.name} should be a @manyToOne field, but has a @${manyToOneAnnotation.kind} annotation`);
-    }
-  }
-  validateOneToOneRelationship(modelName, field, oneToOneAnnotation) {
-    this.validateRelationshipField(modelName, field, oneToOneAnnotation);
-    if (oneToOneAnnotation.kind !== "oneToOne") {
-      throw new Error(`${modelName}.${field.name} should be a @oneToOne field, but has a ${oneToOneAnnotation.kind} annotation`);
-    }
-    if (hasListType(field.type)) {
-      throw new Error(`${modelName}.${field.name} is a list type, but should be an object.`);
-    }
-  }
-  validateRelationshipField(modelName, field, relationshipAnnotation) {
-    if (!relationshipAnnotation) {
-      throw new Error(`${modelName}.${field.name} is missing a relationship annotation.`);
-    }
-    const fieldBaseType = getNamedType5(field.type);
-    if (!isObjectType2(fieldBaseType)) {
-      throw new Error(`${modelName}.${field.name} is marked as a relationship field, but has type ${fieldBaseType.name}. Relationship fields must be object types.`);
-    }
-  }
-};
 
 // src/utils/printSchemaWithDirectives.ts
 import { SchemaComposer } from "graphql-compose";
@@ -938,11 +503,11 @@ var CRUDService = class {
     this.pubSub = config.pubSub;
   }
   async initializeUniqueIndex() {
-    return await this.db.initializeUniqueIndex(this.model.uniqueFields);
+    return await this.db.initializeUniqueIndex();
   }
-  async create(data2, context, info, uniqueFields) {
+  async create(data2, context, info) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.create(data2, selectedFields, uniqueFields);
+    const result = await this.db.create(data2, selectedFields);
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("create" /* CREATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("new", result);
@@ -952,9 +517,9 @@ var CRUDService = class {
     }
     return result;
   }
-  async update(data2, context, info, uniqueFields) {
+  async update(data2, context, info) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.update(data2, selectedFields, uniqueFields);
+    const result = await this.db.update(data2, selectedFields);
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("update" /* UPDATE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("updated", result);
@@ -964,16 +529,16 @@ var CRUDService = class {
     }
     return result;
   }
-  async updateBy(args, context, info, uniqueFields) {
+  async updateBy(args, context, info) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true);
-    const result = await this.db.updateBy(args, selectedFields, uniqueFields);
+    const result = await this.db.updateBy(args, selectedFields);
     return {
       items: result
     };
   }
-  async delete(args, context, info, uniqueFields) {
+  async delete(args, context, info) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.delete(data, selectedFields, uniqueFields);
+    const result = await this.db.delete(data, selectedFields);
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping("delete" /* DELETE */, this.model.graphqlType.name);
       const payload = this.buildEventPayload("deleted", result);
@@ -983,9 +548,9 @@ var CRUDService = class {
     }
     return result;
   }
-  async deleteBy(args, context, info, uniqueFields) {
+  async deleteBy(args, context, info) {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true);
-    const result = await this.db.deleteBy(args, selectedFields, uniqueFields);
+    const result = await this.db.deleteBy(args, selectedFields);
     return {
       items: result
     };
@@ -1148,7 +713,7 @@ var FILTER_SUPPORTED_SCALARS = [
 ];
 
 // src/scalars/index.ts
-import { GraphQLScalarType as GraphQLScalarType2 } from "graphql";
+import { GraphQLScalarType } from "graphql";
 import {
   BigIntResolver,
   ByteResolver,
@@ -1198,145 +763,145 @@ import {
   JSONResolver,
   JSONObjectResolver
 } from "graphql-scalars";
-var BigInt_ = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(BigIntResolver)), {
+var BigInt_ = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(BigIntResolver)), {
   name: "BigInt"
 }));
-var Byte = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(ByteResolver)), {
+var Byte = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(ByteResolver)), {
   name: "Byte"
 }));
-var Currency = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(CurrencyResolver)), {
+var Currency = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(CurrencyResolver)), {
   name: "Currency"
 }));
-var Duration = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(DurationResolver)), {
+var Duration = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(DurationResolver)), {
   name: "Duration"
 }));
-var EmailAddress = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(EmailAddressResolver)), {
+var EmailAddress = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(EmailAddressResolver)), {
   name: "Email"
 }));
-var GUID = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(GUIDResolver)), {
+var GUID = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(GUIDResolver)), {
   name: "GUID"
 }));
-var HSLA = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(HSLAResolver)), {
+var HSLA = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(HSLAResolver)), {
   name: "HSLA"
 }));
-var HSL = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(HSLResolver)), {
+var HSL = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(HSLResolver)), {
   name: "HSL"
 }));
-var HexColorCode = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(HexColorCodeResolver)), {
+var HexColorCode = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(HexColorCodeResolver)), {
   name: "HexColorCode"
 }));
-var Hexadecimal = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(HexadecimalResolver)), {
+var Hexadecimal = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(HexadecimalResolver)), {
   name: "Hexadecimal"
 }));
-var IBAN = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(IBANResolver)), {
+var IBAN = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(IBANResolver)), {
   name: "IBAN"
 }));
-var IPv4 = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(IPv4Resolver)), {
+var IPv4 = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(IPv4Resolver)), {
   name: "IPv4"
 }));
-var IPv6 = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(IPv6Resolver)), {
+var IPv6 = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(IPv6Resolver)), {
   name: "IPv6"
 }));
-var ISBN = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(ISBNResolver)), {
+var ISBN = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(ISBNResolver)), {
   name: "ISBN"
 }));
-var ISO8601Duration = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(ISO8601DurationResolver)), {
+var ISO8601Duration = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(ISO8601DurationResolver)), {
   name: "ISO8601Duration"
 }));
-var LocalDate = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(LocalDateResolver)), {
+var LocalDate = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(LocalDateResolver)), {
   name: "LocalDate"
 }));
-var LocalTime = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(LocalTimeResolver)), {
+var LocalTime = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(LocalTimeResolver)), {
   name: "LocalTime"
 }));
-var MAC = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(MACResolver)), {
+var MAC = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(MACResolver)), {
   name: "MAC"
 }));
-var NegativeFloat = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NegativeFloatResolver)), {
+var NegativeFloat = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NegativeFloatResolver)), {
   name: "NegativeFloat"
 }));
-var NegativeInt = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NegativeIntResolver)), {
+var NegativeInt = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NegativeIntResolver)), {
   name: "NegativeInt"
 }));
-var NonEmptyString = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NonEmptyStringResolver)), {
+var NonEmptyString = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NonEmptyStringResolver)), {
   name: "NonEmptyString"
 }));
-var NonNegativeFloat = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NonNegativeFloatResolver)), {
+var NonNegativeFloat = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NonNegativeFloatResolver)), {
   name: "NonNegativeFloat"
 }));
-var NonNegativeInt = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NonNegativeIntResolver)), {
+var NonNegativeInt = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NonNegativeIntResolver)), {
   name: "NonNegativeInt"
 }));
-var PhoneNumber = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(PhoneNumberResolver)), {
+var PhoneNumber = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(PhoneNumberResolver)), {
   name: "PhoneNumber"
 }));
-var Port = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(PortResolver)), {
+var Port = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(PortResolver)), {
   name: "Port"
 }));
-var PositiveFloat = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(PositiveFloatResolver)), {
+var PositiveFloat = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(PositiveFloatResolver)), {
   name: "PositiveFloat"
 }));
-var PositiveInt = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(PositiveIntResolver)), {
+var PositiveInt = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(PositiveIntResolver)), {
   name: "PositiveInt"
 }));
-var PostalCode = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(PostalCodeResolver)), {
+var PostalCode = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(PostalCodeResolver)), {
   name: "PostalCode"
 }));
-var RGBA = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(RGBAResolver)), {
+var RGBA = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(RGBAResolver)), {
   name: "RGBA"
 }));
-var RGB = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(RGBResolver)), {
+var RGB = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(RGBResolver)), {
   name: "RGB"
 }));
-var URL = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(URLResolver)), {
+var URL = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(URLResolver)), {
   name: "URL"
 }));
-var USCurrency = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(USCurrencyResolver)), {
+var USCurrency = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(USCurrencyResolver)), {
   name: "USCurrency"
 }));
-var UUID = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(UUIDResolver)), {
+var UUID = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(UUIDResolver)), {
   name: "UUID"
 }));
-var UtcOffset = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(UtcOffsetResolver)), {
+var UtcOffset = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(UtcOffsetResolver)), {
   name: "UtcOffset"
 }));
-var DID = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(DIDResolver)), {
+var DID = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(DIDResolver)), {
   name: "DID"
 }));
-var Latitude = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(LatitudeResolver)), {
+var Latitude = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(LatitudeResolver)), {
   name: "Latitude"
 }));
-var Longitude = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(LongitudeResolver)), {
+var Longitude = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(LongitudeResolver)), {
   name: "Longitude"
 }));
-var JWT = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(JWTResolver)), {
+var JWT = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(JWTResolver)), {
   name: "JWT"
 }));
-var LocalEndTime = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(LocalEndTimeResolver)), {
+var LocalEndTime = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(LocalEndTimeResolver)), {
   name: "LocalEndTime"
 }));
-var NonPositiveFloat = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NonPositiveFloatResolver)), {
+var NonPositiveFloat = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NonPositiveFloatResolver)), {
   name: "NonPositiveFloat"
 }));
-var NonPositiveInt = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(NonPositiveIntResolver)), {
+var NonPositiveInt = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(NonPositiveIntResolver)), {
   name: "NonPositiveInt"
 }));
-var Time = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(TimeResolver)), {
+var Time = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(TimeResolver)), {
   name: "Time"
 }));
-var Timestamp = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(TimestampResolver)), {
+var Timestamp = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(TimestampResolver)), {
   name: "Timestamp"
 }));
-var Date_ = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(DateResolver)), {
+var Date_ = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(DateResolver)), {
   name: "Date"
 }));
-var DateTime = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(DateTimeResolver)), {
+var DateTime = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(DateTimeResolver)), {
   name: "DateTime"
 }));
-var JSON_ = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(JSONResolver)), {
+var JSON_ = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(JSONResolver)), {
   name: "JSON"
 }));
-var JSONObject = new GraphQLScalarType2(__spreadProps(__spreadValues({}, extractConfig(JSONObjectResolver)), {
+var JSONObject = new GraphQLScalarType(__spreadProps(__spreadValues({}, extractConfig(JSONObjectResolver)), {
   name: "JSONObject"
 }));
 var graphbackScalarsTypes = [
@@ -1472,22 +1037,15 @@ export {
   PostalCode,
   RGB,
   RGBA,
-  RelationshipMetadataBuilder,
   Time,
   Timestamp,
   URL,
   USCurrency,
   UUID,
   UtcOffset,
-  addRelationshipFields,
-  buildModelTableMap,
   createCRUDService,
   createInMemoryFilterPredicate,
-  defaultTableNameTransform,
   directives,
-  extendOneToManyFieldArguments,
-  extendRelationshipFields,
-  getColumnName,
   getFieldName,
   getInputFieldName,
   getInputFieldTypeName,
@@ -1495,23 +1053,15 @@ export {
   getModelByName,
   getModelFieldsFromResolverFields,
   getPrimaryKey,
-  getRelationFieldName,
   getResolverInfoFieldsList,
   getSelectedFieldsFromResolverInfo,
   getSubscriptionName,
-  getTableName,
   graphbackScalarsTypes,
   isAutoPrimaryKey,
-  isInputField,
-  isOneToManyField,
   isSpecifiedGraphbackJSONScalarType,
   isSpecifiedGraphbackScalarType,
   lowerCaseFirstChar,
-  parseRelationshipAnnotation,
   printSchemaWithDirectives,
-  relationshipFieldDescriptionTemplate,
-  relationshipOneToOneFieldDescriptionTemplate,
-  transformForeignKeyName,
   upperCaseFirstChar
 };
 //# sourceMappingURL=index.mjs.map

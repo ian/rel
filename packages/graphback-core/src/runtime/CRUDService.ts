@@ -37,13 +37,13 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   }
 
   public async initializeUniqueIndex() {
-    return await this.db.initializeUniqueIndex(this.model.uniqueFields)
+    return await this.db.initializeUniqueIndex()
   }
 
-  public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
+  public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
-    const result = await this.db.create(data, selectedFields, uniqueFields)
+    const result = await this.db.create(data, selectedFields)
 
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.CREATE, this.model.graphqlType.name)
@@ -58,10 +58,10 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
+  public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
-    const result = await this.db.update(data, selectedFields, uniqueFields)
+    const result = await this.db.update(data, selectedFields)
 
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.UPDATE, this.model.graphqlType.name)
@@ -76,18 +76,18 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<ResultList<Type>> {
+  public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true)
-    const result = await this.db.updateBy(args, selectedFields, uniqueFields)
+    const result = await this.db.updateBy(args, selectedFields)
 
     return {
       items: result
     }
   }
 
-  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<Type> {
+  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
-    const result = await this.db.delete(data, selectedFields, uniqueFields)
+    const result = await this.db.delete(data, selectedFields)
 
     if (this.pubSub) {
       const topic = this.subscriptionTopicMapping(GraphbackOperationType.DELETE, this.model.graphqlType.name)
@@ -102,9 +102,9 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo, uniqueFields: string[]): Promise<ResultList<Type>> {
+  public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
-    const result = await this.db.deleteBy(args, selectedFields, uniqueFields)
+    const result = await this.db.deleteBy(args, selectedFields)
 
     return {
       items: result

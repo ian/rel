@@ -5,7 +5,7 @@ import DataLoader from 'dataloader'
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
-import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, addRelationshipFields, extendRelationshipFields, extendOneToManyFieldArguments, getInputTypeName, FieldRelationshipMetadata, GraphbackContext, getSelectedFieldsFromResolverInfo, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, getInputTypeName, GraphbackContext, getSelectedFieldsFromResolverInfo, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
 import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters'
 import { buildOrderByInputType,buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
 
@@ -161,7 +161,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       this.createMutations(model, schemaComposer)
       this.createSubscriptions(model, schemaComposer)
       modifiedType = schemaComposer.getOTC(modelName)
-      extendOneToManyFieldArguments(model, modifiedType)
     }
   }
 
@@ -539,28 +538,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
   }
 
   /**
-   * Create relationship resolver fields
-   *
-   * @param {ModelDefinition} model - Model definition with relationship metadata
-   * @param {IResolvers} resolversObj - Resolvers object
-   * @param modelNameToModelDefinition - model type name to its definition for quick search
-   */
-  protected addRelationshipResolvers (model: ModelDefinition, resolversObj: IResolvers, modelNameToModelDefinition: any) {
-    const relationResolvers = {}
-    for (const relationship of model.relationships) {
-      if (relationship.kind === 'oneToMany') {
-        this.addOneToManyResolver(relationship, relationResolvers, modelNameToModelDefinition)
-      } else {
-        this.addOneToOneResolver(relationship, relationResolvers, modelNameToModelDefinition)
-      }
-    }
-
-    if (Object.keys(relationResolvers).length > 0) {
-      resolversObj[model.graphqlType.name] = relationResolvers
-    }
-  }
-
-  /**
    * Creates a Create mutation resolver field
    *
    * @param {ModelDefinition} model - Model GraphQL object type
@@ -576,7 +553,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].create(args.input, context, info, model.uniqueFields)
+      return context.graphback[modelName].create(args.input, context, info)
     }
   }
 
@@ -595,7 +572,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].update(args.input, context, info, model.uniqueFields)
+      return context.graphback[modelName].update(args.input, context, info)
     }
   }
 
@@ -614,7 +591,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].updateBy(args, context, info, model.uniqueFields)
+      return context.graphback[modelName].updateBy(args, context, info)
     }
   }
 
@@ -633,7 +610,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].delete(args, context, info, model.uniqueFields)
+      return context.graphback[modelName].delete(args, context, info)
     }
   }
 
@@ -652,7 +629,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
         throw new Error(`Missing service for ${modelName}`)
       }
 
-      return context.graphback[modelName].deleteBy(args, context, info, model.uniqueFields)
+      return context.graphback[modelName].deleteBy(args, context, info)
     }
   }
 
@@ -753,90 +730,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
 
         return context.graphback[modelName].subscribeToDelete(args.filter, context)
       }
-    }
-  }
-
-  /**
-   * Creates a OneToMany Relationship resolver field
-   *
-   * @param {GraphQLObjectType} modelType - Model GraphQL object type
-   * @param {IResolvers} resolverObj - Resolvers object
-   * @param modelNameToModelDefinition - model type name to its definition for quick search
-   */
-  protected addOneToManyResolver (relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
-    const modelName = relationship.relationType.name
-    const relationOwner = relationship.ownerField.name
-    const model = modelNameToModelDefinition[modelName]
-
-    resolverObj[relationOwner] = (parent: any, args: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
-      if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner]
-      }
-
-      if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`)
-      }
-
-      return context.graphback[modelName].batchLoadData(
-        relationship.relationForeignKey,
-        parent[model.primaryKey.name],
-        args.filter,
-        context,
-        info
-      )
-    }
-  }
-
-  /**
-   * Creates a OneToOne/ManyToOne Relationship resolver field
-   *
-   * @param {GraphQLObjectType} modelType - Model GraphQL object type
-   * @param {IResolvers} resolverObj - Resolvers object
-   * @param modelNameToModelDefinition - model type name to its definition for quick search
-   */
-  protected addOneToOneResolver (relationship: FieldRelationshipMetadata, resolverObj: IResolvers, modelNameToModelDefinition: any) {
-    const modelName = relationship.relationType.name
-    const relationIdField = getPrimaryKey(relationship.relationType)
-    const relationOwner = relationship.ownerField.name
-    const model = modelNameToModelDefinition[modelName]
-
-    resolverObj[relationOwner] = (parent: any, _: any, context: GraphbackContext, info: GraphQLResolveInfo) => {
-      if (Object.keys(parent).includes(relationOwner)) {
-        return parent[relationOwner]
-      }
-
-      if (!context.graphback || !context.graphback[modelName]) {
-        throw new Error(`Missing service for ${modelName}`)
-      }
-
-      const selectedFields = getSelectedFieldsFromResolverInfo(info, model)
-      selectedFields.push(relationIdField.name)
-
-      const fetchedKeys = selectedFields.join('-')
-
-      // construct a unique key to identify the dataloader
-      const dataLoaderName = `${modelName}-${relationship.kind}-${relationIdField.name}-${relationship.relationForeignKey}-${fetchedKeys}-DataLoader`
-
-      if (!context[dataLoaderName]) {
-        context[dataLoaderName] = new DataLoader<string, any>(async (keys: string[]) => {
-          const service = context.graphback[modelName]
-          const results = await service.findBy({ [relationIdField.name]: { in: keys } }, context, info)
-
-          return keys.map((key: string) => {
-            return results.items.find((item: any) => item[relationIdField.name].toString() === key.toString())
-          })
-        })
-      }
-
-      const relationForeignKey = parent[relationship.relationForeignKey]
-
-      // eslint-disable-next-line no-null/no-null
-      if (relationForeignKey === undefined || relationForeignKey === null) {
-        // eslint-disable-next-line no-null/no-null
-        return null
-      }
-
-      return context[dataLoaderName].load(relationForeignKey)
     }
   }
 

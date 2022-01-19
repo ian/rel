@@ -23,7 +23,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  create: (data: Type, selectedFields?: string[], uniqueFields: string[]) => Promise<Type>
+  create: (data: Type, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object updates
@@ -32,7 +32,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  update: (data: Partial<Type>, selectedFields?: string[], uniqueFields: string[]) => Promise<Type>
+  update: (data: Partial<Type>, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object updates by filter
@@ -41,7 +41,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data input data
    * @param context context object passed from graphql or rest layer
    */
-  updateBy: (args: Partial<Type>, selectedFields?: string[], uniqueFields: string[]) => Promise<Type[]>
+  updateBy: (args: Partial<Type>, selectedFields?: string[]) => Promise<Type[]>
 
   /**
    * Implementation for object deletes
@@ -50,7 +50,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data data used for checking consistency
    * @param context context object passed from graphql or rest layer
    */
-  delete: (data: Partial<Type>, selectedFields?: string[], uniqueFields: string[]) => Promise<Type>
+  delete: (data: Partial<Type>, selectedFields?: string[]) => Promise<Type>
 
   /**
    * Implementation for object deletes by filter
@@ -59,7 +59,7 @@ export interface GraphbackDataProvider<Type = any> {
    * @param data data used for checking consistency
    * @param context context object passed from graphql or rest layer
    */
-  deleteBy: (args: Partial<Type>, selectedFields?: string[], uniqueFields: string[]) => Promise<Type[]>
+  deleteBy: (args: Partial<Type>, selectedFields?: string[]) => Promise<Type[]>
 
   /**
    * Implementation for finding a single unique object
@@ -88,9 +88,8 @@ export interface GraphbackDataProvider<Type = any> {
   /**
    * Implementation for initializing the unique index
    *
-   * @param uniqueFields Array of field names
    */
-  initializeUniqueIndex: (uniqueFields: string[]) => Promise<void>
+  initializeUniqueIndex: () => Promise<void>
 
   /**
    * Read multiple items by their id's (used for lazy data loading purposes)
