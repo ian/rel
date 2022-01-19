@@ -1,6 +1,5 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
+import { GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
 import pluralize from 'pluralize'
-import { getUserTypesFromSchema } from '@graphql-tools/utils'
 import { parseRelationshipAnnotation, transformForeignKeyName, getPrimaryKey } from '..'
 import { GraphbackOperationType } from './GraphbackOperationType'
 
@@ -96,25 +95,6 @@ export const getSubscriptionName = (typeName: string, action: GraphbackOperation
   return ''
 }
 
-/**
- * Get only user types annotated by ```@model```
- *
- * @param schema
- */
-export function filterModelTypes (schema: GraphQLSchema): GraphQLObjectType[] {
-  return getUserTypesFromSchema(schema)
-}
-
-/**
- * Get only user types not annotated by ```@model```
- *
- * @param schema
- */
-
-export function getUserModels (modelTypes: GraphQLObjectType[]): GraphQLObjectType[] {
-  return modelTypes
-}
-
 export function isInputField (field: GraphQLField<any, any>): boolean {
   const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
@@ -158,7 +138,7 @@ export function getInputFieldTypeName (modelName: string, field: GraphQLField<an
     const relationshipAnnotation = parseRelationshipAnnotation(field.description)
 
     if (relationshipAnnotation == null) {
-      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}". Visit https://graphback.dev/docs/model/datamodel#relationships to see how you can define relationship in your business model.`)
+      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}".`)
     }
 
     const idField = getPrimaryKey(fieldType)

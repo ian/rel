@@ -33,7 +33,6 @@ var __objRest = (source, exclude) => {
 // src/crud/mappingHelpers.ts
 import { getNamedType, isObjectType, isScalarType, isEnumType } from "graphql";
 import pluralize from "pluralize";
-import { getUserTypesFromSchema } from "@graphql-tools/utils";
 
 // src/crud/GraphbackOperationType.ts
 var GraphbackOperationType = /* @__PURE__ */ ((GraphbackOperationType2) => {
@@ -105,12 +104,6 @@ var getSubscriptionName = (typeName, action) => {
   }
   return "";
 };
-function filterModelTypes(schema) {
-  return getUserTypesFromSchema(schema);
-}
-function getUserModels(modelTypes) {
-  return modelTypes;
-}
 function isInputField(field) {
   const relationshipAnnotation = parseRelationshipAnnotation(field.description);
   return relationshipAnnotation == null || relationshipAnnotation.kind !== "oneToMany";
@@ -143,7 +136,7 @@ function getInputFieldTypeName(modelName, field, operation) {
   if (isObjectType(fieldType)) {
     const relationshipAnnotation = parseRelationshipAnnotation(field.description);
     if (relationshipAnnotation == null) {
-      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}". Visit https://graphback.dev/docs/model/datamodel#relationships to see how you can define relationship in your business model.`);
+      throw new Error(`Missing relationship definition on: "${modelName}.${field.name}".`);
     }
     const idField = getPrimaryKey(fieldType);
     return getNamedType(idField.type).name;
@@ -185,7 +178,7 @@ import { buildSchema } from "graphql";
 // src/plugin/GraphbackCoreMetadata.ts
 import { mergeResolvers } from "@graphql-tools/merge";
 import { getNamedType as getNamedType2 } from "graphql";
-import { getUserTypesFromSchema as getUserTypesFromSchema2 } from "@graphql-tools/utils";
+import { getUserTypesFromSchema } from "@graphql-tools/utils";
 var GraphbackCoreMetadata = class {
   schema;
   resolvers;
@@ -221,7 +214,7 @@ var GraphbackCoreMetadata = class {
     return this.models;
   }
   getGraphQLTypesWithModel() {
-    return getUserTypesFromSchema2(this.schema);
+    return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
     var _a, _b, _c, _d;
@@ -1494,7 +1487,6 @@ export {
   directives,
   extendOneToManyFieldArguments,
   extendRelationshipFields,
-  filterModelTypes,
   getColumnName,
   getFieldName,
   getInputFieldName,
@@ -1508,7 +1500,6 @@ export {
   getSelectedFieldsFromResolverInfo,
   getSubscriptionName,
   getTableName,
-  getUserModels,
   graphbackScalarsTypes,
   isAutoPrimaryKey,
   isInputField,
