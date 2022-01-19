@@ -25,20 +25,15 @@ module.exports.createClient = function(options) {
   return createClientOriginal(optionsCopy)
 }
 
-module.exports.enumEnumPostFields = {
-  id: 'id',
-  body: 'body',
-}
-
-module.exports.enumEnumUserFields = {
-  id: 'id',
-  name: 'name',
-  posts: 'posts',
-}
-
 module.exports.enumSortDirectionEnum = {
   DESC: 'DESC',
   ASC: 'ASC',
+}
+
+module.exports.enumUserFieldsEnum = {
+  _id: '_id',
+  name: 'name',
+  email: 'email',
 }
 
 module.exports.generateQueryOp = function(fields) {

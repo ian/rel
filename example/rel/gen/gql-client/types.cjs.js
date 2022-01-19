@@ -3,17 +3,21 @@ module.exports = {
         1,
         2,
         4,
-        5,
+        11,
         14,
-        21,
-        29
+        17,
+        18,
+        24
     ],
     "types": {
-        "CreatePostInput": {
-            "body": [
+        "CreateUserInput": {
+            "name": [
                 1
             ],
-            "ownerId": [
+            "email": [
+                1
+            ],
+            "count": [
                 2
             ],
             "__typename": [
@@ -21,18 +25,35 @@ module.exports = {
             ]
         },
         "String": {},
-        "ID": {},
-        "CreateUserInput": {
-            "name": [
-                1
+        "Int": {},
+        "IDInput": {
+            "ne": [
+                4
+            ],
+            "eq": [
+                4
+            ],
+            "le": [
+                4
+            ],
+            "lt": [
+                4
+            ],
+            "ge": [
+                4
+            ],
+            "gt": [
+                4
+            ],
+            "in": [
+                4
             ],
             "__typename": [
                 1
             ]
         },
-        "EnumPostFields": {},
-        "EnumUserFields": {},
-        "IDInput": {
+        "ID": {},
+        "IntInput": {
             "ne": [
                 2
             ],
@@ -54,18 +75,7 @@ module.exports = {
             "in": [
                 2
             ],
-            "__typename": [
-                1
-            ]
-        },
-        "MutatePostInput": {
-            "id": [
-                2
-            ],
-            "body": [
-                1
-            ],
-            "ownerId": [
+            "between": [
                 2
             ],
             "__typename": [
@@ -73,118 +83,69 @@ module.exports = {
             ]
         },
         "MutateUserInput": {
-            "id": [
-                2
-            ],
             "name": [
                 1
+            ],
+            "email": [
+                1
+            ],
+            "_id": [
+                4
+            ],
+            "count": [
+                2
             ],
             "__typename": [
                 1
             ]
         },
         "Mutation": {
-            "createPost": [
-                15,
+            "createUser": [
+                16,
                 {
                     "input": [
                         0,
-                        "CreatePostInput!"
-                    ]
-                }
-            ],
-            "updatePost": [
-                15,
-                {
-                    "input": [
-                        7,
-                        "MutatePostInput!"
-                    ]
-                }
-            ],
-            "updatePosts": [
-                17,
-                {
-                    "filter": [
-                        16
-                    ],
-                    "input": [
-                        7,
-                        "MutatePostInput!"
-                    ]
-                }
-            ],
-            "deletePost": [
-                15,
-                {
-                    "id": [
-                        2,
-                        "ID!"
-                    ]
-                }
-            ],
-            "deletePosts": [
-                17,
-                {
-                    "filter": [
-                        16
-                    ]
-                }
-            ],
-            "createUser": [
-                24,
-                {
-                    "input": [
-                        3,
                         "CreateUserInput!"
                     ]
                 }
             ],
             "updateUser": [
-                24,
+                16,
                 {
                     "input": [
-                        8,
+                        6,
                         "MutateUserInput!"
                     ]
                 }
             ],
             "updateUsers": [
-                26,
+                20,
                 {
                     "filter": [
-                        25
+                        19
                     ],
                     "input": [
-                        8,
+                        6,
                         "MutateUserInput!"
                     ]
                 }
             ],
             "deleteUser": [
-                24,
+                16,
                 {
-                    "id": [
-                        2,
+                    "_id": [
+                        4,
                         "ID!"
                     ]
                 }
             ],
             "deleteUsers": [
-                26,
+                20,
                 {
                     "filter": [
-                        25
+                        19
                     ]
                 }
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "OfPostInput": {
-            "of": [
-                4
             ],
             "__typename": [
                 1
@@ -192,18 +153,7 @@ module.exports = {
         },
         "OfUserInput": {
             "of": [
-                5
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "OrderByInput": {
-            "field": [
-                1
-            ],
-            "order": [
-                21
+                18
             ],
             "__typename": [
                 1
@@ -211,182 +161,37 @@ module.exports = {
         },
         "PageRequest": {
             "limit": [
-                14
-            ],
-            "offset": [
-                14
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "Int": {},
-        "Post": {
-            "id": [
                 2
             ],
-            "body": [
-                1
-            ],
-            "owner": [
-                24
-            ],
-            "count": [
-                14,
-                {
-                    "of": [
-                        10
-                    ]
-                }
-            ],
-            "avg": [
-                14,
-                {
-                    "of": [
-                        10
-                    ]
-                }
-            ],
-            "max": [
-                14,
-                {
-                    "of": [
-                        10
-                    ]
-                }
-            ],
-            "min": [
-                14,
-                {
-                    "of": [
-                        10
-                    ]
-                }
-            ],
-            "sum": [
-                14,
-                {
-                    "of": [
-                        10
-                    ]
-                }
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "PostFilter": {
-            "id": [
-                6
-            ],
-            "body": [
-                22
-            ],
-            "ownerId": [
-                6
-            ],
-            "and": [
-                16
-            ],
-            "or": [
-                16
-            ],
-            "not": [
-                16
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "PostMutationResultList": {
-            "items": [
-                15
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "PostResultList": {
-            "items": [
-                15
-            ],
             "offset": [
-                14
-            ],
-            "limit": [
-                14
-            ],
-            "count": [
-                14
-            ],
-            "__typename": [
-                1
-            ]
-        },
-        "PostSubscriptionFilter": {
-            "and": [
-                19
-            ],
-            "or": [
-                19
-            ],
-            "not": [
-                19
-            ],
-            "id": [
-                6
-            ],
-            "body": [
-                22
+                2
             ],
             "__typename": [
                 1
             ]
         },
         "Query": {
-            "getPost": [
-                15,
-                {
-                    "id": [
-                        2,
-                        "ID!"
-                    ]
-                }
-            ],
-            "findPosts": [
-                18,
-                {
-                    "filter": [
-                        16
-                    ],
-                    "page": [
-                        13
-                    ],
-                    "orderBy": [
-                        12
-                    ]
-                }
-            ],
             "getUser": [
-                24,
+                16,
                 {
-                    "id": [
-                        2,
+                    "_id": [
+                        4,
                         "ID!"
                     ]
                 }
             ],
             "findUsers": [
-                27,
+                22,
                 {
                     "filter": [
-                        25
+                        19
                     ],
                     "page": [
-                        13
+                        9
                     ],
                     "orderBy": [
-                        12
+                        21,
+                        "[UserOrderByInput]"
                     ]
                 }
             ],
@@ -431,132 +236,124 @@ module.exports = {
             ]
         },
         "Subscription": {
-            "newPost": [
-                15,
-                {
-                    "filter": [
-                        19
-                    ]
-                }
-            ],
-            "updatedPost": [
-                15,
-                {
-                    "filter": [
-                        19
-                    ]
-                }
-            ],
-            "deletedPost": [
-                15,
-                {
-                    "filter": [
-                        19
-                    ]
-                }
-            ],
             "newUser": [
-                24,
+                16,
                 {
                     "filter": [
-                        28
+                        23
                     ]
                 }
             ],
             "updatedUser": [
-                24,
+                16,
                 {
                     "filter": [
-                        28
+                        23
                     ]
                 }
             ],
             "deletedUser": [
-                24,
+                16,
                 {
                     "filter": [
-                        28
+                        23
                     ]
                 }
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "Timestamp": {},
+        "TimestampInput": {
+            "ne": [
+                14
+            ],
+            "eq": [
+                14
+            ],
+            "le": [
+                14
+            ],
+            "lt": [
+                14
+            ],
+            "ge": [
+                14
+            ],
+            "gt": [
+                14
+            ],
+            "in": [
+                14
+            ],
+            "between": [
+                14
             ],
             "__typename": [
                 1
             ]
         },
         "User": {
-            "id": [
-                2
-            ],
             "name": [
                 1
             ],
-            "posts": [
-                15,
-                {
-                    "filter": [
-                        16
-                    ]
-                }
+            "email": [
+                1
+            ],
+            "_id": [
+                4
             ],
             "count": [
-                14,
+                2,
                 {
                     "of": [
-                        11
+                        8
+                    ],
+                    "distinct": [
+                        17
                     ]
                 }
             ],
-            "avg": [
-                14,
-                {
-                    "of": [
-                        11
-                    ]
-                }
+            "createdAt": [
+                14
             ],
-            "max": [
-                14,
-                {
-                    "of": [
-                        11
-                    ]
-                }
-            ],
-            "min": [
-                14,
-                {
-                    "of": [
-                        11
-                    ]
-                }
-            ],
-            "sum": [
-                14,
-                {
-                    "of": [
-                        11
-                    ]
-                }
+            "updatedAt": [
+                14
             ],
             "__typename": [
                 1
             ]
         },
+        "Boolean": {},
+        "UserFieldsEnum": {},
         "UserFilter": {
-            "id": [
-                6
-            ],
             "name": [
-                22
+                12
+            ],
+            "email": [
+                12
+            ],
+            "_id": [
+                3
+            ],
+            "count": [
+                5
             ],
             "and": [
-                25
+                19
             ],
             "or": [
-                25
+                19
             ],
             "not": [
-                25
+                19
+            ],
+            "createdAt": [
+                15
+            ],
+            "updatedAt": [
+                15
             ],
             "__typename": [
                 1
@@ -564,7 +361,18 @@ module.exports = {
         },
         "UserMutationResultList": {
             "items": [
-                24
+                16
+            ],
+            "__typename": [
+                1
+            ]
+        },
+        "UserOrderByInput": {
+            "field": [
+                18
+            ],
+            "order": [
+                11
             ],
             "__typename": [
                 1
@@ -572,16 +380,16 @@ module.exports = {
         },
         "UserResultList": {
             "items": [
-                24
+                16
             ],
             "offset": [
-                14
+                2
             ],
             "limit": [
-                14
+                2
             ],
             "count": [
-                14
+                2
             ],
             "__typename": [
                 1
@@ -589,24 +397,30 @@ module.exports = {
         },
         "UserSubscriptionFilter": {
             "and": [
-                28
+                23
             ],
             "or": [
-                28
+                23
             ],
             "not": [
-                28
-            ],
-            "id": [
-                6
+                23
             ],
             "name": [
-                22
+                12
+            ],
+            "email": [
+                12
+            ],
+            "_id": [
+                3
+            ],
+            "count": [
+                5
             ],
             "__typename": [
                 1
             ]
         },
-        "Boolean": {}
+        "Float": {}
     }
 }

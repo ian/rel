@@ -11,7 +11,7 @@ export async function cypherUpdateBy (
   opts = {}
 ) {
   const toParams = diff({}, params, {
-    ignore: ['__id', '__typename']
+    ignore: ['_id', '__typename']
   })
 
   const paramsCypher = paramify(toParams, {

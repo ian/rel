@@ -30,7 +30,7 @@ export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any
 /**
  * Check if a GraphQLField can be inferred as a primary key, specific for each database:
  * A field is a potential primary key if:
- * - is named "__id" and has type "ID", auto increment primary key for relational database
+ * - is named "_id" and has type "ID", auto increment primary key for relational database
  * @param field
  */
 export function isAutoPrimaryKey (field: GraphQLField<any, any> | GraphQLInputField): boolean {
@@ -38,5 +38,5 @@ export function isAutoPrimaryKey (field: GraphQLField<any, any> | GraphQLInputFi
   const baseType = getNamedType(type)
   const name = baseType.name
 
-  return fieldName === '__id' && name === 'ID' && isScalarType(baseType)
+  return fieldName === '_id' && name === 'ID' && isScalarType(baseType)
 }

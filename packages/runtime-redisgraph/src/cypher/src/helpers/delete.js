@@ -1,15 +1,15 @@
 import cleanPrefix from '../util/cleanPrefix.js'
 
-export async function cypherDelete (label, __id, projection = []) {
-  const node = await this.find(label, { __id })
+export async function cypherDelete (label, _id, projection = []) {
+  const node = await this.find(label, { _id })
   if (!node) {
-    throw new Error(`Unknown ${label} __id = ${__id}`)
+    throw new Error(`Unknown ${label} _id = ${_id}`)
   }
 
   const res = await this.exec1(
     `
       MATCH (node:${label})
-      WHERE node.__id = "${__id}"
+      WHERE node._id = "${_id}"
       DELETE node
       RETURN ${projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : 'node'};
     `

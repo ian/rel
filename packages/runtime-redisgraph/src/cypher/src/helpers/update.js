@@ -7,19 +7,19 @@ const { isEmpty } = _
 
 export async function cypherUpdate (
   label,
-  __id,
+  _id,
   params,
   projection = [],
   opts = {}
 ) {
-  const node = await this.find(label, { __id })
+  const node = await this.find(label, { _id })
 
   if (!node) {
-    throw new Error(`Unknown ${label} __id = ${__id}`)
+    throw new Error(`Unknown ${label} _id = ${_id}`)
   }
 
   const toParams = diff(node, params, {
-    ignore: ['__id', '__typename']
+    ignore: ['_id', '__typename']
   })
 
   if (isEmpty(toParams)) {
@@ -39,7 +39,7 @@ export async function cypherUpdate (
     query += `OPTIONAL MATCH (unique_node:${label} { __unique: "${params.__unique}"}) WITH unique_node WHERE unique_node IS NULL `
   }
   query += `
-      MATCH (node:${label} { ${paramify({ __id })} })
+      MATCH (node:${label} { ${paramify({ _id })} })
       SET ${paramsCypher}
       RETURN ${projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : 'node'};
     `

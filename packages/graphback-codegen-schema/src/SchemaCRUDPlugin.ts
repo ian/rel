@@ -99,7 +99,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       this.addQueryResolvers(model, resolvers)
       this.addMutationResolvers(model, resolvers)
       this.addSubscriptionResolvers(model, resolvers)
-      this.addRelationshipResolvers(model, resolvers, modelNameToModelDefinition)
     }
 
     return resolvers
@@ -153,7 +152,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       }
 
       modifiedType.addFields({
-        __id: {
+        _id: {
           type: "ID"
         }
       })

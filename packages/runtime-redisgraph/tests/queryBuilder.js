@@ -60,7 +60,7 @@ test('can filter ID', async () => {
   })
 
   const findPost = await context.providers.Post.findBy({
-    filter: { __id: { eq: newPost.__id } }
+    filter: { _id: { eq: newPost._id } }
   })
   assert.is(findPost.length, 1)
   assert.is(findPost[0].text, newPost.text)

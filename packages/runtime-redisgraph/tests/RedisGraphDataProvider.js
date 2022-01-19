@@ -36,11 +36,12 @@ test.after.each(async () => {
 
 let context
 
-const fields = ['__id', 'text']
+const fields = ['_id', 'text']
 
 const todoSchema = `
   type Todos {
     text: String @unique,
+    email: String @constraint(format: "email")
     order: Int
   }
   `
@@ -70,15 +71,15 @@ test('Test crud', async () => {
 
   todo = await context.providers.Todos.update(
     {
-      __id: todo.__id,
+      _id: todo._id,
       text: 'my updated first todo'
     },
     fields
   )
 
   assert.is(todo.text, 'my updated first todo')
-  const data = await context.providers.Todos.delete({ __id: todo.__id }, fields)
-  assert.is(data.__id, todo.__id)
+  const data = await context.providers.Todos.delete({ _id: todo._id }, fields)
+  assert.is(data._id, todo._id)
 })
 
 test('find first 1 todo(s) excluding first todo', async () => {
@@ -115,7 +116,7 @@ test('find Todo by text', async () => {
         text: { eq: all[0].text }
       }
     },
-    ['__id']
+    ['_id']
   )
   assert.ok(todos.length > 0)
   const count = await context.providers.Todos.count({
@@ -301,11 +302,11 @@ test('select only requested fields', async () => {
     }
   )
 
-  const todos = await context.providers.Todos.findBy({}, ['__id', 'text'])
+  const todos = await context.providers.Todos.findBy({}, ['_id', 'text'])
 
   assert.is(todos.length, 3)
   todos.forEach(todo => {
-    assert.not.type(todo.__id, 'undefined')
+    assert.not.type(todo._id, 'undefined')
     assert.not.type(todo.text, 'undefined')
     assert.type(todo.description, 'undefined')
   })
@@ -314,20 +315,20 @@ test('select only requested fields', async () => {
     text: 'new todo',
     description: 'todo add description'
   })
-  assert.not.type(createdTodo.__id, 'undefined')
+  assert.not.type(createdTodo._id, 'undefined')
 
   const updatedTodo = await context.providers.Todos.update(
-    { __id: createdTodo.__id, text: 'updated todo' },
+    { _id: createdTodo._id, text: 'updated todo' },
     ['text']
   )
   assert.type(updatedTodo.description, 'undefined')
   assert.is(updatedTodo.text, 'updated todo')
 
   const deletedTodo = await context.providers.Todos.update(
-    { __id: createdTodo.__id },
-    ['__id', 'text', 'description']
+    { _id: createdTodo._id },
+    ['_id', 'text', 'description']
   )
-  assert.is(deletedTodo.__id, createdTodo.__id)
+  assert.is(deletedTodo._id, createdTodo._id)
   assert.is(deletedTodo.text, 'updated todo')
   assert.is(deletedTodo.description, 'todo add description')
 })
@@ -923,7 +924,7 @@ test('Test UNIQUE constraint', async () => {
   try {
     await context.providers.Todos.update(
       {
-        __id: todo.__id,
+        _id: todo._id,
         text: 'todo'
       },
       fields)
@@ -931,7 +932,7 @@ test('Test UNIQUE constraint', async () => {
     assert.unreachable()
   } catch(e) {}
 
-  await context.providers.Todos.delete({ __id: todo.__id }, fields)
+  await context.providers.Todos.delete({ _id: todo._id }, fields)
   
   try {
     await context.providers.Todos.create({

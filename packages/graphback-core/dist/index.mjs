@@ -191,12 +191,12 @@ var GraphbackCoreMetadata = class {
   buildModel(modelType) {
     var _a, _b, _c, _d, _e, _f;
     const primaryKey = {
-      name: "__id",
+      name: "_id",
       type: "ID"
     };
     const modelFields = modelType.getFields();
     const fields = {};
-    fields.__id = {
+    fields._id = {
       type: "ID"
     };
     const uniqueFields = [];
@@ -338,7 +338,7 @@ function isAutoPrimaryKey(field) {
   const { type, name: fieldName } = field;
   const baseType = getNamedType3(type);
   const name = baseType.name;
-  return fieldName === "__id" && name === "ID" && isScalarType2(baseType);
+  return fieldName === "_id" && name === "ID" && isScalarType2(baseType);
 }
 
 // src/utils/printSchemaWithDirectives.ts
@@ -986,7 +986,7 @@ var directives = `
         exclusiveMin: Float
         exclusiveMax: Float
         notEqual: Float
-      ) on ARGUMENT_DEFINITION | FIELD_DEFINITION
+      ) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION
     `;
 export {
   BigInt_,

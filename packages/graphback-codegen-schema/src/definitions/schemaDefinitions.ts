@@ -145,7 +145,6 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
       extensions,
       deprecationReason: field.deprecationReason
     }
-
     inputFields.push(inputField)
   }
 
@@ -156,8 +155,8 @@ export function buildFindOneFieldMap (modelType: ModelDefinition, schemaComposer
   const { type } = modelType.primaryKey
 
   return {
-    __id: {
-      name: '__id',
+    _id: {
+      name: '_id',
       type: GraphQLNonNull(schemaComposer.getAnyTC(type).getType()),
       description: undefined,
       extensions: undefined,
@@ -182,7 +181,8 @@ export const buildFilterInputType = (schemaComposer: SchemaComposer<any>, modelT
       const type = getInputName(namedType)
       scalarInputFields[field.name] = {
         name: field.name,
-        type
+        type,
+        extensions: field.extensions
       }
     }
   }
@@ -224,7 +224,8 @@ export const buildCreateMutationInputType = (schemaComposer: SchemaComposer<any>
 
         fields[field.name] = {
           name: field.name,
-          type: field.type
+          type: field.type,
+          extensions: field.extensions
         }
       }
 
@@ -281,7 +282,7 @@ export const buildMutationInputType = (schemaComposer: SchemaComposer<any>, mode
     name: inputTypeName,
     fields: () => {
       const fields: any = {}
-      for (const { name, type } of allModelFields) {
+      for (const { name, type,extensions } of allModelFields) {
         let fieldType: GraphQLInputType
 
         if (name !== idField.name) {
@@ -294,7 +295,8 @@ export const buildMutationInputType = (schemaComposer: SchemaComposer<any>, mode
 
         fields[name] = {
           name,
-          type: fieldType || type
+          type: fieldType || type,
+          extensions
         }
       }
 
@@ -321,7 +323,7 @@ function mapObjectInputFields (schemaComposer: SchemaComposer<any>, fields: Arra
     return {
       name: field.name,
       type: inputType || field.type,
-      extensions: [],
+      extensions: {},
       deprecationReason: field.deprecationReason
     }
   })

@@ -3,6 +3,7 @@ import { ServiceCreator, DataProviderCreator, GraphbackPlugin, GraphbackPluginEn
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from '@graphback/codegen-schema'
 import { mergeSchemas } from '@graphql-tools/merge'
 import { PubSub } from 'graphql-subscriptions'
+import { constraint } from 'node-graphql-constraint-lambda'
 
 export interface GraphbackAPIConfig {
   /**
@@ -103,7 +104,7 @@ function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
  *
  * @returns {GraphbackAPI} Generated schema, CRUD resolvers and services
  */
-export async function buildGraphbackAPI (model: string | GraphQLSchema): GraphbackAPI {
+export async function buildGraphbackAPI (model: string | GraphQLSchema,config = {}): GraphbackAPI {
   const schemaPlugins: GraphbackPlugin[] = getPlugins(config.plugins)
 
   const pluginEngine = new GraphbackPluginEngine({
@@ -128,7 +129,11 @@ export async function buildGraphbackAPI (model: string | GraphQLSchema): Graphba
   const resolvers = metadata.getResolvers()
 
   // merge resolvers into schema to make it executable
-  const schemaWithResolvers = mergeSchemas({ schemas: [metadata.getSchema()], resolvers })
+  const schemaWithResolvers = mergeSchemas({ schemas: [metadata.getSchema()], resolvers,
+    schemaDirectives: {
+      constraint
+    } 
+  })
 
   const typeDefs = printSchemaWithDirectives(schemaWithResolvers)
 

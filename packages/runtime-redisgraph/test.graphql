@@ -6,7 +6,7 @@ directive @relation on FIELD_DEFINITION
 
 directive @transient on FIELD_DEFINITION
 
-directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, differsFrom: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, notEqual: Float) on ARGUMENT_DEFINITION | FIELD_DEFINITION
+directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, differsFrom: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, notEqual: Float) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 """Exposes a URL that specifies the behaviour of this scalar."""
 directive @specifiedBy(
@@ -16,6 +16,7 @@ directive @specifiedBy(
 
 input CreateTodosInput {
   text: String
+  email: String @constraint(format: "email")
   order: Int
   count: Int
   avg: Int
@@ -47,8 +48,9 @@ input IntInput {
 
 input MutateTodosInput {
   text: String
+  email: String @constraint(format: "email")
   order: Int
-  __id: ID
+  _id: ID
   count: Int
   avg: Int
   max: Int
@@ -76,7 +78,7 @@ input PageRequest {
 }
 
 type Query {
-  getTodos(__id: ID!): Todos
+  getTodos(_id: ID!): Todos
   findTodos(filter: TodosFilter, page: PageRequest, orderBy: [TodosOrderByInput]): TodosResultList!
 }
 
@@ -122,8 +124,9 @@ input TimestampInput {
 
 type Todos {
   text: String @unique
+  email: String @constraint(format: "email")
   order: Int
-  __id: ID
+  _id: ID
   count(of: OfTodosInput, distinct: Boolean): Int
   avg(of: OfTodosNumberInput, distinct: Boolean): Int
   max(of: OfTodosNumberInput, distinct: Boolean): Int
@@ -134,15 +137,17 @@ type Todos {
 }
 
 enum TodosFieldsEnum {
-  __id
+  _id
   text
+  email
   order
 }
 
 input TodosFilter {
   text: StringInput
+  email: StringInput @constraint(format: "email")
   order: IntInput
-  __id: IDInput
+  _id: IDInput
   count: IntInput
   avg: IntInput
   max: IntInput
@@ -180,8 +185,9 @@ input TodosSubscriptionFilter {
   or: [TodosSubscriptionFilter!]
   not: TodosSubscriptionFilter
   text: StringInput
+  email: StringInput
   order: IntInput
-  __id: IDInput
+  _id: IDInput
   count: IntInput
   avg: IntInput
   max: IntInput

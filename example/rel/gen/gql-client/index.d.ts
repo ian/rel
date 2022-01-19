@@ -69,18 +69,13 @@ export declare const generateSubscriptionOp: (
   fields: SubscriptionRequest & { __name?: string },
 ) => GraphqlOperation
 
-export declare const enumEnumPostFields: {
-  readonly id: 'id'
-  readonly body: 'body'
-}
-
-export declare const enumEnumUserFields: {
-  readonly id: 'id'
-  readonly name: 'name'
-  readonly posts: 'posts'
-}
-
 export declare const enumSortDirectionEnum: {
   readonly DESC: 'DESC'
   readonly ASC: 'ASC'
+}
+
+export declare const enumUserFieldsEnum: {
+  readonly _id: '_id'
+  readonly name: 'name'
+  readonly email: 'email'
 }

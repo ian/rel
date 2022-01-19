@@ -1,13 +1,4 @@
-"""@model"""
-type Post {
-  id: ID!
-  body: String!
-}
-
-"""@model"""
 type User {
-  id: ID!
   name: String!
-  """@oneToMany(field: 'owner')"""
-  posts: [Post]
+  email: String @constraint(format: "email")
 }

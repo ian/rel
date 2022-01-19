@@ -24,7 +24,7 @@ export class RedisGraphProvider {
 
   async create (data, selectedFields) {
     data.createdAt = new Date().getTime()
-    data.__id = uuid()
+    data._id = uuid()
 
     if(this.model.uniqueFields.length > 0) {
       const __unique = await this.checkUniqueness("Create", data)
@@ -48,13 +48,13 @@ export class RedisGraphProvider {
   }
 
   async update (data, selectedFields) {
-    if (!data.__id) {
-      const err = `Cannot update ${this.collectionName} - missing __id field`
+    if (!data._id) {
+      const err = `Cannot update ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
       throw new NoDataError(err)
     }
 
-    const __id = data.__id
+    const _id = data._id
 
     let entity
     let shouldVerifyUniqueness = false
@@ -63,7 +63,7 @@ export class RedisGraphProvider {
     data.updatedAt = new Date().getTime()
 
     if(this.model.uniqueFields.length > 0) {
-      entity = await cypher.find(this.collectionName, { __id: data.__id }, this.model.uniqueFields)
+      entity = await cypher.find(this.collectionName, { _id: data._id }, this.model.uniqueFields)
       if(entity) {
         this.model.uniqueFields.forEach(f => {
           if(data[f] && data[f] !== entity[f]) {
@@ -71,7 +71,7 @@ export class RedisGraphProvider {
             entity[f] = data[f]
           }
         })
-        entity.__id = __id
+        entity._id = _id
         if(shouldVerifyUniqueness) {
           uniqueKey = await this.checkUniqueness("Update", entity)
         }
@@ -81,14 +81,14 @@ export class RedisGraphProvider {
 
     const result = await cypher.update(
       this.collectionName,
-      __id,
+      _id,
       data,
       selectedFields
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:update`
       await createStreamGroup(streamKey)
-      data.__id = __id
+      data._id = _id
       await addStreamData(streamKey, data)
       return result
     }
@@ -104,13 +104,13 @@ export class RedisGraphProvider {
       {
         where: filterQuery
       },
-      ["__id"]
+      ["_id"]
     )
     const items = []
     const updatedAt = new Date().getTime()
     for(let i = 0; i < data.length; i++) {
       const obj = args.input
-      obj.__id = data[i].__id
+      obj._id = data[i]._id
       obj.updatedAt = updatedAt
       items.push(await this.update(obj, selectedFields))
     }
@@ -123,21 +123,21 @@ export class RedisGraphProvider {
   }
 
   async delete (data, selectedFields) {
-    if (!data.__id) {
-      const err = `Cannot delete ${this.collectionName} - missing __id field`
+    if (!data._id) {
+      const err = `Cannot delete ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
       throw new NoDataError(err)
     }
 
     const result = await cypher.delete(
       this.collectionName,
-      data.__id,
+      data._id,
       selectedFields
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:delete`
       await createStreamGroup(streamKey)
-      await addStreamData(streamKey, { __id: data.id })
+      await addStreamData(streamKey, { _id: data.id })
       return result
     }
     const err = `Cannot delete ${this.collectionName}`
@@ -152,12 +152,12 @@ export class RedisGraphProvider {
       {
         where: filterQuery
       },
-      ["__id"]
+      ["_id"]
     )
     const items = []
     for(let i = 0; i < data.length; i++) {
       const obj = {
-        __id: data[i].__id
+        _id: data[i]._id
       }
       items.push(await this.delete(obj, selectedFields))
     }
@@ -272,7 +272,7 @@ export class RedisGraphProvider {
           const __unique = this.generateUniqueValue(items[i])
           await cypher.update(
             this.collectionName,
-            items[i].__id,
+            items[i]._id,
             {__unique}
           )
         }
@@ -307,9 +307,9 @@ export class RedisGraphProvider {
         {
           where: {__unique: {eq: ["=", `"${uniqueKey}"`]}},
         },
-        ["__id", "__unique"],
+        ["_id", "__unique"],
       )
-      if(uniqueValue.__unique && data.__id !== uniqueValue.__id) {
+      if(uniqueValue.__unique && data._id !== uniqueValue._id) {
         throw new Error(`The ${mutationName} mutation would violate ${this.collectionName} UNIQUE constraint`)
       }
     }

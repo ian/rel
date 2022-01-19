@@ -25,20 +25,15 @@ export var createClient = function(options) {
   return createClientOriginal(optionsCopy)
 }
 
-export const enumEnumPostFields = {
-  id: 'id',
-  body: 'body',
-}
-
-export const enumEnumUserFields = {
-  id: 'id',
-  name: 'name',
-  posts: 'posts',
-}
-
 export const enumSortDirectionEnum = {
   DESC: 'DESC',
   ASC: 'ASC',
+}
+
+export const enumUserFieldsEnum = {
+  _id: '_id',
+  name: 'name',
+  email: 'email',
 }
 
 export var generateQueryOp = function(fields) {

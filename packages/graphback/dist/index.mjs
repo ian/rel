@@ -33,6 +33,7 @@ import { GraphbackPluginEngine, printSchemaWithDirectives, createCRUDService } f
 import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from "@graphback/codegen-schema";
 import { mergeSchemas } from "@graphql-tools/merge";
 import { PubSub } from "graphql-subscriptions";
+import { constraint } from "node-graphql-constraint-lambda";
 async function createServices(models, createService, createProvider) {
   const services = {};
   for (const model of models) {
@@ -61,7 +62,7 @@ function getPlugins(plugins) {
     ...Object.values(pluginsMap)
   ];
 }
-async function buildGraphbackAPI(model) {
+async function buildGraphbackAPI(model, config = {}) {
   const schemaPlugins = getPlugins(config.plugins);
   const pluginEngine = new GraphbackPluginEngine({
     schema: model,
@@ -77,7 +78,13 @@ async function buildGraphbackAPI(model) {
     });
   };
   const resolvers = metadata.getResolvers();
-  const schemaWithResolvers = mergeSchemas({ schemas: [metadata.getSchema()], resolvers });
+  const schemaWithResolvers = mergeSchemas({
+    schemas: [metadata.getSchema()],
+    resolvers,
+    schemaDirectives: {
+      constraint
+    }
+  });
   const typeDefs = printSchemaWithDirectives(schemaWithResolvers);
   return {
     schema: schemaWithResolvers,
@@ -109,8 +116,8 @@ function loadPlugins(pluginConfigMap) {
     try {
       const plugin = __require(pluginName);
       if (plugin.Plugin) {
-        const config2 = pluginConfigMap[pluginLabel];
-        pluginInstances.push(new plugin.Plugin(config2));
+        const config = pluginConfigMap[pluginLabel];
+        pluginInstances.push(new plugin.Plugin(config));
       } else {
         console.log(`${pluginName} plugin is not exporting 'Plugin' class`);
       }
@@ -125,9 +132,9 @@ function loadPlugins(pluginConfigMap) {
 var GraphbackGenerator = class {
   config;
   schema;
-  constructor(schema, config2) {
+  constructor(schema, config) {
     this.schema = schema;
-    this.config = config2;
+    this.config = config;
   }
   generateSourceCode() {
     const plugins = loadPlugins(this.config.plugins);

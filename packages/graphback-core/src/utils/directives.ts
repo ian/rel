@@ -18,5 +18,5 @@ export const directives = `
         exclusiveMin: Float
         exclusiveMax: Float
         notEqual: Float
-      ) on ARGUMENT_DEFINITION | FIELD_DEFINITION
+      ) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION
     `

@@ -16,7 +16,7 @@
   "homepage": "https://github.com/rel-js/rel#readme",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "tsup src/index.ts --target esnext --format esm --sourcemap" 
+    "build": "tsup src/index.ts --target esnext --format esm --sourcemap"
   },
   "dependencies": {
     "@genql/cli": "^2.8.0",

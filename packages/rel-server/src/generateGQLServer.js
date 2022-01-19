@@ -7,9 +7,9 @@ import { RedisPubSub } from 'graphql-redis-subscriptions'
 
 export default async ({ dir }) => {
   const dataProviderCreator = createRedisGraphProvider()
-  const schema_ = fs.readFileSync(dir + '/schema.graphql')
+  const schema_ = directives + "\n" + fs.readFileSync(dir + '/schema.graphql').toString()
   const { typeDefs, resolvers, schema, services, contextCreator } =
-    await buildGraphbackAPI(directives + schema_.toString(), {
+    await buildGraphbackAPI(schema_, {
       dataProviderCreator,
       serviceCreator: createCRUDService({
         pubSub: new RedisPubSub(),

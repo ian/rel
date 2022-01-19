@@ -217,8 +217,8 @@ function getModelInputFields(schemaComposer, modelType, operationType) {
 function buildFindOneFieldMap(modelType, schemaComposer) {
   const { type } = modelType.primaryKey;
   return {
-    __id: {
-      name: "__id",
+    _id: {
+      name: "_id",
       type: GraphQLNonNull2(schemaComposer.getAnyTC(type).getType()),
       description: void 0,
       extensions: void 0,
@@ -237,7 +237,8 @@ var buildFilterInputType = (schemaComposer, modelType) => {
       const type = getInputName(namedType);
       scalarInputFields[field.name] = {
         name: field.name,
-        type
+        type,
+        extensions: field.extensions
       };
     }
   }
@@ -272,7 +273,8 @@ var buildCreateMutationInputType = (schemaComposer, modelType) => {
         }
         fields[field.name] = {
           name: field.name,
-          type: field.type
+          type: field.type,
+          extensions: field.extensions
         };
       }
       return fields;
@@ -321,7 +323,7 @@ var buildMutationInputType = (schemaComposer, modelType) => {
     name: inputTypeName,
     fields: () => {
       const fields = {};
-      for (const { name, type } of allModelFields) {
+      for (const { name, type, extensions } of allModelFields) {
         let fieldType;
         if (name !== idField.name) {
           fieldType = getNullableType(type);
@@ -331,7 +333,8 @@ var buildMutationInputType = (schemaComposer, modelType) => {
         }
         fields[name] = {
           name,
-          type: fieldType || type
+          type: fieldType || type,
+          extensions
         };
       }
       return fields;
@@ -352,7 +355,7 @@ function mapObjectInputFields(schemaComposer, fields, objectName) {
     return {
       name: field.name,
       type: inputType || field.type,
-      extensions: [],
+      extensions: {},
       deprecationReason: field.deprecationReason
     };
   });
@@ -468,7 +471,6 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       this.addQueryResolvers(model, resolvers);
       this.addMutationResolvers(model, resolvers);
       this.addSubscriptionResolvers(model, resolvers);
-      this.addRelationshipResolvers(model, resolvers, modelNameToModelDefinition);
     }
     return resolvers;
   }
@@ -504,7 +506,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
         throw new Error(errorMessage("__unique"));
       }
       modifiedType.addFields({
-        __id: {
+        _id: {
           type: "ID"
         }
       });

@@ -68,14 +68,14 @@ export class GraphbackCoreMetadata {
   private buildModel (modelType: GraphQLObjectType): ModelDefinition {
     // Merge CRUD options from type with global ones
     const primaryKey = {
-      name: "__id",
+      name: "_id",
       type: "ID"
     }
     // parse fields
     const modelFields = modelType.getFields()
     const fields: ModelFieldMap = {}
 
-    fields.__id = {
+    fields._id = {
       type: "ID"
     }
 
