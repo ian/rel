@@ -22,9 +22,20 @@ export class RedisGraphProvider {
     this.collectionName = model.graphqlType.name
   }
 
+  addDefaultValues(data) {
+    this.model.defaultFields.forEach(defaultField => {
+      if(data[defaultField.name] === null || typeof data[defaultField.name] === "undefined") {
+        data[defaultField.name] = defaultField.default
+      }
+    })
+    return data
+  }
+
   async create (data, selectedFields) {
     data.createdAt = new Date().getTime()
     data._id = uuid()
+
+    data = this.addDefaultValues(data)
 
     if(this.model.uniqueFields.length > 0) {
       const __unique = await this.checkUniqueness("Create", data)
@@ -61,6 +72,8 @@ export class RedisGraphProvider {
     let uniqueKey
 
     data.updatedAt = new Date().getTime()
+
+    data = this.addDefaultValues(data)
 
     if(this.model.uniqueFields.length > 0) {
       entity = await cypher.find(this.collectionName, { _id: data._id }, this.model.uniqueFields)

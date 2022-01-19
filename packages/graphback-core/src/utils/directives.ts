@@ -3,6 +3,7 @@ export const directives = `
       directive @unique on FIELD_DEFINITION
       directive @relation on FIELD_DEFINITION
       directive @transient on FIELD_DEFINITION
+      directive @default(value: String!) on FIELD_DEFINITION
       directive @constraint(
             minLength: Int
             maxLength: Int

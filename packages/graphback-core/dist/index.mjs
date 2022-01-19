@@ -189,7 +189,7 @@ var GraphbackCoreMetadata = class {
     return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i;
     const primaryKey = {
       name: "_id",
       type: "ID"
@@ -200,6 +200,7 @@ var GraphbackCoreMetadata = class {
       type: "ID"
     };
     const uniqueFields = [];
+    const defaultFields = [];
     for (const field of Object.keys(modelFields)) {
       let fieldName = field;
       let type = "";
@@ -215,6 +216,30 @@ var GraphbackCoreMetadata = class {
       if ((_f = (_e = (_d = graphqlField.extensions) == null ? void 0 : _d.directives) == null ? void 0 : _e.some) == null ? void 0 : _f.call(_e, (d) => d.name === "unique")) {
         uniqueFields.push(field);
       }
+      const defaultField = (_i = (_h = (_g = graphqlField.extensions) == null ? void 0 : _g.directives) == null ? void 0 : _h.find) == null ? void 0 : _i.call(_h, (d) => d.name === "default");
+      if (defaultField) {
+        let parsedDefaultValue = defaultField.args.value;
+        switch (getNamedType2(graphqlField.type).name) {
+          case "String":
+            break;
+          case "Boolean":
+            parsedDefaultValue = Boolean(defaultValue);
+            break;
+          case "Int":
+          case "Float":
+            parsedDefaultValue = Number(defaultValue);
+            break;
+          default:
+            try {
+              parsedDefaultValue = JSON.parse(defaultValue);
+            } catch {
+            }
+        }
+        defaultFields.push({
+          name: field,
+          default: parsedDefaultValue
+        });
+      }
       type = getNamedType2(modelFields[field].type).name;
       fields[field] = {
         name: fieldName,
@@ -227,6 +252,7 @@ var GraphbackCoreMetadata = class {
       primaryKey,
       relationships: [],
       uniqueFields,
+      defaultFields,
       graphqlType: modelType
     };
   }
@@ -971,6 +997,7 @@ var directives = `
       directive @unique on FIELD_DEFINITION
       directive @relation on FIELD_DEFINITION
       directive @transient on FIELD_DEFINITION
+      directive @default(value: String!) on FIELD_DEFINITION
       directive @constraint(
             minLength: Int
             maxLength: Int

@@ -80,6 +80,7 @@ export class GraphbackCoreMetadata {
     }
 
     const uniqueFields = []
+    const defaultFields = []
 
     for (const field of Object.keys(modelFields)) {
       let fieldName = field
@@ -100,6 +101,32 @@ export class GraphbackCoreMetadata {
         uniqueFields.push(field)
       }
 
+      const defaultField = graphqlField.extensions?.directives?.find?.(d => d.name === "default")
+      if (defaultField) {
+        let parsedDefaultValue = defaultField.args.value
+        switch (getNamedType(graphqlField.type).name) {
+          case 'String':
+            break;
+          case 'Boolean':
+            parsedDefaultValue = Boolean(defaultValue);
+            break;
+          case 'Int':
+          case 'Float':
+            parsedDefaultValue = Number(defaultValue);
+            break;
+          default:
+            try {
+              parsedDefaultValue = JSON.parse(defaultValue);
+            } catch {
+              // do nothing, assume the existing value
+            }
+        }
+        defaultFields.push({
+          name: field,
+          default: parsedDefaultValue
+        })
+      }
+
       type = getNamedType(modelFields[field].type).name
 
       fields[field] = {
@@ -114,6 +141,7 @@ export class GraphbackCoreMetadata {
       primaryKey,
       relationships: [],
       uniqueFields,
+      defaultFields,
       graphqlType: modelType
     }
   }

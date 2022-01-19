@@ -41,6 +41,7 @@ const fields = ['_id', 'text']
 const todoSchema = `
   type Todos {
     text: String @unique,
+    description: String @default(value: "FOO")
     email: String @constraint(format: "email")
     order: Int
   }
@@ -80,6 +81,18 @@ test('Test crud', async () => {
   assert.is(todo.text, 'my updated first todo')
   const data = await context.providers.Todos.delete({ _id: todo._id }, fields)
   assert.is(data._id, todo._id)
+})
+
+test('Default value', async () => {
+  context = await createTestingContext(todoSchema, {
+    seedData: {
+      Todos: defaultTodoSeed
+    }
+  })
+  let todo = await context.providers.Todos.create({
+    text: 'create a todo'
+  })
+  assert.is(todo.description, "FOO")
 })
 
 test('find first 1 todo(s) excluding first todo', async () => {

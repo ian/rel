@@ -6,7 +6,9 @@ directive @relation on FIELD_DEFINITION
 
 directive @transient on FIELD_DEFINITION
 
-directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, differsFrom: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, notEqual: Float) on ARGUMENT_DEFINITION | FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @default(value: String!) on FIELD_DEFINITION
+
+directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, multipleOf: Float) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
 """Exposes a URL that specifies the behaviour of this scalar."""
 directive @specifiedBy(
@@ -16,6 +18,7 @@ directive @specifiedBy(
 
 input CreateTodosInput {
   text: String
+  description: String
   email: String @constraint(format: "email")
   order: Int
   count: Int
@@ -48,6 +51,7 @@ input IntInput {
 
 input MutateTodosInput {
   text: String
+  description: String
   email: String @constraint(format: "email")
   order: Int
   _id: ID
@@ -124,6 +128,7 @@ input TimestampInput {
 
 type Todos {
   text: String @unique
+  description: String @default(value: "FOO")
   email: String @constraint(format: "email")
   order: Int
   _id: ID
@@ -139,13 +144,15 @@ type Todos {
 enum TodosFieldsEnum {
   _id
   text
+  description
   email
   order
 }
 
 input TodosFilter {
   text: StringInput
-  email: StringInput @constraint(format: "email")
+  description: StringInput
+  email: StringInput
   order: IntInput
   _id: IDInput
   count: IntInput
@@ -185,6 +192,7 @@ input TodosSubscriptionFilter {
   or: [TodosSubscriptionFilter!]
   not: TodosSubscriptionFilter
   text: StringInput
+  description: StringInput
   email: StringInput
   order: IntInput
   _id: IDInput
