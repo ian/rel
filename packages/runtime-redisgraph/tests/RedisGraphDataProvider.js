@@ -96,7 +96,7 @@ test('Default value', async () => {
   assert.is(todo.description, "FOO")
 })
 
-test.only('Computed value', async () => {
+test('Computed value', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
       Todos: defaultTodoSeed
