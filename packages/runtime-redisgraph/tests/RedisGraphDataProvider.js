@@ -44,7 +44,7 @@ const todoSchema = `
     description: String @default(value: "FOO")
     email: String @constraint(format: "email")
     order: Int
-    computedOrder: Int @computed(value: "<%= order + 100 %>")
+    computedOrder: Int @computed(value: "order + 100")
   }
   `
 

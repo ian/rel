@@ -24,7 +24,7 @@ export class RedisGraphProvider {
     this.computedTemplates = {}
     this.model.computedFields.forEach(computedField => {
       this.computedTemplates[computedField.name] = {
-        template: _.template(computedField.template),
+        template: _.template(`<%= ${computedField.template} %>`),
         type: computedField.type
       }
     })

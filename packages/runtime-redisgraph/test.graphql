@@ -133,7 +133,7 @@ type Todos {
   description: String @default(value: "FOO")
   email: String @constraint(format: "email")
   order: Int
-  computedOrder: Int @computed(value: "<%= order + 100 %>")
+  computedOrder: Int @computed(value: "order + 100")
   _id: ID
   count(of: OfTodosInput, distinct: Boolean): Int
   avg(of: OfTodosNumberInput, distinct: Boolean): Int
