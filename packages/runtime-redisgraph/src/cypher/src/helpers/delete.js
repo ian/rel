@@ -10,7 +10,7 @@ export async function cypherDelete (label, _id, projection = []) {
     `
       MATCH (node:${label})
       WHERE node._id = "${_id}"
-      DELETE node
+      DETACH DELETE node
       RETURN ${projection.length > 0 ? projection.reduce((previous, current, idx, arr) => previous + `node.${current}${idx === arr.length - 1 ? '' : ','}`, '') : 'node'};
     `
   )

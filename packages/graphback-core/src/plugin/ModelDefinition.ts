@@ -22,6 +22,8 @@ export interface ModelDefinition {
   graphqlType: GraphQLObjectType
   relationships: string[]
   uniqueFields: string[]
+  defaultFields: any[]
+  computedFields: any[] 
 }
 
 export function getModelByName (name: string, models: ModelDefinition[]): ModelDefinition | undefined {

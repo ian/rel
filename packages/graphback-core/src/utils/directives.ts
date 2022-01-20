@@ -4,6 +4,7 @@ export const directives = `
       directive @relation on FIELD_DEFINITION
       directive @transient on FIELD_DEFINITION
       directive @default(value: String!) on FIELD_DEFINITION
+      directive @computed(value: String!) on FIELD_DEFINITION
       directive @constraint(
             minLength: Int
             maxLength: Int

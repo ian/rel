@@ -44,6 +44,7 @@ const todoSchema = `
     description: String @default(value: "FOO")
     email: String @constraint(format: "email")
     order: Int
+    computedOrder: Int @computed(value: "<%= order + 100 %>")
   }
   `
 
@@ -93,6 +94,19 @@ test('Default value', async () => {
     text: 'create a todo'
   })
   assert.is(todo.description, "FOO")
+})
+
+test('Computed value', async () => {
+  context = await createTestingContext(todoSchema, {
+    seedData: {
+      Todos: defaultTodoSeed
+    }
+  })
+  const all = await context.providers.Todos.findBy({
+    orderBy: [{ field: 'order', order: 'asc' }]
+  },["computedOrder"])
+  assert.is(all[0].computedOrder, 101)
+  assert.is(all[1].computedOrder, 102)
 })
 
 test('find first 1 todo(s) excluding first todo', async () => {

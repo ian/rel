@@ -81,6 +81,7 @@ export class GraphbackCoreMetadata {
 
     const uniqueFields = []
     const defaultFields = []
+    const computedFields = []
 
     for (const field of Object.keys(modelFields)) {
       let fieldName = field
@@ -88,11 +89,13 @@ export class GraphbackCoreMetadata {
 
       const graphqlField = modelFields[field]
 
+      type = getNamedType(graphqlField.type).name
+
       if (graphqlField.extensions?.directives?.some?.(d => d.name === "transient")) {
         fields[field] = {
           name: field,
           transient: true,
-          type: getNamedType(graphqlField.type).name
+          type
         }
         continue
       }
@@ -104,7 +107,7 @@ export class GraphbackCoreMetadata {
       const defaultField = graphqlField.extensions?.directives?.find?.(d => d.name === "default")
       if (defaultField) {
         let parsedDefaultValue = defaultField.args.value
-        switch (getNamedType(graphqlField.type).name) {
+        switch (type) {
           case 'String':
             break;
           case 'Boolean':
@@ -127,12 +130,21 @@ export class GraphbackCoreMetadata {
         })
       }
 
+      const computedField = graphqlField.extensions?.directives?.find?.(d => d.name === "computed")
+      if(computedField) {
+        computedFields.push({
+          name: field,
+          type,
+          template: computedField.args.value
+        })
+      }
+
       type = getNamedType(modelFields[field].type).name
 
       fields[field] = {
         name: fieldName,
         type,
-        transient: false
+        transient: computedField ? true : false
       }
     }
 
@@ -142,6 +154,7 @@ export class GraphbackCoreMetadata {
       relationships: [],
       uniqueFields,
       defaultFields,
+      computedFields,
       graphqlType: modelType
     }
   }

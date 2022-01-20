@@ -189,7 +189,7 @@ var GraphbackCoreMetadata = class {
     return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     const primaryKey = {
       name: "_id",
       type: "ID"
@@ -201,15 +201,17 @@ var GraphbackCoreMetadata = class {
     };
     const uniqueFields = [];
     const defaultFields = [];
+    const computedFields = [];
     for (const field of Object.keys(modelFields)) {
       let fieldName = field;
       let type = "";
       const graphqlField = modelFields[field];
+      type = getNamedType2(graphqlField.type).name;
       if ((_c = (_b = (_a = graphqlField.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) {
         fields[field] = {
           name: field,
           transient: true,
-          type: getNamedType2(graphqlField.type).name
+          type
         };
         continue;
       }
@@ -219,7 +221,7 @@ var GraphbackCoreMetadata = class {
       const defaultField = (_i = (_h = (_g = graphqlField.extensions) == null ? void 0 : _g.directives) == null ? void 0 : _h.find) == null ? void 0 : _i.call(_h, (d) => d.name === "default");
       if (defaultField) {
         let parsedDefaultValue = defaultField.args.value;
-        switch (getNamedType2(graphqlField.type).name) {
+        switch (type) {
           case "String":
             break;
           case "Boolean":
@@ -240,11 +242,19 @@ var GraphbackCoreMetadata = class {
           default: parsedDefaultValue
         });
       }
+      const computedField = (_l = (_k = (_j = graphqlField.extensions) == null ? void 0 : _j.directives) == null ? void 0 : _k.find) == null ? void 0 : _l.call(_k, (d) => d.name === "computed");
+      if (computedField) {
+        computedFields.push({
+          name: field,
+          type,
+          template: computedField.args.value
+        });
+      }
       type = getNamedType2(modelFields[field].type).name;
       fields[field] = {
         name: fieldName,
         type,
-        transient: false
+        transient: computedField ? true : false
       };
     }
     return {
@@ -253,6 +263,7 @@ var GraphbackCoreMetadata = class {
       relationships: [],
       uniqueFields,
       defaultFields,
+      computedFields,
       graphqlType: modelType
     };
   }
@@ -998,6 +1009,7 @@ var directives = `
       directive @relation on FIELD_DEFINITION
       directive @transient on FIELD_DEFINITION
       directive @default(value: String!) on FIELD_DEFINITION
+      directive @computed(value: String!) on FIELD_DEFINITION
       directive @constraint(
             minLength: Int
             maxLength: Int

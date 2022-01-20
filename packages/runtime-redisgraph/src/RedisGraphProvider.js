@@ -7,6 +7,7 @@ import { buildQuery } from './queryBuilder.js'
 import cypher from './cypher/src/index.js'
 import RedisStreamHelper from 'redis-stream-helper'
 import Redis from "ioredis"
+import _ from 'lodash'
 const { createStreamGroup, addStreamData } = RedisStreamHelper(
   process.env.REDIS_PORT, process.env.REDIS_HOST
 )
@@ -20,6 +21,40 @@ export class RedisGraphProvider {
     this.db = cypher
     this.model = model
     this.collectionName = model.graphqlType.name
+    this.computedTemplates = {}
+    this.model.computedFields.forEach(computedField => {
+      this.computedTemplates[computedField.name] = {
+        template: _.template(computedField.template),
+        type: computedField.type
+      }
+    })
+  }
+
+  addComputedValues(data) {
+    Object.keys(this.computedTemplates).forEach(k => {
+      let value = this.computedTemplates[k].template(data)
+
+      switch (this.computedTemplates[k].type) {
+        case 'String':
+          break;
+        case 'Boolean':
+          value = Boolean(value);
+          break;
+        case 'Int':
+        case 'Float':
+          value = Number(value);
+          break;
+        default:
+          try {
+            value = JSON.parse(value);
+          } catch {
+            // do nothing, assume the existing value
+          }
+      }
+
+      data[k] = value
+    })
+    return data
   }
 
   addDefaultValues(data) {
@@ -31,7 +66,18 @@ export class RedisGraphProvider {
     return data
   }
 
-  async create (data, selectedFields) {
+  createProjection(data, selectedFields = []) {
+    return selectedFields.reduce((prev, cur) => {
+      prev[cur] = data[cur]
+      return prev
+    },{})
+  }
+
+  shouldCompute(selectedFields = []) {
+    return Object.keys(this.computedTemplates).some(i => selectedFields.includes(i))
+  }
+
+  async create (data, selectedFields = []) {
     data.createdAt = new Date().getTime()
     data._id = uuid()
 
@@ -42,12 +88,17 @@ export class RedisGraphProvider {
       data.__unique = __unique
     }
 
-    const result = await cypher.create(
+    let result = await cypher.create(
       this.collectionName,
-      data,
-      selectedFields
+      data
     )
     if (result) {
+      if(this.shouldCompute(selectedFields)) {
+        result = this.addComputedValues(result)
+      }
+      if(selectedFields.length > 0) {
+        result = this.createProjection(result, selectedFields)
+      }
       const streamKey = `rel:${this.collectionName}:create`
       await createStreamGroup(streamKey)
       await addStreamData(streamKey, data)
@@ -58,7 +109,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async update (data, selectedFields) {
+  async update (data, selectedFields = []) {
     if (!data._id) {
       const err = `Cannot update ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
@@ -92,13 +143,18 @@ export class RedisGraphProvider {
       data.__unique = uniqueKey
     }
 
-    const result = await cypher.update(
+    let result = await cypher.update(
       this.collectionName,
       _id,
-      data,
-      selectedFields
+      data
     )
     if (result) {
+      if(this.shouldCompute(selectedFields)) {
+        result = this.addComputedValues(result)
+      }
+      if(selectedFields.length > 0) {
+        result = this.createProjection(result, selectedFields)
+      }
       const streamKey = `rel:${this.collectionName}:update`
       await createStreamGroup(streamKey)
       data._id = _id
@@ -110,7 +166,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async updateBy (args, selectedFields) {
+  async updateBy (args, selectedFields = []) {
     const filterQuery = buildQuery(args?.filter)
     const data = await cypher.list(
       this.collectionName,
@@ -135,17 +191,17 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async delete (data, selectedFields) {
+  async delete (data, selectedFields = []) {
     if (!data._id) {
       const err = `Cannot delete ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
       throw new NoDataError(err)
     }
 
-    const result = await cypher.delete(
+    let result = await cypher.delete(
       this.collectionName,
       data._id,
-      selectedFields
+      selectedFields,
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:delete`
@@ -158,7 +214,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async deleteBy (args, selectedFields) {
+  async deleteBy (args, selectedFields = []) {
     const filterQuery = buildQuery(args?.filter)
     const data = await cypher.list(
       this.collectionName,
@@ -182,10 +238,16 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async findOne (filter, selectedFields) {
-    const data = await cypher.find(this.collectionName, filter, selectedFields)
+  async findOne (filter, selectedFields = []) {
+    let data = await cypher.find(this.collectionName, filter)
 
     if (data) {
+      if(this.shouldCompute(selectedFields)) {
+        result = this.addComputedValues(result)
+      }
+      if(selectedFields.length > 0) {
+        result = this.createProjection(result, selectedFields)
+      }
       return data
     }
 
@@ -196,7 +258,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async findBy (args, selectedFields, fieldArgs) {
+  async findBy (args, selectedFields = [], fieldArgs) {
     const filterQuery = buildQuery(args?.filter)
     if (args?.page?.offset && args.page.offset < 0) {
       const err = 'Invalid offset value. Please use an offset of greater than or equal to 0 in queries'
@@ -209,7 +271,8 @@ export class RedisGraphProvider {
       logger.error(err, 'RedisGraphProvider')
       throw new Error(err)
     }
-    const data = await cypher.list(
+    const shouldCompute = this.shouldCompute(selectedFields)
+    let data = await cypher.list(
       this.collectionName,
       {
         where: filterQuery,
@@ -217,11 +280,17 @@ export class RedisGraphProvider {
         skip: args?.page?.offset,
         limit: args?.page?.limit
       },
-      selectedFields,
+      shouldCompute ? [] : selectedFields,
       fieldArgs
     )
 
     if (data) {
+      if(shouldCompute) {
+        for(let i = 0; i < data.length; i++) {
+            data[i] = this.addComputedValues(data[i])
+            data[i] = this.createProjection(data[i], selectedFields)
+        }
+      }
       return data
     }
 
