@@ -1,13 +1,12 @@
 /* eslint-disable max-lines */
 import { resolve, dirname, join } from 'path'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import DataLoader from 'dataloader'
 import { SchemaComposer, NamedTypeComposer } from 'graphql-compose'
 import { IResolvers, IObjectTypeResolver } from '@graphql-tools/utils'
 import { GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLInt, GraphQLFloat, isScalarType, isSpecifiedScalarType, GraphQLResolveInfo, isObjectType, GraphQLInputObjectType, GraphQLScalarType } from 'graphql'
-import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, getInputTypeName, GraphbackContext, getSelectedFieldsFromResolverInfo, getPrimaryKey, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
+import { Timestamp, getFieldName, printSchemaWithDirectives, getSubscriptionName, GraphbackCoreMetadata, GraphbackOperationType, GraphbackPlugin, ModelDefinition, getInputTypeName, GraphbackContext, graphbackScalarsTypes, FILTER_SUPPORTED_SCALARS, FindByArgs } from '@graphback/core'
 import { gqlSchemaFormatter, jsSchemaFormatter, tsSchemaFormatter } from './writer/schemaFormatters'
-import { buildOrderByInputType,buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, OrderByInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
+import { buildOrderByInputType,buildFilterInputType, createModelListResultType, StringScalarInputType, BooleanScalarInputType, SortDirectionEnum, buildCreateMutationInputType, buildFindOneFieldMap, buildMutationInputType, buildSubscriptionFilterType, IDScalarInputType, PageRequest, createInputTypeForScalar, createVersionedFields, createVersionedInputFields, addCreateObjectInputType, addUpdateObjectInputType, getInputName, createMutationListResultType } from './definitions/schemaDefinitions'
 
 /**
  * Configuration for Schema generator CRUD plugin
@@ -57,7 +56,6 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
     };
 
     const schemaComposer = new SchemaComposer(schema)
-
     this.createAggregationForModelFields(schemaComposer, models)
     this.buildSchemaForModels(schemaComposer, models)
     this.addMetadataFields(schemaComposer, models)
@@ -411,15 +409,13 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const enumName = `${modelName}FieldsEnum`
       const numberEnumName = `${modelName}NumberFieldsEnum`
       const fieldKeys = Object.keys(model.fields)
-      const fields = fieldKeys.filter(field => {
-        return !model.fields[field].transient
-      }).join(' ')
+      const fields = fieldKeys.filter(f => !model.fields[f].transient && !model.fields[f].computed).join(' ')
       const numberTypes = ["Int", "Float","BigInt", "NonPositiveFloat", "NonPositiveInt", "NonNegativeInt", 
       "NonNegativeFloat", "NegativeFloat", "NegativeInt", "PositiveInt", "PositiveFloat"]
-      const numberFields = fieldKeys.filter(field => {
-        return !model.fields[field].transient && numberTypes.includes(model.fields[field].type.replace("!", ""))
+      const numberFields = fieldKeys.filter(f => {
+        return !model.fields[f].transient && !model.fields[f].computed && numberTypes.includes(model.fields[f].type.replace("!", ""))
       }).join(' ')
-      schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`)
+      schemaComposer.createEnumTC(`enum ${enumName} { ${fields} createdAt updatedAt }`)
       schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`)
       if(numberFields !== '') {
         schemaComposer.createEnumTC(`enum ${numberEnumName} { ${numberFields} }`)
@@ -439,11 +435,11 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
       const createAtField = model.fields.createdAt
       const errorMessage = (field: string) => `${name} cannot contain custom "${field}" field since it is generated automatically.`
 
-      if (createAtField && createAtField.type !== Timestamp.name) {
+      if (createAtField) {
         throw new Error(errorMessage("createdAt"))
       }
 
-      if (updateField && updateField.type !== Timestamp.name) {
+      if (updateField) {
         throw new Error(errorMessage("updatedAt"))
       }
 

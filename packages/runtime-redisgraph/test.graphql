@@ -23,7 +23,6 @@ input CreateTodosInput {
   description: String
   email: String @constraint(format: "email")
   order: Int
-  computedOrder: Int
   count: Int
   avg: Int
   max: Int
@@ -57,7 +56,6 @@ input MutateTodosInput {
   description: String
   email: String @constraint(format: "email")
   order: Int
-  computedOrder: Int
   _id: ID
   count: Int
   avg: Int
@@ -152,7 +150,8 @@ enum TodosFieldsEnum {
   description
   email
   order
-  computedOrder
+  createdAt
+  updatedAt
 }
 
 input TodosFilter {
@@ -160,7 +159,6 @@ input TodosFilter {
   description: StringInput
   email: StringInput
   order: IntInput
-  computedOrder: IntInput
   _id: IDInput
   count: IntInput
   avg: IntInput
@@ -180,7 +178,6 @@ type TodosMutationResultList {
 
 enum TodosNumberFieldsEnum {
   order
-  computedOrder
 }
 
 input TodosOrderByInput {
@@ -203,7 +200,6 @@ input TodosSubscriptionFilter {
   description: StringInput
   email: StringInput
   order: IntInput
-  computedOrder: IntInput
   _id: IDInput
   count: IntInput
   avg: IntInput

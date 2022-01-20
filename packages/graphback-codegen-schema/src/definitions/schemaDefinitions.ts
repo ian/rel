@@ -122,7 +122,7 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
     if (!typeName) {
       continue
     }
-    if(field?.extensions?.directives?.some?.(d => d.name === "transient")) {
+    if(field?.extensions?.directives?.some?.(d => ["computed","transient"].includes(d.name))) {
       continue
     }
 
@@ -240,7 +240,7 @@ export const buildSubscriptionFilterType = (schemaComposer: SchemaComposer<any>,
   const modelFields = Object.values(modelType.getFields())
   const subscriptionFilterFields = modelFields.filter((f: GraphQLField<any, any>) => {
     const namedType = getNamedType(f.type)
-    return !f.extensions?.directives?.some?.(d => d.name === "transient") && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
+    return !f.extensions?.directives?.some?.(d => ["transient", "computed"].includes(d.name)) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType)
   })
 
   const fields = {

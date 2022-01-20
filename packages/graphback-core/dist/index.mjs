@@ -189,7 +189,7 @@ var GraphbackCoreMetadata = class {
     return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
     const primaryKey = {
       name: "_id",
       type: "ID"
@@ -215,6 +215,11 @@ var GraphbackCoreMetadata = class {
         };
         continue;
       }
+      fields[field] = {
+        name: fieldName,
+        type,
+        transient: false
+      };
       if ((_f = (_e = (_d = graphqlField.extensions) == null ? void 0 : _d.directives) == null ? void 0 : _e.some) == null ? void 0 : _f.call(_e, (d) => d.name === "unique")) {
         uniqueFields.push(field);
       }
@@ -242,20 +247,15 @@ var GraphbackCoreMetadata = class {
           default: parsedDefaultValue
         });
       }
-      const computedField = (_l = (_k = (_j = graphqlField.extensions) == null ? void 0 : _j.directives) == null ? void 0 : _k.find) == null ? void 0 : _l.call(_k, (d) => d.name === "computed");
+      const computedField = (_k = (_j = graphqlField.astNode.directives) == null ? void 0 : _j.find) == null ? void 0 : _k.call(_j, (d) => d.name.value === "computed");
       if (computedField) {
+        fields[field].computed = true;
         computedFields.push({
           name: field,
           type,
-          template: computedField.args.value
+          template: (_n = (_m = (_l = computedField.arguments) == null ? void 0 : _l.find((a) => a.name.value === "value")) == null ? void 0 : _m.value) == null ? void 0 : _n.value
         });
       }
-      type = getNamedType2(modelFields[field].type).name;
-      fields[field] = {
-        name: fieldName,
-        type,
-        transient: computedField ? true : false
-      };
     }
     return {
       fields,

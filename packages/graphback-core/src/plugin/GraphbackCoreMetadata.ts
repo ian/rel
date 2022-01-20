@@ -100,6 +100,12 @@ export class GraphbackCoreMetadata {
         continue
       }
 
+      fields[field] = {
+        name: fieldName,
+        type,
+        transient: false
+      }
+
       if (graphqlField.extensions?.directives?.some?.(d => d.name === "unique")) {
         uniqueFields.push(field)
       }
@@ -130,21 +136,14 @@ export class GraphbackCoreMetadata {
         })
       }
 
-      const computedField = graphqlField.extensions?.directives?.find?.(d => d.name === "computed")
+      const computedField = graphqlField.astNode.directives?.find?.(d => d.name.value === "computed")
       if(computedField) {
+        fields[field].computed = true
         computedFields.push({
           name: field,
           type,
-          template: computedField.args.value
+          template: computedField.arguments?.find(a => a.name.value === "value")?.value?.value
         })
-      }
-
-      type = getNamedType(modelFields[field].type).name
-
-      fields[field] = {
-        name: fieldName,
-        type,
-        transient: computedField ? true : false
       }
     }
 

@@ -192,7 +192,7 @@ function getModelInputFields(schemaComposer, modelType, operationType) {
     if (!typeName) {
       continue;
     }
-    if ((_c = (_b = (_a = field == null ? void 0 : field.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) {
+    if ((_c = (_b = (_a = field == null ? void 0 : field.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => ["computed", "transient"].includes(d.name))) {
       continue;
     }
     const name = getInputFieldName(field);
@@ -287,7 +287,7 @@ var buildSubscriptionFilterType = (schemaComposer, modelType) => {
   const subscriptionFilterFields = modelFields.filter((f) => {
     var _a, _b, _c;
     const namedType = getNamedType2(f.type);
-    return !((_c = (_b = (_a = f.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType);
+    return !((_c = (_b = (_a = f.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => ["transient", "computed"].includes(d.name))) && (isScalarType(namedType) && FILTER_SUPPORTED_SCALARS.includes(namedType.name)) || isEnumType(namedType);
   });
   const fields = {
     and: {
@@ -727,9 +727,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       const enumName = `${modelName}FieldsEnum`;
       const numberEnumName = `${modelName}NumberFieldsEnum`;
       const fieldKeys = Object.keys(model.fields);
-      const fields = fieldKeys.filter((field) => {
-        return !model.fields[field].transient;
-      }).join(" ");
+      const fields = fieldKeys.filter((f) => !model.fields[f].transient && !model.fields[f].computed).join(" ");
       const numberTypes = [
         "Int",
         "Float",
@@ -743,10 +741,10 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
         "PositiveInt",
         "PositiveFloat"
       ];
-      const numberFields = fieldKeys.filter((field) => {
-        return !model.fields[field].transient && numberTypes.includes(model.fields[field].type.replace("!", ""));
+      const numberFields = fieldKeys.filter((f) => {
+        return !model.fields[f].transient && !model.fields[f].computed && numberTypes.includes(model.fields[f].type.replace("!", ""));
       }).join(" ");
-      schemaComposer.createEnumTC(`enum ${enumName} { ${fields} }`);
+      schemaComposer.createEnumTC(`enum ${enumName} { ${fields} createdAt updatedAt }`);
       schemaComposer.createInputTC(`input Of${modelName}Input { of: ${enumName}}`);
       if (numberFields !== "") {
         schemaComposer.createEnumTC(`enum ${numberEnumName} { ${numberFields} }`);
@@ -764,10 +762,10 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
       const updateField = model.fields.updatedAt;
       const createAtField = model.fields.createdAt;
       const errorMessage = (field) => `${name} cannot contain custom "${field}" field since it is generated automatically.`;
-      if (createAtField && createAtField.type !== Timestamp.name) {
+      if (createAtField) {
         throw new Error(errorMessage("createdAt"));
       }
-      if (updateField && updateField.type !== Timestamp.name) {
+      if (updateField) {
         throw new Error(errorMessage("updatedAt"));
       }
       if (!timestampInputType) {

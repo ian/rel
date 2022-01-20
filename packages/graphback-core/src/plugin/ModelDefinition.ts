@@ -7,6 +7,7 @@ export interface FieldDescriptor {
   name: string
   type: string
   transient?: boolean | undefined
+  computed?: boolean | undefined
 }
 
 export interface ModelFieldMap {

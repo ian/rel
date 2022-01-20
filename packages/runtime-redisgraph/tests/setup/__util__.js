@@ -29,12 +29,10 @@ const run = async () => {
     config
   ) => {
     // Setup graphback
-    schemaStr = directives + schemaStr
+    schemaStr = directives + '\n' + schemaStr
     const schema = buildSchema(schemaStr)
     
-    const metadata = new GraphbackCoreMetadata(
-      schema
-    )
+    const metadata = new GraphbackCoreMetadata(schema)
 
     const schemaGenerator = new SchemaCRUDPlugin()
     const schemaTransformed = schemaGenerator.transformSchema(metadata)
