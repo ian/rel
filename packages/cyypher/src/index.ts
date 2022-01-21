@@ -9,25 +9,35 @@ import { cypherMerge } from './helpers/merge.js'
 import { cypherUpdate } from './helpers/update.js'
 import { cypherUpdateBy } from './helpers/updateBy.js'
 import { cypherCount } from './helpers/count.js'
+
 import {
   cypherClearRelation,
   cypherCreateRelationship,
   cypherDeleteRelationship,
-  cypherListRelationship
+  cypherListRelationship,
 } from './helpers/relationships.js'
 
 import { beautifyCypher } from './util/beautify.js'
 import { sanitize } from './util/sanitize.js'
 
-import logger from '../../logger.js'
+import logger from './logger.js'
 
-export function ref (node) {
+import {
+  Cypher1Response,
+  CypherResponse,
+  Node,
+  NodeRef,
+  QueryConfig,
+  RawResponse,
+} from './types'
+
+export function ref(node) {
   const { __typename, id } = node
   return { __typename, id }
 }
 
 class Client {
-  constructor () {
+  constructor() {
     this.find = cypherFind.bind(this)
     this.list = cypherList.bind(this)
     this.count = cypherCount.bind(this)
@@ -45,14 +55,14 @@ class Client {
     this.deleteRelationship = cypherDeleteRelationship.bind(this)
   }
 
-  async raw (cypher, opts = {}, tries = 0) {
+  async raw(cypher, opts = {}, tries = 0) {
     const graph = new Graph(
       'graph',
       process.env.REDIS_HOST,
       process.env.REDIS_PORT,
       {
         username: process.env.REDIS_USERNAME,
-        password: process.env.REDIS_PASSWORD
+        password: process.env.REDIS_PASSWORD,
       }
     )
 
@@ -61,10 +71,17 @@ class Client {
     try {
       const res = await graph.query(cypher)
       const time = process.hrtime(startTime)
-      if (logger) logger.debug(beautifyCypher(cypher) + ' [' + (time[0] * 1000000000 + time[1]) / 1000000 + 'ms]', 'CYPHER')
+      if (logger)
+        logger.debug(
+          beautifyCypher(cypher) +
+            ' [' +
+            (time[0] * 1000000000 + time[1]) / 1000000 +
+            'ms]',
+          'CYPHER'
+        )
 
       return {
-        records: res._results
+        records: res._results,
       }
     } catch (err) {
       // if (tries < 2) {
@@ -72,16 +89,24 @@ class Client {
       // }
 
       const time = process.hrtime(startTime)
-      logger.error(beautifyCypher(cypher) + '\n' + err + ' [' + (time[0] * 1000000000 + time[1]) / 1000000 + 'ms]', 'CYPHER')
+      logger.error(
+        beautifyCypher(cypher) +
+          '\n' +
+          err +
+          ' [' +
+          (time[0] * 1000000000 + time[1]) / 1000000 +
+          'ms]',
+        'CYPHER'
+      )
       return {
-        records: []
+        records: [],
       }
     } finally {
       graph.close()
     }
   }
 
-  async exec (query, opts) {
+  async exec(query, opts) {
     const res = await this.raw(query, opts)
 
     const recordMapper = (rec) => {
@@ -112,12 +137,12 @@ class Client {
     return res?.records?.map(recordMapper)
   }
 
-  async exec1 (query, opts) {
+  async exec1(query, opts) {
     const res = await this.exec(query, opts)
     return res && res[0]
   }
 
-  deleteAll () {
+  deleteAll() {
     const query = 'MATCH (n) DETACH DELETE n'
     logger.debug(query, 'CYPHER')
     return this.exec(query)

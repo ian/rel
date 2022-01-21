@@ -1,4 +1,4 @@
-export function beautifyCypher (query) {
+export function beautifyCypher(query) {
   return query
     .split('\n')
     .map((s) => s.trim())

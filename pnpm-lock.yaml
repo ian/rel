@@ -38,6 +38,16 @@ importers:
       tsup: 5.11.11_typescript@4.5.5
       typescript: 4.5.5
 
+  packages/cyypher:
+    specifiers:
+      '@ptkdev/logger': ^1.8.0
+      lodash: ^4.17.21
+      redisgraph.js: ^2.3.0
+    dependencies:
+      '@ptkdev/logger': 1.8.0
+      lodash: 4.17.21
+      redisgraph.js: 2.3.0
+
   packages/graphback:
     specifiers:
       '@graphback/codegen-schema': '*'

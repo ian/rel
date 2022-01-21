@@ -1,0 +1,17 @@
+{
+  "name": "cyypher",
+  "version": "0.0.0",
+  "description": "Cypher ORM + client for redis-graph",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "tsup src/index.ts --target esnext --format esm --sourcemap"
+  },
+  "author": "Ian Hunter <ian@rel.run>",
+  "license": "ISC",
+  "dependencies": {
+    "@ptkdev/logger": "^1.8.0",
+    "lodash": "^4.17.21",
+    "redisgraph.js": "^2.3.0"
+  }
+}
