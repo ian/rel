@@ -43,6 +43,7 @@
     }
   },
   "dependencies": {
+    "cyypher": "^0.0.0",
     "graphql": "15.8.0"
   },
   "prettier": {

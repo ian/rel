@@ -22,15 +22,6 @@ import { sanitize } from './util/sanitize.js'
 
 import logger from './logger.js'
 
-import {
-  Cypher1Response,
-  CypherResponse,
-  Node,
-  NodeRef,
-  QueryConfig,
-  RawResponse,
-} from './types'
-
 export function ref(node) {
   const { __typename, id } = node
   return { __typename, id }
@@ -106,7 +97,7 @@ class Client {
     }
   }
 
-  async exec(query, opts) {
+  async exec(query, opts = {}) {
     const res = await this.raw(query, opts)
 
     const recordMapper = (rec) => {

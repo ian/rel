@@ -10,6 +10,7 @@ importers:
       '@commitlint/cli': 11.0.0
       '@commitlint/config-conventional': 11.0.0
       '@typescript-eslint/eslint-plugin': ^4.33.0
+      cyypher: ^0.0.0
       eslint: ^7.32.0
       eslint-config-prettier: ^8.3.0
       eslint-config-standard-with-typescript: ^21.0.1
