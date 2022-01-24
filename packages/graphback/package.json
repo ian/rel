@@ -13,7 +13,8 @@
   },
   "homepage": "https://github.com/rel-js/rel/tree/master/packages/graphback#readme",
   "scripts": {
-    "build": "tsup src/index.ts --format esm --sourcemap"
+    "build": "tsup src/index.ts --format esm --sourcemap",
+    "clean": "rm -rf ./dist"
   },
   "devDependencies": {
     "tsup": "^5.11.9"

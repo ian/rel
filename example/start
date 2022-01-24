@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 
-pnpm build
 ../packages/rel-cli/dist/rel.js dev
 

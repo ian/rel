@@ -16,6 +16,7 @@
   "homepage": "https://github.com/rel-js/rel#readme",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "clean": "rm -rf ./dist",
     "build": "tsup src/index.ts --target esnext --format esm --sourcemap"
   },
   "dependencies": {
@@ -37,7 +38,7 @@
     "nodemon": "^2.0.15",
     "pkg-dir": "^6.0.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper",
-    "runtime-redisgraph": "*"
+    "graphback-redisgraph": "*"
   },
   "devDependencies": {
     "tsup": "^5.11.9"
