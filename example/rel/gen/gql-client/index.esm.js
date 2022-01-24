@@ -34,6 +34,8 @@ export const enumUserFieldsEnum = {
   _id: '_id',
   name: 'name',
   email: 'email',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
 }
 
 export var generateQueryOp = function(fields) {

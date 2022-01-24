@@ -1,5 +1,5 @@
 {
-  "name": "graphback-redisgraph",
+  "name": "runtime-redisgraph",
   "version": "1.0.0",
   "description": "A Rel-gen adapter for RedisGraph",
   "main": "dist/index.js",
@@ -8,15 +8,14 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "clean": "rm -rf ./dist",
-    "old:build": "tsup src/index.ts --target esnext --format esm --sourcemap",
-    "build": "tsc",
+    "build": "tsup src/index.ts --target esnext --format esm --sourcemap",
     "test": "uvu tests -i setup"
   },
   "engine": {
     "node": ">=16"
   },
   "devDependencies": {
-    "@graphback/codegen-schema": "workspace:*",
+    "@graphback/codegen-schema": "*",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",
@@ -27,9 +26,9 @@
     "uvu": "^0.5.3"
   },
   "dependencies": {
-    "@graphback/core": "workspace:*",
+    "@graphback/core": "*",
     "@ptkdev/logger": "^1.8.0",
-    "cyypher": "workspace:*",
+    "cyypher": "*",
     "dataloader": "2.0.0",
     "graphql": "15.8.0",
     "ioredis": "^4.28.3",

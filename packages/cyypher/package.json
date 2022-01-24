@@ -2,9 +2,10 @@
   "name": "cyypher",
   "version": "0.0.0",
   "description": "Cypher ORM + client for redis-graph",
-  "main": "index.js",
+  "main": "dist/index.mjs",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "clean": "rm -rf ./dist",
     "build": "tsup src/index.ts --target esnext --format esm --sourcemap"
   },
   "author": "Ian Hunter <ian@rel.run>",

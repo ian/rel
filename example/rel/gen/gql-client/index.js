@@ -34,6 +34,8 @@ module.exports.enumUserFieldsEnum = {
   _id: '_id',
   name: 'name',
   email: 'email',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
 }
 
 module.exports.generateQueryOp = function(fields) {
