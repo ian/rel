@@ -38,7 +38,7 @@
     "preinstall": "npx only-allow pnpm",
     "build": "pnpm run -r build",
     "clean": "pnpm run -r clean",
-    "bootstrap:redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
+    "redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "husky": {
     "hooks": {
