@@ -106,16 +106,4 @@ export interface GraphbackCRUDService<Type = any, GraphbackContext = any> {
    * @param context additional context
    */
   subscribeToDelete: (filter?: QueryFilter, context?: GraphbackContext) => AsyncIterator<Type> | undefined
-
-  /**
-   * Specialized function that can utilize batching the data basing on
-   * DataLoader library
-   *
-   * @param {string} relationField - name of the field that will be used to match ids
-   * @param {string|number} id - id of the object we want to load
-   * @param {QueryFilter} [filter] - GraphQLCRUD filter object
-   * @param {GraphbackContext} context - resolver context object that will be used to apply new loader
-   * @param {GraphQLResolveInfo} info - GraphQL resolver info
-   */
-  batchLoadData: (relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo) => any
 }

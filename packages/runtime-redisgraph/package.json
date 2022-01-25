@@ -25,7 +25,6 @@
   "dependencies": {
     "@graphback/core": "workspace:*",
     "@ptkdev/logger": "^1.8.0",
-    "dataloader": "2.0.0",
     "graphql": "15.8.0",
     "ioredis": "^4.28.3",
     "lodash": "^4.17.21",

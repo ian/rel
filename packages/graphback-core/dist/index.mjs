@@ -386,7 +386,6 @@ function printSchemaWithDirectives(schemaOrSDL) {
 }
 
 // src/runtime/CRUDService.ts
-import DataLoader from "dataloader";
 import { withFilter } from "graphql-subscriptions";
 
 // src/utils/convertType.ts
@@ -646,25 +645,6 @@ var CRUDService = class {
     const asyncIterator = this.pubSub.asyncIterator(deleteSubKey);
     const subscriptionFilter = createInMemoryFilterPredicate(filter);
     return withFilter(() => asyncIterator, (payload) => subscriptionFilter(payload[subscriptionName]))();
-  }
-  batchLoadData(relationField, id, filter, context, info) {
-    const selectedFields = [];
-    const [selectedFieldsFromInfo, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model);
-    selectedFields.push(...selectedFieldsFromInfo);
-    if (selectedFields.length > 0) {
-      selectedFields.push(relationField);
-    }
-    const fetchedKeys = selectedFields.join("-");
-    const keyName = `${this.model.graphqlType.name}-${upperCaseFirstChar(relationField)}-${fetchedKeys}-${JSON.stringify(filter)}-DataLoader`;
-    if (!context[keyName]) {
-      context[keyName] = new DataLoader(async (keys) => {
-        return await this.db.batchRead(relationField, keys, filter, selectedFields, fieldArgs);
-      });
-    }
-    if (id === void 0 || id === null) {
-      return [];
-    }
-    return context[keyName].load(id);
   }
   subscriptionTopicMapping(triggerType, objectName) {
     return `${triggerType}_${objectName}`.toUpperCase();
