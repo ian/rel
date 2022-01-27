@@ -1,5 +1,5 @@
 import initEnv from './setup/__util__.js'
-import cypher from '../src/cypher/src/index.js'
+import cypher from 'cyypher'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -51,30 +51,30 @@ const todoSchema = `
 const defaultTodoSeed = [
   {
     text: 'todo',
-    order: 1
+    order: 1,
   },
   {
     text: 'todo2',
-    order: 2
-  }
+    order: 2,
+  },
 ]
 
 test('Test crud', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   let todo = await context.providers.Todos.create({
-    text: 'create a todo'
+    text: 'create a todo',
   })
- 
+
   assert.is(todo.text, 'create a todo')
 
   todo = await context.providers.Todos.update(
     {
       _id: todo._id,
-      text: 'my updated first todo'
+      text: 'my updated first todo',
     },
     fields
   )
@@ -87,24 +87,27 @@ test('Test crud', async () => {
 test('Default value', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   let todo = await context.providers.Todos.create({
-    text: 'create a todo'
+    text: 'create a todo',
   })
-  assert.is(todo.description, "FOO")
+  assert.is(todo.description, 'FOO')
 })
 
 test('Computed value', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
-  const all = await context.providers.Todos.findBy({
-    orderBy: [{ field: 'order', order: 'asc' }]
-  },["computedOrder"])
+  const all = await context.providers.Todos.findBy(
+    {
+      orderBy: [{ field: 'order', order: 'asc' }],
+    },
+    ['computedOrder']
+  )
   assert.is(all[0].computedOrder, 101)
   assert.is(all[1].computedOrder, 102)
 })
@@ -112,8 +115,8 @@ test('Computed value', async () => {
 test('find first 1 todo(s) excluding first todo', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   const todos = await context.providers.Todos.findBy(
     { page: { limit: 1, offset: 1 }, orderBy: [{ field: 'order' }] },
@@ -133,21 +136,21 @@ test('find first 1 todo(s) excluding first todo', async () => {
 test('find Todo by text', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   const all = await context.providers.Todos.findBy()
   const todos = await context.providers.Todos.findBy(
     {
       filter: {
-        text: { eq: all[0].text }
-      }
+        text: { eq: all[0].text },
+      },
     },
     ['_id']
   )
   assert.ok(todos.length > 0)
   const count = await context.providers.Todos.count({
-    text: { eq: all[0].text }
+    text: { eq: all[0].text },
   })
   assert.is(count, todos.length)
 })
@@ -155,13 +158,13 @@ test('find Todo by text', async () => {
 test('find Todo by text, limit defaults to complete set', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   const text = 'todo-test'
   for (let i = 0; i < 11; i++) {
     await context.providers.Todos.create({
-      text: text + "-" + i.toString()
+      text: text + '-' + i.toString(),
     })
   }
   const todos = await context.providers.Todos.findBy(
@@ -171,20 +174,22 @@ test('find Todo by text, limit defaults to complete set', async () => {
 
   assert.is(todos.length, 11)
 
-  const count = await context.providers.Todos.count({ text: { contains: text } })
+  const count = await context.providers.Todos.count({
+    text: { contains: text },
+  })
   assert.is(count, 11)
 })
 
 test('find by text offset defaults to 0', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   const text = 'todo-test'
   for (let i = 0; i < 2; i++) {
     await context.providers.Todos.create({
-      text: text + "-" + i.toString()
+      text: text + '-' + i.toString(),
     })
   }
   const todos = await context.providers.Todos.findBy(
@@ -197,22 +202,22 @@ test('find by text offset defaults to 0', async () => {
 test('find first 1 todos by text', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   const text = 'todo-test'
   for (let i = 0; i < 2; i++) {
     await context.providers.Todos.create({
-      text: text + "-" + i.toString()
+      text: text + '-' + i.toString(),
     })
   }
 
   const todos = await context.providers.Todos.findBy(
     {
       filter: {
-        text: { contains: text }
+        text: { contains: text },
       },
-      page: { limit: 1, offset: 0 }
+      page: { limit: 1, offset: 0 },
     },
     fields
   )
@@ -228,9 +233,9 @@ test('test orderby w/o order', async () => {
         { text: 'todo1' },
         { text: 'todo4' },
         { text: 'todo2' },
-        { text: 'todo5' }
-      ]
-    }
+        { text: 'todo5' },
+      ],
+    },
   })
 
   const todos = await context.providers.Todos.findBy(
@@ -250,15 +255,15 @@ test('test orderby with desc order', async () => {
         { text: 'todo1' },
         { text: 'todo4' },
         { text: 'todo2' },
-        { text: 'todo5' }
-      ]
-    }
+        { text: 'todo5' },
+      ],
+    },
   })
 
   const todos = await context.providers.Todos.findBy(
     {
       filter: { text: { contains: 'todo' } },
-      orderBy: [{ field: 'text', order: 'desc' }]
+      orderBy: [{ field: 'text', order: 'desc' }],
     },
     fields
   )
@@ -300,7 +305,7 @@ test.skip('updatedAt', async () => {
   const next = await context.providers.Note.update(
     {
       ...res,
-      text: 'asdftrains'
+      text: 'asdftrains',
     },
     ['updatedAt', 'createdAt']
   )
@@ -323,16 +328,16 @@ test('select only requested fields', async () => {
         Todos: [
           { text: 'todo1', description: 'first todo' },
           { text: 'todo2', description: 'second todo' },
-          { text: 'todo3', description: 'third todo' }
-        ]
-      }
+          { text: 'todo3', description: 'third todo' },
+        ],
+      },
     }
   )
 
   const todos = await context.providers.Todos.findBy({}, ['_id', 'text'])
 
   assert.is(todos.length, 3)
-  todos.forEach(todo => {
+  todos.forEach((todo) => {
     assert.not.type(todo._id, 'undefined')
     assert.not.type(todo.text, 'undefined')
     assert.type(todo.description, 'undefined')
@@ -340,7 +345,7 @@ test('select only requested fields', async () => {
 
   const createdTodo = await context.providers.Todos.create({
     text: 'new todo',
-    description: 'todo add description'
+    description: 'todo add description',
   })
   assert.not.type(createdTodo._id, 'undefined')
 
@@ -371,28 +376,28 @@ test('get todos with field value not in a given arrray argument', async () => {
       seedData: {
         Todo: [
           {
-            items: 1
+            items: 1,
           },
           {
-            items: 2
+            items: 2,
           },
           {
-            items: 3
+            items: 3,
           },
           {
-            items: 4
+            items: 4,
           },
           {
-            items: 5
+            items: 5,
           },
           {
-            items: 6
+            items: 6,
           },
           {
-            items: 8
-          }
-        ]
-      }
+            items: 8,
+          },
+        ],
+      },
     }
   )
 
@@ -412,10 +417,10 @@ test('get todos with field value not in a given arrray argument', async () => {
     filter: {
       not: {
         items: {
-          in: [newTodoItems]
-        }
-      }
-    }
+          in: [newTodoItems],
+        },
+      },
+    },
   })
 
   assert.equal(oldTodos, allTodos) // assert that we did not retrieve the newly added todo item
@@ -436,44 +441,44 @@ test('a && (b || c)', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 1,
             b: 2,
-            c: 10
+            c: 10,
           },
           {
             a: 1,
             b: 5,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
   const filter = {
     a: {
-      eq: 1
+      eq: 1,
     },
     or: [
       {
         c: {
-          eq: 6
-        }
+          eq: 6,
+        },
       },
       {
         b: {
-          eq: 5
-        }
-      }
-    ]
+          eq: 5,
+        },
+      },
+    ],
   }
 
   const items = await context.providers.Todo.findBy({ filter })
@@ -496,25 +501,25 @@ test('a && (b || c) starting at first OR', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 1,
             b: 2,
-            c: 10
+            c: 10,
           },
           {
             a: 1,
             b: 5,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
@@ -522,22 +527,22 @@ test('a && (b || c) starting at first OR', async () => {
     or: [
       {
         a: {
-          eq: 1
+          eq: 1,
         },
         or: [
           {
             c: {
-              eq: 6
-            }
+              eq: 6,
+            },
           },
           {
             b: {
-              eq: 5
-            }
-          }
-        ]
-      }
-    ]
+              eq: 5,
+            },
+          },
+        ],
+      },
+    ],
   }
 
   const items = await context.providers.Todo.findBy({ filter })
@@ -560,25 +565,25 @@ test('a && (c || b) from nested OR', async () => {
           {
             a: 1,
             b: 1,
-            c: 8
+            c: 8,
           },
           {
             a: 9,
             b: 2,
-            c: 10
+            c: 10,
           },
           {
             a: 1,
             b: 5,
-            c: 3
+            c: 3,
           },
           {
             a: 1,
             b: 6,
-            c: 6
-          }
-        ]
-      }
+            c: 6,
+          },
+        ],
+      },
     }
   )
 
@@ -586,22 +591,22 @@ test('a && (c || b) from nested OR', async () => {
     or: [
       {
         a: {
-          eq: 1
+          eq: 1,
         },
         or: [
           {
             c: {
-              eq: 6
-            }
+              eq: 6,
+            },
           },
           {
             b: {
-              eq: 5
-            }
-          }
-        ]
-      }
-    ]
+              eq: 5,
+            },
+          },
+        ],
+      },
+    ],
   }
 
   const items = await context.providers.Todo.findBy({ filter })
@@ -624,25 +629,25 @@ test('a || a || a', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 2,
             b: 2,
-            c: 10
+            c: 10,
           },
           {
             a: 3,
             b: 5,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
@@ -650,20 +655,20 @@ test('a || a || a', async () => {
     or: [
       {
         a: {
-          eq: 1
-        }
+          eq: 1,
+        },
       },
       {
         a: {
-          eq: 2
-        }
+          eq: 2,
+        },
       },
       {
         a: {
-          eq: 3
-        }
-      }
-    ]
+          eq: 3,
+        },
+      },
+    ],
   }
 
   const items = await context.providers.Todo.findBy({ filter })
@@ -686,25 +691,25 @@ test('a || (a && b)', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 2,
             b: 3,
-            c: 10
+            c: 10,
           },
           {
             a: 2,
             b: 3,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
@@ -712,22 +717,22 @@ test('a || (a && b)', async () => {
     or: [
       {
         a: {
-          eq: 1
-        }
+          eq: 1,
+        },
       },
       {
         or: [
           {
             a: {
-              eq: 2
+              eq: 2,
             },
             b: {
-              eq: 3
-            }
-          }
-        ]
-      }
-    ]
+              eq: 3,
+            },
+          },
+        ],
+      },
+    ],
   }
 
   const items = await context.providers.Todo.findBy({ filter })
@@ -750,44 +755,44 @@ test('Aggregations', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 2,
             b: 3,
-            c: 10
+            c: 10,
           },
           {
             a: 2,
             b: 3,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
-  const args = {__arguments: [{of: {value: 'a'}}]}
-  let items = await context.providers.Todo.findBy({}, [],{count: args})
+  const args = { __arguments: [{ of: { value: 'a' } }] }
+  let items = await context.providers.Todo.findBy({}, [], { count: args })
   assert.is(items.length, 1)
   assert.is(items[0].count, 4)
-  items = await context.providers.Todo.findBy({}, [],{sum: args})
+  items = await context.providers.Todo.findBy({}, [], { sum: args })
   assert.is(items.length, 1)
   assert.is(items[0].sum, 11)
-  items = await context.providers.Todo.findBy({}, [],{min: args})
+  items = await context.providers.Todo.findBy({}, [], { min: args })
   assert.is(items.length, 1)
   assert.is(items[0].min, 1)
-  items = await context.providers.Todo.findBy({}, [],{max: args})
+  items = await context.providers.Todo.findBy({}, [], { max: args })
   assert.is(items.length, 1)
   assert.is(items[0].max, 6)
-  items = await context.providers.Todo.findBy({}, [],{avg: args})
+  items = await context.providers.Todo.findBy({}, [], { avg: args })
   assert.is(items.length, 1)
-  assert.is(items[0].avg, 2.75) 
+  assert.is(items[0].avg, 2.75)
 })
 
 test('Aggregations with group', async () => {
@@ -805,54 +810,64 @@ test('Aggregations with group', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 2,
             b: 3,
-            c: 10
+            c: 10,
           },
           {
             a: 2,
             b: 2,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
-  
+
   const filter = {
     a: {
-      gt: 1
+      gt: 1,
     },
   }
-  
-  const selectedFields = ["a"]
 
-  const args = {__arguments: [{of: {value: 'b'}}]}
-  let items = await context.providers.Todo.findBy({filter}, selectedFields,{count: args})
+  const selectedFields = ['a']
+
+  const args = { __arguments: [{ of: { value: 'b' } }] }
+  let items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    count: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].count, 2)
   assert.is(items[1].count, 1)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{sum: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    sum: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].sum, 5)
   assert.is(items[1].sum, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{min: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    min: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].min, 2)
   assert.is(items[1].min, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{max: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    max: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].max, 3)
   assert.is(items[1].max, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{avg: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    avg: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].avg, 2.5)
   assert.is(items[1].avg, 6)
@@ -873,60 +888,72 @@ test('Aggregations with group and DISTINCT', async () => {
           {
             a: 1,
             b: 5,
-            c: 8
+            c: 8,
           },
           {
             a: 2,
             b: 3,
-            c: 10
+            c: 10,
           },
           {
             a: 2,
             b: 2,
-            c: 3
+            c: 3,
           },
           {
             a: 2,
             b: 2,
-            c: 3
+            c: 3,
           },
           {
             a: 6,
             b: 6,
-            c: 3
-          }
-        ]
-      }
+            c: 3,
+          },
+        ],
+      },
     }
   )
 
   const filter = {
     a: {
-      gt: 1
+      gt: 1,
     },
   }
 
-  const selectedFields = ["a"]
+  const selectedFields = ['a']
 
-  const args = {__arguments: [{of: {value: 'b'}}, {distinct: {value: true}}]}
+  const args = {
+    __arguments: [{ of: { value: 'b' } }, { distinct: { value: true } }],
+  }
 
-  let items = await context.providers.Todo.findBy({filter}, selectedFields,{count: args})
+  let items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    count: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].count, 2)
   assert.is(items[1].count, 1)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{sum: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    sum: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].sum, 5)
   assert.is(items[1].sum, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{min: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    min: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].min, 2)
   assert.is(items[1].min, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{max: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    max: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].max, 3)
   assert.is(items[1].max, 6)
-  items = await context.providers.Todo.findBy({filter}, selectedFields,{avg: args})
+  items = await context.providers.Todo.findBy({ filter }, selectedFields, {
+    avg: args,
+  })
   assert.is(items.length, 2)
   assert.is(items[0].avg, 2.5)
   assert.is(items[1].avg, 6)
@@ -935,39 +962,45 @@ test('Aggregations with group and DISTINCT', async () => {
 test('Test UNIQUE constraint', async () => {
   context = await createTestingContext(todoSchema, {
     seedData: {
-      Todos: defaultTodoSeed
-    }
+      Todos: defaultTodoSeed,
+    },
   })
   try {
-    await context.providers.Todos.create({
-      text: 'todo'
-    },[])
+    await context.providers.Todos.create(
+      {
+        text: 'todo',
+      },
+      []
+    )
     assert.unreachable()
-  } catch(e) {}
+  } catch (e) {}
 
-  const todo = await context.providers.Todos.create({
-      text: 'todo3'
-    },[])
+  const todo = await context.providers.Todos.create(
+    {
+      text: 'todo3',
+    },
+    []
+  )
   try {
     await context.providers.Todos.update(
       {
         _id: todo._id,
-        text: 'todo'
+        text: 'todo',
       },
-      fields)
+      fields
+    )
 
     assert.unreachable()
-  } catch(e) {}
+  } catch (e) {}
 
   await context.providers.Todos.delete({ _id: todo._id }, fields)
-  
+
   try {
     await context.providers.Todos.create({
-      text: 'todo3'
+      text: 'todo3',
     })
     assert.unreachable()
-  } catch(e) {}
+  } catch (e) {}
 })
 
 test.run()
-

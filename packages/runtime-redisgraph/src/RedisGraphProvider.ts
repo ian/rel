@@ -1,52 +1,54 @@
-import {
-  NoDataError
-} from '@graphback/core'
+// IH temporary - want to get builds working
+// @ts-nocheck
+
+import { NoDataError } from '@graphback/core'
 import { v4 as uuid, v5 } from 'uuid'
 import logger from './logger.js'
 import { buildQuery } from './queryBuilder.js'
-import cypher from './cypher/src/index.js'
+import cypher from 'cyypher'
 import RedisStreamHelper from 'redis-stream-helper'
-import Redis from "ioredis"
+import Redis from 'ioredis'
 import _ from 'lodash'
 const { createStreamGroup, addStreamData } = RedisStreamHelper(
-  process.env.REDIS_PORT, process.env.REDIS_HOST
+  process.env.REDIS_PORT,
+  process.env.REDIS_HOST
 )
-const redis = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
-const UNIQUE_NAMESPACE = '9003d956-f170-47c6-b3fb-c8af0e9ada83';
+const redis = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST)
+const UNIQUE_NAMESPACE = '9003d956-f170-47c6-b3fb-c8af0e9ada83'
 /**
  * Graphback provider that connnects to the RedisGraph database
  */
 export class RedisGraphProvider {
-  constructor (model) {
+  constructor(model) {
     this.db = cypher
     this.model = model
     this.collectionName = model.graphqlType.name
     this.computedTemplates = {}
-    this.model.computedFields.forEach(computedField => {
+    this.model.computedFields.forEach((computedField) => {
       this.computedTemplates[computedField.name] = {
         template: _.template(`<%= ${computedField.template} %>`),
-        type: computedField.type
+        type: computedField.type,
       }
     })
   }
 
   addComputedValues(data) {
-    Object.keys(this.computedTemplates).forEach(k => {
+    Object.keys(this.computedTemplates).forEach((k) => {
       let value = this.computedTemplates[k].template(data)
 
       switch (this.computedTemplates[k].type) {
         case 'String':
-          break;
+          break
         case 'Boolean':
-          value = Boolean(value);
-          break;
+          value = Boolean(value)
+          break
         case 'Int':
         case 'Float':
-          value = Number(value);
-          break;
+          value = Number(value)
+          break
         default:
           try {
-            value = JSON.parse(value);
+            value = JSON.parse(value)
           } catch {
             // do nothing, assume the existing value
           }
@@ -58,8 +60,11 @@ export class RedisGraphProvider {
   }
 
   addDefaultValues(data) {
-    this.model.defaultFields.forEach(defaultField => {
-      if(data[defaultField.name] === null || typeof data[defaultField.name] === "undefined") {
+    this.model.defaultFields.forEach((defaultField) => {
+      if (
+        data[defaultField.name] === null ||
+        typeof data[defaultField.name] === 'undefined'
+      ) {
         data[defaultField.name] = defaultField.default
       }
     })
@@ -70,33 +75,32 @@ export class RedisGraphProvider {
     return selectedFields.reduce((prev, cur) => {
       prev[cur] = data[cur]
       return prev
-    },{})
+    }, {})
   }
 
   shouldCompute(selectedFields = []) {
-    return Object.keys(this.computedTemplates).some(i => selectedFields.includes(i))
+    return Object.keys(this.computedTemplates).some((i) =>
+      selectedFields.includes(i)
+    )
   }
 
-  async create (data, selectedFields = []) {
+  async create(data, selectedFields = []) {
     data.createdAt = new Date().getTime()
     data._id = uuid()
 
     data = this.addDefaultValues(data)
 
-    if(this.model.uniqueFields.length > 0) {
-      const __unique = await this.checkUniqueness("Create", data)
+    if (this.model.uniqueFields.length > 0) {
+      const __unique = await this.checkUniqueness('Create', data)
       data.__unique = __unique
     }
 
-    let result = await cypher.create(
-      this.collectionName,
-      data
-    )
+    let result = await cypher.create(this.collectionName, data)
     if (result) {
-      if(this.shouldCompute(selectedFields)) {
+      if (this.shouldCompute(selectedFields)) {
         result = this.addComputedValues(result)
       }
-      if(selectedFields.length > 0) {
+      if (selectedFields.length > 0) {
         result = this.createProjection(result, selectedFields)
       }
       const streamKey = `rel:${this.collectionName}:create`
@@ -104,12 +108,16 @@ export class RedisGraphProvider {
       await addStreamData(streamKey, data)
       return result
     }
-    const err = `Cannot create ${this.collectionName}.${this.model.uniqueFields.length > 0 ? " UNIQUE constraint might be violated." : ""}`
+    const err = `Cannot create ${this.collectionName}.${
+      this.model.uniqueFields.length > 0
+        ? ' UNIQUE constraint might be violated.'
+        : ''
+    }`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async update (data, selectedFields = []) {
+  async update(data, selectedFields = []) {
     if (!data._id) {
       const err = `Cannot update ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
@@ -126,33 +134,33 @@ export class RedisGraphProvider {
 
     data = this.addDefaultValues(data)
 
-    if(this.model.uniqueFields.length > 0) {
-      entity = await cypher.find(this.collectionName, { _id: data._id }, this.model.uniqueFields)
-      if(entity) {
-        this.model.uniqueFields.forEach(f => {
-          if(data[f] && data[f] !== entity[f]) {
+    if (this.model.uniqueFields.length > 0) {
+      entity = await cypher.find(
+        this.collectionName,
+        { _id: data._id },
+        this.model.uniqueFields
+      )
+      if (entity) {
+        this.model.uniqueFields.forEach((f) => {
+          if (data[f] && data[f] !== entity[f]) {
             shouldVerifyUniqueness = true
             entity[f] = data[f]
           }
         })
         entity._id = _id
-        if(shouldVerifyUniqueness) {
-          uniqueKey = await this.checkUniqueness("Update", entity)
+        if (shouldVerifyUniqueness) {
+          uniqueKey = await this.checkUniqueness('Update', entity)
         }
       }
       data.__unique = uniqueKey
     }
 
-    let result = await cypher.update(
-      this.collectionName,
-      _id,
-      data
-    )
+    let result = await cypher.update(this.collectionName, _id, data)
     if (result) {
-      if(this.shouldCompute(selectedFields)) {
+      if (this.shouldCompute(selectedFields)) {
         result = this.addComputedValues(result)
       }
-      if(selectedFields.length > 0) {
+      if (selectedFields.length > 0) {
         result = this.createProjection(result, selectedFields)
       }
       const streamKey = `rel:${this.collectionName}:update`
@@ -166,24 +174,24 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async updateBy (args, selectedFields = []) {
+  async updateBy(args, selectedFields = []) {
     const filterQuery = buildQuery(args?.filter)
     const data = await cypher.list(
       this.collectionName,
       {
-        where: filterQuery
+        where: filterQuery,
       },
-      ["_id"]
+      ['_id']
     )
     const items = []
     const updatedAt = new Date().getTime()
-    for(let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       const obj = args.input
       obj._id = data[i]._id
       obj.updatedAt = updatedAt
       items.push(await this.update(obj, selectedFields))
     }
-    if(items.length > 0) {
+    if (items.length > 0) {
       return items
     }
     const err = `Cannot update ${this.collectionName}`
@@ -191,7 +199,7 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async delete (data, selectedFields = []) {
+  async delete(data, selectedFields = []) {
     if (!data._id) {
       const err = `Cannot delete ${this.collectionName} - missing _id field`
       logger.error(err, 'RedisGraphProvider')
@@ -201,7 +209,7 @@ export class RedisGraphProvider {
     let result = await cypher.delete(
       this.collectionName,
       data._id,
-      selectedFields,
+      selectedFields
     )
     if (result) {
       const streamKey = `rel:${this.collectionName}:delete`
@@ -214,19 +222,19 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async deleteBy (args, selectedFields = []) {
+  async deleteBy(args, selectedFields = []) {
     const filterQuery = buildQuery(args?.filter)
     const data = await cypher.list(
       this.collectionName,
       {
-        where: filterQuery
+        where: filterQuery,
       },
-      ["_id"]
+      ['_id']
     )
     const items = []
-    for(let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       const obj = {
-        _id: data[i]._id
+        _id: data[i]._id,
       }
       items.push(await this.delete(obj, selectedFields))
     }
@@ -238,36 +246,38 @@ export class RedisGraphProvider {
     throw new NoDataError(err)
   }
 
-  async findOne (filter, selectedFields = []) {
+  async findOne(filter, selectedFields = []) {
     let data = await cypher.find(this.collectionName, filter)
 
     if (data) {
-      if(this.shouldCompute(selectedFields)) {
+      if (this.shouldCompute(selectedFields)) {
         result = this.addComputedValues(result)
       }
-      if(selectedFields.length > 0) {
+      if (selectedFields.length > 0) {
         result = this.createProjection(result, selectedFields)
       }
       return data
     }
 
     const err = `Cannot find a result for ${
-        this.collectionName
-      } with filter: ${JSON.stringify(filter)}`
+      this.collectionName
+    } with filter: ${JSON.stringify(filter)}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async findBy (args, selectedFields = [], fieldArgs) {
+  async findBy(args, selectedFields = [], fieldArgs) {
     const filterQuery = buildQuery(args?.filter)
     if (args?.page?.offset && args.page.offset < 0) {
-      const err = 'Invalid offset value. Please use an offset of greater than or equal to 0 in queries'
+      const err =
+        'Invalid offset value. Please use an offset of greater than or equal to 0 in queries'
       logger.error(err, 'RedisGraphProvider')
       throw new Error(err)
     }
 
     if (args?.page?.limit && args.page.limit < 1) {
-      const err = 'Invalid limit value. Please use a limit of greater than or equal to 1 in queries'
+      const err =
+        'Invalid limit value. Please use a limit of greater than or equal to 1 in queries'
       logger.error(err, 'RedisGraphProvider')
       throw new Error(err)
     }
@@ -278,52 +288,52 @@ export class RedisGraphProvider {
         where: filterQuery,
         order: args?.orderBy,
         skip: args?.page?.offset,
-        limit: args?.page?.limit
+        limit: args?.page?.limit,
       },
       shouldCompute ? [] : selectedFields,
       fieldArgs
     )
 
     if (data) {
-      if(shouldCompute) {
-        for(let i = 0; i < data.length; i++) {
-            data[i] = this.addComputedValues(data[i])
-            data[i] = this.createProjection(data[i], selectedFields)
+      if (shouldCompute) {
+        for (let i = 0; i < data.length; i++) {
+          data[i] = this.addComputedValues(data[i])
+          data[i] = this.createProjection(data[i], selectedFields)
         }
       }
       return data
     }
 
     const err = `Cannot find all results for ${
-        this.collectionName
-      } with filter: ${JSON.stringify(args?.filter)}`
+      this.collectionName
+    } with filter: ${JSON.stringify(args?.filter)}`
 
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
 
-  async count (filter) {
+  async count(filter) {
     return cypher.count(this.collectionName, {
-      where: filter ? buildQuery(filter) : null
+      where: filter ? buildQuery(filter) : null,
     })
   }
 
-  async batchRead (relationField, ids, filter, selectedFields, fieldArgs) {
+  async batchRead(relationField, ids, filter, selectedFields, fieldArgs) {
     filter = filter || {}
     filter[relationField] = { in: ids }
     const filterQuery = buildQuery(filter)
     const dbResult = await cypher.list(
       this.collectionName,
       {
-        where: filterQuery
+        where: filterQuery,
       },
       selectedFields,
       fieldArgs
     )
 
     if (dbResult) {
-      const resultsById = ids.map(id =>
-        dbResult.filter(data => {
+      const resultsById = ids.map((id) =>
+        dbResult.filter((data) => {
           return data[relationField].toString() === id.toString()
         })
       )
@@ -331,7 +341,9 @@ export class RedisGraphProvider {
       return resultsById
     }
 
-    const err = `No results for ${this.collectionName} and id: ${JSON.stringify(ids)}`
+    const err = `No results for ${this.collectionName} and id: ${JSON.stringify(
+      ids
+    )}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
@@ -340,36 +352,41 @@ export class RedisGraphProvider {
     const uniqueDefRedisKey = `rel:unique:definition:${this.collectionName}`
     const uniqueKeyDefinition = await redis.get(uniqueDefRedisKey)
     const addUniqueValues = async () => {
-      if(this.model.uniqueFields.length > 0) {
-        await redis.set(uniqueDefRedisKey, JSON.stringify({
-          fields: this.model.uniqueFields,
-          initialized: false
-        }))
+      if (this.model.uniqueFields.length > 0) {
+        await redis.set(
+          uniqueDefRedisKey,
+          JSON.stringify({
+            fields: this.model.uniqueFields,
+            initialized: false,
+          })
+        )
         const items = await cypher.list(
           this.collectionName,
           {},
           this.model.uniqueFields
         )
-        for(let i = 0; i < items.length; i++) {
+        for (let i = 0; i < items.length; i++) {
           const __unique = this.generateUniqueValue(items[i])
-          await cypher.update(
-            this.collectionName,
-            items[i]._id,
-            {__unique}
-          )
+          await cypher.update(this.collectionName, items[i]._id, { __unique })
         }
-        await redis.set(uniqueDefRedisKey, JSON.stringify({
-          fields: this.model.uniqueFields,
-          initialized: true
-        }))
+        await redis.set(
+          uniqueDefRedisKey,
+          JSON.stringify({
+            fields: this.model.uniqueFields,
+            initialized: true,
+          })
+        )
       } else {
         await redis.del(uniqueDefRedisKey)
       }
     }
-    if(uniqueKeyDefinition) {
+    if (uniqueKeyDefinition) {
       const uniqueKeyInfo = JSON.parse(uniqueKeyDefinition)
-      if(JSON.stringify(uniqueKeyInfo.fields.sort()) === JSON.stringify(this.model.uniqueFields.sort())) {
-        if(!uniqueKeyInfo.initialized) {
+      if (
+        JSON.stringify(uniqueKeyInfo.fields.sort()) ===
+        JSON.stringify(this.model.uniqueFields.sort())
+      ) {
+        if (!uniqueKeyInfo.initialized) {
           await addUniqueValues()
         }
       } else {
@@ -382,23 +399,31 @@ export class RedisGraphProvider {
 
   async checkUniqueness(mutationName, data) {
     let uniqueKey
-    if(this.model.uniqueFields.length > 0) {
+    if (this.model.uniqueFields.length > 0) {
       uniqueKey = this.generateUniqueValue(data)
       const uniqueValue = await cypher.list(
         this.collectionName,
         {
-          where: {__unique: {eq: ["=", `"${uniqueKey}"`]}},
+          where: { __unique: { eq: ['=', `"${uniqueKey}"`] } },
         },
-        ["_id", "__unique"],
+        ['_id', '__unique']
       )
-      if(uniqueValue.__unique && data._id !== uniqueValue._id) {
-        throw new Error(`The ${mutationName} mutation would violate ${this.collectionName} UNIQUE constraint`)
+      if (uniqueValue.__unique && data._id !== uniqueValue._id) {
+        throw new Error(
+          `The ${mutationName} mutation would violate ${this.collectionName} UNIQUE constraint`
+        )
       }
     }
     return uniqueKey
   }
-  
+
   generateUniqueValue(data) {
-    return v5(this.model.uniqueFields.reduce((previous, current) => previous + current + ":" + data[current], ""), UNIQUE_NAMESPACE)
+    return v5(
+      this.model.uniqueFields.reduce(
+        (previous, current) => previous + current + ':' + data[current],
+        ''
+      ),
+      UNIQUE_NAMESPACE
+    )
   }
 }

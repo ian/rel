@@ -9,6 +9,7 @@
   "main": "dist/rel.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "clean": "rm -rf ./dist",
     "build": "tsup bin/rel.ts --sourcemap inline --target esnext --format esm"
   },
   "dependencies": {

@@ -12,7 +12,8 @@
   },
   "homepage": "https://github.com/rel-js/rel/tree/master/packages/graphback-codegen-schema#readme",
   "scripts": {
-    "build": "tsup src/index.ts --format esm --sourcemap"
+    "build": "tsup src/index.ts --format esm --sourcemap",
+    "clean": "rm -rf ./dist"
   },
   "license": "Apache-2.0",
   "devDependencies": {

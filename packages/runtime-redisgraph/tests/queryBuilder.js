@@ -1,6 +1,6 @@
 import { buildQuery } from '../src/queryBuilder.js'
 import initEnv from './setup/__util__.js'
-import cypher from '../src/cypher/src/index.js'
+import cypher from 'cyypher'
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
 
@@ -46,7 +46,7 @@ const postSchema = `
 const defaultPostSeed = [
   { text: 'post', likes: 300 },
   { text: 'post2', likes: 50 },
-  { text: 'post3', likes: 1500 }
+  { text: 'post3', likes: 1500 },
 ]
 
 let context
@@ -56,11 +56,11 @@ test('can filter ID', async () => {
 
   const newPost = await context.providers.Post.create({
     text: 'hello',
-    likes: 100
+    likes: 100,
   })
 
   const findPost = await context.providers.Post.findBy({
-    filter: { _id: { eq: newPost._id } }
+    filter: { _id: { eq: newPost._id } },
   })
   assert.is(findPost.length, 1)
   assert.is(findPost[0].text, newPost.text)
@@ -69,21 +69,21 @@ test('can filter ID', async () => {
 test('can filter using AND', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
       and: [
         {
-          text: { eq: 'post' }
+          text: { eq: 'post' },
         },
         {
-          likes: { eq: 300 }
-        }
-      ]
-    }
+          likes: { eq: 300 },
+        },
+      ],
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -96,21 +96,21 @@ test('can filter using AND', async () => {
 test('can filter using OR', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
       or: [
         {
-          likes: { eq: 300 }
+          likes: { eq: 300 },
         },
         {
-          text: { eq: 'post2' }
-        }
-      ]
-    }
+          text: { eq: 'post2' },
+        },
+      ],
+    },
   })
   assert.is(posts.length, 2)
   for (const post of posts) {
@@ -121,24 +121,24 @@ test('can filter using OR', async () => {
 test('can filter using list of OR conditions', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
       or: [
         {
-          text: { eq: 'post2' }
+          text: { eq: 'post2' },
         },
         {
-          likes: { eq: 300 }
+          likes: { eq: 300 },
         },
         {
-          text: { eq: 'post3' }
-        }
-      ]
-    }
+          text: { eq: 'post3' },
+        },
+      ],
+    },
   })
   assert.is(posts.length, 3)
 })
@@ -146,21 +146,21 @@ test('can filter using list of OR conditions', async () => {
 test('can filter using NOT', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
       not: [
         {
-          text: { eq: 'post2' }
+          text: { eq: 'post2' },
         },
         {
-          likes: { eq: 300 }
-        }
-      ]
-    }
+          likes: { eq: 300 },
+        },
+      ],
+    },
   })
 
   assert.equal(posts.length, 1)
@@ -173,14 +173,14 @@ test('can filter using NOT', async () => {
 test('can filter using between operator', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
-      likes: { between: [250, 350] }
-    }
+      likes: { between: [250, 350] },
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -193,16 +193,16 @@ test('can filter using between operator', async () => {
 test('can filter using not between operator', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
       not: {
-        likes: { between: [250, 350] }
-      }
-    }
+        likes: { between: [250, 350] },
+      },
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -214,8 +214,8 @@ test('can filter using not between operator', async () => {
 test('can use nested filters', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
@@ -224,21 +224,21 @@ test('can use nested filters', async () => {
         {
           or: [
             { likes: { between: [250, 350] } },
-            { likes: { between: [25, 75] } }
-          ]
+            { likes: { between: [25, 75] } },
+          ],
         },
         {
-          or: [{ text: { eq: 'post' } }, { text: { eq: 'post2' } }]
-        }
-      ]
-    }
+          or: [{ text: { eq: 'post' } }, { text: { eq: 'post2' } }],
+        },
+      ],
+    },
   })
 
   assert.ok(posts.length >= 1)
   for (const post of posts) {
     assert.ok(
       (post.likes >= 250 && post.likes <= 350) ||
-          (post.likes >= 25 && post.likes <= 75)
+        (post.likes >= 25 && post.likes <= 75)
     )
 
     assert.ok(post.text === 'post' || post.text === 'post2')
@@ -248,14 +248,14 @@ test('can use nested filters', async () => {
 test('can use contains operator', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
-      text: { contains: 'post' }
-    }
+      text: { contains: 'post' },
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -267,14 +267,14 @@ test('can use contains operator', async () => {
 test('can use startsWith operator', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
-      text: { startsWith: 'post' }
-    }
+      text: { startsWith: 'post' },
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -286,14 +286,14 @@ test('can use startsWith operator', async () => {
 test('can use endsWith operator', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: defaultPostSeed
-    }
+      Post: defaultPostSeed,
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
-      text: { endsWith: 'post' }
-    }
+      text: { endsWith: 'post' },
+    },
   })
 
   assert.ok(posts.length, 1)
@@ -305,14 +305,14 @@ test('can use endsWith operator', async () => {
 test('escaping regex strings', async () => {
   context = await createTestingContext(postSchema, {
     seedData: {
-      Post: [...defaultPostSeed, { text: 'p..t', likes: 4500 }]
-    }
+      Post: [...defaultPostSeed, { text: 'p..t', likes: 4500 }],
+    },
   })
 
   const posts = await context.providers.Post.findBy({
     filter: {
-      text: { contains: 'p..t' }
-    }
+      text: { contains: 'p..t' },
+    },
   })
 
   assert.ok(posts.length >= 1)
@@ -347,8 +347,8 @@ test.skip('can filter metadata fields', async () => {
   // Get all posts created since startTime
   const posts = await context.providers.Post.findBy({
     filter: {
-      createdAt: { gt: startTime }
-    }
+      createdAt: { gt: startTime },
+    },
   })
   assert.is(posts.length, 3)
   assert.equal(
@@ -358,11 +358,11 @@ test.skip('can filter metadata fields', async () => {
 
   // Get all posts created after the first post
   const newPosts = await context.providers.Post.findBy({
-    filter: { createdAt: { gt: posts[0].createdAt } }
+    filter: { createdAt: { gt: posts[0].createdAt } },
   })
   assert.is(newPosts.length, 2)
   assert.equal(
-    newPosts.map(post => post.text),
+    newPosts.map((post) => post.text),
     ['not yet', 'bye guys']
   )
 })
@@ -370,39 +370,39 @@ test.skip('can filter metadata fields', async () => {
 test('a && (b || c)', () => {
   const inputQuery = {
     a: {
-      eq: 1
+      eq: 1,
     },
     or: [
       {
         b: {
-          eq: 2
-        }
+          eq: 2,
+        },
       },
       {
         c: {
-          eq: 3
-        }
-      }
-    ]
+          eq: 3,
+        },
+      },
+    ],
   }
 
   const outputQuery = buildQuery(inputQuery)
   const expected = {
     a: {
-      eq: ['=', 1]
+      eq: ['=', 1],
     },
     or: [
       {
         b: {
-          eq: ['=', 2]
-        }
+          eq: ['=', 2],
+        },
       },
       {
         c: {
-          eq: ['=', 3]
-        }
-      }
-    ]
+          eq: ['=', 3],
+        },
+      },
+    ],
   }
 
   assert.equal(outputQuery, expected)
@@ -413,39 +413,39 @@ test('a || b || c starting at root or operator of query', () => {
     or: [
       {
         a: {
-          eq: 1
-        }
+          eq: 1,
+        },
       },
       {
         b: {
-          eq: 2
-        }
+          eq: 2,
+        },
       },
       {
         c: {
-          eq: 3
-        }
-      }
-    ]
+          eq: 3,
+        },
+      },
+    ],
   }
 
   const outputQuery = buildQuery(inputQuery)
   const expected = [
     {
       a: {
-        eq: ['=', 1]
-      }
+        eq: ['=', 1],
+      },
     },
     {
       b: {
-        eq: ['=', 2]
-      }
+        eq: ['=', 2],
+      },
     },
     {
       c: {
-        eq: ['=', 3]
-      }
-    }
+        eq: ['=', 3],
+      },
+    },
   ]
 
   assert.equal(outputQuery.or, expected)
@@ -457,25 +457,25 @@ test('(a && b) && (c || c)', () => {
     or: [
       {
         a: {
-          eq: 1
+          eq: 1,
         },
         b: {
-          eq: 2
+          eq: 2,
         },
         or: [
           {
             c: {
-              eq: 3
-            }
+              eq: 3,
+            },
           },
           {
             c: {
-              eq: 2
-            }
-          }
-        ]
-      }
-    ]
+              eq: 2,
+            },
+          },
+        ],
+      },
+    ],
   }
 
   const outputQuery = buildQuery(inputQuery)
@@ -484,25 +484,25 @@ test('(a && b) && (c || c)', () => {
     or: [
       {
         a: {
-          eq: ['=', 1]
+          eq: ['=', 1],
         },
         b: {
-          eq: ['=', 2]
+          eq: ['=', 2],
         },
         or: [
           {
             c: {
-              eq: ['=', 3]
-            }
+              eq: ['=', 3],
+            },
           },
           {
             c: {
-              eq: ['=', 2]
-            }
-          }
-        ]
-      }
-    ]
+              eq: ['=', 2],
+            },
+          },
+        ],
+      },
+    ],
   }
 
   assert.equal(outputQuery, expected)
@@ -511,54 +511,54 @@ test('(a && b) && (c || c)', () => {
 test('a && b && (c || b) from query root (explicit AND)', () => {
   const inputQuery = {
     a: {
-      eq: 1
+      eq: 1,
     },
     and: [
       {
         b: {
-          eq: 2
-        }
-      }
+          eq: 2,
+        },
+      },
     ],
     or: [
       {
         c: {
-          eq: 3
-        }
+          eq: 3,
+        },
       },
       {
         b: {
-          eq: 4
-        }
-      }
-    ]
+          eq: 4,
+        },
+      },
+    ],
   }
 
   const outputQuery = buildQuery(inputQuery)
 
   const expected = {
     a: {
-      eq: ['=', 1]
+      eq: ['=', 1],
     },
     and: [
       {
         b: {
-          eq: ['=', 2]
-        }
-      }
+          eq: ['=', 2],
+        },
+      },
     ],
     or: [
       {
         c: {
-          eq: ['=', 3]
-        }
+          eq: ['=', 3],
+        },
       },
       {
         b: {
-          eq: ['=', 4]
-        }
-      }
-    ]
+          eq: ['=', 4],
+        },
+      },
+    ],
   }
 
   assert.equal(outputQuery, expected)

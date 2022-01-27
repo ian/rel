@@ -5,19 +5,31 @@ const buildWhereQuery = (data = {}, opts = { prefix: '' }) => {
       result = querystring + (key.toLowerCase() === 'not' ? 'NOT' : '')
       if (Array.isArray(data[key])) {
         result += data[key].reduce((previous, current, _idx, _arr) => {
-          return previous + buildWhereQuery(current, opts) + (_idx === _arr.length - 1 ? ')' : (key.toLowerCase() === 'AND' ? ' AND ' : ' OR '))
+          return (
+            previous +
+            buildWhereQuery(current, opts) +
+            (_idx === _arr.length - 1
+              ? ')'
+              : key.toLowerCase() === 'AND'
+              ? ' AND '
+              : ' OR ')
+          )
         }, '(')
       } else {
         result += '(' + buildWhereQuery(data[key], opts) + ')'
       }
     } else if (Array.isArray(data[key])) {
       result = querystring + data[key].join(' ')
-    } else if (typeof data[key] === 'object' && Object.keys(data[key]).length > 0) {
-      result = querystring + opts.prefix + key + ' ' + buildWhereQuery(data[key], opts)
+    } else if (
+      typeof data[key] === 'object' &&
+      Object.keys(data[key]).length > 0
+    ) {
+      result =
+        querystring + opts.prefix + key + ' ' + buildWhereQuery(data[key], opts)
     } else {
       result = querystring
     }
-    result += (idx === arr.length - 1 ? '' : ' AND ')
+    result += idx === arr.length - 1 ? '' : ' AND '
     return result
   }, '')
 }

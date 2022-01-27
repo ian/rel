@@ -43,7 +43,7 @@ export interface User {
     __typename: 'User'
 }
 
-export type UserFieldsEnum = '_id' | 'name' | 'email'
+export type UserFieldsEnum = '_id' | 'name' | 'email' | 'createdAt' | 'updatedAt'
 
 export interface UserMutationResultList {
     items: (User | undefined)[]

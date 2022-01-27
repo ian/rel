@@ -78,4 +78,6 @@ export declare const enumUserFieldsEnum: {
   readonly _id: '_id'
   readonly name: 'name'
   readonly email: 'email'
+  readonly createdAt: 'createdAt'
+  readonly updatedAt: 'updatedAt'
 }
