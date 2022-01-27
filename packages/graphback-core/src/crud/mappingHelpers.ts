@@ -1,6 +1,6 @@
 import { GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
 import pluralize from 'pluralize'
-import { parseRelationshipAnnotation, getPrimaryKey } from '..'
+import { getPrimaryKey } from '..'
 import { GraphbackOperationType } from './GraphbackOperationType'
 
 // TODO it is esential to document this element

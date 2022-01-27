@@ -1,7 +1,6 @@
-import DataLoader from 'dataloader'
 import { PubSubEngine, withFilter } from 'graphql-subscriptions'
 import { GraphQLResolveInfo } from 'graphql'
-import { GraphbackOperationType, upperCaseFirstChar, getSubscriptionName } from '..'
+import { GraphbackOperationType, getSubscriptionName } from '..'
 import { ModelDefinition } from '../plugin/ModelDefinition'
 import { getSelectedFieldsFromResolverInfo, getResolverInfoFieldsList } from '../plugin/getSelectedFieldsFromResolverInfo'
 import { createInMemoryFilterPredicate } from './createInMemoryFilterPredicate'
@@ -187,33 +186,6 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     const subscriptionFilter = createInMemoryFilterPredicate<Type>(filter)
 
     return withFilter(() => asyncIterator, (payload: any) => subscriptionFilter(payload[subscriptionName]))()
-  }
-
-  public batchLoadData (relationField: string, id: string | number, filter: QueryFilter, context: GraphbackContext, info?: GraphQLResolveInfo) {
-    const selectedFields = []
-    const [selectedFieldsFromInfo, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model)
-    selectedFields.push(...selectedFieldsFromInfo)
-
-    // only push the relation field if there are fields selected
-    // because all fields will be selected otherwise
-    if (selectedFields.length > 0) {
-      selectedFields.push(relationField)
-    }
-
-    const fetchedKeys = selectedFields.join('-')
-    const keyName = `${this.model.graphqlType.name}-${upperCaseFirstChar(relationField)}-${fetchedKeys}-${JSON.stringify(filter)}-DataLoader`
-    if (!context[keyName]) {
-      context[keyName] = new DataLoader<string, any>(async (keys: string[]) => {
-        return await this.db.batchRead(relationField, keys, filter, selectedFields, fieldArgs)
-      })
-    }
-
-    // eslint-disable-next-line no-null/no-null
-    if (id === undefined || id === null) {
-      return []
-    }
-
-    return context[keyName].load(id)
   }
 
   /**

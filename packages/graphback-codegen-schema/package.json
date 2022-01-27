@@ -17,15 +17,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "dataloader": "2.0.0",
     "tsup": "^5.11.9"
   },
   "dependencies": {
     "@graphback/core": "*",
     "@graphql-tools/utils": "7.1.4",
     "graphql": "15.8.0",
-    "graphql-compose": "7.23.0",
-    "pluralize": "8.0.0"
+    "graphql-compose": "7.23.0"
   },
   "peerDependencies": {
     "graphql": "^15.8.0"
