@@ -1,5 +1,5 @@
 {
-  "name": "graphback-redisgraph",
+  "name": "runtime-redisgraph",
   "version": "1.0.0",
   "description": "A Rel-gen adapter for RedisGraph",
   "main": "dist/index.js",

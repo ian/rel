@@ -5,7 +5,7 @@ import {
   directives
 } from '@graphback/core'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
-import { RedisGraphProvider } from '../../src/RedisGraphProvider.js'
+import { RedisGraphProvider } from '../../dist/index.js'
 import fs from 'fs'
 // import Docker from 'dockerode'
 import events from 'events'
@@ -31,7 +31,7 @@ const run = async () => {
     // Setup graphback
     schemaStr = directives + '\n' + schemaStr
     const schema = buildSchema(schemaStr)
-    
+
     const metadata = new GraphbackCoreMetadata(schema)
 
     const schemaGenerator = new SchemaCRUDPlugin()

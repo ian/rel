@@ -33,7 +33,7 @@
     "fastify": "^3.25.0",
     "fastify-cors": "^6.0.2",
     "graphback": "*",
-    "graphback-redisgraph": "workspace:^1.0.0",
+    "runtime-redisgraph": "*",
     "graphql": "15.8.0",
     "graphql-redis-subscriptions": "^2.4.2",
     "graphql-yoga": "2.0.0-alpha.7",

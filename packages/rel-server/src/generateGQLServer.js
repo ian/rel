@@ -1,5 +1,5 @@
 import { buildGraphbackAPI, createCRUDService } from 'graphback'
-import { createRedisGraphProvider } from 'graphback-redisgraph'
+import { createRedisGraphProvider } from 'runtime-redisgraph'
 import { SchemaCRUDPlugin } from '@graphback/codegen-schema'
 import fs from 'fs'
 import { directives } from '@graphback/core'

@@ -1,3 +1,4 @@
 
-export * from './RedisGraphProvider.js'
-export * from './createRedisGraphProvider.js'
+export * from './RedisGraphProvider'
+export * from './createRedisGraphProvider'
+export * from './queryBuilder'

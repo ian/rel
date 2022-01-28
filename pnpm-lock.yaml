@@ -72,51 +72,112 @@ importers:
     specifiers:
       '@graphback/core': '*'
       '@graphql-tools/utils': 7.1.4
-      dataloader: 2.0.0
       graphql: 15.8.0
       graphql-compose: 7.23.0
-      pluralize: 8.0.0
       tsup: ^5.11.9
     dependencies:
       '@graphback/core': link:../graphback-core
       '@graphql-tools/utils': 7.1.4_graphql@15.8.0
       graphql: 15.8.0
       graphql-compose: 7.23.0_graphql@15.8.0
-      pluralize: 8.0.0
     devDependencies:
-      dataloader: 2.0.0
       tsup: 5.11.9_typescript@4.5.5
 
   packages/graphback-core:
     specifiers:
       '@graphql-tools/merge': 6.2.6
       '@graphql-tools/utils': 7.1.4
-      dataloader: 2.0.0
-      glob: 7.1.6
       graphql: 15.8.0
       graphql-compose: 7.23.0
       graphql-fields: ^2.0.3
       graphql-scalars: 1.14.1
       graphql-subscriptions: 2.0.0
-      pino: 7.6.2
       pluralize: 8.0.0
       tsup: ^5.11.9
     dependencies:
       '@graphql-tools/merge': 6.2.6_graphql@15.8.0
       '@graphql-tools/utils': 7.1.4_graphql@15.8.0
-      dataloader: 2.0.0
-      glob: 7.1.6
       graphql: 15.8.0
       graphql-compose: 7.23.0_graphql@15.8.0
       graphql-fields: 2.0.3
       graphql-scalars: 1.14.1_graphql@15.8.0
       graphql-subscriptions: 2.0.0_graphql@15.8.0
-      pino: 7.6.2
       pluralize: 8.0.0
     devDependencies:
       tsup: 5.11.9_typescript@4.5.5
 
-  packages/graphback-redisgraph:
+  packages/rel-cli:
+    specifiers:
+      chalk: ^5.0.0
+      child_process: ^1.0.2
+      chokidar: ^3.5.2
+      commander: ^7.2.0
+      debounce: ^1.2.1
+      dotenv: ^8.2.0
+      fs-utils: ^0.7.0
+      inquirer: ^8.2.0
+      ora: ^5.3.0
+      rel-server: '*'
+    dependencies:
+      chalk: 5.0.0
+      child_process: 1.0.2
+      chokidar: 3.5.2
+      commander: 7.2.0
+      debounce: 1.2.1
+      dotenv: 8.6.0
+      fs-utils: 0.7.0
+      inquirer: 8.2.0
+      ora: 5.4.1
+      rel-server: link:../rel-server
+
+  packages/rel-server:
+    specifiers:
+      '@genql/cli': ^2.8.0
+      '@genql/runtime': ^2.8.0
+      '@go-trace/tracer': https://gitpkg.now.sh/rel-js/trace/tracer-npm-package?main
+      '@graphback/codegen-schema': '*'
+      '@graphback/core': '*'
+      '@graphql-tools/schema': ^8.3.1
+      '@nodelib/fs.walk': ^1.2.8
+      '@ptkdev/logger': ^1.8.0
+      altair-fastify-plugin: ^4.2.1
+      crypto: ^1.0.1
+      fastify: ^3.25.0
+      fastify-cors: ^6.0.2
+      graphback: '*'
+      graphql: 15.8.0
+      graphql-redis-subscriptions: ^2.4.2
+      graphql-yoga: 2.0.0-alpha.7
+      nodemon: ^2.0.15
+      pkg-dir: ^6.0.1
+      redis-stream-helper: github:thelinuxlich/redis-stream-helper
+      runtime-redisgraph: '*'
+      tsup: ^5.11.9
+    dependencies:
+      '@genql/cli': 2.9.0
+      '@genql/runtime': 2.9.0_graphql@15.8.0
+      '@go-trace/tracer': '@gitpkg.now.sh/rel-js/trace/tracer-npm-package?main'
+      '@graphback/codegen-schema': link:../graphback-codegen-schema
+      '@graphback/core': link:../graphback-core
+      '@graphql-tools/schema': 8.3.1_graphql@15.8.0
+      '@nodelib/fs.walk': 1.2.8
+      '@ptkdev/logger': 1.8.0
+      altair-fastify-plugin: 4.3.1_fastify@3.25.3
+      crypto: 1.0.1
+      fastify: 3.25.3
+      fastify-cors: 6.0.2
+      graphback: link:../graphback
+      graphql: 15.8.0
+      graphql-redis-subscriptions: 2.4.2
+      graphql-yoga: 2.0.0-alpha.7_graphql@15.8.0
+      nodemon: 2.0.15
+      pkg-dir: 6.0.1
+      redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
+      runtime-redisgraph: link:../runtime-redisgraph
+    devDependencies:
+      tsup: 5.11.9_typescript@4.5.5
+
+  packages/runtime-redisgraph:
     specifiers:
       '@graphback/codegen-schema': '*'
       '@graphback/core': '*'
@@ -158,77 +219,6 @@ importers:
       mockdate: 3.0.5
       tsup: 5.11.11_typescript@4.5.5
       uvu: 0.5.3
-
-  packages/rel-cli:
-    specifiers:
-      chalk: ^5.0.0
-      child_process: ^1.0.2
-      chokidar: ^3.5.2
-      commander: ^7.2.0
-      debounce: ^1.2.1
-      dotenv: ^8.2.0
-      fs-utils: ^0.7.0
-      inquirer: ^8.2.0
-      ora: ^5.3.0
-      rel-server: '*'
-    dependencies:
-      chalk: 5.0.0
-      child_process: 1.0.2
-      chokidar: 3.5.2
-      commander: 7.2.0
-      debounce: 1.2.1
-      dotenv: 8.6.0
-      fs-utils: 0.7.0
-      inquirer: 8.2.0
-      ora: 5.4.1
-      rel-server: link:../rel-server
-
-  packages/rel-server:
-    specifiers:
-      '@genql/cli': ^2.8.0
-      '@genql/runtime': ^2.8.0
-      '@go-trace/tracer': https://gitpkg.now.sh/rel-js/trace/tracer-npm-package?main
-      '@graphback/codegen-schema': '*'
-      '@graphback/core': '*'
-      '@graphql-tools/schema': ^8.3.1
-      '@nodelib/fs.walk': ^1.2.8
-      '@ptkdev/logger': ^1.8.0
-      altair-fastify-plugin: ^4.2.1
-      crypto: ^1.0.1
-      fastify: ^3.25.0
-      fastify-cors: ^6.0.2
-      graphback: '*'
-      graphback-redisgraph: workspace:^1.0.0
-      graphql: 15.8.0
-      graphql-redis-subscriptions: ^2.4.2
-      graphql-yoga: 2.0.0-alpha.7
-      nodemon: ^2.0.15
-      pkg-dir: ^6.0.1
-      redis-stream-helper: github:thelinuxlich/redis-stream-helper
-      tsup: ^5.11.9
-    dependencies:
-      '@genql/cli': 2.9.0
-      '@genql/runtime': 2.9.0_graphql@15.8.0
-      '@go-trace/tracer': '@gitpkg.now.sh/rel-js/trace/tracer-npm-package?main'
-      '@graphback/codegen-schema': link:../graphback-codegen-schema
-      '@graphback/core': link:../graphback-core
-      '@graphql-tools/schema': 8.3.1_graphql@15.8.0
-      '@nodelib/fs.walk': 1.2.8
-      '@ptkdev/logger': 1.8.0
-      altair-fastify-plugin: 4.3.1_fastify@3.25.3
-      crypto: 1.0.1
-      fastify: 3.25.3
-      fastify-cors: 6.0.2
-      graphback: link:../graphback
-      graphback-redisgraph: link:../runtime-redisgraph
-      graphql: 15.8.0
-      graphql-redis-subscriptions: 2.4.2
-      graphql-yoga: 2.0.0-alpha.7_graphql@15.8.0
-      nodemon: 2.0.15
-      pkg-dir: 6.0.1
-      redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
-    devDependencies:
-      tsup: 5.11.9_typescript@4.5.5
 
 packages:
 
@@ -1990,6 +1980,7 @@ packages:
 
   /dataloader/2.0.0:
     resolution: {integrity: sha512-YzhyDAwA4TaQIhM5go+vCLmU0UikghC/t9DTQYZR2M/UvZ1MdOhPezSDZcjj9uqQJOMqjLcpWtyW2iNINdlatQ==}
+    dev: false
 
   /date-fns/1.30.1:
     resolution: {integrity: sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==}
@@ -3373,6 +3364,7 @@ packages:
       minimatch: 3.0.4
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
 
   /glob/7.2.0:
     resolution: {integrity: sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==}
