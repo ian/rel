@@ -21,6 +21,10 @@ export default async function AuthPlugin(
     secret,
   } = opts
 
+  if (!secret) {
+    throw new Error("Missing secret key for JWT - Please set this via the auth.secret param")
+  }
+
   app.register(Cookies, {
     secret, // for cookies signature
     parseOptions: {}, // options for parsing cookies
@@ -46,16 +50,10 @@ export default async function AuthPlugin(
     url: '/session',
     method: ['POST'],
     handler: async (req, reply) => {
-      // const cookies = new Cookies(req, reply)
-
       try {
-        const auth = req.headers.authorization
-
-        // let magic = new MagicAdmin(process.env.MAGIC_SECRET_KEY)
-        // await magic.token.validate(didToken)
-        // let { email } = await magic.users.getMetadataByToken(didToken)
-
+        // @todo - use a adapter callback to load / get the user
         const user = {}
+
         const token = jwt.sign(
           {
             ...user,
