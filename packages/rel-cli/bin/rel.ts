@@ -18,6 +18,7 @@ program
   .command('dev')
   .description('Start Rel in development mode')
   .arguments("<dir>")
+  .option('-v, --verbose', "Make Rel more talkative")
   .action(DevCommand)
 
 program.parse(process.argv)
