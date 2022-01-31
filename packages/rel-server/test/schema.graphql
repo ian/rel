@@ -1,9 +1,0 @@
-type Note {
-  body: String!
-  archived: Boolean
-}
-
-type User {
-  name: String!
-  email: String
-}
