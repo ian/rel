@@ -1,8 +1,6 @@
-directive @model on OBJECT
-
 directive @unique on FIELD_DEFINITION
 
-directive @relation on FIELD_DEFINITION
+directive @relation(type: String!, direction: RelDirection!) on FIELD_DEFINITION
 
 directive @transient on FIELD_DEFINITION
 
@@ -23,11 +21,7 @@ input CreateTodosInput {
   description: String
   email: String @constraint(format: "email")
   order: Int
-  count: Int
-  avg: Int
-  max: Int
-  min: Int
-  sum: Int
+  computedOrder: Int
 }
 
 input IDInput {
@@ -56,12 +50,8 @@ input MutateTodosInput {
   description: String
   email: String @constraint(format: "email")
   order: Int
+  computedOrder: Int
   _id: ID
-  count: Int
-  avg: Int
-  max: Int
-  min: Int
-  sum: Int
 }
 
 type Mutation {
@@ -86,6 +76,11 @@ input PageRequest {
 type Query {
   getTodos(_id: ID!): Todos
   findTodos(filter: TodosFilter, page: PageRequest, orderBy: [TodosOrderByInput]): TodosResultList!
+}
+
+enum RelDirection {
+  IN
+  OUT
 }
 
 enum SortDirectionEnum {
@@ -160,11 +155,6 @@ input TodosFilter {
   email: StringInput
   order: IntInput
   _id: IDInput
-  count: IntInput
-  avg: IntInput
-  max: IntInput
-  min: IntInput
-  sum: IntInput
   and: [TodosFilter!]
   or: [TodosFilter!]
   not: TodosFilter

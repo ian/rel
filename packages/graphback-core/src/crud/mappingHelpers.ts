@@ -1,6 +1,5 @@
-import { GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType } from 'graphql'
+import { GraphQLField, getNamedType, isObjectType, isScalarType, isEnumType, isListType } from 'graphql'
 import pluralize from 'pluralize'
-import { getPrimaryKey } from '..'
 import { GraphbackOperationType } from './GraphbackOperationType'
 
 // TODO it is esential to document this element
@@ -9,11 +8,11 @@ import { GraphbackOperationType } from './GraphbackOperationType'
  * Graphback CRUD Mapping helpers
  */
 
-export function lowerCaseFirstChar (text: string) {
+export function lowerCaseFirstChar(text: string) {
   return `${text.charAt(0).toLowerCase()}${text.slice(1)}`
 }
 
-export function upperCaseFirstChar (text: string) {
+export function upperCaseFirstChar(text: string) {
   return `${text.charAt(0).toUpperCase()}${text.slice(1)}`
 }
 
@@ -95,31 +94,31 @@ export const getSubscriptionName = (typeName: string, action: GraphbackOperation
   return ''
 }
 
-export function getInputFieldName (field: GraphQLField<any, any>): string {
+export function getInputFieldName(field: GraphQLField<any, any>): string {
   return field.name
 }
 
-export function getInputFieldTypeName (modelName: string, field: GraphQLField<any, any>, operation: GraphbackOperationType): string {
+export function getInputFieldTypeName(modelName: string, field: GraphQLField<any, any>, operation: GraphbackOperationType): string {
   const fieldType = getNamedType(field.type)
 
   if (isObjectType(fieldType)) {
-    const idField = getPrimaryKey(fieldType)
-
-    return getNamedType(idField.type).name
+    if (isListType(field.type)) {
+      if (["update", "updateBy"].includes(operation)) {
+        return `Mutate${fieldType.name}RelationInput`
+      } else if (operation === "create") {
+        return `Create${fieldType.name}RelationInput`
+      } else {
+        return getInputTypeName(fieldType.name, operation)
+      }
+    } else if (operation === "find") {
+      return getInputTypeName(fieldType.name, operation)
+    } else {
+      return "ID"
+    }
   }
 
   if (isScalarType(fieldType) || isEnumType(fieldType)) {
     return fieldType.name
-  }
-
-  if (isObjectType(fieldType)) {
-    // TODO: Filtering on JSON fields
-    if (operation === GraphbackOperationType.FIND) {
-      return undefined
-      // return GraphQLJSON
-    }
-
-    return getInputTypeName(fieldType.name, operation)
   }
 
   return undefined

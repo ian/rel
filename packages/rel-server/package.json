@@ -42,6 +42,7 @@
     "graphback": "*",
     "graphback-redisgraph": "workspace:^1.0.0",
     "graphql-playground-html": "^1.6.30",
+    "graphql": "15.8.0",
     "graphql-redis-subscriptions": "^2.4.2",
     "jsonwebtoken": "^8.5.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper"

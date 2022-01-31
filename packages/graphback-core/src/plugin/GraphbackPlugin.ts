@@ -21,7 +21,7 @@ export abstract class GraphbackPlugin {
    *
    * @param metadata - metadata object containing schema
    */
-  public transformSchema (metadata: GraphbackCoreMetadata): GraphQLSchema {
+  public transformSchema(metadata: GraphbackCoreMetadata): GraphQLSchema {
     return metadata.getSchema()
   }
 
@@ -29,7 +29,7 @@ export abstract class GraphbackPlugin {
    * Create resources like files etc. for this plugin.
    * This method should write resouces to filesystem
    */
-  public createResources (metadata: GraphbackCoreMetadata): void {
+  public createResources(metadata: GraphbackCoreMetadata): void {
     return undefined
   }
 
@@ -39,16 +39,16 @@ export abstract class GraphbackPlugin {
    *
    * @param metadata - metadata object with model metadata
    */
-  public createResolvers (metadata: GraphbackCoreMetadata): IResolvers {
+  public createResolvers(metadata: GraphbackCoreMetadata): IResolvers {
     return undefined
   }
 
-  protected logWarning (message: string): void {
+  public logWarning(message: string): void {
     // eslint-disable-next-line no-console
     console.log(`Warning - ${this.getPluginName()}: ${message}`)
   }
 
-  protected logError (message: string): void {
+  protected logError(message: string): void {
     // eslint-disable-next-line no-console
     console.error(`Error - ${this.getPluginName()}: ${message}`)
   }
@@ -56,5 +56,5 @@ export abstract class GraphbackPlugin {
   /**
    * @returns Unique name of the plugin
    */
-  public abstract getPluginName (): string
+  public abstract getPluginName(): string
 };

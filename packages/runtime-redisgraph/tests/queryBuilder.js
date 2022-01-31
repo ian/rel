@@ -1,4 +1,4 @@
-import { buildQuery } from '../src/queryBuilder.js'
+import { buildQuery } from '../dist/index.js'
 import initEnv from './setup/__util__.js'
 import cypher from 'cyypher'
 import { test } from 'uvu'
@@ -238,7 +238,7 @@ test('can use nested filters', async () => {
   for (const post of posts) {
     assert.ok(
       (post.likes >= 250 && post.likes <= 350) ||
-        (post.likes >= 25 && post.likes <= 75)
+      (post.likes >= 25 && post.likes <= 75)
     )
 
     assert.ok(post.text === 'post' || post.text === 'post2')

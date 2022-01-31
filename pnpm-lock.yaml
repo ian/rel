@@ -140,6 +140,7 @@ importers:
       fs-utils: 0.7.0
       inquirer: 8.2.0
       ora: 5.4.1
+      pkg-dir: 6.0.1
       rel-server: link:../rel-server
     devDependencies:
       tsup: 5.11.13_typescript@4.5.5
@@ -160,11 +161,13 @@ importers:
       graphback: '*'
       graphback-redisgraph: workspace:^1.0.0
       graphql-playground-html: ^1.6.30
+      graphql: 15.8.0
       graphql-redis-subscriptions: ^2.4.2
       jsonwebtoken: ^8.5.1
       redis-stream-helper: github:thelinuxlich/redis-stream-helper
       rel-cli: workspace:*
       tsup: ^5.11.13
+      runtime-redisgraph: '*'
     dependencies:
       '@genql/cli': 2.9.0
       '@genql/runtime': 2.9.0
@@ -180,9 +183,11 @@ importers:
       graphback: link:../graphback
       graphback-redisgraph: link:../runtime-redisgraph
       graphql-playground-html: 1.6.30
+      graphql: 15.8.0
       graphql-redis-subscriptions: 2.4.2
       jsonwebtoken: 8.5.1
       redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
+      runtime-redisgraph: link:../runtime-redisgraph
     devDependencies:
       rel-cli: link:../rel-cli
       tsup: 5.11.13_typescript@4.5.5
@@ -2962,6 +2967,7 @@ packages:
       minimatch: 3.0.4
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
 
   /glob/7.2.0:
     resolution: {integrity: sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==}

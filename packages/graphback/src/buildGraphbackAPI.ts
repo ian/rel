@@ -65,44 +65,30 @@ export interface GraphbackAPI {
   contextCreator: (context?: any) => GraphbackContext
 }
 
-export type GraphbackServiceCreator = (
-  model: ModelDefinition,
-  dataProvider: GraphbackDataProvider
-) => GraphbackCRUDService
-export type GraphbackDataProviderCreator = (
-  model: ModelDefinition
-) => GraphbackDataProvider
+export type GraphbackServiceCreator = (model: ModelDefinition, dataProvider: GraphbackDataProvider) => GraphbackCRUDService
+export type GraphbackDataProviderCreator = (model: ModelDefinition) => GraphbackDataProvider
 
-async function createServices(
-  models: ModelDefinition[],
-  createService: Promise<GraphbackServiceCreator>,
-  createProvider: GraphbackDataProviderCreator
-) {
+async function createServices(models: ModelDefinition[], createService: Promise<GraphbackServiceCreator>, createProvider: GraphbackDataProviderCreator) {
   const services: GraphbackServiceConfigMap = {}
 
   for (const model of models) {
     const modelType = model.graphqlType
     const modelProvider = createProvider(model)
-    const modelService = await createService(model, modelProvider)
+    const modelService = await createService(model, modelProvider, models)
     services[modelType.name] = modelService
   }
 
   return services
 }
 
-interface PluginMap {
-  [name: string]: GraphbackPlugin
-}
+interface PluginMap { [name: string]: GraphbackPlugin }
 
 function getPlugins(plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
-  const pluginsMap: PluginMap =
-    plugins?.reduce((acc: PluginMap, plugin: GraphbackPlugin) => {
-      if (acc[plugin.getPluginName()]) {
-        // eslint-disable-next-line no-console
-        console.debug(
-          `Plugin ${plugin.getPluginName()} is already defined and will be overridden`
-        )
-      }
+  const pluginsMap: PluginMap = plugins?.reduce((acc: PluginMap, plugin: GraphbackPlugin) => {
+    if (acc[plugin.getPluginName()]) {
+      // eslint-disable-next-line no-console
+      console.debug(`Plugin ${plugin.getPluginName()} is already defined and will be overridden`)
+    }
 
       acc[plugin.getPluginName()] = plugin
 
@@ -131,10 +117,7 @@ function getPlugins(plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
  *
  * @returns {GraphbackAPI} Generated schema, CRUD resolvers and services
  */
-export async function buildGraphbackAPI(
-  model: string | GraphQLSchema,
-  config = {}
-): GraphbackAPI {
+export async function buildGraphbackAPI(model: string | GraphQLSchema, config = {}): GraphbackAPI {
   const schemaPlugins: GraphbackPlugin[] = getPlugins(config.plugins)
 
   const pluginEngine = new GraphbackPluginEngine({

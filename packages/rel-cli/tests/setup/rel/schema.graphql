@@ -1,0 +1,9 @@
+type User {
+  name: String!
+  posts: [Post] @relation(type: "AUTHORED", direction: OUT)
+}
+
+type Post {
+  title: String!
+  author: User! @relation(type: "AUTHORED", direction: IN)
+}

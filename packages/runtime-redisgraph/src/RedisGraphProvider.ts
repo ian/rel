@@ -19,9 +19,10 @@ const UNIQUE_NAMESPACE = '9003d956-f170-47c6-b3fb-c8af0e9ada83'
  * Graphback provider that connnects to the RedisGraph database
  */
 export class RedisGraphProvider {
-  constructor(model) {
+  constructor(model, models) {
     this.db = cypher
     this.model = model
+    this.models = models
     this.collectionName = model.graphqlType.name
     this.computedTemplates = {}
     this.model.computedFields.forEach((computedField) => {
@@ -30,6 +31,10 @@ export class RedisGraphProvider {
         type: computedField.type,
       }
     })
+  }
+
+  setGlobalModelDefinition(models) {
+    this.models = models
   }
 
   addComputedValues(data) {
@@ -108,11 +113,10 @@ export class RedisGraphProvider {
       await addStreamData(streamKey, data)
       return result
     }
-    const err = `Cannot create ${this.collectionName}.${
-      this.model.uniqueFields.length > 0
-        ? ' UNIQUE constraint might be violated.'
-        : ''
-    }`
+    const err = `Cannot create ${this.collectionName}.${this.model.uniqueFields.length > 0
+      ? ' UNIQUE constraint might be violated.'
+      : ''
+      }`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
@@ -259,9 +263,8 @@ export class RedisGraphProvider {
       return data
     }
 
-    const err = `Cannot find a result for ${
-      this.collectionName
-    } with filter: ${JSON.stringify(filter)}`
+    const err = `Cannot find a result for ${this.collectionName
+      } with filter: ${JSON.stringify(filter)}`
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)
   }
@@ -304,9 +307,8 @@ export class RedisGraphProvider {
       return data
     }
 
-    const err = `Cannot find all results for ${
-      this.collectionName
-    } with filter: ${JSON.stringify(args?.filter)}`
+    const err = `Cannot find all results for ${this.collectionName
+      } with filter: ${JSON.stringify(args?.filter)}`
 
     logger.error(err, 'RedisGraphProvider')
     throw new NoDataError(err)

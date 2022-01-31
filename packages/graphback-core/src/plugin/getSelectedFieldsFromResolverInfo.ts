@@ -33,7 +33,7 @@ export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, mode
  * @param {string[]} resolverFields - resolver field names
  * @param {ModelDefinition} model - Graphback model
  */
-export const getModelFieldsFromResolverFields = (resolverFields: string[], fieldArgs: any, model: ModelDefinition): string[] => {
+export const getModelFieldsFromResolverFields = (resolverFields: string[], fieldArgs: any, model: ModelDefinition): any => {
   const selectedFields = new Set<string>()
 
   for (const key of resolverFields) {
@@ -52,4 +52,10 @@ export const getModelFieldsFromResolverFields = (resolverFields: string[], field
  * @param info - the resolver info object
  * @param path - the root path to start field resolution from
  */
-export const getResolverInfoFieldsList = (info: GraphQLResolveInfo, path?: string) => fieldsList(info, { path })
+export const getResolverInfoFieldsList = (info: GraphQLResolveInfo, path?: string) => {
+  let projectionObj = graphqlFields(info, {}, { processArguments: true })
+  if (path) {
+    projectionObj = projectionObj[path]
+  }
+  return Object.keys(projectionObj)
+}
