@@ -29,10 +29,12 @@ export default async function Server(config: Config): Promise<FastifyInstance> {
 
   app.register(Cors)
 
-  app.register(Auth, {
-    secret: process.env.JWT_SECRET,
-    ...auth
-  })
+  if (auth) {
+    app.register(Auth, {
+      secret: process.env.JWT_SECRET,
+      ...auth
+    })  
+  }
 
   app.register(GraphQL, {
     schema,
