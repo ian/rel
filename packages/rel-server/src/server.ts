@@ -1,10 +1,12 @@
 // import loadListeners from './listeners'
+// global.Request = () => console.log("FARK")
+
 import fs from 'fs'
+import Fastify, { FastifyInstance } from 'fastify'
 
 import generateGQLClient from './client.js'
-import Fastify, { FastifyInstance } from 'fastify'
 import Logger from '@ptkdev/logger'
-import Cors from 'fastify-cors'
+// import Cors from 'fastify-cors'
 // import Auth from './auth'
 import GraphQL from './graphql'
 
@@ -24,7 +26,7 @@ export default async function Server(config): Promise<FastifyInstance> {
   // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
   // @todo - check for redis running
 
-  app.register(Cors)
+  // app.register(Cors)
 
   // app.register(Auth, {
   //   secret: process.env.JWT_SECRET,

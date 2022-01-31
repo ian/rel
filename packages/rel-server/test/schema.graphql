@@ -5,5 +5,5 @@ type Note {
 
 type User {
   name: String!
-  email: String @constraint(format: "email")
+  email: String
 }
