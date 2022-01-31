@@ -40,10 +40,10 @@
     "graphback": "*",
     "graphback-redisgraph": "workspace:^1.0.0",
     "graphql": "15.8.0",
+    "graphql-playground-html": "^1.6.30",
     "graphql-redis-subscriptions": "^2.4.2",
-    "graphql-yoga": "2.0.0-alpha.7",
     "jsonwebtoken": "^8.5.1",
-    "mercurius": "^9.1.0",
+    "mercurius": "github:ian/mercurius#ian/fix-empty-variables-error",
     "nodemon": "^2.0.15",
     "pkg-dir": "^6.0.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper"

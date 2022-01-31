@@ -1,13 +1,14 @@
-// import { createServer } from 'graphql-yoga'
 import { formatSdl } from 'format-graphql'
+import { renderPlaygroundPage } from 'graphql-playground-html'
 
-import { FastifyInstance } from 'fastify'
-import mercurius from 'mercurius'
-import AltairFastify from 'altair-fastify-plugin'
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import Mercurius, { MercuriusError } from 'mercurius'
+// import AltairFastify from 'altair-fastify-plugin'
 // import goTrace from '@go-trace/tracer'
 
 import Graphback from './graphback'
 
+// ////////////////////////
 // ////////////////////////
 // move me
 import Logger from '@ptkdev/logger'
@@ -21,6 +22,7 @@ type Opts = {
   logger: Logger
 }
 // ////////////////////////
+// ////////////////////////
 
 export default async function GraphQLPlugin(
   app: FastifyInstance,
@@ -28,60 +30,77 @@ export default async function GraphQLPlugin(
 ): Promise<void> {
   const { schema: baseSchema, outputPath, logger } = opts
 
-  const { schema, resolvers, services } = await Graphback({
+  const graphback = await Graphback({
     schema: baseSchema,
     outputPath,
     logger,
   })
 
-  app.register(mercurius, {
-    schema,
+  const { schema, resolvers, contextCreator } = graphback
+
+  app.register(Mercurius, {
+    path: "/graphql",
+    schema: schema,
     resolvers: pruneResultListsForNow(resolvers),
-    context: (request, reply) => {
-      // Return an object that will be available in your GraphQL resolvers
+    context: (req, reply) => {
       return {
-        graphback: services
+        req,
+        reply,
+        ...contextCreator(req,reply)
       }
+    },
+    errorHandler: (error: MercuriusError, request: FastifyRequest, reply: FastifyReply) => {
+      console.error(error)
+      reply.status(500).send({ message: error.message })
     }
   })
+
+  if (process.env.GRAPHQL_LOGGING) {
+    app.ready().then(() => {
+      app.graphql.addHook('onResolution', async function (execution, context) {
+        const { query, variables } = context.reply.request.body as {
+          query: string
+          variables: object
+        }
+        
+        // if (query.match("query IntrospectionQuery")) return
+
+        // @todo - i'd like to stick this into some logging solution
+        console.log(formatSdl(query))
+        console.log(JSON.stringify(variables, null, 2))
+        // console.log(JSON.stringify(execution, null, 2))
+        console.log()
+      })
+    })
+  }
 
   if (process.env.REL_TRACE) {
     logger.info('Tracer enabled at http://localhost:2929', 'INIT')
   }
 
-  if (process.env.GRAPHQL_LOGGING) {
-    app.ready().then(() => {
-      app.graphql.addHook(
-        "onResolution",
-        async function (execution, context) {
-          const { query, variables } = context.reply.request.body as {
-            query: string
-            variables: object
-          }
-
-          if (query.match("query IntrospectionQuery")) return
-
-          // @todo - i'd like to stick this into some logging solution
-          console.log(formatSdl(query))
-          console.log(JSON.stringify(variables, null, 2))
-          // console.log(JSON.stringify(execution, null, 2))
-          console.log()
-        }
-      )
+  // GraphQL Playground
+  app.get('/', async (_, reply) => {
+    reply.headers({
+      'Content-Type': 'text/html',
     })
-  }
 
-  // console.log(printSchema(schema))
-
-  app.register(AltairFastify, {
-    /**
-     * All these are the defaults.
-     */
-    path: '/altair',
-    baseURL: '/altair/',
-    endpointURL: '/graphql',
-    // decorateReply: false,
+    reply.send(
+      renderPlaygroundPage({
+        endpoint: `/graphql`,
+      })
+    )
+    reply.status(200)
   })
+
+  // app.register(AltairFastify, {
+  //   /**
+  //    * All these are the defaults.
+  //    */
+  //   path: '/altair',
+  //   baseURL: '/altair/',
+  //   endpointURL: '/graphql',
+  //   // decorateReply: false,
+  // })
 }
 
 function pruneResultListsForNow(resolvers) {

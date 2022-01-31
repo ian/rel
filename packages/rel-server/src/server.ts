@@ -5,7 +5,7 @@ import generateGQLClient from './client.js'
 import Fastify, { FastifyInstance } from 'fastify'
 import Logger from '@ptkdev/logger'
 import Cors from 'fastify-cors'
-import Auth from './auth'
+// import Auth from './auth'
 import GraphQL from './graphql'
 
 export default async function Server(config): Promise<FastifyInstance> {
@@ -26,10 +26,10 @@ export default async function Server(config): Promise<FastifyInstance> {
 
   app.register(Cors)
 
-  app.register(Auth, {
-    secret: process.env.JWT_SECRET,
-    ...auth
-  })
+  // app.register(Auth, {
+  //   secret: process.env.JWT_SECRET,
+  //   ...auth
+  // })
 
   app.register(GraphQL, {
     schema,
