@@ -1,5 +1,3 @@
-// import loadListeners from './listeners'
-
 import fs from 'fs'
 import Fastify, { FastifyInstance } from 'fastify'
 
@@ -8,6 +6,7 @@ import generateGQLClient from './client.js'
 import Cors from 'fastify-cors'
 import Auth from './auth'
 import GraphQL from './graphql'
+import loadListeners from './listeners'
 
 type Config = {
   auth: any, // @todo ian
@@ -52,9 +51,9 @@ export default async function Server(config: Config): Promise<FastifyInstance> {
   //   'INIT'
   // )
 
-  // loadListeners({
-  //   dir,
-  // }).catch((err) => console.error(err))
+  loadListeners({
+    dir,
+  }).catch((err) => console.error(err))
 
   generateGQLClient({
     dir,

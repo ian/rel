@@ -7,26 +7,26 @@ export var isMutation = function(obj) {
 
 
 
-var Post_possibleTypes = ['Post']
-export var isPost = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPost"')
-  return Post_possibleTypes.includes(obj.__typename)
+var Note_possibleTypes = ['Note']
+export var isNote = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNote"')
+  return Note_possibleTypes.includes(obj.__typename)
 }
 
 
 
-var PostMutationResultList_possibleTypes = ['PostMutationResultList']
-export var isPostMutationResultList = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPostMutationResultList"')
-  return PostMutationResultList_possibleTypes.includes(obj.__typename)
+var NoteMutationResultList_possibleTypes = ['NoteMutationResultList']
+export var isNoteMutationResultList = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNoteMutationResultList"')
+  return NoteMutationResultList_possibleTypes.includes(obj.__typename)
 }
 
 
 
-var PostResultList_possibleTypes = ['PostResultList']
-export var isPostResultList = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPostResultList"')
-  return PostResultList_possibleTypes.includes(obj.__typename)
+var NoteResultList_possibleTypes = ['NoteResultList']
+export var isNoteResultList = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNoteResultList"')
+  return NoteResultList_possibleTypes.includes(obj.__typename)
 }
 
 

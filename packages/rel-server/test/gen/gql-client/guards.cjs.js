@@ -7,6 +7,30 @@ module.exports.isMutation = function(obj) {
 
 
 
+var Note_possibleTypes = ['Note']
+module.exports.isNote = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNote"')
+  return Note_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var NoteMutationResultList_possibleTypes = ['NoteMutationResultList']
+module.exports.isNoteMutationResultList = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNoteMutationResultList"')
+  return NoteMutationResultList_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var NoteResultList_possibleTypes = ['NoteResultList']
+module.exports.isNoteResultList = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNoteResultList"')
+  return NoteResultList_possibleTypes.includes(obj.__typename)
+}
+
+
+
 var Query_possibleTypes = ['Query']
 module.exports.isQuery = function(obj) {
   if (!obj || !obj.__typename) throw new Error('__typename is missing in "isQuery"')

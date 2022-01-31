@@ -1,8 +1,6 @@
-directive @model on OBJECT
-
 directive @unique on FIELD_DEFINITION
 
-directive @relation on FIELD_DEFINITION
+directive @relation(type: String!, direction: RelDirection!) on FIELD_DEFINITION
 
 directive @transient on FIELD_DEFINITION
 
@@ -12,10 +10,19 @@ directive @computed(value: String!) on FIELD_DEFINITION
 
 directive @constraint(minLength: Int, maxLength: Int, startsWith: String, endsWith: String, contains: String, notContains: String, pattern: String, format: String, min: Float, max: Float, exclusiveMin: Float, exclusiveMax: Float, multipleOf: Float) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
 
+input BooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input CreateNoteInput {
+  body: String!
+  archived: Boolean
+}
+
 input CreateUserInput {
   name: String!
   email: String
-  count: Int
 }
 
 input IDInput {
@@ -39,19 +46,87 @@ input IntInput {
   between: [Int!]
 }
 
+input MutateNoteInput {
+  body: String
+  archived: Boolean
+  _id: ID
+}
+
 input MutateUserInput {
   name: String
   email: String
   _id: ID
-  count: Int
 }
 
 type Mutation {
+  createNote(input: CreateNoteInput!): Note
+  updateNote(input: MutateNoteInput!): Note
+  updateNotes(filter: NoteFilter, input: MutateNoteInput!): NoteMutationResultList
+  deleteNote(_id: ID!): Note
+  deleteNotes(filter: NoteFilter): NoteMutationResultList
   createUser(input: CreateUserInput!): User
   updateUser(input: MutateUserInput!): User
   updateUsers(filter: UserFilter, input: MutateUserInput!): UserMutationResultList
   deleteUser(_id: ID!): User
   deleteUsers(filter: UserFilter): UserMutationResultList
+}
+
+type Note {
+  body: String!
+  archived: Boolean
+  _id: ID
+  count(of: OfNoteInput, distinct: Boolean): Int
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+enum NoteFieldsEnum {
+  _id
+  body
+  archived
+  createdAt
+  updatedAt
+}
+
+input NoteFilter {
+  body: StringInput
+  archived: BooleanInput
+  _id: IDInput
+  and: [NoteFilter!]
+  or: [NoteFilter!]
+  not: NoteFilter
+  createdAt: TimestampInput
+  updatedAt: TimestampInput
+}
+
+type NoteMutationResultList {
+  items: [Note]!
+}
+
+input NoteOrderByInput {
+  field: NoteFieldsEnum
+  order: SortDirectionEnum = ASC
+}
+
+type NoteResultList {
+  items: [Note]!
+  offset: Int
+  limit: Int
+  count: Int
+}
+
+input NoteSubscriptionFilter {
+  and: [NoteSubscriptionFilter!]
+  or: [NoteSubscriptionFilter!]
+  not: NoteSubscriptionFilter
+  body: StringInput
+  archived: BooleanInput
+  _id: IDInput
+  count: IntInput
+}
+
+input OfNoteInput {
+  of: NoteFieldsEnum
 }
 
 input OfUserInput {
@@ -64,8 +139,15 @@ input PageRequest {
 }
 
 type Query {
+  getNote(_id: ID!): Note
+  findNotes(filter: NoteFilter, page: PageRequest, orderBy: [NoteOrderByInput]): NoteResultList!
   getUser(_id: ID!): User
   findUsers(filter: UserFilter, page: PageRequest, orderBy: [UserOrderByInput]): UserResultList!
+}
+
+enum RelDirection {
+  IN
+  OUT
 }
 
 enum SortDirectionEnum {
@@ -87,6 +169,9 @@ input StringInput {
 }
 
 type Subscription {
+  newNote(filter: NoteSubscriptionFilter): Note!
+  updatedNote(filter: NoteSubscriptionFilter): Note!
+  deletedNote(filter: NoteSubscriptionFilter): Note!
   newUser(filter: UserSubscriptionFilter): User!
   updatedUser(filter: UserSubscriptionFilter): User!
   deletedUser(filter: UserSubscriptionFilter): User!
@@ -129,7 +214,6 @@ input UserFilter {
   name: StringInput
   email: StringInput
   _id: IDInput
-  count: IntInput
   and: [UserFilter!]
   or: [UserFilter!]
   not: UserFilter

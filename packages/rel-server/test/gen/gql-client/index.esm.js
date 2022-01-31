@@ -1,17 +1,17 @@
-const {
+import {
   linkTypeMap,
-  createClient: createClientOriginal,
+  createClient as createClientOriginal,
   generateGraphqlOperation,
   assertSameVersion,
-} = require('@genql/runtime')
-var typeMap = linkTypeMap(require('./types.cjs'))
+} from '@genql/runtime'
+import types from './types.esm'
+var typeMap = linkTypeMap(types)
+export * from './guards.esm'
 
-var version = '2.9.0'
+export var version = '2.9.0'
 assertSameVersion(version)
 
-module.exports.version = version
-
-module.exports.createClient = function(options) {
+export var createClient = function(options) {
   options = options || {}
   var optionsCopy = {
     url: undefined,
@@ -25,12 +25,25 @@ module.exports.createClient = function(options) {
   return createClientOriginal(optionsCopy)
 }
 
-module.exports.enumSortDirectionEnum = {
+export const enumNoteFieldsEnum = {
+  _id: '_id',
+  body: 'body',
+  archived: 'archived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+}
+
+export const enumRelDirection = {
+  IN: 'IN',
+  OUT: 'OUT',
+}
+
+export const enumSortDirectionEnum = {
   DESC: 'DESC',
   ASC: 'ASC',
 }
 
-module.exports.enumUserFieldsEnum = {
+export const enumUserFieldsEnum = {
   _id: '_id',
   name: 'name',
   email: 'email',
@@ -38,20 +51,15 @@ module.exports.enumUserFieldsEnum = {
   updatedAt: 'updatedAt',
 }
 
-module.exports.generateQueryOp = function(fields) {
+export var generateQueryOp = function(fields) {
   return generateGraphqlOperation('query', typeMap.Query, fields)
 }
-module.exports.generateMutationOp = function(fields) {
+export var generateMutationOp = function(fields) {
   return generateGraphqlOperation('mutation', typeMap.Mutation, fields)
 }
-module.exports.generateSubscriptionOp = function(fields) {
+export var generateSubscriptionOp = function(fields) {
   return generateGraphqlOperation('subscription', typeMap.Subscription, fields)
 }
-module.exports.everything = {
+export var everything = {
   __scalar: true,
-}
-
-var schemaExports = require('./guards.cjs')
-for (var k in schemaExports) {
-  module.exports[k] = schemaExports[k]
 }

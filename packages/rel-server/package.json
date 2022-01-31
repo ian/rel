@@ -24,7 +24,6 @@
     "olddev2": "rel dev ./test"
   },
   "devDependencies": {
-    "rel-cli": "workspace:*",
     "tsup": "^5.11.13"
   },
   "dependencies": {
@@ -35,14 +34,15 @@
     "@graphql-tools/merge": "6.2.6",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-yoga/node": "^0.1.0-alpha.3",
+    "@nodelib/fs.walk": "^1.2.8",
     "@ptkdev/logger": "^1.8.0",
     "fastify": "^3.27.0",
     "fastify-cookie": "^5.5.0",
     "fastify-cors": "^6.0.2",
     "graphback": "*",
     "graphback-redisgraph": "workspace:^1.0.0",
-    "graphql-playground-html": "^1.6.30",
     "graphql": "15.8.0",
+    "graphql-playground-html": "^1.6.30",
     "graphql-redis-subscriptions": "^2.4.2",
     "jsonwebtoken": "^8.5.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper"
