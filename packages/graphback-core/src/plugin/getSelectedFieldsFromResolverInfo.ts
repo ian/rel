@@ -51,4 +51,10 @@ export const getModelFieldsFromResolverFields = (resolverFields: string[], field
  * @param info - the resolver info object
  * @param path - the root path to start field resolution from
  */
-export const getResolverInfoFieldsList = (info: GraphQLResolveInfo, path?: string) => fieldsList(info, { path })
+export const getResolverInfoFieldsList = (info: GraphQLResolveInfo, path?: string) => {
+  let projectionObj = graphqlFields(info, {}, { processArguments: true })
+  if (path) {
+    projectionObj = projectionObj[path]
+  }
+  return Object.keys(projectionObj)
+}
