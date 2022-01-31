@@ -20,10 +20,12 @@
     "build": "tsup src/index.ts --target esnext --format esm --sourcemap",
     "oldbuild": "tsc",
     "olddev": "nodemon --exec pnpm build",
-    "dev": "nodemon --exec \"pnpm build && node test/dev.js\""
+    "dev": "nodemon --exec \"pnpm build && rel dev ./test\"",
+    "olddev2": "rel dev ./test"
   },
   "devDependencies": {
-    "tsup": "^5.11.9"
+    "rel-cli": "workspace:*",
+    "tsup": "^5.11.13"
   },
   "dependencies": {
     "@genql/cli": "^2.9.0",

@@ -17,6 +17,7 @@ program
 program
   .command('dev')
   .description('Start Rel in development mode')
+  .arguments("<dir>")
   .action(DevCommand)
 
 program.parse(process.argv)

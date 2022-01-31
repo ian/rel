@@ -22,7 +22,6 @@ importers:
       nodemon: ^2.0.15
       replace: 1.2.1
       tslib: ^2.3.1
-      tsup: ^5.11.11
       typescript: '*'
     devDependencies:
       '@commitlint/cli': 11.0.0
@@ -40,7 +39,6 @@ importers:
       nodemon: 2.0.15
       replace: 1.2.1
       tslib: 2.3.1
-      tsup: 5.11.11_typescript@4.5.5
       typescript: 4.5.5
 
   packages/cyypher:
@@ -116,6 +114,7 @@ importers:
 
   packages/rel-cli:
     specifiers:
+      '@ptkdev/logger': ^1.8.0
       chalk: ^5.0.0
       child_process: ^1.0.2
       chokidar: ^3.5.2
@@ -125,8 +124,10 @@ importers:
       fs-utils: ^0.7.0
       inquirer: ^8.2.0
       ora: ^5.3.0
-      rel-server: '*'
+      rel-server: workspace:*
+      tsup: ^5.11.13
     dependencies:
+      '@ptkdev/logger': 1.8.0
       chalk: 5.0.0
       child_process: 1.0.2
       chokidar: 3.5.2
@@ -137,6 +138,8 @@ importers:
       inquirer: 8.2.0
       ora: 5.4.1
       rel-server: link:../rel-server
+    devDependencies:
+      tsup: 5.11.13_typescript@4.5.5
 
   packages/rel-server:
     specifiers:
@@ -157,7 +160,8 @@ importers:
       graphql-redis-subscriptions: ^2.4.2
       jsonwebtoken: ^8.5.1
       redis-stream-helper: github:thelinuxlich/redis-stream-helper
-      tsup: ^5.11.9
+      rel-cli: workspace:*
+      tsup: ^5.11.13
     dependencies:
       '@genql/cli': 2.9.0
       '@genql/runtime': 2.9.0
@@ -177,7 +181,8 @@ importers:
       jsonwebtoken: 8.5.1
       redis-stream-helper: github.com/thelinuxlich/redis-stream-helper/c6a5c97865c3fc9e913267d396d83f77b30f6471
     devDependencies:
-      tsup: 5.11.9_typescript@4.5.5
+      rel-cli: link:../rel-cli
+      tsup: 5.11.13_typescript@4.5.5
 
   packages/runtime-redisgraph:
     specifiers:
@@ -1326,6 +1331,16 @@ packages:
       esbuild: '>=0.13'
     dependencies:
       esbuild: 0.14.9
+    dev: true
+
+  /bundle-require/3.0.4_esbuild@0.14.13:
+    resolution: {integrity: sha512-VXG6epB1yrLAvWVQpl92qF347/UXmncQj7J3U8kZEbdVZ1ZkQyr4hYeL/9RvcE8vVVdp53dY78Fd/3pqfRqI1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    peerDependencies:
+      esbuild: '>=0.13'
+    dependencies:
+      esbuild: 0.14.13
+      load-tsconfig: 0.2.3
     dev: true
 
   /cac/6.7.12:
@@ -3923,6 +3938,11 @@ packages:
       - zen-observable
     dev: false
 
+  /load-tsconfig/0.2.3:
+    resolution: {integrity: sha512-iyT2MXws+dc2Wi6o3grCFtGXpeMvHmJqS27sMPGtV2eUu4PeFnG+33I8BlFK1t1NWMjOpcx9bridn5yxLDX2gQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: true
+
   /locate-path/2.0.0:
     resolution: {integrity: sha1-K1aLJl7slExtnA3pw9u7ygNUzY4=}
     engines: {node: '>=4'}
@@ -5505,6 +5525,35 @@ packages:
         optional: true
     dependencies:
       bundle-require: 2.2.0_esbuild@0.14.13
+      cac: 6.7.12
+      chokidar: 3.5.3
+      debug: 4.3.3
+      esbuild: 0.14.13
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss-load-config: 3.1.1
+      resolve-from: 5.0.0
+      rollup: 2.66.0
+      source-map: 0.7.3
+      sucrase: 3.20.3
+      tree-kill: 1.2.2
+      typescript: 4.5.5
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
+
+  /tsup/5.11.13_typescript@4.5.5:
+    resolution: {integrity: sha512-NVMK01gVmojZn7+iZwxRK1CzW2BIabaVMyEjs7Nm9lm4DrSf7IAqs2F3fg0vT7rH72x1cIBsW9U/TlWrCvHVQQ==}
+    hasBin: true
+    peerDependencies:
+      typescript: ^4.1.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 3.0.4_esbuild@0.14.13
       cac: 6.7.12
       chokidar: 3.5.3
       debug: 4.3.3

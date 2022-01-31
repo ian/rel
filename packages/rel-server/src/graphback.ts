@@ -17,7 +17,7 @@ export default async function Graphback(params: Params) {
   const dataProviderCreator = createRedisGraphProvider()
   const typeDefs = directives + '\n' + schema
 
-  logger.info(`Schema generated at ${outputPath}`, 'INIT')
+  logger?.info(`Schema generated at ${outputPath}`, 'INIT')
 
   return buildGraphbackAPI(typeDefs, {
     dataProviderCreator,

@@ -4,7 +4,6 @@ import fs from 'fs'
 import Fastify, { FastifyInstance } from 'fastify'
 
 import generateGQLClient from './client.js'
-import Logger from '@ptkdev/logger'
 
 import Cors from 'fastify-cors'
 import Auth from './auth'
@@ -12,19 +11,16 @@ import GraphQL from './graphql'
 
 type Config = {
   auth: any, // @todo ian
+  logger?: any
   dir: string // @todo I want to change this to be schema string, so we can load from wherever.
 }
 
 export default async function Server(config: Config): Promise<FastifyInstance> {
-  const { auth, dir } = config
+  const { auth, logger, dir } = config
 
   const app = Fastify()
   const port = Number(process.env.REL_PORT) || 4000
   const host = process.env.REL_HOST || 'localhost'
-
-  const logger = new Logger({
-    debug: !!process.env.REL_DEBUG,
-  })
 
   const schema = fs.readFileSync(dir + '/schema.graphql').toString()
 
@@ -46,7 +42,7 @@ export default async function Server(config: Config): Promise<FastifyInstance> {
   
   app.listen({ port, host })
 
-  logger.info(`Rel Server started in http://${host}:${port}`, 'INIT')
+  logger?.info(`Rel Server started in http://${host}:${port}`, 'INIT')
 
   // logger.info(`Svelte example enabled at http://${host}:${port}/svelte`, 'INIT')
   // logger.info(

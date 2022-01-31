@@ -3,20 +3,26 @@
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import ora from 'ora'
-// import { spawn } from 'child_process'
 import startServer from 'rel-server'
+import Logger from '@ptkdev/logger'
 
 let server
 
-const handleDirChange = debounce(async () => {
-  // console.clear()
+const handleChange = debounce(async (dir) => {
+  console.clear()
   const reloading = ora('Reloading Rel').start()
 
   if (server) {
     await server.kill('SIGINT')
   }
+
+  const logger = new Logger({
+    // debug: !!process.env.REL_DEBUG,
+    debug: false
+  })
+
   server = await startServer({
-    dir: process.cwd() + '/rel',
+    dir
   })
     .then(() => {
       reloading.succeed('Rel running on http://localhost:4000')
@@ -27,8 +33,8 @@ const handleDirChange = debounce(async () => {
     })
 }, 300)
 
-export default () => {
+export default (dir:string): void => {
   chokidar
-    .watch(process.cwd() + '/./rel/schema.graphql', { persistent: true })
-    .on('all', handleDirChange)
+    .watch(dir + '/schema.graphql', { persistent: true })
+    .on('all', () => handleChange(dir))
 }
