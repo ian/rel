@@ -149,6 +149,7 @@ importers:
       '@graphql-yoga/node': ^0.1.0-alpha.3
       '@ptkdev/logger': ^1.8.0
       fastify: ^3.27.0
+      fastify-cors: ^6.0.2
       graphback: '*'
       graphback-redisgraph: workspace:^1.0.0
       graphql-playground-html: ^1.6.30
@@ -165,6 +166,7 @@ importers:
       '@graphql-yoga/node': 0.1.0-alpha.3
       '@ptkdev/logger': 1.8.0
       fastify: 3.27.0
+      fastify-cors: 6.0.2
       graphback: link:../graphback
       graphback-redisgraph: link:../runtime-redisgraph
       graphql-playground-html: 1.6.30
@@ -2640,8 +2642,19 @@ packages:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
     dev: false
 
+  /fastify-cors/6.0.2:
+    resolution: {integrity: sha512-sE0AOyzmj5hLLRRVgenjA6G2iOGX35/1S3QGYB9rr9TXelMZB3lFrXy4CzwYVOMiujJeMiLgO4J7eRm8sQSv8Q==}
+    dependencies:
+      fastify-plugin: 3.0.1
+      vary: 1.1.2
+    dev: false
+
   /fastify-error/0.3.1:
     resolution: {integrity: sha512-oCfpcsDndgnDVgiI7bwFKAun2dO+4h84vBlkWsWnz/OUK9Reff5UFoFl241xTiLeHWX/vU9zkDVXqYUxjOwHcQ==}
+    dev: false
+
+  /fastify-plugin/3.0.1:
+    resolution: {integrity: sha512-qKcDXmuZadJqdTm6vlCqioEbyewF60b/0LOFCcYN1B6BIZGlYJumWWOYs70SFYLDAH4YqdE1cxH/RKMG7rFxgA==}
     dev: false
 
   /fastify-warning/0.2.0:
@@ -5639,6 +5652,11 @@ packages:
   /value-or-promise/1.0.6:
     resolution: {integrity: sha512-9r0wQsWD8z/BxPOvnwbPf05ZvFngXyouE9EKB+5GbYix+BYnAwrIChCUyFIinfbf2FL/U71z+CPpbnmTdxrwBg==}
     engines: {node: '>=12'}
+    dev: false
+
+  /vary/1.1.2:
+    resolution: {integrity: sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=}
+    engines: {node: '>= 0.8'}
     dev: false
 
   /wcwidth/1.0.1:

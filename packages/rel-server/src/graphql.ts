@@ -95,19 +95,3 @@ export default async function GraphQLPlugin(
   //   // decorateReply: false,
   // })
 }
-
-// function pruneResultListsForNow(resolvers) {
-//   const prune = (obj) => {
-//     return Object.entries(obj).reduce((acc, entry) => {
-//       const [key, value] = entry
-//       if (!key.match(/Result/)) acc[key] = value
-//       return acc
-//     }, {})
-//   }
-//   return {
-//     ...resolvers,
-//     Query: prune(resolvers.Query),
-//     Mutation: prune(resolvers.Mutation),
-//     Subscription: prune(resolvers.Subscription),
-//   }
-// }

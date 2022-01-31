@@ -1,16 +1,21 @@
 // import loadListeners from './listeners'
-// global.Request = () => console.log("FARK")
 
 import fs from 'fs'
 import Fastify, { FastifyInstance } from 'fastify'
 
 import generateGQLClient from './client.js'
 import Logger from '@ptkdev/logger'
-// import Cors from 'fastify-cors'
-// import Auth from './auth'
+
+import Cors from 'fastify-cors'
+import Auth from './auth'
 import GraphQL from './graphql'
 
-export default async function Server(config): Promise<FastifyInstance> {
+type Config = {
+  auth: any, // @todo ian
+  dir: string // @todo I want to change this to be schema string, so we can load from wherever.
+}
+
+export default async function Server(config: Config): Promise<FastifyInstance> {
   const { auth, dir } = config
 
   const app = Fastify()
@@ -26,12 +31,12 @@ export default async function Server(config): Promise<FastifyInstance> {
   // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
   // @todo - check for redis running
 
-  // app.register(Cors)
+  app.register(Cors)
 
-  // app.register(Auth, {
-  //   secret: process.env.JWT_SECRET,
-  //   ...auth
-  // })
+  app.register(Auth, {
+    secret: process.env.JWT_SECRET,
+    ...auth
+  })
 
   app.register(GraphQL, {
     schema,
