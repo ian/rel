@@ -2,8 +2,8 @@
   "name": "rel-server",
   "version": "0.0.0",
   "description": "",
-  "type": "module",
   "main": "dist/index.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rel-js/rel.git"
@@ -17,7 +17,10 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "clean": "rm -rf ./dist",
-    "build": "tsup src/index.ts --target esnext --format esm --sourcemap"
+    "build": "tsup src/index.ts --target esnext --format esm --sourcemap",
+    "oldbuild": "tsc",
+    "olddev": "nodemon --exec pnpm build",
+    "dev": "nodemon --exec \"pnpm build && node test/dev.js\""
   },
   "dependencies": {
     "@genql/cli": "^2.8.0",

@@ -25,7 +25,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "husky": "4.3.6",
+    "nodemon": "^2.0.15",
     "replace": "1.2.1",
+    "tslib": "^2.3.1",
     "tsup": "^5.11.11",
     "typescript": "*"
   },
@@ -38,6 +40,7 @@
     "preinstall": "npx only-allow pnpm",
     "build": "pnpm run -r build",
     "clean": "pnpm run -r clean",
+    "dev": "pnpm run -r dev",
     "redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "husky": {
