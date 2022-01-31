@@ -17,7 +17,7 @@ program
 program
   .command('dev')
   .description('Start Rel in development mode')
-  .arguments("<dir>")
+  .option('-d, --dir <dir>', "Base directory", "./rel")
   .option('-v, --verbose', "Make Rel more talkative")
   .action(DevCommand)
 

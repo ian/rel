@@ -51,9 +51,9 @@ export default async function Server(config: Config): Promise<FastifyInstance> {
   //   'INIT'
   // )
 
-  loadListeners({
-    dir,
-  }).catch((err) => console.error(err))
+  // loadListeners({
+  //   dir,
+  // }).catch((err) => console.error(err))
 
   generateGQLClient({
     dir,

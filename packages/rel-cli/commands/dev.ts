@@ -8,12 +8,12 @@ import Logger from '@ptkdev/logger'
 
 let server
 
-const handleChange = debounce(async (dir, opts) => {
+const handleChange = debounce(async (opts) => {
   if (server) {
     await server.kill('SIGINT')
   }
 
-  const { verbose } = opts
+  const { dir, verbose } = opts
   let reloadingIndicator
   let logger
 
@@ -49,11 +49,13 @@ const handleChange = debounce(async (dir, opts) => {
 }, 300)
 
 type Opts = {
-  logging
+  dir: string
+  logging: boolean
 }
 
-export default (dir: string, opts: Opts): void => {
+export default (opts: Opts): void => {
+  const { dir } = opts
   chokidar
     .watch(dir + '/schema.graphql', { persistent: true })
-    .on('all', () => handleChange(dir, opts))
+    .on('all', () => handleChange(opts))
 }
