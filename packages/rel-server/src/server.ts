@@ -5,10 +5,11 @@ import generateGQLClient from './client.js'
 import Fastify, { FastifyInstance } from 'fastify'
 import Logger from '@ptkdev/logger'
 import Cors from 'fastify-cors'
+import Auth from './auth'
 import GraphQL from './graphql'
 
 export default async function Server(config): Promise<FastifyInstance> {
-  const { dir } = config
+  const { auth, dir } = config
 
   const app = Fastify()
   const port = Number(process.env.REL_PORT) || 4000
@@ -18,24 +19,24 @@ export default async function Server(config): Promise<FastifyInstance> {
     debug: !!process.env.REL_DEBUG,
   })
 
-  // console.log({ dir })
-
-  // console.log({ graphback })
-
   const schema = fs.readFileSync(dir + '/schema.graphql').toString()
-
-  // console.log(schema)
 
   // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
   // @todo - check for redis running
 
   app.register(Cors)
+
+  app.register(Auth, {
+    secret: process.env.JWT_SECRET,
+    ...auth
+  })
+
   app.register(GraphQL, {
     schema,
     outputPath: dir + '/gen/schema.graphql',
     logger,
   })
-
+  
   app.listen({ port, host })
 
   logger.info(`Rel Server started in http://${host}:${port}`, 'INIT')

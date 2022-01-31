@@ -1,10 +1,10 @@
-import { createServer } from 'graphql-yoga'
+// import { createServer } from 'graphql-yoga'
+import { formatSdl } from 'format-graphql'
 
 import { FastifyInstance } from 'fastify'
 import mercurius from 'mercurius'
 import AltairFastify from 'altair-fastify-plugin'
 // import goTrace from '@go-trace/tracer'
-// import { GraphQLSchema, printSchema } from 'graphql'
 
 import Graphback from './graphback'
 
@@ -28,13 +28,11 @@ export default async function GraphQLPlugin(
 ): Promise<void> {
   const { schema: baseSchema, outputPath, logger } = opts
 
-  const { schema, resolvers, services, ...graphback } = await Graphback({
+  const { schema, resolvers, services } = await Graphback({
     schema: baseSchema,
     outputPath,
     logger,
   })
-
-  // console.log({ graphback })
 
   app.register(mercurius, {
     schema,
@@ -45,76 +43,33 @@ export default async function GraphQLPlugin(
         graphback: services
       }
     }
-    // context: {
-    //   graphback
-    // }
-    // // subscription: {
-    // //   emitter,
-    // // },
   })
-
-  // const graphQLServer = createServer({
-  //   // schema,
-  //   // context: contextCreator,
-  //   ...graphback,
-  //   enableLogging: false,
-  // })
-
-  // app.route({
-  //   url: '/graphql',
-  //   method: ['GET', 'POST', 'OPTIONS'],
-  //   handler: async (req, reply) => {
-  //     // let response
-  //     // if (process.env.REL_TRACE && req.headers.accept !== 'text/event-stream') {
-  //     //   const hasQuery = Object.keys(req.query).length > 0
-  //     //   response = await goTrace(
-  //     //     schema,
-  //     //     // @ts-ignore
-  //     //     hasQuery ? req.query.query : req.body.query,
-  //     //     null,
-  //     //     contextCreator(),
-  //     //     // @ts-ignore
-  //     //     hasQuery ? JSON.parse(req.query.variables) : req.body.variables
-  //     //   )
-  //     //   reply.status(200)
-  //     //   reply.send(response)
-  //     // } else {
-
-  //     const response = await graphQLServer.handleIncomingMessage(req)
-
-  //     console.log(req.body)
-  //     console.log(response.body, response.status)
-
-  //     response.headers.forEach((value, key) => {
-  //       reply.header(key, value)
-  //     })
-  //     reply.status(response.status)
-  //     reply.send(response.body)
-  //     // }
-  //   },
-  // })
 
   if (process.env.REL_TRACE) {
     logger.info('Tracer enabled at http://localhost:2929', 'INIT')
   }
 
-  // if (process.env.GRAPHQL_LOGGING) {
-  //   app.graphql.addHook('onResolution', async function (execution, context) {
-  //     // console.log('onResolution called', context.reply.raw, context.reply.request)
-  //     const { query, variables } = context.reply.request.body as {
-  //       query: string
-  //       variables: any
-  //     }
+  if (process.env.GRAPHQL_LOGGING) {
+    app.ready().then(() => {
+      app.graphql.addHook(
+        "onResolution",
+        async function (execution, context) {
+          const { query, variables } = context.reply.request.body as {
+            query: string
+            variables: object
+          }
 
-  //     // if (query.match('query IntrospectionQuery')) return
+          if (query.match("query IntrospectionQuery")) return
 
-  //     console.log()
-  //     console.log(query.trim())
-  //     console.log(JSON.stringify(variables, null, 2))
-  //     console.log(JSON.stringify(execution, null, 2))
-  //     console.log()
-  //   })
-  // }
+          // @todo - i'd like to stick this into some logging solution
+          console.log(formatSdl(query))
+          console.log(JSON.stringify(variables, null, 2))
+          // console.log(JSON.stringify(execution, null, 2))
+          console.log()
+        }
+      )
+    })
+  }
 
   // console.log(printSchema(schema))
 
