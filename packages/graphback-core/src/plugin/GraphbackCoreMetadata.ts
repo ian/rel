@@ -116,15 +116,15 @@ export class GraphbackCoreMetadata {
           case 'String':
             break;
           case 'Boolean':
-            parsedDefaultValue = Boolean(defaultValue);
+            parsedDefaultValue = Boolean(parsedDefaultValue);
             break;
           case 'Int':
           case 'Float':
-            parsedDefaultValue = Number(defaultValue);
+            parsedDefaultValue = Number(parsedDefaultValue);
             break;
           default:
             try {
-              parsedDefaultValue = JSON.parse(defaultValue);
+              parsedDefaultValue = JSON.parse(parsedDefaultValue);
             } catch {
               // do nothing, assume the existing value
             }
