@@ -32,7 +32,7 @@ export const getSelectedFieldsFromResolverInfo = (info: GraphQLResolveInfo, mode
  * @param {string[]} resolverFields - resolver field names
  * @param {ModelDefinition} model - Graphback model
  */
-export const getModelFieldsFromResolverFields = (resolverFields: string[], fieldArgs: any, model: ModelDefinition): string[] => {
+export const getModelFieldsFromResolverFields = (resolverFields: string[], fieldArgs: any, model: ModelDefinition): any => {
   const selectedFields = new Set<string>()
 
   for (const key of resolverFields) {

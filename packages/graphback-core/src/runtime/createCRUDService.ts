@@ -11,7 +11,7 @@ export interface CreateCRUDServiceOptions {
 }
 
 export function createCRUDService(config?: CreateCRUDServiceOptions): ServiceCreator {
-  return async (model: ModelDefinition, dataProvider: GraphbackDataProvider, models: ModelDefinition[]): GraphbackCRUDService => {
+  return async (model: ModelDefinition, dataProvider: GraphbackDataProvider, models: ModelDefinition[]): Promise<GraphbackCRUDService> => {
     const serviceConfig: CRUDServiceConfig = {
       pubSub: new PubSub(),
       ...config,

@@ -52,4 +52,4 @@ export type DataProviderCreator = (model: ModelDefinition) => GraphbackDataProvi
 /**
  * Creator method that can be used by underlying implementation to create new data service
  */
-export type ServiceCreator = (model: ModelDefinition, dataProvider: GraphbackDataProvider) => GraphbackCRUDService
+export type ServiceCreator = (model: ModelDefinition, dataProvider: GraphbackDataProvider, models: ModelDefinition[]) => Promise<GraphbackCRUDService>

@@ -236,15 +236,15 @@ var GraphbackCoreMetadata = class {
           case "String":
             break;
           case "Boolean":
-            parsedDefaultValue = Boolean(defaultValue);
+            parsedDefaultValue = Boolean(parsedDefaultValue);
             break;
           case "Int":
           case "Float":
-            parsedDefaultValue = Number(defaultValue);
+            parsedDefaultValue = Number(parsedDefaultValue);
             break;
           default:
             try {
-              parsedDefaultValue = JSON.parse(defaultValue);
+              parsedDefaultValue = JSON.parse(parsedDefaultValue);
             } catch {
             }
         }
@@ -366,7 +366,13 @@ var getModelFieldsFromResolverFields = (resolverFields, fieldArgs, model) => {
   }
   return [[...selectedFields], fieldArgs];
 };
-var getResolverInfoFieldsList = (info, path) => fieldsList(info, { path });
+var getResolverInfoFieldsList = (info, path) => {
+  let projectionObj = graphqlFields(info, {}, { processArguments: true });
+  if (path) {
+    projectionObj = projectionObj[path];
+  }
+  return Object.keys(projectionObj);
+};
 
 // src/db/getPrimaryKey.ts
 import { getNamedType as getNamedType3, isScalarType as isScalarType2 } from "graphql";

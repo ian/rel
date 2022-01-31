@@ -9,7 +9,7 @@ const SortDirectionEnumName = 'SortDirectionEnum'
 const OrderByInputTypeName = 'OrderByInput'
 const aggFields = ["count", "sum", "max", "avg", "min"]
 
-export const getInputName = (type: GraphQLNamedType) => {
+export const getInputName = (type: GraphQLNamedType): string => {
   if (isEnumType(type)) {
     return 'StringInput'
   }
@@ -21,7 +21,7 @@ export const getInputName = (type: GraphQLNamedType) => {
   return `${type.name}Input`
 }
 
-export const createInputTypeForScalar = (scalarType: GraphQLScalarType) => {
+export const createInputTypeForScalar = (scalarType: GraphQLScalarType): GraphQLInputObjectType => {
   const newInput = new GraphQLInputObjectType({
     name: getInputName(scalarType),
     fields: {
@@ -96,11 +96,11 @@ export const SortDirectionEnum = new GraphQLEnumType({
   }
 })
 
-export const buildOrderByInputType = (modelName) => {
+export const buildOrderByInputType = (schemaComposer, modelName: string): GraphQLInputObjectType => {
   return new GraphQLInputObjectType({
     name: modelName + "OrderByInput",
     fields: {
-      field: { type: modelName + "FieldsEnum" },
+      field: { type: schemaComposer.getETC(modelName + "FieldsEnum").getType() },
       order: { type: SortDirectionEnum, defaultValue: 'asc' }
     }
   })
@@ -154,9 +154,11 @@ function getModelInputFields(schemaComposer: SchemaComposer<any>, modelType: Gra
       type = schemaComposer.createInputTC(`input ${typeName} { foo: Int }`).getType()
     }
 
-    const wrappedType = copyWrappingType(field.type, type)
+    const wrappedType = copyWrappingType(field.type, type) as GraphQLInputType
 
-    const extensions = {}
+    const extensions = {
+      directives: []
+    }
 
     const constraintDirective = field?.extensions?.directives?.find?.(d => d.name === "constraint")
 

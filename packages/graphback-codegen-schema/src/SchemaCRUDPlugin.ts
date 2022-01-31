@@ -393,7 +393,7 @@ export class SchemaCRUDPlugin extends GraphbackPlugin {
           type: PageRequest
         },
         orderBy: {
-          type: [buildOrderByInputType(name)]
+          type: [buildOrderByInputType(schemaComposer, name)]
         }
       }
     }

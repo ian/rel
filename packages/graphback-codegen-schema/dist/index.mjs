@@ -168,11 +168,11 @@ var SortDirectionEnum = new GraphQLEnumType({
     ASC: { value: "asc" }
   }
 });
-var buildOrderByInputType = (modelName) => {
+var buildOrderByInputType = (schemaComposer, modelName) => {
   return new GraphQLInputObjectType({
     name: modelName + "OrderByInput",
     fields: {
-      field: { type: modelName + "FieldsEnum" },
+      field: { type: schemaComposer.getETC(modelName + "FieldsEnum").getType() },
       order: { type: SortDirectionEnum, defaultValue: "asc" }
     }
   });
@@ -220,7 +220,9 @@ function getModelInputFields(schemaComposer, modelType, operationType) {
       type = schemaComposer.createInputTC(`input ${typeName} { foo: Int }`).getType();
     }
     const wrappedType = copyWrappingType(field.type, type);
-    const extensions = {};
+    const extensions = {
+      directives: []
+    };
     const constraintDirective = (_f = (_e = (_d = field == null ? void 0 : field.extensions) == null ? void 0 : _d.directives) == null ? void 0 : _e.find) == null ? void 0 : _f.call(_e, (d) => d.name === "constraint");
     if (constraintDirective) {
       extensions.directives = [constraintDirective];
@@ -733,7 +735,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
           type: PageRequest
         },
         orderBy: {
-          type: [buildOrderByInputType(name)]
+          type: [buildOrderByInputType(schemaComposer, name)]
         }
       }
     };
