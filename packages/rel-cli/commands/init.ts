@@ -19,14 +19,13 @@ export default async function InitCommand() {
 
   await fsUtils.writeFileSync(
     `${projectDir}/schema.graphql`,
-    `"""@model"""
+    `
 type Post {
   id: ID!
   body: String!
   owner: User!
 }
 
-"""@model"""
 type User {
   id: ID!
   name: String!
@@ -44,13 +43,13 @@ type User {
   console.log()
   console.log(
     '1. Run ' +
-      chalk.blueBright('rel dev') +
-      ' and visit https://localhost:4000'
+    chalk.blueBright('rel dev') +
+    ' and visit https://localhost:4000'
   )
   console.log(
     '2. Edit ' +
-      chalk.greenBright('rel/schema.graphql') +
-      ' to update your schema.'
+    chalk.greenBright('rel/schema.graphql') +
+    ' to update your schema.'
   )
   console.log('3. Read more documentation at https://rel.run/docs')
   console.log()

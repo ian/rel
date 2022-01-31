@@ -117,6 +117,7 @@ importers:
       fs-utils: ^0.7.0
       inquirer: ^8.2.0
       ora: ^5.3.0
+      pkg-dir: ^6.0.1
       rel-server: '*'
     dependencies:
       chalk: 5.0.0
@@ -128,6 +129,7 @@ importers:
       fs-utils: 0.7.0
       inquirer: 8.2.0
       ora: 5.4.1
+      pkg-dir: 6.0.1
       rel-server: link:../rel-server
 
   packages/rel-server:

@@ -4,7 +4,7 @@ import { GraphQLField, GraphQLObjectType, getNamedType, isScalarType, GraphQLInp
  * Returns the primary key field of a GraphQL object.
  * @param graphqlType
  */
-export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any, any> {
+export function getPrimaryKey(graphqlType: GraphQLObjectType): GraphQLField<any, any> {
   const fields = Object.values(graphqlType.getFields())
 
   const autoPrimaryKeyFromScalar: Array<GraphQLField<any, any>> = []
@@ -33,7 +33,7 @@ export function getPrimaryKey (graphqlType: GraphQLObjectType): GraphQLField<any
  * - is named "_id" and has type "ID", auto increment primary key for relational database
  * @param field
  */
-export function isAutoPrimaryKey (field: GraphQLField<any, any> | GraphQLInputField): boolean {
+export function isAutoPrimaryKey(field: GraphQLField<any, any> | GraphQLInputField): boolean {
   const { type, name: fieldName } = field
   const baseType = getNamedType(type)
   const name = baseType.name

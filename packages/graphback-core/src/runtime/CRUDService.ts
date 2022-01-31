@@ -29,9 +29,10 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   protected model: ModelDefinition
   protected pubSub: PubSubEngine
 
-  public constructor (model: ModelDefinition, db: GraphbackDataProvider, config: CRUDServiceConfig) {
+  public constructor(model: ModelDefinition, db: GraphbackDataProvider, config: CRUDServiceConfig, models: ModelDefinition[]) {
     this.model = model
     this.db = db
+    this.db.setGlobalModelDefinition(models)
     this.pubSub = config.pubSub
   }
 
@@ -39,7 +40,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return await this.db.initializeUniqueIndex()
   }
 
-  public async create (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async create(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
     const result = await this.db.create(data, selectedFields)
@@ -57,7 +58,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async update (data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async update(data: Type, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
 
     const result = await this.db.update(data, selectedFields)
@@ -75,7 +76,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async updateBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
+  public async updateBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.mode, true)
     const result = await this.db.updateBy(args, selectedFields)
 
@@ -84,7 +85,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     }
   }
 
-  public async delete (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async delete(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
     const result = await this.db.delete(data, selectedFields)
 
@@ -101,7 +102,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return result
   }
 
-  public async deleteBy (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
+  public async deleteBy(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<ResultList<Type>> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model, true)
     const result = await this.db.deleteBy(args, selectedFields)
 
@@ -110,12 +111,12 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     }
   }
 
-  public async findOne (args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
+  public async findOne(args: Partial<Type>, context?: GraphbackContext, info?: GraphQLResolveInfo): Promise<Type> {
     const [selectedFields, _] = getSelectedFieldsFromResolverInfo(info, this.model)
     return await this.db.findOne(args, selectedFields)
   }
 
-  public async findBy (args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>> {
+  public async findBy(args?: FindByArgs, context?: GraphbackContext, info?: GraphQLResolveInfo, path?: string): Promise<ResultList<Type>> {
     let requestedCount = false
     const [selectedFields, fieldArgs] = getSelectedFieldsFromResolverInfo(info, this.model, false, path)
     requestedCount = path === 'items' && getResolverInfoFieldsList(info).some((field: string) => field === 'count')
@@ -140,7 +141,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     }
   }
 
-  public subscribeToCreate (filter?: QueryFilter): AsyncIterator<Type> | undefined {
+  public subscribeToCreate(filter?: QueryFilter): AsyncIterator<Type> | undefined {
     if (!this.pubSub) {
       throw Error('Missing PubSub implementation in CRUDService')
     }
@@ -156,7 +157,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return withFilter(() => asyncIterator, (payload: any) => subscriptionFilter(payload[subscriptionName]))()
   }
 
-  public subscribeToUpdate (filter?: QueryFilter): AsyncIterator<Type> | undefined {
+  public subscribeToUpdate(filter?: QueryFilter): AsyncIterator<Type> | undefined {
     if (!this.pubSub) {
       throw Error('Missing PubSub implementation in CRUDService')
     }
@@ -172,7 +173,7 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
     return withFilter(() => asyncIterator, (payload: any) => subscriptionFilter(payload[subscriptionName]))()
   }
 
-  public subscribeToDelete (filter?: QueryFilter): AsyncIterator<Type> | undefined {
+  public subscribeToDelete(filter?: QueryFilter): AsyncIterator<Type> | undefined {
     if (!this.pubSub) {
       throw Error('Missing PubSub implementation in CRUDService')
     }
@@ -191,11 +192,11 @@ export class CRUDService<Type = any> implements GraphbackCRUDService<Type> {
   /**
    * Provides way to map runtime topics for subscriptions for specific types and object names
    */
-  protected subscriptionTopicMapping (triggerType: GraphbackOperationType, objectName: string) {
+  protected subscriptionTopicMapping(triggerType: GraphbackOperationType, objectName: string) {
     return `${triggerType}_${objectName}`.toUpperCase()
   }
 
-  private buildEventPayload (action: string, result: any) {
+  private buildEventPayload(action: string, result: any) {
     const payload = {}
     payload[`${action}${this.model.graphqlType.name}`] = result
 

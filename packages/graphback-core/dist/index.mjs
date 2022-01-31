@@ -31,7 +31,7 @@ var __objRest = (source, exclude) => {
 };
 
 // src/crud/mappingHelpers.ts
-import { getNamedType, isObjectType, isScalarType, isEnumType } from "graphql";
+import { getNamedType, isObjectType, isScalarType, isEnumType, isListType } from "graphql";
 import pluralize from "pluralize";
 
 // src/crud/GraphbackOperationType.ts
@@ -110,17 +110,22 @@ function getInputFieldName(field) {
 function getInputFieldTypeName(modelName, field, operation) {
   const fieldType = getNamedType(field.type);
   if (isObjectType(fieldType)) {
-    const idField = getPrimaryKey(fieldType);
-    return getNamedType(idField.type).name;
+    if (isListType(field.type)) {
+      if (["update", "updateBy"].includes(operation)) {
+        return `Mutate${fieldType.name}RelationInput`;
+      } else if (operation === "create") {
+        return `Create${fieldType.name}RelationInput`;
+      } else {
+        return getInputTypeName(fieldType.name, operation);
+      }
+    } else if (operation === "find") {
+      return getInputTypeName(fieldType.name, operation);
+    } else {
+      return "ID";
+    }
   }
   if (isScalarType(fieldType) || isEnumType(fieldType)) {
     return fieldType.name;
-  }
-  if (isObjectType(fieldType)) {
-    if (operation === "find" /* FIND */) {
-      return void 0;
-    }
-    return getInputTypeName(fieldType.name, operation);
   }
   return void 0;
 }
@@ -149,7 +154,7 @@ import { buildSchema } from "graphql";
 
 // src/plugin/GraphbackCoreMetadata.ts
 import { mergeResolvers } from "@graphql-tools/merge";
-import { getNamedType as getNamedType2 } from "graphql";
+import { getNamedType as getNamedType2, isListType as isListType2 } from "graphql";
 import { getUserTypesFromSchema } from "@graphql-tools/utils";
 var GraphbackCoreMetadata = class {
   schema;
@@ -189,7 +194,7 @@ var GraphbackCoreMetadata = class {
     return getUserTypesFromSchema(this.schema);
   }
   buildModel(modelType) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v;
     const primaryKey = {
       name: "_id",
       type: "ID"
@@ -197,16 +202,17 @@ var GraphbackCoreMetadata = class {
     const modelFields = modelType.getFields();
     const fields = {};
     fields._id = {
-      type: "ID"
+      type: "ID",
+      name: "_id",
+      transient: false
     };
     const uniqueFields = [];
     const defaultFields = [];
     const computedFields = [];
+    const relationships = [];
     for (const field of Object.keys(modelFields)) {
-      let fieldName = field;
-      let type = "";
       const graphqlField = modelFields[field];
-      type = getNamedType2(graphqlField.type).name;
+      const type = getNamedType2(graphqlField.type).name;
       if ((_c = (_b = (_a = graphqlField.extensions) == null ? void 0 : _a.directives) == null ? void 0 : _b.some) == null ? void 0 : _c.call(_b, (d) => d.name === "transient")) {
         fields[field] = {
           name: field,
@@ -216,7 +222,7 @@ var GraphbackCoreMetadata = class {
         continue;
       }
       fields[field] = {
-        name: fieldName,
+        name: field,
         type,
         transient: false
       };
@@ -256,11 +262,21 @@ var GraphbackCoreMetadata = class {
           template: (_n = (_m = (_l = computedField.arguments) == null ? void 0 : _l.find((a) => a.name.value === "value")) == null ? void 0 : _m.value) == null ? void 0 : _n.value
         });
       }
+      const relationField = (_p = (_o = graphqlField.astNode.directives) == null ? void 0 : _o.find) == null ? void 0 : _p.call(_o, (d) => d.name.value === "relation");
+      if (relationField) {
+        relationships.push({
+          type: (_s = (_r = (_q = relationField.arguments) == null ? void 0 : _q.find((a) => a.name.value === "type")) == null ? void 0 : _r.value) == null ? void 0 : _s.value,
+          field,
+          isList: isListType2(graphqlField.type),
+          fieldType: type,
+          direction: (_v = (_u = (_t = relationField.arguments) == null ? void 0 : _t.find((a) => a.name.value === "direction")) == null ? void 0 : _u.value) == null ? void 0 : _v.value
+        });
+      }
     }
     return {
       fields,
       primaryKey,
-      relationships: [],
+      relationships,
       uniqueFields,
       defaultFields,
       computedFields,
@@ -533,9 +549,10 @@ var CRUDService = class {
   db;
   model;
   pubSub;
-  constructor(model, db, config) {
+  constructor(model, db, config, models) {
     this.model = model;
     this.db = db;
+    this.db.setGlobalModelDefinition(models);
     this.pubSub = config.pubSub;
   }
   async initializeUniqueIndex() {
@@ -659,11 +676,11 @@ var CRUDService = class {
 // src/runtime/createCRUDService.ts
 import { PubSub } from "graphql-subscriptions";
 function createCRUDService(config) {
-  return async (model, dataProvider) => {
+  return async (model, dataProvider, models) => {
     const serviceConfig = __spreadValues({
       pubSub: new PubSub()
     }, config);
-    const crudService = new CRUDService(model, dataProvider, serviceConfig);
+    const crudService = new CRUDService(model, dataProvider, serviceConfig, models);
     await crudService.initializeUniqueIndex();
     return crudService;
   };
@@ -984,9 +1001,12 @@ function extractConfig(wrappedScalar) {
 
 // src/utils/directives.ts
 var directives = `
-      directive @model on OBJECT
+      enum RelDirection { IN OUT }
       directive @unique on FIELD_DEFINITION
-      directive @relation on FIELD_DEFINITION
+      directive @relation(
+            type: String!
+            direction: RelDirection!
+      ) on FIELD_DEFINITION
       directive @transient on FIELD_DEFINITION
       directive @default(value: String!) on FIELD_DEFINITION
       directive @computed(value: String!) on FIELD_DEFINITION

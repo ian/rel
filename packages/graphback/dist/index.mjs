@@ -39,7 +39,7 @@ async function createServices(models, createService, createProvider) {
   for (const model of models) {
     const modelType = model.graphqlType;
     const modelProvider = createProvider(model);
-    const modelService = await createService(model, modelProvider);
+    const modelService = await createService(model, modelProvider, models);
     services[modelType.name] = modelService;
   }
   return services;

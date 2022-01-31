@@ -21,13 +21,13 @@ export interface ModelDefinition {
   primaryKey: FieldDescriptor
   fields: ModelFieldMap
   graphqlType: GraphQLObjectType
-  relationships: string[]
+  relationships: any[]
   uniqueFields: string[]
   defaultFields: any[]
-  computedFields: any[] 
+  computedFields: any[]
 }
 
-export function getModelByName (name: string, models: ModelDefinition[]): ModelDefinition | undefined {
+export function getModelByName(name: string, models: ModelDefinition[]): ModelDefinition | undefined {
   if (!models) {
     return undefined
   }

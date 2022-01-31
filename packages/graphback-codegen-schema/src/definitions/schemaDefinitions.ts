@@ -7,6 +7,7 @@ import { copyWrappingType } from './copyWrappingType'
 const PageRequestTypeName = 'PageRequest'
 const SortDirectionEnumName = 'SortDirectionEnum'
 const OrderByInputTypeName = 'OrderByInput'
+const aggFields = ["count", "sum", "max", "avg", "min"]
 
 export const getInputName = (type: GraphQLNamedType) => {
   if (isEnumType(type)) {
@@ -97,7 +98,7 @@ export const SortDirectionEnum = new GraphQLEnumType({
 
 export const buildOrderByInputType = (modelName) => {
   return new GraphQLInputObjectType({
-    name: modelName+ "OrderByInput",
+    name: modelName + "OrderByInput",
     fields: {
       field: { type: modelName + "FieldsEnum" },
       order: { type: SortDirectionEnum, defaultValue: 'asc' }
@@ -113,7 +114,25 @@ export const OrderByInputType = new GraphQLInputObjectType({
   }
 })
 
-function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType, operationType: GraphbackOperationType): GraphQLInputField[] {
+function addITC(schemaComposer, inputTypeName, fields) {
+  let itc
+  try {
+    itc = schemaComposer.getITC(inputTypeName)
+  } catch {
+    itc = null
+  }
+
+  if (!itc) {
+    schemaComposer.createInputTC({
+      name: inputTypeName,
+      fields
+    })
+  } else {
+    itc.removeField("foo").addFields(fields)
+  }
+}
+
+function getModelInputFields(schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType, operationType: GraphbackOperationType): GraphQLInputField[] {
   const inputFields: GraphQLInputField[] = []
   const fields: Array<GraphQLField<any, any>> = Object.values(modelType.getFields())
 
@@ -122,19 +141,26 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
     if (!typeName) {
       continue
     }
-    if(field?.extensions?.directives?.some?.(d => ["computed","transient"].includes(d.name))) {
+    if (field?.extensions?.directives?.some?.(d => ["computed", "transient"].includes(d.name))) {
       continue
     }
 
     const name = getInputFieldName(field)
-    const type = schemaComposer.getAnyTC(typeName).getType()
-    const wrappedType = copyWrappingType(field.type, type) as GraphQLInputType
+
+    let type
+    try {
+      type = schemaComposer.getAnyTC(typeName).getType()
+    } catch {
+      type = schemaComposer.createInputTC(`input ${typeName} { foo: Int }`).getType()
+    }
+
+    const wrappedType = copyWrappingType(field.type, type)
 
     const extensions = {}
 
     const constraintDirective = field?.extensions?.directives?.find?.(d => d.name === "constraint")
 
-    if(constraintDirective) {
+    if (constraintDirective) {
       extensions.directives = [constraintDirective]
     }
 
@@ -151,7 +177,7 @@ function getModelInputFields (schemaComposer: SchemaComposer<any>, modelType: Gr
   return inputFields
 }
 
-export function buildFindOneFieldMap (modelType: ModelDefinition, schemaComposer: SchemaComposer<any>): GraphQLInputFieldMap {
+export function buildFindOneFieldMap(modelType: ModelDefinition, schemaComposer: SchemaComposer<any>): GraphQLInputFieldMap {
   const { type } = modelType.primaryKey
 
   return {
@@ -176,8 +202,10 @@ export const buildFilterInputType = (schemaComposer: SchemaComposer<any>, modelT
 
   for (const field of inputFields) {
     const namedType = getNamedType(field.type)
-
-    if (FILTER_SUPPORTED_SCALARS.includes(namedType.name) || isEnumType(namedType)) {
+    if (aggFields.includes(field.name)) {
+      continue
+    }
+    if (FILTER_SUPPORTED_SCALARS.includes(namedType.name) || isEnumType(namedType) || isInputObjectType(namedType)) {
       const type = getInputName(namedType)
       scalarInputFields[field.name] = {
         name: field.name,
@@ -186,23 +214,20 @@ export const buildFilterInputType = (schemaComposer: SchemaComposer<any>, modelT
     }
   }
 
-  const filterInput = new GraphQLInputObjectType({
-    name: inputTypeName,
-    fields: {
-      ...scalarInputFields,
-      and: {
-        type: `[${inputTypeName}!]`
-      },
-      or: {
-        type: `[${inputTypeName}!]`
-      },
-      not: {
-        type: `${inputTypeName}`
-      }
+  const fields = {
+    ...scalarInputFields,
+    and: {
+      type: `[${inputTypeName}!]`
+    },
+    or: {
+      type: `[${inputTypeName}!]`
+    },
+    not: {
+      type: `${inputTypeName}`
     }
-  })
+  }
 
-  schemaComposer.add(filterInput)
+  addITC(schemaComposer, inputTypeName, fields)
 }
 
 export const buildCreateMutationInputType = (schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType) => {
@@ -212,27 +237,27 @@ export const buildCreateMutationInputType = (schemaComposer: SchemaComposer<any>
   const idField = getPrimaryKey(modelType)
   const allModelFields = getModelInputFields(schemaComposer, modelType, operationType)
 
-  const mutationInputType = new GraphQLInputObjectType({
-    name: inputTypeName,
-    fields: () => {
-      const fields: any = {}
-      for (const field of allModelFields) {
-        if (field.name === idField.name && isAutoPrimaryKey(field)) {
-          continue
-        }
+  const fields: any = {}
+  for (const field of allModelFields) {
+    if ((field.name === idField.name && isAutoPrimaryKey(field)) || aggFields.includes(field.name)) {
+      continue
+    }
 
-        fields[field.name] = {
-          name: field.name,
-          type: field.type,
-          extensions: field.extensions
-        }
-      }
+    fields[field.name] = {
+      name: field.name,
+      type: field.type,
+      extensions: field.extensions
+    }
+  }
 
-      return fields
+  addITC(schemaComposer, inputTypeName, fields)
+  const relationFields = {}
+  Object.keys(fields).forEach(k => {
+    if (!(["ID", "ID!"].includes(fields[k].type.toString()) || fields[k].name === "_id") && !aggFields.includes(fields[k].name)) {
+      relationFields[k] = fields[k]
     }
   })
-
-  schemaComposer.add(mutationInputType)
+  addITC(schemaComposer, `Create${modelType.name}RelationInput`, relationFields)
 }
 
 export const buildSubscriptionFilterType = (schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType) => {
@@ -264,10 +289,7 @@ export const buildSubscriptionFilterType = (schemaComposer: SchemaComposer<any>,
     }
   }
 
-  schemaComposer.createInputTC({
-    name: inputTypeName,
-    fields
-  })
+  addITC(schemaComposer, inputTypeName, fields)
 }
 
 export const buildMutationInputType = (schemaComposer: SchemaComposer<any>, modelType: GraphQLObjectType) => {
@@ -277,36 +299,39 @@ export const buildMutationInputType = (schemaComposer: SchemaComposer<any>, mode
   const idField = getPrimaryKey(modelType)
   const allModelFields = getModelInputFields(schemaComposer, modelType, operationType)
 
-  const mutationInputObject = new GraphQLInputObjectType({
-    name: inputTypeName,
-    fields: () => {
-      const fields: any = {}
-      for (const { name, type,extensions } of allModelFields) {
-        let fieldType: GraphQLInputType
+  const fields: any = {}
+  for (const { name, type, extensions } of allModelFields) {
+    if (aggFields.includes(name)) {
+      continue
+    }
+    let fieldType: GraphQLInputType
 
-        if (name !== idField.name) {
-          fieldType = getNullableType(type)
-        }
+    if (name !== idField.name) {
+      fieldType = getNullableType(type)
+    }
 
-        if (isListType(fieldType)) {
-          fieldType = GraphQLList(getNamedType(fieldType))
-        }
+    if (isListType(fieldType)) {
+      fieldType = GraphQLList(getNamedType(fieldType))
+    }
 
-        fields[name] = {
-          name,
-          type: fieldType || type,
-          extensions
-        }
-      }
+    fields[name] = {
+      name,
+      type: fieldType || type,
+      extensions
+    }
+  }
 
-      return fields
+  addITC(schemaComposer, inputTypeName, fields)
+  const relationFields = {}
+  Object.keys(fields).forEach(k => {
+    if ((fields[k].type.toString() !== "ID" || fields[k].name === "_id") && !aggFields.includes(fields[k].name)) {
+      relationFields[k] = fields[k]
     }
   })
-
-  schemaComposer.add(mutationInputObject)
+  addITC(schemaComposer, `Mutate${modelType.name}RelationInput`, relationFields)
 }
 
-function mapObjectInputFields (schemaComposer: SchemaComposer<any>, fields: Array<GraphQLField<any, any>>, objectName: string): GraphQLInputField[] {
+function mapObjectInputFields(schemaComposer: SchemaComposer<any>, fields: Array<GraphQLField<any, any>>, objectName: string): GraphQLInputField[] {
   return fields.map((field: GraphQLField<any, any>) => {
     let namedType = getNamedType(field.type) as GraphQLNamedInputType
     let typeName = namedType.name
@@ -328,38 +353,32 @@ function mapObjectInputFields (schemaComposer: SchemaComposer<any>, fields: Arra
   })
 }
 
-export function addCreateObjectInputType (schemaComposer: SchemaComposer<any>, objectType: GraphQLObjectType) {
+export function addCreateObjectInputType(schemaComposer: SchemaComposer<any>, objectType: GraphQLObjectType) {
   const objectFields = Object.values(objectType.getFields())
   const operationType = GraphbackOperationType.CREATE
+  const inputTypeName = getInputTypeName(objectType.name, operationType)
+  const fields = mapObjectInputFields(schemaComposer, objectFields, objectType.name)
+    .reduce((fieldObj: any, { name, type, description }: any) => {
+      fieldObj[name] = { type, description }
 
-  const inputType = new GraphQLInputObjectType({
-    name: getInputTypeName(objectType.name, operationType),
-    fields: mapObjectInputFields(schemaComposer, objectFields, objectType.name)
-      .reduce((fieldObj: any, { name, type, description }: any) => {
-        fieldObj[name] = { type, description }
+      return fieldObj
+    }, {})
 
-        return fieldObj
-      }, {})
-  })
-
-  schemaComposer.add(inputType)
+  addITC(schemaComposer, inputTypeName, fields)
 }
 
-export function addUpdateObjectInputType (schemaComposer: SchemaComposer<any>, objectType: GraphQLObjectType) {
+export function addUpdateObjectInputType(schemaComposer: SchemaComposer<any>, objectType: GraphQLObjectType) {
   const objectFields = Object.values(objectType.getFields())
   const operationType = GraphbackOperationType.UPDATE
+  const inputTypeName = getInputTypeName(objectType.name, operationType)
+  const fields = mapObjectInputFields(schemaComposer, objectFields, objectType.name)
+    .reduce((fieldObj: any, { name, type, description }: any) => {
+      fieldObj[name] = { type: getNullableType(type), description }
 
-  const inputType = new GraphQLInputObjectType({
-    name: getInputTypeName(objectType.name, operationType),
-    fields: mapObjectInputFields(schemaComposer, objectFields, objectType.name)
-      .reduce((fieldObj: any, { name, type, description }: any) => {
-        fieldObj[name] = { type: getNullableType(type), description }
+      return fieldObj
+    }, {})
 
-        return fieldObj
-      }, {})
-  })
-
-  schemaComposer.add(inputType)
+  addITC(schemaComposer, inputTypeName, fields)
 }
 
 export const createMutationListResultType = (modelType: GraphQLObjectType) => {
@@ -387,7 +406,7 @@ export const createModelListResultType = (modelType: GraphQLObjectType) => {
   })
 }
 
-export function createVersionedInputFields (versionedInputType: GraphQLInputObjectType) {
+export function createVersionedInputFields(versionedInputType: GraphQLInputObjectType) {
   return {
     createdAt: {
       type: versionedInputType
@@ -398,7 +417,7 @@ export function createVersionedInputFields (versionedInputType: GraphQLInputObje
   }
 }
 
-export function createVersionedFields (type: GraphQLScalarType) {
+export function createVersionedFields(type: GraphQLScalarType) {
   return {
     createdAt: {
       type,

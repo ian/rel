@@ -44,7 +44,7 @@ const run = async () => {
     const providers = {}
     const models = metadata.getModelDefinitions()
     for (const model of models) {
-      providers[model.graphqlType.name] = new RedisGraphProvider(model)
+      providers[model.graphqlType.name] = new RedisGraphProvider(model, models)
     }
 
     // if seed data is supplied, insert it into collections

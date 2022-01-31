@@ -52,22 +52,22 @@ export interface GraphbackAPI {
 export type GraphbackServiceCreator = (model: ModelDefinition, dataProvider: GraphbackDataProvider) => GraphbackCRUDService
 export type GraphbackDataProviderCreator = (model: ModelDefinition) => GraphbackDataProvider
 
-async function createServices (models: ModelDefinition[], createService: Promise<GraphbackServiceCreator>, createProvider: GraphbackDataProviderCreator) {
+async function createServices(models: ModelDefinition[], createService: Promise<GraphbackServiceCreator>, createProvider: GraphbackDataProviderCreator) {
   const services: GraphbackServiceConfigMap = {}
 
   for (const model of models) {
     const modelType = model.graphqlType
     const modelProvider = createProvider(model)
-    const modelService = await createService(model, modelProvider)
+    const modelService = await createService(model, modelProvider, models)
     services[modelType.name] = modelService
   }
 
   return services
 }
 
-interface PluginMap { [name: string]: GraphbackPlugin}
+interface PluginMap { [name: string]: GraphbackPlugin }
 
-function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
+function getPlugins(plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
   const pluginsMap: PluginMap = plugins?.reduce((acc: PluginMap, plugin: GraphbackPlugin) => {
     if (acc[plugin.getPluginName()]) {
       // eslint-disable-next-line no-console
@@ -104,7 +104,7 @@ function getPlugins (plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
  *
  * @returns {GraphbackAPI} Generated schema, CRUD resolvers and services
  */
-export async function buildGraphbackAPI (model: string | GraphQLSchema,config = {}): GraphbackAPI {
+export async function buildGraphbackAPI(model: string | GraphQLSchema, config = {}): GraphbackAPI {
   const schemaPlugins: GraphbackPlugin[] = getPlugins(config.plugins)
 
   const pluginEngine = new GraphbackPluginEngine({
@@ -130,7 +130,7 @@ export async function buildGraphbackAPI (model: string | GraphQLSchema,config = 
 
   const schema = constraintDirective()(metadata.getSchema())
   // merge resolvers into schema to make it executable
-  const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers})
+  const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers })
 
   const typeDefs = printSchemaWithDirectives(schemaWithResolvers)
 

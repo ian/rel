@@ -1,5 +1,5 @@
 import { mergeResolvers } from '@graphql-tools/merge'
-import { GraphQLObjectType, GraphQLSchema, getNamedType } from 'graphql'
+import { GraphQLObjectType, GraphQLSchema, getNamedType, isListType } from 'graphql'
 import { getUserTypesFromSchema, IResolvers } from '@graphql-tools/utils'
 import { ModelDefinition, ModelFieldMap } from './ModelDefinition'
 
@@ -11,19 +11,19 @@ export class GraphbackCoreMetadata {
   private resolvers: IResolvers
   private models: ModelDefinition[]
 
-  public constructor (schema: GraphQLSchema) {
+  public constructor(schema: GraphQLSchema) {
     this.schema = schema
   }
 
-  public getSchema () {
+  public getSchema() {
     return this.schema
   }
 
-  public setSchema (newSchema: GraphQLSchema) {
+  public setSchema(newSchema: GraphQLSchema) {
     this.schema = newSchema
   }
 
-  public addResolvers (resolvers: IResolvers) {
+  public addResolvers(resolvers: IResolvers) {
     if (resolvers) {
       const mergedResolvers = [
         this.resolvers,
@@ -33,14 +33,14 @@ export class GraphbackCoreMetadata {
     }
   }
 
-  public getResolvers (): IResolvers {
+  public getResolvers(): IResolvers {
     return this.resolvers
   }
 
   /**
    * Get Graphback Models - GraphQL Types with additional CRUD configuration
    */
-  public getModelDefinitions () {
+  public getModelDefinitions() {
     // Contains map of the models with their underlying CRUD configuration
     this.models = []
     // Get actual user types
@@ -61,11 +61,11 @@ export class GraphbackCoreMetadata {
    * Returns all user types that have @model in description
    * @param schema
    */
-  public getGraphQLTypesWithModel (): GraphQLObjectType[] {
+  public getGraphQLTypesWithModel(): GraphQLObjectType[] {
     return getUserTypesFromSchema(this.schema)
   }
 
-  private buildModel (modelType: GraphQLObjectType): ModelDefinition {
+  private buildModel(modelType: GraphQLObjectType): ModelDefinition {
     // Merge CRUD options from type with global ones
     const primaryKey = {
       name: "_id",
@@ -76,20 +76,19 @@ export class GraphbackCoreMetadata {
     const fields: ModelFieldMap = {}
 
     fields._id = {
-      type: "ID"
+      type: "ID",
+      name: "_id",
+      transient: false
     }
 
     const uniqueFields = []
     const defaultFields = []
     const computedFields = []
+    const relationships = []
 
     for (const field of Object.keys(modelFields)) {
-      let fieldName = field
-      let type: string = ''
-
       const graphqlField = modelFields[field]
-
-      type = getNamedType(graphqlField.type).name
+      const type = getNamedType(graphqlField.type).name
 
       if (graphqlField.extensions?.directives?.some?.(d => d.name === "transient")) {
         fields[field] = {
@@ -101,7 +100,7 @@ export class GraphbackCoreMetadata {
       }
 
       fields[field] = {
-        name: fieldName,
+        name: field,
         type,
         transient: false
       }
@@ -137,7 +136,7 @@ export class GraphbackCoreMetadata {
       }
 
       const computedField = graphqlField.astNode.directives?.find?.(d => d.name.value === "computed")
-      if(computedField) {
+      if (computedField) {
         fields[field].computed = true
         computedFields.push({
           name: field,
@@ -145,12 +144,23 @@ export class GraphbackCoreMetadata {
           template: computedField.arguments?.find(a => a.name.value === "value")?.value?.value
         })
       }
+
+      const relationField = graphqlField.astNode.directives?.find?.(d => d.name.value === "relation")
+      if (relationField) {
+        relationships.push({
+          type: relationField.arguments?.find(a => a.name.value === "type")?.value?.value,
+          field,
+          isList: isListType(graphqlField.type),
+          fieldType: type,
+          direction: relationField.arguments?.find(a => a.name.value === "direction")?.value?.value
+        })
+      }
     }
 
     return {
       fields,
       primaryKey,
-      relationships: [],
+      relationships,
       uniqueFields,
       defaultFields,
       computedFields,
