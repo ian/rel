@@ -40,7 +40,7 @@
     "fastify-cookie": "^5.5.0",
     "fastify-cors": "^6.0.2",
     "graphback": "*",
-    "graphback-redisgraph": "workspace:^1.0.0",
+    "graphback-redisgraph": "workspace:*",
     "graphql": "15.8.0",
     "graphql-playground-html": "^1.6.30",
     "graphql-redis-subscriptions": "^2.4.2",
