@@ -34,7 +34,6 @@ export default async function AuthPlugin(
     url: '/session',
     method: ['GET'],
     handler: async (req, reply) => {
-      // const cookies = new Cookies(req, reply)
       const token = req.cookies[cookieName]
       const decoded = jwt.decode(token)
 
@@ -76,7 +75,6 @@ export default async function AuthPlugin(
     url: '/session',
     method: 'DELETE',
     handler: async (req, reply) => {
-      // const cookies = new Cookies(req, reply)
       reply.status(200).clearCookie(cookieName).send()
     },
   })
