@@ -1,7 +1,7 @@
-import { renderPlaygroundPage } from 'graphql-playground-html'
-
+import { Readable } from 'stream'
 import { FastifyInstance } from 'fastify'
 import { createServer } from '@graphql-yoga/node'
+import { renderPlaygroundPage } from 'graphql-playground-html'
 
 // import goTrace from '@go-trace/tracer'
 
@@ -11,12 +11,8 @@ import Graphback from './graphback'
 // ////////////////////////
 // move me
 import Logger from '@ptkdev/logger'
-import { Readable } from 'stream'
 
 type Opts = {
-  // schema: GraphQLSchema
-  // resolvers: object
-  // contextCreator: any // what is this?
   schema: string
   outputPath: string
   logger: Logger
@@ -55,7 +51,6 @@ export default async function GraphQLPlugin(
     handler: async (req, reply) => {
       const response = await graphQLServer
         .handleIncomingMessage(req)
-        // .catch(console.error)
 
       response.headers.forEach((value, key) => {
         reply.header(key, value)
@@ -67,7 +62,7 @@ export default async function GraphQLPlugin(
   })
 
   if (process.env.REL_TRACE) {
-    logger.info('Tracer enabled at http://localhost:2929', 'INIT')
+    logger?.info('Tracer enabled at http://localhost:2929', 'INIT')
   }
 
   // GraphQL Playground
