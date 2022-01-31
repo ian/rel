@@ -1,6 +1,22 @@
 import { GraphQLSchema } from 'graphql'
-import { ServiceCreator, DataProviderCreator, GraphbackPlugin, GraphbackPluginEngine, printSchemaWithDirectives, ModelDefinition, GraphbackServiceConfigMap, GraphbackContext, createCRUDService, GraphbackDataProvider, GraphbackCRUDService } from '@graphback/core'
-import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from '@graphback/codegen-schema'
+import { formatSdl } from 'format-graphql'
+import {
+  ServiceCreator,
+  DataProviderCreator,
+  GraphbackPlugin,
+  GraphbackPluginEngine,
+  printSchemaWithDirectives,
+  ModelDefinition,
+  GraphbackServiceConfigMap,
+  GraphbackContext,
+  createCRUDService,
+  GraphbackDataProvider,
+  GraphbackCRUDService,
+} from '@graphback/core'
+import {
+  SchemaCRUDPlugin,
+  SCHEMA_CRUD_PLUGIN_NAME,
+} from '@graphback/codegen-schema'
 import { mergeSchemas } from '@graphql-tools/merge'
 import { PubSub } from 'graphql-subscriptions'
 import { constraintDirective } from 'graphql-constraint-directive'
@@ -74,23 +90,20 @@ function getPlugins(plugins?: GraphbackPlugin[]): GraphbackPlugin[] {
       console.debug(`Plugin ${plugin.getPluginName()} is already defined and will be overridden`)
     }
 
-    acc[plugin.getPluginName()] = plugin
+      acc[plugin.getPluginName()] = plugin
 
-    return acc
-  }, {}) || {}
+      return acc
+    }, {}) || {}
 
   let schemaPlugin: GraphbackPlugin
 
   if (pluginsMap[SCHEMA_CRUD_PLUGIN_NAME]) {
     schemaPlugin = pluginsMap[SCHEMA_CRUD_PLUGIN_NAME]
     /* eslint-disable-next-line */
-    delete pluginsMap[SCHEMA_CRUD_PLUGIN_NAME]; // remove the crud schema plugin as it will be added as first entry.
+    delete pluginsMap[SCHEMA_CRUD_PLUGIN_NAME] // remove the crud schema plugin as it will be added as first entry.
   }
 
-  return [
-    schemaPlugin || new SchemaCRUDPlugin(),
-    ...Object.values(pluginsMap)
-  ]
+  return [schemaPlugin || new SchemaCRUDPlugin(), ...Object.values(pluginsMap)]
 }
 
 /**
@@ -109,20 +122,25 @@ export async function buildGraphbackAPI(model: string | GraphQLSchema, config = 
 
   const pluginEngine = new GraphbackPluginEngine({
     schema: model,
-    plugins: schemaPlugins
+    plugins: schemaPlugins,
   })
 
   const metadata = pluginEngine.createResources()
   const models = metadata.getModelDefinitions()
 
   // Set a default ServiceCreator in the event the config does not have one
-  const serviceCreator = config.serviceCreator || createCRUDService({ pubSub: new PubSub() })
+  const serviceCreator =
+    config.serviceCreator || createCRUDService({ pubSub: new PubSub() })
 
-  const services = await createServices(models, serviceCreator, config.dataProviderCreator)
+  const services = await createServices(
+    models,
+    serviceCreator,
+    config.dataProviderCreator
+  )
   const contextCreator = (context: any) => {
     return {
       ...context,
-      graphback: services
+      graphback: services,
     }
   }
 
@@ -132,13 +150,13 @@ export async function buildGraphbackAPI(model: string | GraphQLSchema, config = 
   // merge resolvers into schema to make it executable
   const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers })
 
-  const typeDefs = printSchemaWithDirectives(schemaWithResolvers)
+  const typeDefs = formatSdl(printSchemaWithDirectives(schemaWithResolvers))
 
   return {
     schema: schemaWithResolvers,
     typeDefs,
     resolvers,
     services,
-    contextCreator
+    contextCreator,
   }
 }

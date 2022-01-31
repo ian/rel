@@ -3,32 +3,59 @@
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import ora from 'ora'
-// import { spawn } from 'child_process'
 import startServer from 'rel-server'
+import Logger from '@ptkdev/logger'
 
 let server
 
-const handleDirChange = debounce(async () => {
-  // console.clear()
-  const reloading = ora('Reloading Rel').start()
-
+const handleChange = debounce(async (opts) => {
   if (server) {
     await server.kill('SIGINT')
   }
+
+  const { dir, verbose } = opts
+  let reloadingIndicator
+  let logger
+
+  if (verbose) {
+    logger = new Logger({
+      debug: true,
+      write: true,
+      
+      // @todo - do we want to support file logging?
+      // type: 'log',
+      // path: {
+      //   // remember: add string *.log to .gitignore
+      //   debug_log: dir + '/logs/debug.log',
+      //   error_log: dir + '/logs/errors.log',
+      // },
+    })
+  } else {
+    console.log()
+    reloadingIndicator = ora('Reloading Rel').start()
+  }
+
   server = await startServer({
-    dir: process.cwd() + '/rel',
+    dir,
+    logger,
   })
     .then(() => {
-      reloading.succeed('Rel running on http://localhost:4000')
+      reloadingIndicator?.succeed('Rel running on http://localhost:4000')
     })
     .catch((err) => {
-      reloading.fail('Error during server start')
+      reloadingIndicator?.fail('Error during server start')
       console.error(err)
     })
 }, 300)
 
-export default () => {
+type Opts = {
+  dir: string
+  logging: boolean
+}
+
+export default (opts: Opts): void => {
+  const { dir } = opts
   chokidar
-    .watch(process.cwd() + '/./rel/schema.graphql', { persistent: true })
-    .on('all', handleDirChange)
+    .watch(dir + '/schema.graphql', { persistent: true })
+    .on('all', () => handleChange(opts))
 }

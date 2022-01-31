@@ -24,6 +24,7 @@
     "@graphback/codegen-schema": "*",
     "@graphback/core": "*",
     "@graphql-tools/merge": "6.2.6",
+    "format-graphql": "^1.4.0",
     "graphql": "15.8.0",
     "graphql-constraint-directive": "^2.3.0",
     "graphql-subscriptions": "2.0.0"

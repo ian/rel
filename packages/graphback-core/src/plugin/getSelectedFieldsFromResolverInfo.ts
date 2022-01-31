@@ -1,5 +1,6 @@
 import { GraphQLResolveInfo } from 'graphql'
 import graphqlFields from 'graphql-fields'
+import { fieldsList } from "graphql-fields-list"
 import { ModelDefinition } from './ModelDefinition'
 
 /**

@@ -1,0 +1,9 @@
+type Note {
+  title: String!
+  archived: Boolean
+}
+
+type User {
+  name: String!
+  email: String # this doesn't work @constraint(format: "email")
+}

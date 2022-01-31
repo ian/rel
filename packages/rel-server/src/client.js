@@ -7,7 +7,6 @@ export default ({ dir, logger }) => {
     output: dir + '/gen/gql-client',
   })
     .then(() => {
-      logger.info(`GraphQL Client generated at ${dir + '/gen/gql-client'}`, 'INIT')
+      logger?.info(`GraphQL Client generated at ${dir + '/gen/gql-client'}`, 'INIT')
     })
-    .catch(console.error)
 }
