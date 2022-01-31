@@ -29,8 +29,16 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
 export * from "@graphback/core";
 
 // src/buildGraphbackAPI.ts
-import { GraphbackPluginEngine, printSchemaWithDirectives, createCRUDService } from "@graphback/core";
-import { SchemaCRUDPlugin, SCHEMA_CRUD_PLUGIN_NAME } from "@graphback/codegen-schema";
+import { formatSdl } from "format-graphql";
+import {
+  GraphbackPluginEngine,
+  printSchemaWithDirectives,
+  createCRUDService
+} from "@graphback/core";
+import {
+  SchemaCRUDPlugin,
+  SCHEMA_CRUD_PLUGIN_NAME
+} from "@graphback/codegen-schema";
 import { mergeSchemas } from "@graphql-tools/merge";
 import { PubSub } from "graphql-subscriptions";
 import { constraintDirective } from "graphql-constraint-directive";
@@ -57,10 +65,7 @@ function getPlugins(plugins) {
     schemaPlugin = pluginsMap[SCHEMA_CRUD_PLUGIN_NAME];
     delete pluginsMap[SCHEMA_CRUD_PLUGIN_NAME];
   }
-  return [
-    schemaPlugin || new SchemaCRUDPlugin(),
-    ...Object.values(pluginsMap)
-  ];
+  return [schemaPlugin || new SchemaCRUDPlugin(), ...Object.values(pluginsMap)];
 }
 async function buildGraphbackAPI(model, config = {}) {
   const schemaPlugins = getPlugins(config.plugins);
@@ -80,7 +85,7 @@ async function buildGraphbackAPI(model, config = {}) {
   const resolvers = metadata.getResolvers();
   const schema = constraintDirective()(metadata.getSchema());
   const schemaWithResolvers = mergeSchemas({ schemas: [schema], resolvers });
-  const typeDefs = printSchemaWithDirectives(schemaWithResolvers);
+  const typeDefs = formatSdl(printSchemaWithDirectives(schemaWithResolvers));
   return {
     schema: schemaWithResolvers,
     typeDefs,

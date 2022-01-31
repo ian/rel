@@ -828,6 +828,7 @@ var SchemaCRUDPlugin = class extends GraphbackPlugin {
     const modelName = modelType.name;
     const resolverCreateField = getFieldName(modelName, GraphbackOperationType2.CREATE);
     mutationObj[resolverCreateField] = (_, args, context, info) => {
+      console.log("context.graphback", context.graphback);
       if (!context.graphback || !context.graphback[modelName]) {
         throw new Error(`Missing service for ${modelName}`);
       }

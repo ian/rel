@@ -4,10 +4,9 @@ import fs from 'fs'
 import generateGQLClient from './client.js'
 import Fastify, { FastifyInstance } from 'fastify'
 import Logger from '@ptkdev/logger'
-import fastifyCors from 'fastify-cors'
+import Cors from 'fastify-cors'
 
 import GraphQL from './graphql'
-import Graphback from './graphback'
 
 export default async function Server(config): Promise<FastifyInstance> {
   const { dir } = config
@@ -20,20 +19,21 @@ export default async function Server(config): Promise<FastifyInstance> {
     debug: !!process.env.REL_DEBUG,
   })
 
-  console.log({ dir })
+  // console.log({ dir })
 
-  const graphback = await Graphback({
-    schema: fs.readFileSync(dir + '/schema.graphql').toString(),
-    outputPath: dir + '/gen/schema.graphql',
-    logger,
-  })
+  // console.log({ graphback })
+
+  const schema = fs.readFileSync(dir + '/schema.graphql').toString()
+
+  // console.log(schema)
 
   // make sure you have redis running on localhost:6379 or change process.env.REDIS_HOST and process.env.REDIS_PORT
   // @todo - check for redis running
 
-  app.register(fastifyCors)
+  app.register(Cors)
   app.register(GraphQL, {
-    ...graphback,
+    schema,
+    outputPath: dir + '/gen/schema.graphql',
     logger,
   })
 

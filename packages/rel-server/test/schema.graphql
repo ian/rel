@@ -1,3 +1,9 @@
-type BlogPost {
-  title: String!
+# type Note {
+#   body: String!
+#   archived: Boolean
+# }
+
+type User {
+  name: String!
+  email: String @constraint(format: "email")
 }

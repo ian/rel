@@ -19,7 +19,7 @@ export default async function Graphback(params: Params) {
 
   logger.info(`Schema generated at ${outputPath}`, 'INIT')
 
-  return await buildGraphbackAPI(typeDefs, {
+  return buildGraphbackAPI(typeDefs, {
     dataProviderCreator,
     serviceCreator: createCRUDService({
       pubSub: new RedisPubSub(),
