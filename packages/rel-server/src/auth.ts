@@ -68,7 +68,7 @@ export default async function AuthPlugin(
 
         reply.status(200).setCookie(cookieName, token, { path: '/' }).send(user)
       } catch (error) {
-        console.log(error)
+        console.error(error)
         reply.status(500).send()
       }
     },

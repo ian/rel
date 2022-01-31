@@ -43,8 +43,8 @@ export default async function GraphQLPlugin(
     schema,
     context: contextCreator,
     logging: {
-      prettyLog: true,
-      logLevel: 'debug',
+      // prettyLog: true,
+      // logLevel: 'debug',
     },
 
     // plugins: [useGraphQLModules(createGraphQLApp())],

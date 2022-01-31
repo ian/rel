@@ -35,11 +35,13 @@
     "@graphql-yoga/node": "^0.1.0-alpha.3",
     "@ptkdev/logger": "^1.8.0",
     "fastify": "^3.27.0",
+    "fastify-cookie": "^5.5.0",
     "fastify-cors": "^6.0.2",
     "graphback": "*",
     "graphback-redisgraph": "workspace:^1.0.0",
     "graphql-playground-html": "^1.6.30",
     "graphql-redis-subscriptions": "^2.4.2",
+    "jsonwebtoken": "^8.5.1",
     "redis-stream-helper": "github:thelinuxlich/redis-stream-helper"
   }
 }
