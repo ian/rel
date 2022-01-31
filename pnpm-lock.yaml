@@ -96,6 +96,7 @@ importers:
       graphql: 15.8.0
       graphql-compose: 7.23.0
       graphql-fields: ^2.0.3
+      graphql-fields-list: ^2.2.4
       graphql-scalars: 1.14.1
       graphql-subscriptions: 2.0.0
       pluralize: 8.0.0
@@ -106,6 +107,7 @@ importers:
       graphql: 15.8.0
       graphql-compose: 7.23.0_graphql@15.8.0
       graphql-fields: 2.0.3
+      graphql-fields-list: 2.2.4
       graphql-scalars: 1.14.1_graphql@15.8.0
       graphql-subscriptions: 2.0.0_graphql@15.8.0
       pluralize: 8.0.0
@@ -3611,6 +3613,10 @@ packages:
       '@graphql-tools/utils': 6.2.4_graphql@15.8.0
       graphql: 15.8.0
       validator: 13.7.0
+    dev: false
+
+  /graphql-fields-list/2.2.4:
+    resolution: {integrity: sha512-dhsMajI/7FMeZ8UWJDiw7iZlwacW5eBM02IVJ6IldFNgmVSDeuS+0+wF3ZOB0zcpYl3Q1spuegPLAFKcriPOCw==}
     dev: false
 
   /graphql-fields/2.0.3:

@@ -1,11 +1,10 @@
-import loadListeners from './listeners'
+// import loadListeners from './listeners'
 import fs from 'fs'
 
 import generateGQLClient from './client.js'
 import Fastify, { FastifyInstance } from 'fastify'
 import Logger from '@ptkdev/logger'
 import Cors from 'fastify-cors'
-
 import GraphQL from './graphql'
 
 export default async function Server(config): Promise<FastifyInstance> {

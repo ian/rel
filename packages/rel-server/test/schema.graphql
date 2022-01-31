@@ -1,7 +1,7 @@
-# type Note {
-#   body: String!
-#   archived: Boolean
-# }
+type Note {
+  body: String!
+  archived: Boolean
+}
 
 type User {
   name: String!

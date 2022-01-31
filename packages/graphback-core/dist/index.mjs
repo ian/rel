@@ -324,6 +324,7 @@ function getModelByName(name, models) {
 
 // src/plugin/getSelectedFieldsFromResolverInfo.ts
 import graphqlFields from "graphql-fields";
+import { fieldsList } from "graphql-fields-list";
 var getSelectedFieldsFromResolverInfo = (info, model, isMutation = false, path) => {
   let projectionObj = graphqlFields(info, {}, { processArguments: true });
   if (path) {
@@ -350,7 +351,11 @@ var getModelFieldsFromResolverFields = (resolverFields, fieldArgs, model) => {
   }
   return [[...selectedFields], fieldArgs];
 };
-var getResolverInfoFieldsList = (info, path) => fieldsList(info, { path });
+var getResolverInfoFieldsList = (info, path) => {
+  const list = fieldsList(info, { path });
+  console.log({ list });
+  return list;
+};
 
 // src/db/getPrimaryKey.ts
 import { getNamedType as getNamedType3, isScalarType as isScalarType2 } from "graphql";
