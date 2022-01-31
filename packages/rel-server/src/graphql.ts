@@ -3,7 +3,6 @@ import { renderPlaygroundPage } from 'graphql-playground-html'
 import { FastifyInstance } from 'fastify'
 import { createServer } from '@graphql-yoga/node'
 
-// import AltairFastify from 'altair-fastify-plugin'
 // import goTrace from '@go-trace/tracer'
 
 import Graphback from './graphback'
@@ -84,14 +83,4 @@ export default async function GraphQLPlugin(
     )
     reply.status(200)
   })
-
-  // app.register(AltairFastify, {
-  //   /**
-  //    * All these are the defaults.
-  //    */
-  //   path: '/altair',
-  //   baseURL: '/altair/',
-  //   endpointURL: '/graphql',
-  //   // decorateReply: false,
-  // })
 }
