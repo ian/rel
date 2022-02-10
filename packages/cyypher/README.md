@@ -49,142 +49,238 @@ const cyypher = new Client({
 
 ## Usage
 
-### `find()`
+### `find(label, where)`
 
 Finds a single node by label and params.
 
 ```ts
-cyypher.find("Person", { id: "123" })
-cyypher.find("Person", { name: "Ian" })
+cyypher.find('Person', { _id: '123' })
+cyypher.find('Person', { name: 'Ian' })
 ```
 
-### `list()`
+### `list(label, where)`
 
 List multiple nodes by label and params.
 
 ```ts
 // List everyone
-cyypher.list("Person", { })
+cyypher.list('Person', {})
 
 // List only admins
-cyypher.list("Person", { where: { admin: true } })
+cyypher.list('Person', { where: { admin: true } })
 ```
 
-### `count()`
+### `count(label, where)`
 
 Count number of matching nodes.
 
 ```ts
 // total count of a label
-cyypher.count("Person")
+cyypher.count('Person')
 
-// where params
-cyypher.count("Person", { where: { admin: true } })
+// with where params
+cyypher.count('Person', { where: { admin: true } })
 ```
 
-### `create()`
+### `create(label, where)`
 
 ```ts
-cyypher.create("Person", { name: "Inigo Montoya" })
-
-// {
-//   name: "Inigo Montoya",
-//   _id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
+cyypher.create('Person', { name: 'Inigo Montoya' })
 ```
 
 Ensure uniqueness across a field:
 
 ```ts
-cyypher.create("Person", { name: "Inigo Montoya" })
+cyypher.create('Person', { name: 'Inigo Montoya' })
 
 // this call is idempotent
-cyypher.create("Person", { name: "Inigo Montoya", __unique: "name" })
+cyypher.create('Person', { name: 'Inigo Montoya', __unique: 'name' })
 ```
 
-### `findOrCreate()`
+### `findOrCreate(label, where, updateParams)`
 
 A find() and then create() call that will return an existing node if found.
 
 ```ts
-cyypher.findOrCreate("Person", { name: "Inigo Montoya" })
-
-// {
-//   name: "Inigo Montoya",
-//   _id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
-
-cyypher.findOrCreate("Person", { name: "Inigo Montoya" })
-
-// Same Person
-// {
-//   name: "Inigo Montoya",
-//   _id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
-
-cyypher.findOrCreate("Person", { name: "Vizzini" })
-
-// New Person
-// {
-//   name: "Vizzini",
-//   _id: "2xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
+cyypher.findOrCreate('Person', { name: 'Inigo Montoya' })
+// this won't create a new node
+cyypher.findOrCreate('Person', { name: 'Inigo Montoya' })
+// this will create a new node
+cyypher.findOrCreate('Person', { name: 'Vizzini' })
 ```
 
 Optional: `create` params:
 
 ```ts
 cyypher.findOrCreate(
-  "Person", 
-  { id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" }, 
-  { name: "Inigo Montoya" }
+  'Person',
+  { _id: '1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' },
+  { name: 'Inigo Montoya' }
 )
-
-// {
-//   name: "Inigo Montoya",
-//   _id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
 ```
 
 > Note: It is not necessary to re-specify find params in the create params, the two will be merged together.
 
-### `merge()`
+### `merge(label, where, updateParams)`
 
 Similar to `findOrCreate` but uses cypher's native merge command:
 
-```
-cyypher.findOrCreate("Person", { name: "Inigo Montoya" })
-
-// {
-//   name: "Inigo Montoya",
-//   _id: "1xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   _createdAt: "2022-01-01T00:00:00+00:00",
-//   _updatedAt: "2022-01-01T00:00:00+00:00",
-// }
+```ts
+cyypher.merge('Person', { name: 'Inigo Montoya' })
 ```
 
-### `update()`
+### `update(label, id, updateParams)`
 
-### `updateBy()`
+Update a node based on ID.
 
-### `delete()`
+```ts
+cyypher.merge('Person', '123', { name: 'Inigo Montoya' })
+```
 
-### `deleteBy()`
+### `updateBy(label, where, updateParams)`
 
-### `listRelationship()`
+Update multiple nodes by params.
 
-### `createRelationship()`
+```ts
+cyypher.updateBy(
+  'Person',
+  { name: 'Inigo Montoya' },
+  { name: 'Mandy Patinkin' }
+)
+```
+
+### `delete(label, id)`
+
+Delete a node by ID.
+
+```ts
+cyypher.delete('Person', '123')
+```
+
+### `deleteBy(label, params)`
+
+Delete multiple nodes by params.
+
+```ts
+cyypher.deleteBy('Person', { name: 'Inigo Montoya' })
+```
+
+### `listRelationship(from, rel, to, opts)`
+
+List relationships between nodes.
+
+| Param      | Type                           | Required | Description                    | Default |
+| :--------- | :----------------------------- | -------- | ------------------------------ | ------- |
+| `from`     | `string` \| `object` \| `Node` | yes      | From node                      |
+| `rel`      | `string` \| `object` \| `Node` | yes      | Relationship                   |
+| `to`       | `string` \| `object` \| `Node` | yes      | To node                        |
+| Options    |                                |          |                                |         |
+| `singular` | `boolean`                      |          | Singular relationship?         | false   |
+| `skip`     | `number`                       |          | Skip offset                    | 0       |
+| `limit`    | `number`                       |          | Number of results              |
+| `order`    | `object`                       |          | Order the results              |
+| `orderRaw` | `string`                       |          | Direct order string to pass in |
+
+```ts
+// List N-1 between many nodes
+cyypher.listRelationship('Person', 'FRIEND', { _id: '456' })
+
+// List all FRIEND relationships between Persons
+cyypher.listRelationship('Person', 'FRIEND', 'Person')
+
+// List 1-1 between two nodes
+cyypher.listRelationship({ _id: '123' }, 'FRIEND', { _id: '456' })
+
+// You can also pass a node instance
+import { ref } from 'cyypher'
+const fromNode = await cyypher.find('Person', 'ID')
+const toNode = await cyypher.find('Person', 'ID2')
+
+cyypher.listRelationship(ref(fromNode), 'FRIEND', ref(toNode))
+
+// List 1-1 between two nodes with types
+cyypher.listRelationship({ __typename: 'Person', _id: '123' }, 'FRIEND', {
+  __typename: 'Person',
+  _id: '456',
+})
+
+// List 1-1 between two nodes with relation params
+cyypher.listRelationship(
+  { _id: '123' },
+  { __typename: 'FRIEND', relation: 'close', metAt: new Date() },
+  { _id: '456' }
+)
+
+// List directed relationship (IN, OUT, NONE)
+cyypher.listRelationship(
+  { _id: '123' },
+  { __typename: 'FRIEND', __direction: 'OUT' },
+  { _id: '456' }
+)
+```
+
+### `createRelationship(from, rel, to, opts)`
+
+Create relationship(s) between two or more nodes.
+
+| Param      | Type                           | Required | Description            | Default |
+| :--------- | :----------------------------- | -------- | ---------------------- | ------- |
+| `from`     | `string` \| `object` \| `Node` | yes      | From node              |
+| `rel`      | `string` \| `object` \| `Node` | yes      | Relationship           |
+| `to`       | `string` \| `object` \| `Node` | yes      | To node                |
+| Options    |                                |          |                        |         |
+| `singular` | `boolean`                      |          | Singular relationship? | false   |
+
+```ts
+// Using params
+cyypher.createRelationship({ _id: '123' }, 'FRIEND', { _id: '456' })
+
+// Using node references
+import { ref } from 'cyypher'
+const fromNode = await cyypher.find('Person', 'ID')
+const toNode = await cyypher.find('Person', 'ID2')
+cyypher.createRelationship(ref(fromNode), 'FRIEND', ref(toNode))
+
+// Singular
+cyypher.createRelationship(
+  { _id: '123' },
+  'FRIEND',
+  { _id: '456' },
+  { singular: true }
+)
+```
 
 ### `clearRelationship()`
 
+Clear all relationships between two or more nodes.
+
+| Param  | Type                           | Required | Description  | Default |
+| :----- | :----------------------------- | -------- | ------------ | ------- |
+| `from` | `string` \| `object` \| `Node` | yes      | From node    |
+| `rel`  | `string` \| `object` \| `Node` | yes      | Relationship |
+
+```ts
+// Using params
+cyypher.clearRelationship({ _id: '123' }, 'FRIEND')
+```
+
 ### `deleteRelationship()`
+
+Delete relationship(s) between two or more nodes.
+
+| Param  | Type                           | Required | Description  | Default |
+| :----- | :----------------------------- | -------- | ------------ | ------- |
+| `from` | `string` \| `object` \| `Node` | yes      | From node    |
+| `rel`  | `string` \| `object` \| `Node` | yes      | Relationship |
+| `to`   | `string` \| `object` \| `Node` | yes      | To node      |
+
+```ts
+// Using params
+cyypher.deleteRelationship({ _id: '123' }, 'FRIEND', { _id: '456' })
+
+// Using node references
+import { ref } from 'cyypher'
+const fromNode = await cyypher.find('Person', 'ID')
+const toNode = await cyypher.find('Person', 'ID2')
+cyypher.deleteRelationship(ref(fromNode), 'FRIEND', ref(toNode))
+```
