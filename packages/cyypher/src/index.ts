@@ -27,8 +27,21 @@ export function ref(node) {
   return { __typename, id }
 }
 
+const DEFAULT_CONNECTION = {
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  auth: {
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD,
+  }
+}
+
 class Client {
-  constructor() {
+  connection = null
+
+  constructor(connection = DEFAULT_CONNECTION) {
+    this.connection = connection 
+
     this.find = cypherFind.bind(this)
     this.list = cypherList.bind(this)
     this.count = cypherCount.bind(this)
@@ -49,12 +62,9 @@ class Client {
   async raw(cypher, opts = {}, tries = 0) {
     const graph = new Graph(
       'graph',
-      process.env.REDIS_HOST,
-      process.env.REDIS_PORT,
-      {
-        username: process.env.REDIS_USERNAME,
-        password: process.env.REDIS_PASSWORD,
-      }
+      this.connection.host,
+      this.connection.port,
+      this.connection.auth
     )
 
     const startTime = process.hrtime()
