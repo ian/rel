@@ -1,6 +1,6 @@
 {
   "name": "cyypher",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Cypher ORM + client for redis-graph",
   "main": "dist/index.mjs",
   "scripts": {
