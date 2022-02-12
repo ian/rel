@@ -8,12 +8,14 @@ import _ from 'lodash'
  * @return {Object}      An object of differences between the two
  */
 
-export const diff = function (obj1, obj2, opts = {}) {
-  const { ignore = [] } = opts
+export const diff = function (obj1, obj2, opts = { ignore: [] }) {
+  const { ignore } = opts
   const changed = {}
 
   if (!obj2) return changed
-  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') { throw new Error('diff can only be used on two objects') }
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+    throw new Error('diff can only be used on two objects')
+  }
 
   Object.entries(obj2).forEach(([k, v]) => {
     if (obj1[k] !== obj2[k] && !ignore.includes(k)) {

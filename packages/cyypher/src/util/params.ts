@@ -1,6 +1,11 @@
 import { coerce } from './coercion.js'
 
-export function paramsBuilder (params, opts = {}) {
+type ParmsBuilderOpts = {
+  except?: any
+  only?: any
+}
+
+export function paramsBuilder(params, opts: ParmsBuilderOpts = {}) {
   const { except = null, only = null } = opts
 
   const res = {}
@@ -17,10 +22,16 @@ export function paramsBuilder (params, opts = {}) {
   return res
 }
 
-export function paramsToCypher (params, opts = {}) {
+type ParamsToCypherOpts = {
+  separator?: string
+  join?: string
+  prefix?: string
+}
+
+export function paramsToCypher(params, opts: ParamsToCypherOpts = {}) {
   const { separator = ':', join = ' , ', prefix = null } = opts
 
-  function mapper (key) {
+  function mapper(key) {
     const field = prefix ? `${prefix}${key}` : key
     const value = coerce(this[key])
     return `${field} ${separator} ${value}`
@@ -30,26 +41,26 @@ export function paramsToCypher (params, opts = {}) {
 }
 
 // Converts { id: "1", name: "Ian" } => `id: 1, name: "Ian"`
-export function paramify (params, opts = {}) {
+export function paramify(params, opts = {}) {
   return paramsToCypher(paramsBuilder(params, opts), opts)
 }
 
 // Converts { id: "1", name: "Ian" } => `id = 1 AND name = "Ian"`
-export function andify (params, opts = {}) {
+export function andify(params, opts = {}) {
   return paramsToCypher(paramsBuilder(params, opts), {
     separator: '=',
     join: ' AND ',
-    ...opts
+    ...opts,
   })
   // return paramsToCypher(params, { separator: '=', join: ' AND ', ...opts })
 }
 
 // Converts { id: "1", name: "Ian" } => `SET id = 1, SET name = "Ian"`
-export function setify (params, opts = {}) {
+export function setify(params, opts = {}) {
   return paramsToCypher(paramsBuilder(params, opts), {
     separator: '=',
     join: ', ',
-    ...opts
+    ...opts,
   })
   // return paramsToCypher(params, { separator: '=', join: ', ', ...opts })
 }

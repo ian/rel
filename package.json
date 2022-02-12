@@ -40,7 +40,7 @@
     "build": "pnpm run -r build",
     "clean": "pnpm run -r clean",
     "dev": "pnpm run -r dev",
-    "redis": "docker run -d -p 6379:6379 -it --rm redislabs/redisgraph"
+    "redis": "docker run -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "husky": {
     "hooks": {

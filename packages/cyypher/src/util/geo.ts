@@ -1,5 +1,8 @@
 export class Geo {
-  constructor ({ lat, lng }) {
+  lat = null
+  lng = null
+
+  constructor({ lat, lng }) {
     this.lat = lat
     this.lng = lng
   }

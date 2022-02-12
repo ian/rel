@@ -1,3 +1,4 @@
+import { URL } from 'url'
 import { Graph } from 'redisgraph.js'
 import { cypherCreate } from './helpers/create.js'
 import { cypherDelete } from './helpers/delete.js'
@@ -27,36 +28,53 @@ export function ref(node) {
   return { __typename, id }
 }
 
-const DEFAULT_CONNECTION = {
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  auth: {
-    username: process.env.REDIS_USERNAME,
-    password: process.env.REDIS_PASSWORD,
+function parseConnection(conn: ConnectionOpts) {
+  if (typeof conn === 'string') {
+    const url = new URL(conn)
+    return {
+      host: url.hostname,
+      port: url.port,
+      auth: {
+        username: url.username,
+        password: url.password,
+      },
+    }
+  } else {
+    return conn
   }
 }
 
-class Client {
+type Connection = {
+  host: string
+  port: string
+  auth?: {
+    username: string
+    password: string
+  }
+}
+
+type ConnectionOpts = string | Connection
+export class Client {
   connection = null
 
-  constructor(connection = DEFAULT_CONNECTION) {
-    this.connection = connection 
+  find = cypherFind.bind(this)
+  list = cypherList.bind(this)
+  count = cypherCount.bind(this)
+  create = cypherCreate.bind(this)
+  merge = cypherMerge.bind(this)
+  update = cypherUpdate.bind(this)
+  updateBy = cypherUpdateBy.bind(this)
+  findOrCreate = cypherFindOrCreate.bind(this)
+  delete = cypherDelete.bind(this)
+  deleteBy = cypherDeleteBy.bind(this)
 
-    this.find = cypherFind.bind(this)
-    this.list = cypherList.bind(this)
-    this.count = cypherCount.bind(this)
-    this.create = cypherCreate.bind(this)
-    this.merge = cypherMerge.bind(this)
-    this.update = cypherUpdate.bind(this)
-    this.updateBy = cypherUpdateBy.bind(this)
-    this.findOrCreate = cypherFindOrCreate.bind(this)
-    this.delete = cypherDelete.bind(this)
-    this.deleteBy = cypherDeleteBy.bind(this)
+  listRelationship = cypherListRelationship.bind(this)
+  createRelationship = cypherCreateRelationship.bind(this)
+  clearRelationship = cypherClearRelation.bind(this)
+  deleteRelationship = cypherDeleteRelationship.bind(this)
 
-    this.listRelationship = cypherListRelationship.bind(this)
-    this.createRelationship = cypherCreateRelationship.bind(this)
-    this.clearRelationship = cypherClearRelation.bind(this)
-    this.deleteRelationship = cypherDeleteRelationship.bind(this)
+  constructor(conn: ConnectionOpts) {
+    this.connection = parseConnection(conn)
   }
 
   async raw(cypher, opts = {}, tries = 0) {
@@ -150,4 +168,13 @@ class Client {
   }
 }
 
-export default new Client()
+export default new Client(
+  process.env.REDIS_URL || {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    auth: {
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD,
+    },
+  }
+)
