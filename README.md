@@ -1,119 +1,108 @@
-# rel - The backend-in-a-box for Javascripters
+<!-- [![npm](https://img.shields.io/npm/v/rel.js.svg?style=flat-square)](https://www.npmjs.com/package/rel.js)
+[![npm](https://img.shields.io/npm/l/rel.js.svg?style=flat-square)](https://www.npmjs.com/package/rel.js)
+[![npm](https://img.shields.io/npm/dt/rel.js.svg?style=flat-square)](https://www.npmjs.com/package/rel.js)
+![npm bundle size](https://img.shields.io/bundlephobia/min/rel.js)
+[![Known Vulnerabilities](https://snyk.io/test/github/rel-js/rel.js/badge.svg)](https://snyk.io/test/github/nftapi/nftapi) -->
 
-There has been quite the renaissance in the Javascript world over the past 10 years. New frontend tooling is pushing the boundaries of both native and web applications.
+# rel.js
 
-Our goal is to apply some of the foundations that have made frontend tooling successful to the backend. We want to have you up and running in minutes
+[Rel](https://rel.run) is a zero-config backend framework for the frontend of your choice. We've combined [GraphQL](https://graphql.org) with the deep relational capabilities of [redis-graph](https://github.com/RedisGraph/RedisGraph/).
 
-# Documentation
+Rel is the end-to-end backend framework:
 
-Visit [https://rel.run](https://rel.run) to view the full documentation.
+- [x] Schema driven (`schema.graphql`)
+- [x] CRUD + custom endpoints
+- [x] Auto-generated client (TypeScript)
+- [ ] Authentication and authorization
+- [x] Realtime subscriptions
+- [ ] Delayed + scheduled jobs
+- [x] Event streams / hooks
+- [ ] Plugins + Extensions
+- [ ] Hosting (later 2022)
 
-# Quickstart
+## Quickstart
 
-Run `npx create-rel-app` to initialize a new project.
+Install rel.js with npm:
 
-This will run your though a few questions about your project and generate a runnable server.
-
-Once finished, you will have the following project structure:
-
-```
-./myapp
-│
-├── auth
-│   └── auth.ts
-├── jobs
-│   └── ...
-├── schema
-│   └── ...
-├── server.ts
-├── package.json
-├── relconfig.json
-├── tsconfig.json
-└── Dockerfile
+```sh
+npm install -g reljs
 ```
 
-Add new models by running `rel model Book`
+Then boostrap Rel into your project:
 
 ```
-// ./models/Book.ts
-
-import { model, string } from "@reldb/meta"
-
-export default model().fields({
-  name: string().required(),
-  // ... add other fields
-})
+rel init
 ```
 
-If you want to define Authentication models, change ports, etc, find in `./server.ts`
+Afterwards, Then run `rel dev` to start the server on [http://localhost:4000](http://localhost:4000).
 
+Other things available to you after install:
+
+- Visit http://localhost:4000/playground for a GraphQL playground.
+- Edit `rel/schema.graphql` to change your schema and generated client.
+  <!-- - Integrate Rel with the frontend of your choice: (next.js, svelte, Vue, Expo) -->
+  <!-- - Configure server endpoints, streams, and background jobs. -->
+  <!-- - Browse the extension marketplace -->
+
+## Community
+
+- [Discord](https://discord.gg/HpuzRGwevb) - Community feedback, announcements, and peer help.
+- [GitHub Issues](https://github.com/rel-js/rel/issues) - Report issues + errors while using rel.js.
+- [Twitter](https://twitter.com/rel) - Help spread the word and give us a follow!
+
+## Roadmap
+
+- [x] Alpha (current): We are activelly developing Rel and not recommending for production yet.
+- [ ] Public Alpha (Q2 2022): [Public release](https://github.com/orgs/rel-js/projects/2) for curious developers and hobby projects.
+- [ ] Public Beta: Stable enough for most non-enterprise use-cases
+- [ ] Public: Production-ready
+
+<!-- ## Useful environment variables
+
+- REL_HOST: The host for the GraphQL endpoint
+- REL_PORT: The port for the GraphQL endpoint
+- REL_DEBUG: Enable debug messages(example: Cypher queries)
+- REL_TRACE: Enable tracing at http://localhost:2929
+- REDIS_HOST: The Redis host (with RedisGraph module enabled)
+- REDIS_PORT: The Redis port -->
+
+## Development
+
+Rel uses [pnpm](https://pnpm.io/) as our package manager and we love it.
+
+- pnpm install
+- pnpm run build
+- pnpm run bootstrap:redis
+
+<!-- - Visit http://localhost:4000/schema to view and edit your DB schema. -->
+
+<!-- Install rel.js into your existing project (Next.js, Svelte, Vue, etc.):
+
+- docker run -p 6379:6379 -it --rm redislabs/redisgraph
+- npm install rel-run
+- make sure you have a valid `schema.graphql` file in your project root -->
+
+<!-- Then on your backend code:
+
+```javascript
+import { Server } from "rel.js";
+
+const server = new Server();
 ```
-import { server, loadSchema } from "@reldb/run"
-import { Social, Methods } from "@reldb/auth"
 
-const port = process.env.PORT
+Go to http://127.0.0.1:4000/altair or consume the endpoint in http://localhost:4000/graphql
 
-export default server({
-  auth: Social({
-    providers: {
-      email: Mailgun({
-        apiKey: "..."
-      })
-    },
-    methods: [
-      Methods.EmailPassword(),
-      Methods.EmailLink(),
-    ],
-  }),
-  port
-})
-```
+## Useful environment variables
 
-Then run your project:
+- REL_HOST: The host for the GraphQL endpoint
+- REL_PORT: The port for the GraphQL endpoint
+- REL_DEBUG: Enable debug messages(example: Cypher queries)
+- REL_TRACE: Enable tracing at http://localhost:2929
+- REDIS_HOST: The Redis host (with RedisGraph module enabled)
+- REDIS_PORT: The Redis port
 
-```
-rel dev
-```
+## Development
 
-<!-- See all configuration options here: https://rel.run/docs/config -->
-
-# Examples
-
-We have written a number of example projects like Clubhouse, Instagram, Shopify, to show you how easy it is to get setup with rel.
-
-Visit [https://rel.run/examples](https://rel.run/examples)
-
-# What is rel?
-
-rel is a batteries-included, highly configurable and extensible backend-as-a-service for generating GraphQL, REST, and metal APIs. rel is written in [Typescript](https://www.typescriptlang.org/) and [Cypher](http://www.opencypher.org/) on [redis-graph](http://www.opencypher.org/).
-
-rel is designed to handle the 80%+ usecase for most applications. Out of the box it comes with a ton of configurable modules:
-
-- Customizable domain model (e.g. Users _HAVE_ Followers, Users \_BELONG_TO Accounts)
-- Authentication models (social, saas, crypto, forum, etc.)
-- A privileges + guard system with controls at the model, field and endpoint level.
-- Background jobs
-- Plugin support for Images (via Imgix), Video (via Mux), Files (via S3, gCloud storage, etc)
-- Endpoints generated in your flavor of choise (REST, GraphQL)
-
-The name rel is an homage to CYPHER relationship, the rel.
-
-## What is CYPHER?
-
-Quite simply, CYPHER is SQL for Graph Databases, but infinitely better. It's a far more elegant and visually representative query language. We're big fans.
-
-Whereas a SQL database seeks to force data into a specific format via field and table constraints, a Graph DB seeks to "make sense" of your data by allowing you to look at it in different ways. We like to think of it as providing the 10,000 ft view all the way down to the
-
-You can read more on Why CYPHER on our documentation: [https://rel.run/docs/why-cypher](https://rel.run/docs/why-cypher)
-
-In general, using rel you will likely never have to write Cypher since the persistence layer is handled for you. However, there are advanced settings that let you drop into a CYPHER query from any endpoint or field.
-
-## Architecture
-
-![Rel Architecture](docs/architecture.jpg)
-
-# Contributing
-
-We are actively looking for backend and graph developers to help make rel a success.
-
-Please see our contributing.md.
+- pnpm i
+- pnpm run build
+- pnpm run bootstrap:redis -->
