@@ -1,6 +1,6 @@
 {
   "name": "cyypher",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Cypher ORM + client for redis-graph",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "ISC",

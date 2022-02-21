@@ -1,6 +1,6 @@
 {
   "name": "rel-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "ISC",
@@ -11,7 +11,9 @@
     "build:watch": "tsup --watch --format esm"
   },
   "tsup": {
-    "entry": ["src"],
+    "entry": [
+      "src"
+    ],
     "splitting": false,
     "sourcemap": true,
     "clean": true

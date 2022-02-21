@@ -1,7 +1,7 @@
 {
   "name": "rel-js",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Visit https://rel.run/docs to view the full documentation.",
   "repository": "https://github.com/runrel/rel",
   "author": "Ian Hunter <ian@rel.run>",
