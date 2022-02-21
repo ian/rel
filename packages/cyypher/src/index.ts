@@ -1,5 +1,5 @@
 import { URL } from "url"
-import { isEmpty } from "lodash"
+import lodash from "lodash"
 import { Graph } from "redisgraph.js"
 import { cypherCreate } from "./helpers/create.js"
 import { cypherDelete } from "./helpers/delete.js"
@@ -33,7 +33,7 @@ function parseConnection(conn: ConnectionOpts) {
   if (typeof conn === "string") {
     const url = new URL(conn)
     let auth = null
-    if (!isEmpty(url.username) && !isEmpty(url.password)) {
+    if (!lodash.isEmpty(url.username) && !lodash.isEmpty(url.password)) {
       auth = {
         username: url.username,
         password: url.password,
