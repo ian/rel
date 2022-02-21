@@ -34,7 +34,8 @@
     "fs-utils": "^0.7.0",
     "inquirer": "^8.2.0",
     "ora": "^5.3.0",
-    "rel-server": "workspace:*"
+    "rel-server": "workspace:*",
+    "slugify": "^1.6.5"
   },
   "devDependencies": {
     "tsup": "^5.11.13"
