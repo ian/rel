@@ -1,7 +1,7 @@
 import { GraphQLSchema } from "graphql"
 import { Client } from "cyypher"
 import { Readable } from "stream"
-import Fastify from "fastify"
+import Fastify, { FastifyInstance } from "fastify"
 import { createServer } from "@graphql-yoga/node"
 import { renderPlaygroundPage } from "graphql-playground-html"
 
@@ -20,6 +20,8 @@ export default class Server {
   private typeDefs: string
   private resolvers: object
 
+  private app: FastifyInstance
+
   // private _nodes?: Node[]
   // private _relationships?: Relationship[]
 
@@ -28,6 +30,9 @@ export default class Server {
     this.connection = connection
     this.typeDefs = typeDefs
     this.resolvers = resolvers
+    this.app = Fastify({
+      trustProxy: true,
+    })
   }
 
   private async generateSchema(): Promise<GraphQLSchema> {
@@ -39,10 +44,6 @@ export default class Server {
 
   async listen(port: number | string) {
     const schema = await this.generateSchema()
-    const app = Fastify({
-      trustProxy: true,
-    })
-
     const cypher = new Client(this.connection)
 
     const graphQLServer = createServer({
@@ -59,7 +60,7 @@ export default class Server {
       },
     })
 
-    app.route({
+    this.app.route({
       url: "/graphql",
       method: ["POST", "OPTIONS"],
       handler: async (req, reply) => {
@@ -73,7 +74,7 @@ export default class Server {
     })
 
     // GraphQL Playground
-    app.get("/", async (_, reply) => {
+    this.app.get("/", async (_, reply) => {
       reply.headers({
         "Content-Type": "text/html",
       })
@@ -86,12 +87,16 @@ export default class Server {
       reply.status(200)
     })
 
-    return app.listen(port).then(() => {
+    return this.app.listen(port).then(() => {
       const generatedSchema = printSchema(schema)
       return {
         port,
         generatedSchema,
       }
     })
+  }
+
+  async kill() {
+    this.app.close()
   }
 }

@@ -1,5 +1,5 @@
 // require('dotenv').config({ path: '.env' })
-
+import fs from "fs"
 import chokidar from "chokidar"
 import debounce from "debounce"
 import ora from "ora"
@@ -9,9 +9,9 @@ import Logger from "@ptkdev/logger"
 let server
 
 const handleChange = debounce(async (opts) => {
-  // if (server) {
-  //   await server.kill("SIGINT")
-  // }
+  if (server) {
+    await server.kill()
+  }
 
   const { dir, verbose } = opts
   let reloadingIndicator
@@ -30,24 +30,9 @@ const handleChange = debounce(async (opts) => {
       //   error_log: dir + '/logs/errors.log',
       // },
     })
-  } else {
-    console.log()
-    reloadingIndicator = ora("Reloading Rel").start()
   }
 
-  const typeDefs = `
-    type Movie {
-        title: String!
-        year: Int
-        rating: Float
-        genres: [Genre]! @rel(label: "IN_GENRE", direction: OUT)
-    }
-
-    type Genre {
-        name: String
-        movies: [Movie]! @rel(label: "IN_GENRE", direction: IN)
-    }
-`
+  const typeDefs = fs.readFileSync(dir + "/schema.graphql").toString()
 
   const connection = "redis://localhost:6379"
 
@@ -83,6 +68,8 @@ type Opts = {
 
 export default (opts: Opts): void => {
   const { dir } = opts
+  // console.log("Starting", { dir })
+
   chokidar
     .watch(dir + "/schema.graphql", { persistent: true })
     .on("all", () => handleChange(opts))

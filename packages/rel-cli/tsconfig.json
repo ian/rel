@@ -2,10 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "es5",
-    "esModuleInterop": true,
-    "module": "commonjs",
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
+    "module": "ESnext",
+    "target": "ESnext",
+    "importHelpers": false,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "esModuleInterop": true
   },
-  "include": ["bin", "commands", "lib"]
+  "include": ["src"]
 }

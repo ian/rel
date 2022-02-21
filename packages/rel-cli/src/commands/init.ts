@@ -1,6 +1,6 @@
-import fsUtils from 'fs-utils'
-import chalk from 'chalk'
-import ora from 'ora'
+import fsUtils from "fs-utils"
+import chalk from "chalk"
+import ora from "ora"
 
 export default async function InitCommand() {
   console.log(`
@@ -35,22 +35,22 @@ type User {
   )
 
   initializing.succeed(
-    'Your Rel schema was created at ' + chalk.greenBright('rel/schema.graphql')
+    "Your Rel schema was created at " + chalk.greenBright("rel/schema.graphql")
   )
 
   console.log()
-  console.log('Next steps:')
+  console.log("Next steps:")
   console.log()
   console.log(
-    '1. Run ' +
-    chalk.blueBright('rel dev') +
-    ' and visit https://localhost:4000'
+    "1. Run " +
+      chalk.blueBright("rel dev") +
+      " and visit https://localhost:4000"
   )
   console.log(
-    '2. Edit ' +
-    chalk.greenBright('rel/schema.graphql') +
-    ' to update your schema.'
+    "2. Edit " +
+      chalk.greenBright("rel/schema.graphql") +
+      " to update your schema."
   )
-  console.log('3. Read more documentation at https://rel.run/docs')
+  console.log("3. Read more documentation at https://rel.run/docs")
   console.log()
 }
