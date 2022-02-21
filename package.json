@@ -4,7 +4,8 @@
   "scripts": {
     "clean": "pnpm m run clean",
     "build": "pnpm m run build",
-    "dev": "pnpm m run dev"
+    "dev": "pnpm m run dev",
+    "redis": "docker run -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "oldscripts": {
     "bootstrap": "lerna bootstrap",
