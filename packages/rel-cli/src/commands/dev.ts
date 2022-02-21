@@ -9,12 +9,15 @@ import Logger from "@ptkdev/logger"
 let server
 
 const handleChange = debounce(async (opts) => {
+  console.clear()
+
   if (server) {
     await server.kill()
   }
 
   const { dir, verbose } = opts
-  let reloadingIndicator
+  const reloadingIndicator = ora("Loading unicorns").start()
+
   let logger
 
   if (verbose) {
@@ -43,10 +46,17 @@ const handleChange = debounce(async (opts) => {
 
   const port = process.env.PORT || 4000
 
-  server.listen(port).then(({ port, generatedSchema }) => {
-    console.log(`🚨 Server listening on http://localhost:${port}`)
-    // console.log(generatedSchema)
-  })
+  server
+    .listen(port)
+    .then(({ port, generatedSchema }) => {
+      // console.log(`🚨 Server listening on http://localhost:${port}`)
+      reloadingIndicator?.succeed("Rel running on http://localhost:4000")
+      // console.log(generatedSchema)
+    })
+    .catch((err) => {
+      reloadingIndicator?.fail("Error during server start")
+      console.error(err)
+    })
 
   // server = await startServer({
   //   dir,

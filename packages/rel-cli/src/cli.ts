@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.removeAllListeners("warning")
+
 import { Command } from "commander"
 
 import DevCommand from "./commands/dev.js"
