@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build:watch": "tsc --watch --preserveWatchOutput",
     "redis": "docker run -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "author": "",

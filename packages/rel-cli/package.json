@@ -13,7 +13,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@ptkdev/logger": "^1.8.0",
