@@ -9,8 +9,8 @@
     "removeComments": true,
     "declaration": true,
     "sourceMap": true,
-    "lib": ["es6", "DOM"],
+    "lib": ["es6", "DOM"]
   },
   "include": [],
-  "exclude": ["**/node_modules", "dist", "test"]
+  "exclude": ["**/node_modules", "./dist", "./test"]
 }

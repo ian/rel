@@ -1,0 +1,31 @@
+{
+  "name": "rel",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "redis": "docker run -p 6379:6379 -it --rm redislabs/redisgraph"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/merge": "^8.2.1",
+    "@graphql-tools/schema": "^8.3.1",
+    "@graphql-tools/utils": "^8.6.1",
+    "@graphql-yoga/node": "^0.0.1-canary-ae94a57.0",
+    "@types/node": "14.14.33",
+    "cyypher": "^0.0.7",
+    "fastify": "^3.24.0",
+    "graphql": "^16.3.0",
+    "graphql-compose": "^9.0.7",
+    "graphql-playground-html": "^1.6.30",
+    "graphql-scalars": "^1.13.5",
+    "mercurius": "^8.9.1",
+    "pluralize": "^8.0.0",
+    "typescript": "^4.5.5",
+    "uuid": "^8.3.2"
+  }
+}

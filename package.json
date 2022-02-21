@@ -1,10 +1,12 @@
 {
   "name": "rel",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
+    "clean": "pnpm m run clean",
+    "build": "pnpm m run build",
+    "dev": "pnpm m run dev"
+  },
+  "oldscripts": {
     "bootstrap": "lerna bootstrap",
     "link": "lerna link",
     "build": "lerna run build",
@@ -15,9 +17,5 @@
     "release": "lerna run clean && lerna run build && lerna publish",
     "redis": "docker run -p 6379:6379 redislabs/redismod"
   },
-  "devDependencies": {
-    "@types/jest": "^26.0.20",
-    "jest": "^26.6.3",
-    "lerna": "^4.0.0"
-  }
+  "devDependencies": {}
 }
