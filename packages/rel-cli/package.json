@@ -1,5 +1,5 @@
 {
-  "name": "rel-cli",
+  "name": "rel-js",
   "type": "module",
   "version": "0.0.0",
   "description": "Visit https://rel.run/docs to view the full documentation.",
@@ -16,7 +16,9 @@
     "build:watch": "tsup --watch --format esm"
   },
   "tsup": {
-    "entry": ["src/cli.ts"],
+    "entry": [
+      "src/cli.ts"
+    ],
     "splitting": false,
     "sourcemap": true,
     "clean": true

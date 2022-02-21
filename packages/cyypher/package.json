@@ -2,18 +2,29 @@
   "name": "cyypher",
   "version": "0.0.7",
   "description": "Cypher ORM + client for redis-graph",
-  "main": "dist/index.js",
-  "scripts": {
-    "clean": "rm -rf ./dist",
-    "build": "tsc",
-    "build:watch": "tsc -w --preserveWatchOutput"
-  },
   "author": "Ian Hunter <ian@rel.run>",
   "license": "ISC",
+  "main": "dist/index.mjs",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "tsup --format esm",
+    "build:watch": "tsup --watch --format esm"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  },
   "dependencies": {
     "@ptkdev/logger": "^1.8.0",
     "lodash": "^4.17.21",
     "redisgraph.js": "^2.3.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "tsup": "^5.11.13"
   }
 }

@@ -8,28 +8,20 @@ importers:
     dependencies:
       concurrently: 7.0.0
 
-  examples/basic:
-    specifiers:
-      '@types/node': ^14.14.34
-      rel-cli: workspace:*
-      typescript: ^4.2.3
-    dependencies:
-      rel-cli: link:../../packages/rel-cli
-    devDependencies:
-      '@types/node': 14.18.12
-      typescript: 4.5.5
-
   packages/cyypher:
     specifiers:
       '@ptkdev/logger': ^1.8.0
       lodash: ^4.17.21
       redisgraph.js: ^2.3.0
+      tsup: ^5.11.13
       uuid: ^8.3.2
     dependencies:
       '@ptkdev/logger': 1.8.0
       lodash: 4.17.21
       redisgraph.js: 2.3.0
       uuid: 8.3.2
+    devDependencies:
+      tsup: 5.11.13
 
   packages/rel-cli:
     specifiers:
@@ -283,10 +275,6 @@ packages:
     dependencies:
       form-data: 2.5.1
     dev: false
-
-  /@types/node/14.18.12:
-    resolution: {integrity: sha512-q4jlIR71hUpWTnGhXWcakgkZeHa3CCjcQcnuzU8M891BAWA2jHiziiWEPEkdS5pFsz7H9HJiy8BrK7tBRNrY7A==}
-    dev: true
 
   /abort-controller/3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -2963,12 +2951,6 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
     dev: false
-
-  /typescript/4.5.5:
-    resolution: {integrity: sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-    dev: true
 
   /unbox-primitive/1.0.1:
     resolution: {integrity: sha512-tZU/3NqK3dA5gpE1KtyiJUrEB0lxnGkMFHptJ7q6ewdZ8s12QrODwNbhIJStmJkd1QDXa1NRA8aF2A1zk/Ypyw==}
