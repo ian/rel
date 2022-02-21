@@ -4,8 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rel build",
-    "start": "rel start",
     "dev": "rel dev"
   },
   "dependencies": {

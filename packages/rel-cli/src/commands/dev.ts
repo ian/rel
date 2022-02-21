@@ -50,25 +50,13 @@ const handleChange = debounce(async (opts) => {
     .listen(port)
     .then(({ port, generatedSchema }) => {
       // console.log(`🚨 Server listening on http://localhost:${port}`)
-      reloadingIndicator?.succeed("Rel running on http://localhost:4000")
+      reloadingIndicator?.succeed(`Rel running on http://localhost:${port}`)
       // console.log(generatedSchema)
     })
     .catch((err) => {
       reloadingIndicator?.fail("Error during server start")
       console.error(err)
     })
-
-  // server = await startServer({
-  //   dir,
-  //   logger,
-  // })
-  //   .then(() => {
-  //     reloadingIndicator?.succeed('Rel running on http://localhost:4000')
-  //   })
-  //   .catch((err) => {
-  //     reloadingIndicator?.fail('Error during server start')
-  //     console.error(err)
-  //   })
 }, 300)
 
 type Opts = {
