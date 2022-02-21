@@ -1,4 +1,5 @@
 // require('dotenv').config({ path: '.env' })
+
 import fs from "fs"
 import chokidar from "chokidar"
 import debounce from "debounce"
@@ -49,7 +50,6 @@ const handleChange = debounce(async (opts) => {
   server
     .listen(port)
     .then(({ port, generatedSchema }) => {
-      // console.log(`🚨 Server listening on http://localhost:${port}`)
       reloadingIndicator?.succeed(`Rel running on http://localhost:${port}`)
       // console.log(generatedSchema)
     })
