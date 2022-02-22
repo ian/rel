@@ -22,24 +22,19 @@ Rel is the end-to-end backend framework:
 
 ## Quickstart
 
-Install rel.js with npm:
+Install Rel to your existing project, or create a new one:
 
 ```sh
-npm install -g reljs
-```
-
-Then boostrap Rel into your project:
-
-```
-rel init
+npx rel-cmd@latest init
 ```
 
 Afterwards, Then run `rel dev` to start the server on [http://localhost:4000](http://localhost:4000).
 
 Other things available to you after install:
 
-- Visit http://localhost:4000/playground for a GraphQL playground.
-- Edit `rel/schema.graphql` to change your schema and generated client.
+- Visit http://localhost:4000/ for a GraphQL playground.
+- Make queries to your GraphQL server at http://localhost:4000/graphql.
+- Edit `rel/schema.graphql` (or ./schema.graphql for standalone) to change your schema and generated client.
   <!-- - Integrate Rel with the frontend of your choice: (next.js, svelte, Vue, Expo) -->
   <!-- - Configure server endpoints, streams, and background jobs. -->
   <!-- - Browse the extension marketplace -->
@@ -48,7 +43,7 @@ Other things available to you after install:
 
 - [Discord](https://discord.gg/HpuzRGwevb) - Community feedback, announcements, and peer help.
 - [GitHub Issues](https://github.com/rel-js/rel/issues) - Report issues + errors while using rel.js.
-- [Twitter](https://twitter.com/rel) - Help spread the word and give us a follow!
+- [Twitter](https://twitter.com/rel_js) - Help spread the word and give us a follow!
 
 ## Roadmap
 
