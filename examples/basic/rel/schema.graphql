@@ -1,12 +1,3 @@
-# type User {
-#   name: String!
-#   posts: [Post] @rel(label: "AUTHORED", direction: OUT)
-# }
-
-# type Post {
-#   title: String!
-#   author: User! @rel(label: "AUTHORED", direction: IN)
-# }
 
 type Movie {
   title: String!
@@ -19,3 +10,4 @@ type Genre {
   name: String
   movies: [Movie]! @rel(label: "IN_GENRE", direction: IN)
 }
+    

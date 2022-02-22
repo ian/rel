@@ -32,7 +32,7 @@ export default async function InitCommand() {
   let projectDir = "."
 
   if (isExistingProject) {
-    console.log("Exising project found in .")
+    console.log("Project found in current directory")
 
     switch (true) {
       case isNPM:
@@ -81,10 +81,12 @@ export default async function InitCommand() {
     )
   }
 
+  console.log()
   const initializing = ora(`Installing Rel packages`).start()
   execSync(`${cmd} add rel-cmd@${version}`)
   initializing.succeed(`Rel packages installed`)
 
+  console.log()
   const { path } = await inquirer.prompt([
     {
       type: "input",
@@ -95,13 +97,10 @@ export default async function InitCommand() {
   ])
 
   await fsUtils.writeFileSync(
-    `${path}/rel.config.js`,
-    `
-const relConfig = {
-  baseDir: "${path}"
+    `${projectDir}/rel.config.json`,
+    `{
+  "baseDir": "${path}"
 }
-    
-module.exports = relConfig
 `
   )
 

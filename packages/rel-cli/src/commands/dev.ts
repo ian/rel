@@ -17,7 +17,7 @@ const handleChange = debounce(async (opts) => {
   }
 
   const { dir, verbose } = opts
-  const reloadingIndicator = ora("Loading unicorns").start()
+  const reloadingIndicator = ora("Starting Rel ...").start()
 
   let logger
 
@@ -37,7 +37,6 @@ const handleChange = debounce(async (opts) => {
   }
 
   const typeDefs = fs.readFileSync(dir + "/schema.graphql").toString()
-
   const connection = "redis://localhost:6379"
 
   server = new Rel({
@@ -50,7 +49,10 @@ const handleChange = debounce(async (opts) => {
   server
     .listen(port)
     .then(({ port, generatedSchema }) => {
-      reloadingIndicator?.succeed(`Rel running on http://localhost:${port}`)
+      reloadingIndicator?.succeed(`Rel running`)
+      console.log()
+      console.log(`GraphQL Playground: http://localhost:${port}`)
+      console.log(`GraphQL Endpoint: http://localhost:${port}/graphql`)
       // console.log(generatedSchema)
     })
     .catch((err) => {
@@ -65,10 +67,16 @@ type Opts = {
 }
 
 export default (opts: Opts): void => {
-  const { dir } = opts
-  // console.log("Starting", { dir })
+  const currentDir = process.cwd()
+  const config = fs.readFileSync(`${currentDir}/rel.config.json`).toString()
+  const { baseDir } = JSON.parse(config)
 
   chokidar
-    .watch(dir + "/schema.graphql", { persistent: true })
-    .on("all", () => handleChange(opts))
+    .watch(baseDir + "/schema.graphql", { persistent: true })
+    .on("all", () =>
+      handleChange({
+        dir: baseDir,
+        ...opts,
+      })
+    )
 }
