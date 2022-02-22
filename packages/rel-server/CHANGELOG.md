@@ -1,5 +1,16 @@
 # rel-server
 
+## 0.1.0
+
+### Minor Changes
+
+- Overhaul of CLI tooling, using rel.config.json now, init and dev scripts working well"
+
+### Patch Changes
+
+- Updated dependencies
+  - cyypher@0.1.0
+
 ## 0.0.3
 
 ### Patch Changes
