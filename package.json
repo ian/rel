@@ -6,8 +6,7 @@
     "build": "pnpm m run build",
     "build:watch": "concurrently \"pnpm build:watch --dir packages/cyypher\" \"pnpm build:watch --dir packages/rel-cli\" \"pnpm build:watch --dir packages/rel-server\"",
     "dev": "pnpm m run dev",
-    "version": "pnpx changeset version",
-    "release": "pnpm publish -r --no-git-checks",
+    "release": "pnpx changeset version && pnpm publish -r --no-git-checks",
     "redis": "docker run -p 6379:6379 -it --rm redislabs/redisgraph"
   },
   "oldscripts": {
