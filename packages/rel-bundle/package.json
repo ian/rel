@@ -6,8 +6,8 @@
   "license": "ISC",
   "main": "dist/index.mjs",
   "exports": {
-    "client": "./dist/client.mjs",
-    "server": "./dist/server.mjs"
+    "./client": "./dist/client.mjs",
+    "./server": "./dist/server.mjs"
   },
   "scripts": {
     "clean": "rm -rf ./dist",
