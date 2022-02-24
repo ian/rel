@@ -4,7 +4,6 @@
   "description": "Visit https://rel.run/docs to view the full documentation.",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "ISC",
-  "main": "dist/index.mjs",
   "type": "module",
   "exports": {
     "client": "./dist/client.js",
