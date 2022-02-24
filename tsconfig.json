@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "target": "es5",
-    // "module": "commonjs",
-    // "moduleResolution": "node",
-    // "resolveJsonModule": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
