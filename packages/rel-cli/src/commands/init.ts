@@ -83,7 +83,8 @@ export default async function InitCommand() {
 
   console.log()
   const initializing = ora(`Installing Rel packages`).start()
-  execSync(`${cmd} add rel-cmd@${version}`)
+  execSync(`${cmd} add -D rel-cmd@latest`)
+  execSync(`${cmd} add rel-bundle@latest`)
   initializing.succeed(`Rel packages installed`)
 
   console.log()
