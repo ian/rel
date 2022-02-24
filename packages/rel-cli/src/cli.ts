@@ -6,6 +6,7 @@ import { Command } from "commander"
 
 import DevCommand from "./commands/dev.js"
 import InitCommand from "./commands/init.js"
+import GenCommand from "./commands/gen.js"
 
 const program = new Command()
 
@@ -22,6 +23,11 @@ program
   .option("-d, --dir <dir>", "Base directory")
   .option("-v, --verbose", "Make Rel more talkative")
   .action(DevCommand)
+
+program
+  .command("gen")
+  .description("Generate Rel Typescript client")
+  .action(GenCommand)
 
 program.parse(process.argv)
 

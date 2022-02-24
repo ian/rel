@@ -1,0 +1,31 @@
+{
+  "name": "rel-client",
+  "version": "0.0.0",
+  "description": "Visit https://rel.run/docs to view the full documentation.",
+  "author": "Ian Hunter <ian@rel.run>",
+  "main": "dist/index.mjs",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "tsup --format esm",
+    "build:watch": "tsup --watch --format esm"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "dts": true,
+    "sourcemap": true,
+    "clean": true
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^5.11.13"
+  },
+  "dependencies": {
+    "@genql/cli": "^2.9.0",
+    "@genql/runtime": "^2.9.0",
+    "fs-utils": "^0.7.0",
+    "graphql": "^16.3.0"
+  }
+}

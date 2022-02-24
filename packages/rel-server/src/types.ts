@@ -1,6 +1,6 @@
 import { Client } from "cyypher"
 
-export type Field = {
+export declare type Field = {
   name: string
   type: string
   directives: Directive[]
