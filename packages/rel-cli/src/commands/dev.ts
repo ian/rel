@@ -5,6 +5,9 @@ import chokidar from "chokidar"
 import debounce from "debounce"
 import ora from "ora"
 import Rel from "rel-server"
+// import { printSchema } from "graphql"
+// import { generateClient } from "rel-client"
+import Generate from "./gen"
 import Logger from "@ptkdev/logger"
 
 let server
@@ -43,6 +46,15 @@ const handleChange = debounce(async (opts) => {
     typeDefs,
     connection,
   })
+
+  await Generate()
+
+  // const generatedSchema = await server.generateSchema()
+
+  // await generateClient({
+  //   schema: printSchema(generatedSchema),
+  //   outputPath: path.join(baseDir, "client"),
+  // })
 
   const port = process.env.PORT || 4000
 

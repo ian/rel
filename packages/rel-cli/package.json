@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "description": "Visit https://rel.run/docs to view the full documentation.",
-  "repository": "https://github.com/runrel/rel",
+  "repository": "https://github.com/rel-js/rel",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "Apache-2.0",
   "main": "dist/cli.js",

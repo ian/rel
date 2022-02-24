@@ -26,6 +26,47 @@ importers:
     devDependencies:
       tsup: 5.11.13
 
+  packages/rel-bundle:
+    specifiers:
+      '@graphql-tools/merge': ^8.2.1
+      '@graphql-tools/schema': ^8.3.1
+      '@graphql-tools/utils': ^8.6.1
+      '@graphql-yoga/node': ^0.0.1-canary-ae94a57.0
+      cyypher: workspace:*
+      fastify: ^3.24.0
+      graphql: ^16.3.0
+      graphql-compose: ^9.0.7
+      graphql-playground-html: ^1.6.30
+      graphql-scalars: ^1.13.5
+      js-cookie: ^3.0.1
+      mercurius: ^8.9.1
+      pluralize: ^8.0.0
+      rel-client: workspace:^0.0.0
+      rel-server: workspace:^0.1.0
+      tsup: ^5.11.13
+      typescript: ^4.5.5
+      uuid: ^8.3.2
+    dependencies:
+      '@graphql-tools/merge': 8.2.2_graphql@16.3.0
+      '@graphql-tools/schema': 8.3.1_graphql@16.3.0
+      '@graphql-tools/utils': 8.6.1_graphql@16.3.0
+      '@graphql-yoga/node': 0.0.1-canary-ae94a57.0_graphql@16.3.0
+      cyypher: link:../cyypher
+      fastify: 3.27.2
+      graphql: 16.3.0
+      graphql-compose: 9.0.7_graphql@16.3.0
+      graphql-playground-html: 1.6.30
+      graphql-scalars: 1.14.1_graphql@16.3.0
+      js-cookie: 3.0.1
+      mercurius: 8.12.0
+      pluralize: 8.0.0
+      rel-client: link:../rel-client
+      rel-server: link:../rel-server
+      uuid: 8.3.2
+    devDependencies:
+      tsup: 5.11.13_typescript@4.5.5
+      typescript: 4.5.5
+
   packages/rel-cli:
     specifiers:
       '@ptkdev/logger': ^1.8.0
@@ -67,12 +108,14 @@ importers:
       '@genql/runtime': ^2.9.0
       fs-utils: ^0.7.0
       graphql: ^16.3.0
+      js-cookie: ^3.0.1
       tsup: ^5.11.13
     dependencies:
       '@genql/cli': 2.9.0
       '@genql/runtime': 2.9.0_graphql@16.3.0
       fs-utils: 0.7.0
       graphql: 16.3.0
+      js-cookie: 3.0.1
     devDependencies:
       tsup: 5.11.13
 
@@ -2691,6 +2734,11 @@ packages:
   /joycon/3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
+
+  /js-cookie/3.0.1:
+    resolution: {integrity: sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==}
+    engines: {node: '>=12'}
+    dev: false
 
   /js-tokens/4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}

@@ -9,7 +9,7 @@ type Opts = {
   logging: boolean
 }
 
-export default async (opts: Opts): Promise<void> => {
+export default async (): Promise<void> => {
   const currentDir = process.cwd()
   const config = fs.readFileSync(`${currentDir}/rel.config.json`).toString()
   const { baseDir } = JSON.parse(config)

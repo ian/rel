@@ -26,6 +26,7 @@
     "@genql/cli": "^2.9.0",
     "@genql/runtime": "^2.9.0",
     "fs-utils": "^0.7.0",
-    "graphql": "^16.3.0"
+    "graphql": "^16.3.0",
+    "js-cookie": "^3.0.1"
   }
 }
