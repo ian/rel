@@ -12,7 +12,7 @@ Rel is the end-to-end backend framework:
 
 - [x] Schema driven (`schema.graphql`)
 - [x] CRUD + custom endpoints
-- [ ] Auto-generated client (TypeScript)
+- [x] Auto-generated client (TypeScript)
 - [ ] Standard and polymorphic relationships
 - [ ] Authentication and authorization
 - [ ] Realtime subscriptions

@@ -1,10 +1,9 @@
-// require('dotenv').config({ path: '.env' })
-
 import fs from "fs"
 import chokidar from "chokidar"
 import debounce from "debounce"
 import ora from "ora"
 import Rel from "rel-server"
+import Generate from "./gen"
 import Logger from "@ptkdev/logger"
 
 let server
@@ -43,6 +42,8 @@ const handleChange = debounce(async (opts) => {
     typeDefs,
     connection,
   })
+
+  await Generate()
 
   const port = process.env.PORT || 4000
 

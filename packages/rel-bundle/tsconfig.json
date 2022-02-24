@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "paths": {
+      "client/*": ["./client/*"],
+      "server/*": ["./server/*"]
+    }
+  },
+  "include": ["src"]
+}

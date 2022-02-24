@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "description": "Visit https://rel.run/docs to view the full documentation.",
-  "repository": "https://github.com/runrel/rel",
+  "repository": "https://github.com/rel-js/rel",
   "author": "Ian Hunter <ian@rel.run>",
   "license": "Apache-2.0",
   "main": "dist/cli.js",
@@ -20,6 +20,7 @@
       "src/cli.ts"
     ],
     "splitting": false,
+    "dts": true,
     "sourcemap": true,
     "clean": true
   },
@@ -32,8 +33,10 @@
     "debounce": "^1.2.1",
     "dotenv": "^8.2.0",
     "fs-utils": "^0.7.0",
+    "graphql": "^16.3.0",
     "inquirer": "^8.2.0",
     "ora": "^5.3.0",
+    "rel-client": "workspace:^0.0.0",
     "rel-server": "workspace:*",
     "slugify": "^1.6.5"
   },

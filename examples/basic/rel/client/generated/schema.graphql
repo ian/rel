@@ -1,0 +1,123 @@
+scalar DateTime
+
+type Genre {
+  createdAt: DateTime!
+  id: ID!
+  movies(limit: Int, skip: Int, where: MovieWhere): [Movie]!
+  name: String
+  updatedAt: DateTime
+}
+
+input GenreCreateInput {
+  name: String
+}
+
+input GenreUpdateInput {
+  name: String
+}
+
+input GenreWhere {
+  AND: [GenreWhere!]
+  NOT: [GenreWhere!]
+  OR: [GenreWhere!]
+  id: ID
+  name: String
+}
+
+type Movie {
+  createdAt: DateTime!
+  genres(limit: Int, skip: Int, where: GenreWhere): [Genre]!
+  id: ID!
+  rating: Float
+  title: String!
+  updatedAt: DateTime
+  year: Int
+}
+
+input MovieCreateInput {
+  rating: Float
+  title: String!
+  year: Int
+}
+
+input MovieUpdateInput {
+  rating: Float
+  title: String
+  year: Int
+}
+
+input MovieWhere {
+  AND: [MovieWhere!]
+  NOT: [MovieWhere!]
+  OR: [MovieWhere!]
+  id: ID
+  rating: Float
+  title: String
+  year: Int
+}
+
+type Mutation {
+  """Create a single Genre using 'data' values"""
+  createGenre(data: GenreCreateInput!): Genre
+
+  """Create a single Movie using 'data' values"""
+  createMovie(data: MovieCreateInput!): Movie
+
+  """Delete one Genre by 'where', returns node if found otherwise null"""
+  deleteGenre(where: GenreWhere!): Genre
+
+  """Delete multiple Genres by 'where', returns number of nodes deleted"""
+  deleteManyGenre(where: GenreWhere!): Int!
+
+  """Delete multiple Movies by 'where', returns number of nodes deleted"""
+  deleteManyMovie(where: MovieWhere!): Int!
+
+  """Delete one Movie by 'where', returns node if found otherwise null"""
+  deleteMovie(where: MovieWhere!): Movie
+
+  """
+  Merge will find or create a Genre matching 'where', if found will update using data, if not found will create using data + where
+  """
+  mergeGenre(data: GenreUpdateInput, where: GenreWhere!): Genre
+
+  """
+  Merge will find or create a Movie matching 'where', if found will update using data, if not found will create using data + where
+  """
+  mergeMovie(data: MovieUpdateInput, where: MovieWhere!): Movie
+
+  """Update first Genre matching 'where'"""
+  updateGenre(data: GenreUpdateInput!, where: GenreWhere!): Genre
+
+  """
+  Update multiple Genres matching 'where', sets all nodes to 'data' values
+  """
+  updateManyGenre(data: GenreUpdateInput!, where: GenreWhere!): [Genre]!
+
+  """
+  Update multiple Movies matching 'where', sets all nodes to 'data' values
+  """
+  updateManyMovie(data: MovieUpdateInput!, where: MovieWhere!): [Movie]!
+
+  """Update first Movie matching 'where'"""
+  updateMovie(data: MovieUpdateInput!, where: MovieWhere!): Movie
+}
+
+type Query {
+  """Count number of Genre nodes matching 'where'"""
+  countGenres(where: GenreWhere): Int!
+
+  """Count number of Movie nodes matching 'where'"""
+  countMovies(where: MovieWhere): Int!
+
+  """Find multiple Genres matching 'where'"""
+  findManyGenres(limit: Int, offset: Int, where: GenreWhere): [Genre]!
+
+  """Find multiple Movies matching 'where'"""
+  findManyMovies(limit: Int, offset: Int, where: MovieWhere): [Movie]!
+
+  """Find one Genre matching 'where'"""
+  findOneGenre(where: GenreWhere): Genre
+
+  """Find one Movie matching 'where'"""
+  findOneMovie(where: MovieWhere): Movie
+}
