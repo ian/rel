@@ -42,7 +42,7 @@ Other things available to you after install:
 
 ## Community
 
-- [Discord](https://discord.gg/HpuzRGwevb) - Community feedback, announcements, and peer help.
+- [Github Discussions](https://github.com/rel-js/rel/discussions) - Want to suggest a feature? Open a discussion.
 - [GitHub Issues](https://github.com/rel-js/rel/issues) - Report issues + errors while using rel.js.
 - [Twitter](https://twitter.com/rel_js) - Help spread the word and give us a follow!
 
